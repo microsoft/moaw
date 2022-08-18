@@ -1,18 +1,18 @@
-<!--
+---
 description: This is a workshop for...
 authors: Yohan Lasorsa
 contacts: @sinedied
-banner_url: assets/banner.png (optional)
-video_url: https://youtube.com/link (optional)
+# banner_url: assets/banner.png (optional)
+# video_url: https://youtube.com/link (optional)
 duration_minutes: 90-120
-audience: students (optional)
+audience: students
 tags: github, gatsby, azure, static web apps, javascript, markdown
 published: false
--->
+---
 
 # Create and deploy your online portfolio with Gatsby, GitHub and Azure Static Web Apps
 
-TODO: short description
+TODO: add short description
 
 ## Workshop Objectives
 - Bootstrap a Gatsby app from a template
@@ -41,8 +41,9 @@ git --version
 gatsby --version
 ```
 
-<details id=1>
-<summary><h2>Step 1: Bootstrap Gatsby app</h2></summary>
+---
+
+## 1. Bootstrap Gatsby app
 
 ### What's [Gatsby](http://www.gatsbyjs.com)?
 
@@ -76,10 +77,9 @@ gatsby develop
   ![Screenshot showing git commands on GitHub](assets/gh-git.png)
 3. After the push is finished, check that your code is visible on GitHub
 
-</details>
+---
 
-<details id=2>
-<summary><h2>Step 2: Deploy your app on Azure Static Web Apps</h2></summary>
+## 2. Deploy your app on Azure Static Web Apps
 
 ### What's the cloud? ☁️
 
@@ -237,10 +237,9 @@ Try and change the background color!
 - [ ] Feature your skills in interests section
 - [ ] Show your projects
 
-</details>
+---
 
-<details id=4>
-<summary><h2>Step 4: Go Further (Bonus)</h2></summary>
+## Step 4: Go Further (Bonus)
 
 ### React components
 
@@ -274,5 +273,3 @@ Gatbsy and Azure Static Web Apps are not limited to static data. You can follow 
 - Learn Markdown: https://commonmark.org/help/
 - More Static Web Apps tutorials: https://aka.ms/learn/swa
 - Intro to React: https://reactjs.org/tutorial/tutorial.html
-
-</details>
