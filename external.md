@@ -25,10 +25,10 @@ Please use this format when adding a link to this list:
 PWA with Azure Static Web Apps](https://aka.ms/spwa) by Yohan Lasorsa [slides][en]
   * [GitHub source](https://github.com/sinedied/workshops/tree/main/pwa)
 
-- [Déployer vos conteneurs Docker dans Azure](http://workshops.devcongalaxy.io/#/workshops/docker-azure?repo=thomasrannou%2Fcontainer-workshop%2Fmain&step=1&WT.mc_id=AZ-MVP-5004246&ocid=AID3030268) by Thomas Rannou [website][fr]
+- [Déployer vos conteneurs Docker dans Azure](http://workshops.devcongalaxy.io/#/workshops/docker-azure?repo=thomasrannou%2Fcontainer-workshop%2Fmain&step=1&WT.mc_id=AZ-MVP-5004246&ocid=AID3030268) by Thomas Rannou (MVP) [website][fr]
   * [GitHub source](https://github.com/thomasrannou/container-workshop/main)
 
-- [Déployer votre premier cluster Kubernetes dans Azure](http://workshops.devcongalaxy.io/#/workshops/aks?repo=thomasrannou%2Faks-workshop%2Fmain%2F&step=1&WT.mc_id=AZ-MVP-5004246&ocid=AID3030268) by Thomas Rannou [website][fr]
+- [Déployer votre premier cluster Kubernetes dans Azure](http://workshops.devcongalaxy.io/#/workshops/aks?repo=thomasrannou%2Faks-workshop%2Fmain%2F&step=1&WT.mc_id=AZ-MVP-5004246&ocid=AID3030268) by Thomas Rannou (MVP) [website][fr]
   * [GitHub source](https://github.com/thomasrannou/aks-workshop/main/)
 
 - [Codez votre premier projet IoT sur MXChip](http://workshops.devcongalaxy.io/#/workshops/mxchip-azure?repo=tagazok%2Fmy-workshops%2Fmaster%2Fmxchip-azure&step=1&WT.mc_id=javascript-0000-yolasors&ocid=AID1234) by Jim Bennet, Christopher Maneu, Wassim Chegham, Olivier Leplus [website][fr]
