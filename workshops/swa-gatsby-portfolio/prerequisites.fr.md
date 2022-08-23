@@ -1,8 +1,3 @@
----
-type: page
-published: false
----
-
 # Préparez votre environnement
 
 Afin de réaliser ce workshop, vous aurez besoin de: 

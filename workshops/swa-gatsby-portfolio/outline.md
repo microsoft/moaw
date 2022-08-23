@@ -1,8 +1,3 @@
----
-type: page
-published: false
----
-
 PWA WORKSHOP
 ============
 
