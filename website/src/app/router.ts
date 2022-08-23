@@ -7,7 +7,7 @@ export interface Route {
 
 export const Routes: Route[] = [
   { path: '/workshop/', id: 'workshop' },
-  { path: '/slide/', id: 'slide' },
+  { path: '/deck/', id: 'deck' },
   { path: '/page/', id: 'page' },
   { path: '/', id: 'home', redirect: true }
 ];

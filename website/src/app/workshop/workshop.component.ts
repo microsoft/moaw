@@ -10,6 +10,11 @@ import { Workshop, loadWorkshop } from './workshop';
   standalone: true,
   imports: [CommonModule, MarkdownModule],
   template: `
+    <header class="navbar">
+      <div class="links">
+        <a href="#">GitHub</a>
+      </div>
+    </header>
     <div *ngIf="workshop; else noWorkshop" class="workshop">
       <markdown ngPreserveWhitespaces [data]="workshop.sections[workshop.step]"></markdown>
     </div>
@@ -37,7 +42,9 @@ export class WorkshopComponent implements OnInit {
     this.loading = true;
     try {
       this.workshop = await loadWorkshop(repoPath, { wtid, ocid });
-    } catch {}
+    } catch (error) {
+      console.error(error);
+    }
     this.loading = false;
 
     if (this.workshop && step) {
