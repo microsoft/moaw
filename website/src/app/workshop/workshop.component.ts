@@ -17,15 +17,17 @@ import { Workshop, loadWorkshop } from './workshop';
       <p *ngIf="!loading">Could not load workshop :(</p>
     </ng-template>
   `,
-  styles: [`
-    :host {
-      height: 100%;
-    }
-  `]
+  styles: [
+    `
+      :host {
+        height: 100%;
+      }
+    `
+  ]
 })
 export class WorkshopComponent implements OnInit {
   loading: boolean = true;
-  workshop: Workshop|undefined;
+  workshop: Workshop | undefined;
 
   async ngOnInit() {
     const currentPath = decodeURIComponent(window.location.pathname);
@@ -35,12 +37,11 @@ export class WorkshopComponent implements OnInit {
     this.loading = true;
     try {
       this.workshop = await loadWorkshop(repoPath, { wtid, ocid });
-    } catch { }
+    } catch {}
     this.loading = false;
 
     if (this.workshop && step) {
       this.workshop.step = Number(step);
     }
   }
-
 }
