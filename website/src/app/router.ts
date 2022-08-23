@@ -12,12 +12,12 @@ export const Routes: Route[] = [
   { path: '/', id: 'home', redirect: true }
 ];
 
-let currentRoute: Route|undefined;
+let currentRoute: Route | undefined;
 let routeChangeListener: (route: Route) => void = () => {};
 
 function updateRoute() {
   const path = window.location.pathname;
-  currentRoute = Routes.find(r => path.startsWith(r.path));
+  currentRoute = Routes.find((r) => path.startsWith(r.path));
 
   if (!currentRoute || (currentRoute.redirect && path !== currentRoute.path)) {
     return navigate(currentRoute?.path ?? '/');

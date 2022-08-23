@@ -33,9 +33,9 @@ export async function loadWorkshop(repoPath: string, options?: WorkshopOptions):
   markdown = updateTrackingCodes(markdown, {
     wtid: meta.wt_id,
     ocid: meta?.oc_id,
-    ...options,
+    ...options
   });
-  
+
   return {
     meta,
     githubUrl: getGitHubRepoUrl(gitHubFileUrl),

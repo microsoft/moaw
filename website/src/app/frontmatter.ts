@@ -24,5 +24,5 @@ export function parseFrontMatter(text: string): FrontMatterParseResult {
   if (!yaml) {
     return { data: {}, content: text };
   }
-  return { data: parse(yaml), content }
+  return { data: parse(yaml), content };
 }

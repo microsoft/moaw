@@ -8,13 +8,11 @@ import { WorkshopComponent } from './workshop/workshop.component';
   standalone: true,
   selector: 'app-root',
   imports: [CommonModule, WorkshopComponent],
-  template: `
-    <app-workshop *ngIf="route?.id === 'workshop'"></app-workshop>
-  `,
+  template: ` <app-workshop *ngIf="route?.id === 'workshop'"></app-workshop> `,
   styles: []
 })
 export class AppComponent {
-  route: Route|undefined;
+  route: Route | undefined;
 
   constructor() {
     setupRouter(this.routeChanged.bind(this));
