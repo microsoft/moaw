@@ -11,8 +11,11 @@ if (environment.production) {
 }
 
 bootstrapApplication(AppComponent, {
-  providers: [importProvidersFrom(MarkdownModule.forRoot({
-    sanitize: SecurityContext.NONE
-  }))]
-})
-  .catch(err => console.error(err));
+  providers: [
+    importProvidersFrom(
+      MarkdownModule.forRoot({
+        sanitize: SecurityContext.NONE
+      })
+    )
+  ]
+}).catch((err) => console.error(err));

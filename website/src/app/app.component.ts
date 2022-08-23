@@ -3,12 +3,16 @@ import { Component } from '@angular/core';
 
 import { Route, setupRouter } from './router';
 import { WorkshopComponent } from './workshop/workshop.component';
+import { DeckComponent } from './deck/deck.component';
 
 @Component({
   standalone: true,
   selector: 'app-root',
-  imports: [CommonModule, WorkshopComponent],
-  template: ` <app-workshop *ngIf="route?.id === 'workshop'"></app-workshop> `,
+  imports: [CommonModule, WorkshopComponent, DeckComponent],
+  template: `
+    <app-workshop *ngIf="route?.id === 'workshop'"></app-workshop>
+    <app-deck *ngIf="route?.id === 'deck'"></app-deck>
+  `,
   styles: []
 })
 export class AppComponent {
