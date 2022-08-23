@@ -1,7 +1,7 @@
 ---
 description: This is a workshop for...
 authors: Yohan Lasorsa
-contacts: @sinedied
+contacts: '@sinedied'
 # banner_url: assets/banner.png (optional)
 # video_url: https://youtube.com/link (optional)
 duration_minutes: 90-120
