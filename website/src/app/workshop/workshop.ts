@@ -1,10 +1,12 @@
 import { getFileUrl, getBaseUrl, getGitHubRepoUrl } from '../github';
-import { parseFrontMatter } from '../frontmatter';
+import { FrontMatterData, parseFrontMatter } from '../frontmatter';
+import { updateTrackingCodeInText } from 'cxa-track/tracking';
 
-const sectionSeparator = '--sep--'; // '***'
+const sectionSeparator = '\n---\n';
 const assetsFolder = 'assets/';
 
 export interface Workshop {
+  meta: FrontMatterData;
   githubUrl: string;
   sections: string[];
   step: number;
@@ -26,11 +28,16 @@ export async function loadWorkshop(repoPath: string, options?: WorkshopOptions):
   }
 
   const text = await response.text();
-  let { data, content: markdown } = parseFrontMatter(text);
+  let { data: meta, content: markdown } = parseFrontMatter(text);
   markdown = updateAssetsBasePath(markdown, getBaseUrl(gitHubFileUrl));
-  markdown = updateTrackingCodes(markdown, options);
+  markdown = updateTrackingCodes(markdown, {
+    wtid: meta.wt_id,
+    ocid: meta?.oc_id,
+    ...options,
+  });
   
   return {
+    meta,
     githubUrl: getGitHubRepoUrl(gitHubFileUrl),
     sections: markdown.split(sectionSeparator),
     step: 0
@@ -38,21 +45,14 @@ export async function loadWorkshop(repoPath: string, options?: WorkshopOptions):
 }
 
 function updateAssetsBasePath(markdown: string, baseUrl: string): string {
-  markdown = markdown.replace(new RegExp(assetsFolder, 'g'), `${baseUrl}/${assetsFolder}`);
-  // TODO: remove
-  markdown = markdown.replace(/media/g, `${baseUrl}/images`);
-
-  return markdown;
+  return markdown.replace(new RegExp(assetsFolder, 'g'), `${baseUrl}/${assetsFolder}`);
 }
 
 function updateTrackingCodes(markdown: string, options?: WorkshopOptions): string {
-  if (!options) {
-    return markdown;
+  const { ocid, wtid } = options || {};
+  if (wtid) {
+    markdown = updateTrackingCodeInText(markdown, wtid, true, ocid ? { ocid } : undefined);
   }
-
-  const { ocid, wtid } = options;
-
-  // TODO: update and use cxa-track URL updating
 
   return markdown;
 }

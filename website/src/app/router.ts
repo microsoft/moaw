@@ -42,17 +42,12 @@ export function navigate(path: string) {
 
 export function setQueryParams(params: Record<string, string>) {
   const url = new URL(window.location.href);
-  url.searchParams.forEach((_value, key) => url.searchParams.delete(key));
-  for (const [key, values] of Object.entries(params)) {
-    url.searchParams.set(key, values);
-  }
+  url.search = new URLSearchParams(params).toString();
   window.history.pushState({}, window.location.pathname, url);
   updateRoute();
 }
 
 export function getQueryParams(): Record<string, string> {
   const url = new URL(window.location.href);
-  const params: Record<string, string> = {};
-  url.searchParams.forEach((value, key) => params[key] = value);
-  return params;
+  return Object.fromEntries(url.searchParams.entries());
 }

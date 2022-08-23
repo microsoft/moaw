@@ -10,15 +10,18 @@ import { Workshop, loadWorkshop } from './workshop';
   standalone: true,
   imports: [CommonModule, MarkdownModule],
   template: `
-    <div *ngIf="workshop; else noWorkshop">
+    <div *ngIf="workshop; else noWorkshop" class="workshop">
       <markdown ngPreserveWhitespaces [data]="workshop.sections[workshop.step]"></markdown>
     </div>
     <ng-template #noWorkshop>
       <p *ngIf="!loading">Could not load workshop :(</p>
     </ng-template>
   `,
-  styles: [
-  ]
+  styles: [`
+    :host {
+      height: 100%;
+    }
+  `]
 })
 export class WorkshopComponent implements OnInit {
   loading: boolean = true;
@@ -27,15 +30,17 @@ export class WorkshopComponent implements OnInit {
   async ngOnInit() {
     const currentPath = decodeURIComponent(window.location.pathname);
     const repoPath = currentPath.substring('/workshop/'.length);
-  
-    this.workshop = await loadWorkshop(repoPath);
+    const { step, wtid, ocid } = getQueryParams();
 
-    if (this.workshop) {
-      const queryParams = getQueryParams();
-      const step = queryParams?.['step'];
-      if (step) {
-        this.workshop.step = Number(step);
-      }
+    this.loading = true;
+    try {
+      this.workshop = await loadWorkshop(repoPath, { wtid, ocid });
+    } catch { }
+    this.loading = false;
+
+    if (this.workshop && step) {
+      this.workshop.step = Number(step);
     }
   }
+
 }
