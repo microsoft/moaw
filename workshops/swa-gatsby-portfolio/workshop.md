@@ -8,6 +8,12 @@ duration_minutes: 90-120
 audience: students
 tags: github, gatsby, azure, static web apps, javascript, markdown
 published: false
+sections_title:
+  - Introduction
+  - 1. Bootstrap your app
+  - 2. Deploy your app
+  - 3. Add your own content
+  - 4. Go further (Bonus)
 ---
 
 # Create and deploy your online portfolio with Gatsby, GitHub and Azure Static Web Apps
@@ -124,10 +130,9 @@ In the Azure portal, in the created resource, select **GitHub Actions runs**.
 - Every **new commit** triggers a new build and deployment
 - You can preview changes separately using a **pull request**
 
-</details>
+---
 
-<details id=3>
-<summary><h2>Step 3: Create your own content</h2></summary>
+## Step 3: Create your own content
 
 ### Gatsby app structure
 
