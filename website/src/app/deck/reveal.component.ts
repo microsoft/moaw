@@ -16,15 +16,17 @@ import { Deck } from './deck';
       </div>
     </div>
   `,
-  styles: [`
-    :host {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-  `]
+  styles: [
+    `
+      :host {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    `
+  ]
 })
 export class RevealComponent {
   @Input() deck: Deck | undefined;
