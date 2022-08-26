@@ -15,6 +15,7 @@
     "@angular/core": "^14.1.0",
     "@angular/platform-browser": "^14.1.0",
     "cxa-track": "^2.1.0",
+    "marked": "^4.0.19",
     "ngx-markdown": "^14.0.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",

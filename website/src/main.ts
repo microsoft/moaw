@@ -1,9 +1,9 @@
 import 'zone.js';
 import { enableProdMode, importProvidersFrom, SecurityContext } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { MarkdownModule } from 'ngx-markdown';
-
+import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
 import { AppComponent } from './app/app.component';
+import { markedOptionsFactory } from './app/shared/markdown';
 import { environment } from './environments/environment';
 
 if (environment.production) {
@@ -14,7 +14,11 @@ bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(
       MarkdownModule.forRoot({
-        sanitize: SecurityContext.NONE
+        sanitize: SecurityContext.NONE,
+        markedOptions: {
+          provide: MarkedOptions,
+          useFactory: markedOptionsFactory
+        }
       })
     )
   ]
