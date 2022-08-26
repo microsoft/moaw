@@ -6,26 +6,28 @@ export interface Route {
 }
 
 export const Routes: Route[] = [
-  { path: '/workshop/', id: 'workshop' },
-  { path: '/deck/', id: 'deck' },
-  { path: '/page/', id: 'page' },
-  { path: '/', id: 'home', redirect: true }
+  { path: 'workshop/', id: 'workshop' },
+  { path: 'deck/', id: 'deck' },
+  { path: 'page/', id: 'page' },
+  { path: '', id: 'home', redirect: true }
 ];
 
+let basePath = '';
 let currentRoute: Route | undefined;
 let routeChangeListener: (route: Route) => void = () => {};
 
 function updateRoute() {
   const path = window.location.pathname;
-  currentRoute = Routes.find((r) => path.startsWith(r.path));
+  currentRoute = Routes.find((r) => path.startsWith(basePath + r.path));
 
   if (!currentRoute || (currentRoute.redirect && path !== currentRoute.path)) {
-    return navigate(currentRoute?.path ?? '/');
+    return navigate(currentRoute?.path ?? '');
   }
   routeChangeListener(currentRoute);
 }
 
 export function setupRouter(listener?: (route: Route) => void) {
+  basePath = new URL(document.baseURI).pathname;
   routeChangeListener = listener || (() => {});
   window.onpopstate = () => updateRoute();
   updateRoute();
@@ -36,7 +38,7 @@ export function getCurrentRoute() {
 }
 
 export function navigate(path: string) {
-  window.history.pushState({}, path, window.location.origin + path);
+  window.history.pushState({}, path, window.location.origin + basePath + path);
   updateRoute();
 }
 
