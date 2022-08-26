@@ -1,7 +1,6 @@
 import { getFileUrl, getBaseUrl } from '../shared/github';
 import { FrontMatterParseResult, parseFrontMatter } from '../shared/frontmatter';
 import { updateTrackingCodeInText } from 'cxa-track/tracking';
-import { Renderer2 } from '@angular/core';
 
 const cdnUrl = 'https://cdn.jsdelivr.net/npm/';
 const assetsFolder = 'assets/';
@@ -13,18 +12,18 @@ export interface LoaderOptions {
 
 export interface FileContents extends FrontMatterParseResult {
   githubUrl: string;
-};
+}
 
 export async function loadFile(repoPath: string, options?: LoaderOptions): Promise<FileContents> {
   const gitHubFileUrl = getFileUrl(repoPath);
   const response = await fetch(gitHubFileUrl);
-  
+
   if (response.status !== 200) {
     const error = `Cannot load file from ${gitHubFileUrl}`;
     console.error(error);
     throw new Error(error);
   }
-  
+
   const text = await response.text();
   let { meta, markdown } = parseFrontMatter(text);
   markdown = updateAssetsBasePath(markdown, getBaseUrl(gitHubFileUrl));
@@ -61,10 +60,12 @@ export async function loadScripts(scripts: string[]): Promise<void> {
     script.type = 'text/javascript';
     script.src = cdnUrl + src;
     document.body.appendChild(script);
-    promises.push(new Promise((resolve, reject) => {
-      script.onload = resolve;
-      script.onerror = reject;
-    }));
+    promises.push(
+      new Promise((resolve, reject) => {
+        script.onload = resolve;
+        script.onerror = reject;
+      })
+    );
   }
   return Promise.all(promises).then(() => {});
 }
@@ -76,10 +77,12 @@ export async function loadStyles(styles: string[]): Promise<void> {
     style.rel = 'stylesheet';
     style.href = cdnUrl + src;
     document.head.appendChild(style);
-    promises.push(new Promise((resolve, reject) => {
-      style.onload = resolve;
-      style.onerror = reject;
-    }));
+    promises.push(
+      new Promise((resolve, reject) => {
+        style.onload = resolve;
+        style.onerror = reject;
+      })
+    );
   }
   return Promise.all(promises).then(() => {});
 }

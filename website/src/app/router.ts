@@ -40,9 +40,13 @@ export function navigate(path: string) {
   updateRoute();
 }
 
-export function setQueryParams(params: Record<string, string>) {
+export function setQueryParams(params: Record<string, any>, replace = false) {
   const url = new URL(window.location.href);
-  url.search = new URLSearchParams(params).toString();
+  if (replace) {
+    url.search = new URLSearchParams(params).toString();
+  } else {
+    Object.entries(params).forEach((entry) => url.searchParams.set(...entry));
+  }
   window.history.pushState({}, window.location.pathname, url);
   updateRoute();
 }

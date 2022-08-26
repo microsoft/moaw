@@ -4,11 +4,12 @@ const frontMatterRegex = /^(?:---\r?\n([\s\S]+?)\r?\n---\r?\n)?([\s\S]*?)$/;
 
 export type FrontMatterData = Partial<{
   type: 'workshop' | 'deck' | 'page';
-  deckType: 'marked' | 'reveal';
+  deckType: 'reveal' | 'remark';
   title: string;
+  section_titles: string[];
   description: string;
-  authors: string|string[];
-  contact: string|string[];
+  authors: string | string[];
+  contact: string | string[];
   banner_url: string;
   video_url: string;
   duration_minutes: string;

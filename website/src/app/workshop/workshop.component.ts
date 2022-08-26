@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MarkdownModule } from 'ngx-markdown';
-
 import { getQueryParams } from '../router';
 import { Workshop, loadWorkshop } from './workshop';
+import { PaginationComponent } from './pagination.component';
 
 @Component({
   selector: 'app-workshop',
   standalone: true,
-  imports: [CommonModule, MarkdownModule],
+  imports: [CommonModule, MarkdownModule, PaginationComponent],
   template: `
     <header class="navbar">
       <div class="links">
@@ -16,7 +16,8 @@ import { Workshop, loadWorkshop } from './workshop';
       </div>
     </header>
     <div *ngIf="workshop; else noWorkshop" class="workshop">
-      <markdown ngPreserveWhitespaces [data]="workshop.sections[workshop.step]"></markdown>
+      <markdown ngPreserveWhitespaces [data]="workshop.sections[workshop.step].markdown"></markdown>
+      <app-pagination [workshop]="workshop"></app-pagination>
     </div>
     <ng-template #noWorkshop>
       <p *ngIf="!loading">Could not load workshop :(</p>
