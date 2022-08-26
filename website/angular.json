@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ng-lite-app": {
+    "moaw-website": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -46,6 +46,7 @@
             "index": "src/public/index.html",
             "main": "src/main.ts",
             "tsConfig": "tsconfig.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
@@ -54,8 +55,8 @@
               }
             ],
             "styles": [
-              "src/styles.scss",
-              "node_modules/prismjs/themes/prism-okaidia.css"
+              "node_modules/prismjs/themes/prism-okaidia.css",
+              "src/styles.scss"
             ],
             "scripts": [
               "node_modules/marked/marked.min.js",

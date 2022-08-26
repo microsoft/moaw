@@ -6,7 +6,7 @@ export type FrontMatterData = Partial<{
   type: 'workshop' | 'deck' | 'page';
   deckType: 'reveal' | 'remark';
   title: string;
-  section_titles: string[];
+  sections_title: string[];
   description: string;
   authors: string | string[];
   contact: string | string[];
