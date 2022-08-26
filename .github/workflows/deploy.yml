@@ -1,27 +1,43 @@
 name: Deploy website to GitHub Pages
 on:
-  push: [main, website]
-  pull_request: [main, website]
+  push:
+    branches: [main, website]
+  pull_request:
+    branches: [main, website]
+  workflow_dispatch:
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   build_and_deploy:
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     name: Build and Deploy
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v1
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
       with:
         node-version: 16
     - name: Build website
-        run: |
-          cd website
-          npm ci
-          npm run build -- --base-href /moaw/
-      - name: Deploy to GitHub Pages
-        if: success()
-        uses: crazy-max/ghaction-github-pages@eb08c35b9fab86751edfff4e55cd5cde35ff0e52
+      run: |
+        cd website
+        npm ci
+        npm run build -- --base-href /moaw/
+    - name: Setup GitHub Pages
+      uses: actions/configure-pages@v2
+    - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          target_branch: gh-pages
-          build_dir: website/dist/moaw-website
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: website/dist/moaw-website
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
