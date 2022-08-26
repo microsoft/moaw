@@ -11,6 +11,7 @@ export interface WorkshopSection {
 
 export interface Workshop extends FileContents {
   title: string;
+  shortTitle?: string;
   sections: WorkshopSection[];
   step: number;
 }
@@ -28,6 +29,7 @@ export async function loadWorkshop(repoPath: string, options?: LoaderOptions): P
   return {
     ...fileContents,
     title: fileContents.meta.title ?? sections[0].title,
+    shortTitle: fileContents.meta.short_title,
     sections,
     step: 0
   };
