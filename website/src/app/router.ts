@@ -27,6 +27,13 @@ function updateRoute() {
 }
 
 export function setupRouter(listener?: (route: Route) => void) {
+  // GitHub Pages workaround for SPA support
+  const redirect = sessionStorage['redirect'];
+  sessionStorage.removeItem('redirect');
+  if (redirect && redirect !== location.href) {
+    history.replaceState(null, redirect, redirect);
+  }
+
   basePath = new URL(document.baseURI).pathname;
   routeChangeListener = listener || (() => {});
   window.onpopstate = () => updateRoute();
