@@ -6,7 +6,6 @@ export interface Deck extends FileContents {
 
 export async function loadDeck(repoPath: string, options?: LoaderOptions): Promise<Deck> {
   const fileContents = await loadFile(repoPath, options);
-
   return {
     ...fileContents,
     slide: 0

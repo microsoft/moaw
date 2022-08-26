@@ -16,8 +16,7 @@ import { Deck, loadDeck } from './deck';
       <p *ngIf="!loading">Could not load slide deck :(</p>
     </ng-template>
   `,
-  styles: [`
-  `]
+  styles: [``]
 })
 export class DeckComponent implements OnInit {
   loading: boolean = true;
@@ -40,5 +39,4 @@ export class DeckComponent implements OnInit {
       this.deck.slide = Number(slide);
     }
   }
-
 }
