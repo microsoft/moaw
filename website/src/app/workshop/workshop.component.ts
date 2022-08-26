@@ -11,7 +11,7 @@ import { PaginationComponent } from './pagination.component';
   standalone: true,
   imports: [CommonModule, MarkdownModule, HeaderComponent, PaginationComponent],
   template: `
-    <app-header [title]="workshop?.title"></app-header>
+    <app-header [title]="workshop?.meta?.title || 'Workshop'"></app-header>
     <div *ngIf="workshop; else noWorkshop" class="workshop">
       <markdown ngPreserveWhitespaces [data]="workshop.sections[workshop.step].markdown"></markdown>
       <app-pagination [workshop]="workshop"></app-pagination>
@@ -34,8 +34,8 @@ export class WorkshopComponent implements OnInit {
 
   async ngOnInit() {
     const currentPath = decodeURIComponent(window.location.pathname);
-    const repoPath = currentPath.substring('/workshop/'.length);
-    const { step, wtid, ocid } = getQueryParams();
+    const { src, step, wtid, ocid } = getQueryParams();
+    const repoPath = src ?? currentPath.substring('/workshop/'.length);
 
     this.loading = true;
     try {

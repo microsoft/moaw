@@ -24,8 +24,8 @@ export class DeckComponent implements OnInit {
 
   async ngOnInit() {
     const currentPath = decodeURIComponent(window.location.pathname);
-    const repoPath = currentPath.substring('/deck/'.length);
-    const { slide, wtid, ocid } = getQueryParams();
+    const { src, slide, wtid, ocid } = getQueryParams();
+    const repoPath = src ?? currentPath.substring('/deck/'.length);
 
     this.loading = true;
     try {
