@@ -1,5 +1,189 @@
 :root {
   --primary: #07c;
   --accent: #c54;
+  --neutral: #b0b0c0;
+  --neutral-light: #f4f4f6;
+  --warning: #f60;
+  --success: #0c0;
+  --danger: #f00;
+  --info: var(--primary);
   --text: #111;
+  --text-light: #fff;
+  --text-font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 'Segoe UI', Helvetica,
+    Arial, sans-serif;
+  // --title-font-family:
+  --monospace-font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --text-base-size: 16px;
+  --border-color: #ddd;
+  --border-radius: 0.3rem;
+  --space-xxxs: 0.15rem;
+  --space-xxs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --transition-duration: 0.2s;
+}
+
+// Base style ----------------------------------------------------------------
+
+html,
+body {
+  font-family: var(--text-font-family);
+  font-size: var(--text-base-size);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.7;
+  font-weight: 400;
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: var(--space-md) 0;
+}
+
+th,
+td {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--space-xxs) var(--space-md);
+  border: 2px solid var(--border-color);
+
+  &:empty {
+    padding: 0;
+  }
+}
+
+img,
+iframe {
+  border: 0;
+}
+
+// Common style --------------------------------------------------------------
+
+p,
+ul,
+ol,
+h3,
+h4,
+h5,
+h6,
+pre {
+  margin: var(--space-xs) 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+h1 {
+  font-size: 2.2rem;
+  margin: var(--space-lg) 0;
+}
+
+h2 {
+  font-size: 1.65rem;
+  margin-top: var(--space-lg);
+  padding-bottom: 0.3rem;
+  border-bottom: solid 1px var(--border-color);
+}
+
+h3 {
+  font-size: 1.35rem;
+  margin-top: var(--space-lg);
+}
+
+h4 {
+  margin-top: var(--space-md);
+}
+
+ol,
+ul {
+  padding-left: 1.3em;
+}
+
+blockquote {
+  border-left: solid 6px var(--neutral);
+  padding: var(--space-xs) var(--space-md);
+  margin: var(--space-md) 0;
+  background: var(--neutral-light);
+  border-radius: var(--border-radius);
+}
+
+code:not(pre > code) {
+  font-family: var(--monospace-font-family);
+  background: var(--neutral-light);
+  padding: var(--space-xxxs) var(--space-xxs);
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: var(--border-radius);
+}
+
+pre {
+  &::-webkit-scrollbar {
+    -webkit-appearance: none;
+    height: 8px;
+    background: var(--neutral-light);
+    visibility: visible;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: var(--border-radius);
+  }
+}
+
+a {
+  font-weight: 500;
+  color: var(--primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+button {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--space-md);
+  color: var(--text-color);
+  transition: border-color var(--transition-duration);
+  font-family: var(--text-font-family);
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--primary);
+  }
+}
+
+img {
+  max-width: 100%;
+  margin: var(--space-xs) 0;
+}
+
+.navbar {
+  position: sticky;
+  background: var(--primary);
+  padding: var(--space-xs);
+}
+
+.workshop {
+  margin: var(--space-lg);
 }
