@@ -11,7 +11,7 @@ import { PaginationComponent } from './pagination.component';
   standalone: true,
   imports: [CommonModule, MarkdownModule, HeaderComponent, PaginationComponent],
   template: `
-    <app-header [title]="workshop?.meta?.title || 'Workshop'"></app-header>
+    <app-header [title]="workshop?.shortTitle || 'Workshop'"></app-header>
     <div *ngIf="workshop; else noWorkshop" class="workshop">
       <markdown ngPreserveWhitespaces [data]="workshop.sections[workshop.step].markdown"></markdown>
       <app-pagination [workshop]="workshop"></app-pagination>
