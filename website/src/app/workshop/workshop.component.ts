@@ -2,19 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MarkdownModule } from 'ngx-markdown';
 import { getQueryParams } from '../router';
+import { HeaderComponent } from '../shared/header.component';
 import { Workshop, loadWorkshop } from './workshop';
 import { PaginationComponent } from './pagination.component';
 
 @Component({
   selector: 'app-workshop',
   standalone: true,
-  imports: [CommonModule, MarkdownModule, PaginationComponent],
+  imports: [CommonModule, MarkdownModule, HeaderComponent, PaginationComponent],
   template: `
-    <header class="navbar">
-      <div class="links">
-        <a href="#">GitHub</a>
-      </div>
-    </header>
+    <app-header [title]="workshop?.title"></app-header>
     <div *ngIf="workshop; else noWorkshop" class="workshop">
       <markdown ngPreserveWhitespaces [data]="workshop.sections[workshop.step].markdown"></markdown>
       <app-pagination [workshop]="workshop"></app-pagination>

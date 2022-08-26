@@ -12,7 +12,7 @@
   --text-font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 'Segoe UI', Helvetica,
     Arial, sans-serif;
   // --title-font-family:
-  --monospace-font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --code-font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', 'Courier New', monospace;
   --text-base-size: 16px;
   --border-color: #ddd;
   --border-radius: 0.3rem;
@@ -123,8 +123,17 @@ blockquote {
   border-radius: var(--border-radius);
 }
 
+pre, code {
+  font-family: var(--code-font-family);
+
+  // Override prismjs default style
+  &[class*="language-"] {
+    font-family: var(--code-font-family);
+  }
+}
+
 code:not(pre > code) {
-  font-family: var(--monospace-font-family);
+  font-family: var(--code-font-family);
   background: var(--neutral-light);
   padding: var(--space-xxxs) var(--space-xxs);
   border: 1px solid rgba(0,0,0,.1);
@@ -180,8 +189,21 @@ img {
 
 .navbar {
   position: sticky;
+  top: 0;
   background: var(--primary);
   padding: var(--space-xs);
+  height: 60px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-md);
+
+  .title {
+    color: var(--text-light);
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
 }
 
 .workshop {
