@@ -18,7 +18,6 @@ export interface Workshop extends FileContents {
 
 export async function loadWorkshop(repoPath: string, options?: LoaderOptions): Promise<Workshop> {
   const fileContents = await loadFile(repoPath, options);
-  console.log(fileContents.meta);
   const sections = fileContents.markdown
     .split(sectionSeparator)
     .map((markdown, index) => {

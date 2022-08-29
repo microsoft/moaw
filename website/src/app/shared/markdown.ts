@@ -1,17 +1,14 @@
 import { marked } from 'marked';
 import { MarkedOptions, MarkedRenderer } from 'ngx-markdown';
 
+const slugger = new marked.Slugger();
+
 export interface MarkdownHeading {
   text: string;
   level: number;
 }
 
-export function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^\w ]+/g, '')
-    .replace(/ +/g, '-');
-}
+export const slugify = (text: string) => slugger.slug(text);
 
 export function markedOptionsFactory(): MarkedOptions {
   const renderer = new MarkedRenderer();
@@ -20,9 +17,16 @@ export function markedOptionsFactory(): MarkedOptions {
   //   return '<blockquote class="blockquote"><p>' + text + '</p></blockquote>';
   // };
 
+  renderer.heading = (text, level, raw, slugger) => {
+    console.log(text, level, raw, slugger);
+    const slug = slugger.slug(raw);
+    const anchorLink =`<a class="heading-anchor" href="#${slug}" aria-hidden="true">#</a>`;
+    return `<h${level} id="${slug}" class="heading">${text} ${anchorLink}</h${level}>`;
+  }
+
   return {
     renderer: renderer,
-    smartLists: true
+    smartLists: true,
   };
 }
 
