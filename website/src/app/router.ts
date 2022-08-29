@@ -34,7 +34,11 @@ export function setupRouter(listener?: (route: Route) => void) {
     history.replaceState(null, redirect, redirect);
   }
 
+
   basePath = new URL(document.baseURI).pathname;
+  // Once we know the base path, remove the <base> tag so that anchor links work
+  document.querySelector('base')?.remove();
+
   routeChangeListener = listener || (() => {});
   window.onpopstate = () => updateRoute();
   updateRoute();

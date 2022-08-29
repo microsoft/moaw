@@ -9,6 +9,7 @@
   --info: var(--primary);
   --text: #111;
   --text-light: #fff;
+  --background: #fff;
   --text-font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 'Segoe UI', Helvetica,
     Arial, sans-serif;
   // --title-font-family:
@@ -29,6 +30,7 @@
 
 html,
 body {
+  background: var(--background);
   font-family: var(--text-font-family);
   font-size: var(--text-base-size);
   -webkit-font-smoothing: antialiased;
@@ -203,6 +205,16 @@ img {
     font-size: 1.5rem;
     font-weight: 500;
     line-height: 1.5;
+  }
+}
+
+.heading-anchor {
+  font-size: .85em;
+  opacity: 0;
+  transition: opacity var(--transition-duration);
+
+  .heading:hover & {
+    opacity: 1;
   }
 }
 
