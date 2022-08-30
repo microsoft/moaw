@@ -3,6 +3,7 @@
   --accent: #c54;
   --neutral: #b0b0c0;
   --neutral-light: #f4f4f6;
+  --neutral-dark: #99a;
   --warning: #f60;
   --success: #0c0;
   --danger: #f00;
@@ -24,6 +25,7 @@
   --space-lg: 2rem;
   --space-xl: 3rem;
   --transition-duration: 0.2s;
+  --navbar-height: 60px;
 }
 
 // Base style ----------------------------------------------------------------
@@ -89,6 +91,7 @@ h5,
 h6 {
   font-weight: 600;
   line-height: 1.25;
+  scroll-margin: calc(var(--navbar-height) + 1em);
 }
 
 h1 {
@@ -194,11 +197,16 @@ img {
   top: 0;
   background: var(--primary);
   padding: var(--space-xs);
-  height: 60px;
+  height: var(--navbar-height);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
   display: flex;
   align-items: center;
   padding: var(--space-xs) var(--space-md);
+
+  i {
+    color: var(--text-light);
+    margin-right: var(--space-md);
+  }
 
   .title {
     color: var(--text-light);
@@ -220,4 +228,20 @@ img {
 
 .workshop {
   margin: var(--space-lg);
+}
+
+.octicon {
+  display: inline-block;
+  vertical-align: text-top;
+  fill: currentColor;
+  overflow: visible;
+}
+
+.external-link {
+  color: var(--neutral-dark);
+  text-decoration: none;
+  height: .85em;
+  width: .85em;
+  vertical-align: baseline;
+  margin: 0 .1em -.1em var(--space-xxs);
 }
