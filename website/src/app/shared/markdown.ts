@@ -1,5 +1,6 @@
 import { marked } from 'marked';
 import { MarkedOptions, MarkedRenderer } from 'ngx-markdown';
+import * as octicons from '@primer/octicons';
 
 const slugger = new marked.Slugger();
 
@@ -18,10 +19,19 @@ export function markedOptionsFactory(): MarkedOptions {
   // };
 
   renderer.heading = (text, level, raw, slugger) => {
-    console.log(text, level, raw, slugger);
     const slug = slugger.slug(raw);
     const anchorLink =`<a class="heading-anchor" href="#${slug}" aria-hidden="true">#</a>`;
     return `<h${level} id="${slug}" class="heading">${text} ${anchorLink}</h${level}>`;
+  }
+
+  const originalLinkRender = renderer.link;
+  renderer.link = (href, title, text) => {
+    const link = originalLinkRender.bind(renderer)(href, title, text);
+    if (href?.startsWith('http')) {
+      const svg = octicons['link-external'].toSVG({ width: 14, class: 'external-link' });
+      return link.replace(/<\/a>/, `${svg}</a>`);
+    }
+    return link;
   }
 
   return {

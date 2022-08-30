@@ -14,6 +14,7 @@
     "@angular/compiler": "^14.1.0",
     "@angular/core": "^14.1.0",
     "@angular/platform-browser": "^14.1.0",
+    "@primer/octicons": "^17.4.1",
     "cxa-track": "^2.1.0",
     "marked": "^4.0.19",
     "ngx-markdown": "^14.0.1",
@@ -23,6 +24,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
+    "@types/primer__octicons": "^17.3.0",
     "@angular-devkit/build-angular": "^14.1.0",
     "@angular/cli": "~14.1.0",
     "@angular/compiler-cli": "^14.1.0",
