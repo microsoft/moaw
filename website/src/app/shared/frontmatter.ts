@@ -16,6 +16,7 @@ export type FrontMatterData = Partial<{
   duration_minutes: string;
   published: boolean;
   tags: string;
+  links: Record<string, string>;
   wt_id: string;
   oc_id: string;
 }>;

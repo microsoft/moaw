@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 
-import { Route, setupRouter } from './router';
+import { addRouteChangeListener, Route, setupRouter } from './router';
 import { WorkshopComponent } from './workshop/workshop.component';
 import { DeckComponent } from './deck/deck.component';
 
@@ -19,7 +19,8 @@ export class AppComponent {
   route: Route | undefined;
 
   constructor() {
-    setupRouter(this.routeChanged.bind(this));
+    addRouteChangeListener(this.routeChanged.bind(this));
+    setupRouter();
   }
 
   routeChanged(route: Route) {

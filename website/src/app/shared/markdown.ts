@@ -7,6 +7,7 @@ const slugger = new marked.Slugger();
 export interface MarkdownHeading {
   text: string;
   level: number;
+  url: string;
 }
 
 export const slugify = (text: string) => slugger.slug(text);
@@ -29,7 +30,9 @@ export function markedOptionsFactory(): MarkedOptions {
     const link = originalLinkRender.bind(renderer)(href, title, text);
     if (href?.startsWith('http')) {
       const svg = octicons['link-external'].toSVG({ width: 14, class: 'external-link' });
-      return link.replace(/<\/a>/, `${svg}</a>`);
+      return link
+        .replace(/^<a /, `<a target="_blank" `) + svg
+        .replace(/<\/a>/, `${svg}</a>`);
     }
     return link;
   }
@@ -44,5 +47,6 @@ export function getHeadings(markdown: string): MarkdownHeading[] {
   return marked
     .lexer(markdown)
     .filter((token: marked.Token): token is marked.Tokens.Heading => token.type === 'heading')
-    .map((token) => ({ text: token.text, level: token.depth }));
+    // TODO: fix test/slug
+    .map((token) => ({ text: token.text, level: token.depth, url: '#' + slugify(token.raw) }));
 }
