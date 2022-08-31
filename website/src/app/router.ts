@@ -1,9 +1,12 @@
-export type RouteChangeListener = (route: Route) => void;
+import { EventDispatcher, EventListener } from './shared/event';
+
 export interface Route {
   path: string;
   id: string;
   redirect?: boolean;
 }
+
+export type RouteChangeListener = EventListener<Route>;
 
 export const Routes: Route[] = [
   { path: 'workshop/', id: 'workshop' },
@@ -12,21 +15,25 @@ export const Routes: Route[] = [
   { path: '', id: 'home', redirect: true }
 ];
 
+const dispatcher = new EventDispatcher<Route>();
 let basePath = '';
 let currentRoute: Route | undefined;
-let routeChangeListener: (route: Route) => void = () => {};
 
 function updateRoute() {
   const path = window.location.pathname;
   currentRoute = Routes.find((r) => path.startsWith(basePath + r.path));
 
   if (!currentRoute || (currentRoute.redirect && path !== currentRoute.path)) {
-    return navigate(currentRoute?.path ?? '');
+    // return navigate(currentRoute?.path ?? '');
+
+    console.log('error: route not found');
+    return;
   }
-  routeChangeListener(currentRoute);
+
+  dispatcher.dispatch(currentRoute);
 }
 
-export function setupRouter(listener?: (route: Route) => void) {
+export function setupRouter() {
   // GitHub Pages workaround for SPA support
   const redirect = sessionStorage['redirect'];
   sessionStorage.removeItem('redirect');
@@ -34,12 +41,10 @@ export function setupRouter(listener?: (route: Route) => void) {
     history.replaceState(null, redirect, redirect);
   }
 
-
   basePath = new URL(document.baseURI).pathname;
   // Once we know the base path, remove the <base> tag so that anchor links work
   document.querySelector('base')?.remove();
 
-  routeChangeListener = listener || (() => {});
   window.onpopstate = () => updateRoute();
   updateRoute();
 }
@@ -49,7 +54,11 @@ export function getCurrentRoute() {
 }
 
 export function navigate(path: string) {
-  window.history.pushState({}, path, window.location.origin + basePath + path);
+  if (path.startsWith('http')) {
+    window.history.pushState({}, path, path);
+  } else {
+    window.history.pushState({}, path, window.location.origin + basePath + path);
+  }
   updateRoute();
 }
 
@@ -67,4 +76,12 @@ export function setQueryParams(params: Record<string, any>, replace = false) {
 export function getQueryParams(): Record<string, string> {
   const url = new URL(window.location.href);
   return Object.fromEntries(url.searchParams.entries());
+}
+
+export function addRouteChangeListener(listener: RouteChangeListener) {
+  dispatcher.addListener(listener);
+}
+
+export function removeRouteChangeListener(listener: RouteChangeListener) {
+  dispatcher.removeListener(listener);
 }

@@ -1,3 +1,4 @@
+import { getCurrentUrlWithQueryParams, MenuLink } from '../shared/link';
 import { FileContents, LoaderOptions, loadFile } from '../shared/loader';
 import { MarkdownHeading, getHeadings } from '../shared/markdown';
 
@@ -32,4 +33,24 @@ export async function loadWorkshop(repoPath: string, options?: LoaderOptions): P
     sections,
     step: 0
   };
+}
+
+export function createMenuLinks(workshop: Workshop): MenuLink[] {
+  return workshop.sections.map((section, index) => {
+    const active = index === workshop.step;
+    const children = !active ? [] : section.headings
+      .slice(1)
+      .filter(heading => heading.level === section.headings[0].level + 1)
+      .map(heading => ({
+        active: false,  // TODO
+        text: heading.text,
+        url: heading.url
+      }));
+    return {
+      active,
+      text: section.title,
+      url: getCurrentUrlWithQueryParams({ step: index }),
+      children
+    };
+  });
 }
