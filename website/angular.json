@@ -106,10 +106,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "ng-lite-app:build:production"
+              "browserTarget": "moaw-website:build:production"
             },
             "development": {
-              "browserTarget": "ng-lite-app:build:development"
+              "browserTarget": "moaw-website:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -117,7 +117,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ng-lite-app:build"
+            "browserTarget": "moaw-website:build"
           }
         }
       }
