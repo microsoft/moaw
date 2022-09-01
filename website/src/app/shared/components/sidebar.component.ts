@@ -12,7 +12,7 @@ import { navigate } from '../../router';
       <ul class="links">
         <li *ngFor="let link of links">
           <a [href]="link.url" (click)="openLink($event, link.url)" [class.active]="link.active">{{ link.text }}</a>
-          <ul *ngIf="link.children" class="sub-links">
+          <ul *ngIf="link.active && link.children" class="sub-links">
             <li *ngFor="let sublink of link.children">
               <a [href]="sublink.url" (click)="openLink($event, sublink.url)" [class.active]="sublink.active">{{ sublink.text }}</a>
             </li>
@@ -107,7 +107,6 @@ export class SidebarComponent {
   }
 
   openLink(event: Event, url: string) {
-    console.log(url)
     if (!url.startsWith('#')) {
       event.preventDefault();
       event.stopPropagation();

@@ -23,3 +23,11 @@ export class EventDispatcher<T> {
     this.target.dispatchEvent(new CustomEvent(EventDispatcher.eventName, { detail: data }));
   }
 }
+
+export function debounce<T>(func: (...args: T[]) => void, timeInMs: number = 100): (...args: T[]) => void {
+  let timeout: number | undefined;
+  return (...args: T[]) => {
+    clearTimeout(timeout);
+    timeout = window.setTimeout(() => func(...args), timeInMs);
+  }
+}
