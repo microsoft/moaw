@@ -23,11 +23,8 @@ function updateRoute() {
   const path = window.location.pathname;
   currentRoute = Routes.find((r) => path.startsWith(basePath + r.path));
 
-  if (!currentRoute || (currentRoute.redirect && path !== currentRoute.path)) {
-    // return navigate(currentRoute?.path ?? '');
-
-    console.log('error: route not found');
-    return;
+  if (!currentRoute || (currentRoute.redirect && path.substring(1) !== currentRoute.path)) {
+    return navigate(currentRoute?.path ?? '');
   }
 
   dispatcher.dispatch(currentRoute);
