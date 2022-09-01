@@ -26,7 +26,7 @@ import { Link } from '../link';
       margin-left: calc(-1 * var(--space-md));
     }
 
-    @media (min-width: $breakpoint-md) {
+    @media (min-width: $breakpoint-lg) {
       .menu-toggle {
         display: none;
       }

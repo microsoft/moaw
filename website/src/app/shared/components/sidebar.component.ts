@@ -41,7 +41,7 @@ import { navigate } from '../../router';
       }
     }
 
-    @media (min-width: $breakpoint-md) {
+    @media (min-width: $breakpoint-lg) {
       .sidebar {
         position: initial;
         height: 100%;

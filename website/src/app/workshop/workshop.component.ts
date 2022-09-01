@@ -27,11 +27,13 @@ import { scrollToId, scrollToTop } from '../shared/scroll';
         </div>
       </div>
       <ng-template #noWorkshop>
-        <p *ngIf="!loading">Could not load workshop :(</p>
+        <p class="container" *ngIf="!loading">Could not load workshop :(</p>
       </ng-template>
     </div>
   `,
   styles: [`
+    @import '../../variables';
+
     .full-viewport {
       display: flex;
       flex-direction: column;
@@ -44,13 +46,20 @@ import { scrollToId, scrollToTop } from '../shared/scroll';
     }
     
     .workshop {
-      height: 100%;
+      flex: 1;
       overflow-y: auto;
       /* scroll-behavior: smooth; */
     }
     
     .container {
-      margin: var(--space-lg);
+      margin: var(--space-lg) auto;
+      padding: 0 var(--space-lg);
+    }
+
+    @media (min-width: $breakpoint-lg) {
+      .container {
+        max-width: 800px;
+      }
     }
   `]
 })
