@@ -1,3 +1,5 @@
+@import 'variables';
+
 :root {
   --primary: #07c;
   --accent: #c54;
@@ -252,4 +254,10 @@ img {
   width: .85em;
   vertical-align: baseline;
   margin: 0 .1em -.1em var(--space-xxs);
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

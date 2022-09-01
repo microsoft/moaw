@@ -13,15 +13,23 @@ import { Link } from '../link';
       <button *ngIf="sidebar" class="menu-toggle" (click)="toggleSidebar($event)">
         <app-icon name="three-bars" size="24"></app-icon>
       </button>
-      <div class="title">{{ title }}</div>
+      <div class="title text-ellipsis">{{ title }}</div>
       <div class="links">
         <a *ngFor="let link of links" [href]="link.url">{{ link.text }}</a>
       </div>
     </header>
   `,
   styles: [`
+    @import '../../../variables';
+
     .menu-toggle {
       margin-left: calc(-1 * var(--space-md));
+    }
+
+    @media (min-width: $breakpoint-md) {
+      .menu-toggle {
+        display: none;
+      }
     }
   `]
 })
