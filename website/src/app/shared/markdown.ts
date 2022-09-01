@@ -44,9 +44,15 @@ export function markedOptionsFactory(): MarkedOptions {
 }
 
 export function getHeadings(markdown: string): MarkdownHeading[] {
+  const parser = new marked.Parser(markedOptionsFactory());
+  const domParser = new DOMParser();
   return marked
     .lexer(markdown)
     .filter((token: marked.Token): token is marked.Tokens.Heading => token.type === 'heading')
     // TODO: fix test/slug
-    .map((token) => ({ text: token.text, level: token.depth, url: '#' + slugify(token.raw) }));
+    .map((token) => {
+      const html = parser.parseInline(token.tokens, parser.textRenderer as any);
+      const text = domParser.parseFromString(html, 'text/html').body.textContent || '';
+      return { text, level: token.depth, url: '#' + slugify(text) }
+    });
 }
