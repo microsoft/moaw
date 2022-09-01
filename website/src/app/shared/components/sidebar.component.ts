@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MenuLink } from '../link';
-import { navigate } from 'src/app/router';
+import { navigate } from '../../router';
 
 @Component({
   selector: 'app-sidebar',
@@ -14,7 +14,7 @@ import { navigate } from 'src/app/router';
           <a [href]="link.url" (click)="openLink($event, link.url)" [class.active]="link.active">{{ link.text }}</a>
           <ul *ngIf="link.children" class="sub-links">
             <li *ngFor="let sublink of link.children">
-              <a [href]="sublink.url" (click)="openLink($event, link.url)" [class.active]="sublink.active">{{ sublink.text }}</a>
+              <a [href]="sublink.url" (click)="openLink($event, sublink.url)" [class.active]="sublink.active">{{ sublink.text }}</a>
             </li>
           </ul>
         </li>
@@ -22,6 +22,8 @@ import { navigate } from 'src/app/router';
     </nav>
   `,
   styles: [`
+    @import '../../../variables';
+
     .sidebar {
       position: fixed;
       z-index: 1;
@@ -36,6 +38,13 @@ import { navigate } from 'src/app/router';
 
       &.open {
         left: 0;
+      }
+    }
+
+    @media (min-width: $breakpoint-md) {
+      .sidebar {
+        position: initial;
+        height: 100%;
       }
     }
 
@@ -89,7 +98,7 @@ import { navigate } from 'src/app/router';
   exportAs: 'sidebar'
 })
 export class SidebarComponent {
-  open: boolean = true;
+  open: boolean = false;
 
   @Input() links: MenuLink[] = [];
 
@@ -98,6 +107,7 @@ export class SidebarComponent {
   }
 
   openLink(event: Event, url: string) {
+    console.log(url)
     if (!url.startsWith('#')) {
       event.preventDefault();
       event.stopPropagation();
@@ -105,5 +115,4 @@ export class SidebarComponent {
     }
     this.toggleOpen(false);
   }
-
 }

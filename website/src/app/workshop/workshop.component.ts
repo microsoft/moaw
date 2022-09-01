@@ -15,23 +15,29 @@ import { MenuLink } from '../shared/link';
   template: `
     <div (click)="sidebar.toggleOpen(false)">
       <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
-      <app-sidebar #sidebar="sidebar" [links]="menuLinks"></app-sidebar>
-      <div *ngIf="workshop; else noWorkshop" class="workshop">
-        <markdown ngPreserveWhitespaces [data]="workshop.sections[workshop.step].markdown"></markdown>
-        <app-pagination [workshop]="workshop"></app-pagination>
+      <div class="container">
+        <app-sidebar #sidebar="sidebar" [links]="menuLinks"></app-sidebar>
+        <div *ngIf="workshop; else noWorkshop">
+          <div class="workshop">
+            <markdown ngPreserveWhitespaces [data]="workshop.sections[workshop.step].markdown"></markdown>
+            <app-pagination [workshop]="workshop"></app-pagination>
+          </div>
+        </div>
       </div>
       <ng-template #noWorkshop>
         <p *ngIf="!loading">Could not load workshop :(</p>
       </ng-template>
     </div>
   `,
-  styles: [
-    `
-      :host {
-        height: 100%;
-      }
-    `
-  ]
+  styles: [`
+    :host {
+      height: 100%; 
+    }
+
+    .container {
+      display: flex;
+    }
+  `]
 })
 export class WorkshopComponent implements OnInit {
   loading: boolean = true;
@@ -55,6 +61,13 @@ export class WorkshopComponent implements OnInit {
     }
 
     addRouteChangeListener(this.routeChanged.bind(this));
+    this.updateTitle();
+  }
+
+  updateTitle() {
+    if (this.workshop) {
+      document.title = `${this.workshop.shortTitle} - ${this.workshop.sections[this.workshop.step].title}`;
+    }
   }
 
   routeChanged(_route: Route) {
@@ -62,6 +75,7 @@ export class WorkshopComponent implements OnInit {
     const stepNumber = Number(step);
     if (this.workshop && step && this.workshop.step !== stepNumber) {
       this.workshop.step = stepNumber;
+      this.updateTitle();
     }
   }
 
