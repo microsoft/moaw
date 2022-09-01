@@ -12,6 +12,9 @@ import { DeckComponent } from './deck/deck.component';
   template: `
     <app-workshop *ngIf="route?.id === 'workshop'"></app-workshop>
     <app-deck *ngIf="route?.id === 'deck'"></app-deck>
+    <div *ngIf="route?.id === 'home'">
+      WIP
+    </div>
   `,
   styles: []
 })
