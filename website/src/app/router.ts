@@ -54,6 +54,11 @@ export function getCurrentRoute() {
 }
 
 export function navigate(path: string) {
+  if (path.startsWith('#')) {
+    setHash(path);
+    return;
+  }
+
   if (path.startsWith('http')) {
     window.history.pushState({}, path, path);
   } else {
@@ -69,7 +74,7 @@ export function setQueryParams(params: Record<string, any>, replace = false) {
   } else {
     Object.entries(params).forEach((entry) => url.searchParams.set(...entry));
   }
-  window.history.pushState({}, window.location.pathname, url);
+  window.history.pushState({}, url.pathname, url);
   updateRoute();
 }
 
@@ -78,8 +83,21 @@ export function getQueryParams(): Record<string, string> {
   return Object.fromEntries(url.searchParams.entries());
 }
 
+export function setHash(hash?: string) {
+  const url = new URL(window.location.href);
+  url.hash = hash ?? '';
+  window.history.replaceState({}, url.pathname, url);
+}
+
+export function getHash(): string {
+  return window.location.hash;
+}
+
 export function addRouteChangeListener(listener: RouteChangeListener) {
   dispatcher.addListener(listener);
+  if (currentRoute) {
+    dispatcher.dispatch(currentRoute);
+  }
 }
 
 export function removeRouteChangeListener(listener: RouteChangeListener) {

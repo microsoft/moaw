@@ -95,7 +95,7 @@ h6 {
   font-family: var(--title-font-family);
   font-weight: 600;
   line-height: 1.25;
-  scroll-margin: calc(var(--navbar-height) + 1em);
+  scroll-margin: 1em;
 }
 
 h1 {
@@ -236,8 +236,12 @@ img {
   }
 }
 
-.workshop {
-  margin: var(--space-lg);
+.full-viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .octicon {

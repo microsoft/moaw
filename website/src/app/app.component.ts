@@ -19,8 +19,8 @@ export class AppComponent {
   route: Route | undefined;
 
   constructor() {
-    addRouteChangeListener(this.routeChanged.bind(this));
     setupRouter();
+    addRouteChangeListener(this.routeChanged.bind(this));
   }
 
   routeChanged(route: Route) {

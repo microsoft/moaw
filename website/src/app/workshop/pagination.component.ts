@@ -1,8 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Workshop } from './workshop';
-import { setQueryParams } from '../router';
-import { scrollToTop } from '../shared/scroll';
+import { setHash, setQueryParams } from '../router';
 
 @Component({
   selector: 'app-pagination',
@@ -93,17 +92,15 @@ export class PaginationComponent {
 
   previous() {
     if (this.hasPrevious()) {
-      this.workshop!.step--;
-      setQueryParams({ step: this.workshop!.step });
-      scrollToTop();
+      setQueryParams({ step: this.workshop!.step - 1 });
+      setHash();
     }
   }
 
   next() {
     if (this.hasNext()) {
-      this.workshop!.step++;
-      setQueryParams({ step: this.workshop!.step });
-      scrollToTop();
+      setQueryParams({ step: this.workshop!.step + 1 });
+      setHash();
     }
   }
 }

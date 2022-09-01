@@ -38,11 +38,11 @@ export async function loadWorkshop(repoPath: string, options?: LoaderOptions): P
 export function createMenuLinks(workshop: Workshop): MenuLink[] {
   return workshop.sections.map((section, index) => {
     const active = index === workshop.step;
-    const children = !active ? [] : section.headings
+    const children = section.headings
       .slice(1)
       .filter(heading => heading.level === section.headings[0].level + 1)
       .map(heading => ({
-        active: false,  // TODO
+        active: false,
         text: heading.text,
         url: heading.url
       }));
