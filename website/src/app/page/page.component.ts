@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MarkdownModule } from 'ngx-markdown';
 import { HeaderComponent } from '../shared/components/header.component';
+import { FooterComponent } from '../shared/components/footer.component';
 import { getRepoPath } from '../shared/loader';
 import { loadPage, Page } from './page';
 import { getQueryParams } from '../router';
@@ -9,7 +10,7 @@ import { getQueryParams } from '../router';
 @Component({
   selector: 'app-page',
   standalone: true,
-  imports: [CommonModule, MarkdownModule, HeaderComponent],
+  imports: [CommonModule, MarkdownModule, HeaderComponent, FooterComponent],
   template: `
     <div class="full-viewport">
       <app-header [title]="page?.shortTitle || page?.title"></app-header>
@@ -18,6 +19,7 @@ import { getQueryParams } from '../router';
           <div class="container no-sidebar">
             <markdown ngPreserveWhitespaces [data]="page.markdown"></markdown>
           </div>
+          <app-footer></app-footer>
         </div>
       </div>
       <ng-template #noPage>

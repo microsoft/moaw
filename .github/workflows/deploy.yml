@@ -32,6 +32,7 @@ jobs:
         cd website
         npm ci
         npm run build -- --base-href /moaw/
+        npm run tag:version
     - name: Setup GitHub Pages
       uses: actions/configure-pages@v2
     - name: Upload artifact
