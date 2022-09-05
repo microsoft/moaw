@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MarkdownModule } from 'ngx-markdown';
 import { addRouteChangeListener, getHash, getQueryParams, redirectRoutePath, Route, setHash } from '../router';
 import { HeaderComponent } from '../shared/components/header.component';
+import { FooterComponent } from '../shared/components/footer.component';
 import { SidebarComponent } from '../shared/components/sidebar.component';
 import { Workshop, loadWorkshop, createMenuLinks } from './workshop';
 import { PaginationComponent } from './pagination.component';
@@ -14,7 +15,7 @@ import { getRepoPath } from '../shared/loader';
 @Component({
   selector: 'app-workshop',
   standalone: true,
-  imports: [CommonModule, MarkdownModule, HeaderComponent, SidebarComponent, PaginationComponent],
+  imports: [CommonModule, MarkdownModule, HeaderComponent, FooterComponent, SidebarComponent, PaginationComponent],
   template: `
     <div (click)="sidebar.toggleOpen(false)" class="full-viewport">
       <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
@@ -25,6 +26,7 @@ import { getRepoPath } from '../shared/loader';
             <markdown (ready)="markdownReady()" ngPreserveWhitespaces [data]="workshop.sections[workshop.step].markdown"></markdown>
             <app-pagination [workshop]="workshop"></app-pagination>
           </div>
+          <app-footer></app-footer>
         </div>
       </div>
       <ng-template #noWorkshop>

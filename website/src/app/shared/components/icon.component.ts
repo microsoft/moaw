@@ -4,7 +4,13 @@ import * as octicons from '@primer/octicons';
 @Component({
   selector: 'app-icon',
   standalone: true,
-  template: ``
+  template: ``,
+  styles: [`
+    :host {
+      display: inline-block;
+      vertical-align: text-top;
+    }
+  `]
 })
 export class IconComponent implements OnInit {
   @Input() name!: string;
@@ -18,7 +24,7 @@ export class IconComponent implements OnInit {
       console.error(`Unknown octicon: ${this.name}`);
       return;
     }
-    const svg = icon.toSVG({ width: Number(this.size) });
+    const svg = icon.toSVG(this.size ? { width: Number(this.size) } : {});
     this.element.nativeElement.innerHTML = svg;
   }
 }
