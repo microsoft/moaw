@@ -9,6 +9,7 @@ import { PaginationComponent } from './pagination.component';
 import { MenuLink } from '../shared/link';
 import { debounce } from '../shared/event';
 import { scrollToId, scrollToTop } from '../shared/scroll';
+import { getRepoPath } from '../shared/loader';
 
 @Component({
   selector: 'app-workshop',
@@ -19,7 +20,7 @@ import { scrollToId, scrollToTop } from '../shared/scroll';
       <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
       <div class="content">
         <app-sidebar #sidebar="sidebar" [links]="menuLinks"></app-sidebar>
-        <div id="workshop" *ngIf="workshop; else noWorkshop" class="workshop" (scroll)="enableScrollEvent && scrolled($event)">
+        <div id="workshop" *ngIf="workshop; else noWorkshop" class="scrollable" (scroll)="enableScrollEvent && scrolled($event)">
           <div class="container">
             <markdown (ready)="markdownReady()" ngPreserveWhitespaces [data]="workshop.sections[workshop.step].markdown"></markdown>
             <app-pagination [workshop]="workshop"></app-pagination>
@@ -32,35 +33,6 @@ import { scrollToId, scrollToTop } from '../shared/scroll';
     </div>
   `,
   styles: [`
-    @import '../../variables';
-
-    .full-viewport {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .content {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-    
-    .workshop {
-      flex: 1;
-      overflow-y: auto;
-      /* scroll-behavior: smooth; */
-    }
-    
-    .container {
-      margin: var(--space-lg) auto;
-      padding: 0 var(--space-lg);
-    }
-
-    @media (min-width: $breakpoint-lg) {
-      .container {
-        max-width: 800px;
-      }
-    }
   `]
 })
 export class WorkshopComponent {
@@ -124,10 +96,9 @@ export class WorkshopComponent {
   }
 
   async ngAfterViewInit() {
-    const currentPath = decodeURIComponent(window.location.pathname);
     const { src, step, wtid, ocid } = getQueryParams();
-    const repoPath = src ?? currentPath.substring('/workshop/'.length);
-
+    const repoPath = getRepoPath(src);
+    
     this.loading = true;
     try {
       this.workshop = await loadWorkshop(repoPath, { wtid, ocid });

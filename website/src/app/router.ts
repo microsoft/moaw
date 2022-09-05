@@ -50,6 +50,10 @@ export function getCurrentRoute() {
   return currentRoute;
 }
 
+export function getBasePath() {
+  return basePath;
+}
+
 export function navigate(path: string) {
   if (path.startsWith('#')) {
     setHash(path);
@@ -99,4 +103,15 @@ export function addRouteChangeListener(listener: RouteChangeListener) {
 
 export function removeRouteChangeListener(listener: RouteChangeListener) {
   dispatcher.removeListener(listener);
+}
+
+export function getPathAfterRoute() {
+  const currentPath = decodeURIComponent(window.location.pathname);
+  return currentPath.replace(basePath, '').split('/').slice(1).join('/')
+}
+
+export function redirectRoutePath(routePath: string) {
+  const url = new URL(window.location.href);
+  url.pathname = basePath + routePath + getPathAfterRoute();
+  window.location.href = url.href;
 }
