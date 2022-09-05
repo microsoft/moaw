@@ -1,6 +1,7 @@
 ---
 short_title: Portfolio Workshop
 description: This is a workshop for...
+type: workshop
 authors: Yohan Lasorsa
 contacts: '@sinedied'
 # banner_url: assets/banner.png (optional)
