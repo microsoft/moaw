@@ -19,7 +19,7 @@ import { scrollToId, scrollToTop } from '../shared/scroll';
       <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
       <div class="content">
         <app-sidebar #sidebar="sidebar" [links]="menuLinks"></app-sidebar>
-        <div id="workshop" *ngIf="workshop; else noWorkshop" class="workshop" (scroll)="scrolled($event)">
+        <div id="workshop" *ngIf="workshop; else noWorkshop" class="workshop" (scroll)="enableScrollEvent && scrolled($event)">
           <div class="container">
             <markdown (ready)="markdownReady()" ngPreserveWhitespaces [data]="workshop.sections[workshop.step].markdown"></markdown>
             <app-pagination [workshop]="workshop"></app-pagination>
@@ -68,6 +68,7 @@ export class WorkshopComponent {
   workshop: Workshop | undefined;
   menuLinks: MenuLink[] = [];
   scrollInit: boolean = false;
+  enableScrollEvent: boolean = false;
 
   scrolled = debounce((_event: Event) => {
     if (!this.scrollInit) {
@@ -114,7 +115,8 @@ export class WorkshopComponent {
         link.active = index === this.workshop!.step
         if (link.active) {
           link.children?.forEach(sublink => {
-            sublink.active = sublink.url === getHash();
+            const anchor = decodeURIComponent(getHash());
+            sublink.active = sublink.url === anchor;
           });
         }
       });
@@ -155,16 +157,21 @@ export class WorkshopComponent {
         this.workshop.step = stepNumber;
         this.updateAnchor();
         scrollToTop('workshop');
-      } else {
-        // TODO: won't work until md ready
-        
       }
       this.updateTitle();
+      this.enableScrollEvent = false;
       this.updateActiveLink();
+      this.enableScrollUpdates();
     }
   }
 
   markdownReady() {
     scrollToId(getHash().substring(1));
+  }
+
+  enableScrollUpdates() {
+    // Need to push this to the end of the event loop to avoid received triggers
+    // from browser-generated scroll events
+    setTimeout(() => this.enableScrollEvent = true, 0);
   }
 }
