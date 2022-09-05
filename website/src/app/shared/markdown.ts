@@ -49,7 +49,6 @@ export function getHeadings(markdown: string): MarkdownHeading[] {
   return marked
     .lexer(markdown)
     .filter((token: marked.Token): token is marked.Tokens.Heading => token.type === 'heading')
-    // TODO: fix test/slug
     .map((token) => {
       const html = parser.parseInline(token.tokens, parser.textRenderer as any);
       const text = domParser.parseFromString(html, 'text/html').body.textContent || '';
