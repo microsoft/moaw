@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RevealComponent } from './reveal.component';
 import { getQueryParams } from '../router';
 import { Deck, loadDeck } from './deck';
+import { getRepoPath } from '../shared/loader';
 
 @Component({
   selector: 'app-deck',
@@ -23,9 +24,8 @@ export class DeckComponent implements OnInit {
   deck: Deck | undefined;
 
   async ngOnInit() {
-    const currentPath = decodeURIComponent(window.location.pathname);
     const { src, slide, wtid, ocid } = getQueryParams();
-    const repoPath = src ?? currentPath.substring('/deck/'.length);
+    const repoPath = getRepoPath(src);
 
     this.loading = true;
     try {

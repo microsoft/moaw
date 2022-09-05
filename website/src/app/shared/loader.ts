@@ -1,6 +1,7 @@
+import { updateTrackingCodeInText } from 'cxa-track/tracking';
 import { getFileUrl, getBaseUrl } from '../shared/github';
 import { FrontMatterParseResult, parseFrontMatter } from '../shared/frontmatter';
-import { updateTrackingCodeInText } from 'cxa-track/tracking';
+import { getCurrentRoute, getPathAfterRoute, redirectRoutePath } from '../router';
 
 const cdnUrl = 'https://cdn.jsdelivr.net/npm/';
 const assetsFolder = 'assets/';
@@ -14,7 +15,7 @@ export interface FileContents extends FrontMatterParseResult {
   githubUrl: string;
 }
 
-export async function loadFile(repoPath: string, options?: LoaderOptions): Promise<FileContents> {
+export async function loadFile(repoPath: string, options?: LoaderOptions, redirectWrongType = true): Promise<FileContents> {
   const gitHubFileUrl = getFileUrl(repoPath);
   const response = await fetch(gitHubFileUrl);
 
@@ -26,6 +27,13 @@ export async function loadFile(repoPath: string, options?: LoaderOptions): Promi
 
   const text = await response.text();
   let { meta, markdown } = parseFrontMatter(text);
+
+  const currentRoute = getCurrentRoute();
+  if (redirectWrongType && meta.type && meta.type !== currentRoute?.id) {
+    console.warn(`Wrong document type, redirecting to "${meta.type}"...`);
+    redirectRoutePath(meta.type + '/');
+  }
+
   markdown = updateAssetsBasePath(markdown, getBaseUrl(gitHubFileUrl));
   markdown = updateTrackingCodes(markdown, {
     wtid: meta.wt_id,
@@ -92,4 +100,8 @@ export function injectCode(code: string): void {
   script.type = 'text/javascript';
   script.innerHTML = code;
   document.body.appendChild(script);
+}
+
+export function getRepoPath(source: string): string {
+  return source ?? getPathAfterRoute();
 }
