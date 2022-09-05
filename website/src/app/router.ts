@@ -110,8 +110,8 @@ export function getPathAfterRoute() {
   return currentPath.replace(basePath, '').split('/').slice(1).join('/')
 }
 
-export function redirectRoutePath(routePath: string) {
-  const url = new URL(window.location.href);
+export function redirectRoutePath(routePath: string, cleanUrl = false) {
+  const url = new URL(cleanUrl ? window.location.origin : window.location.href);
   url.pathname = basePath + routePath + getPathAfterRoute();
   window.location.href = url.href;
 }

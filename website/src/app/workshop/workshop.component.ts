@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MarkdownModule } from 'ngx-markdown';
-import { addRouteChangeListener, getHash, getQueryParams, Route, setHash } from '../router';
+import { addRouteChangeListener, getHash, getQueryParams, redirectRoutePath, Route, setHash } from '../router';
 import { HeaderComponent } from '../shared/components/header.component';
 import { SidebarComponent } from '../shared/components/sidebar.component';
 import { Workshop, loadWorkshop, createMenuLinks } from './workshop';
@@ -98,7 +98,11 @@ export class WorkshopComponent {
   async ngAfterViewInit() {
     const { src, step, wtid, ocid } = getQueryParams();
     const repoPath = getRepoPath(src);
-    
+    if (!repoPath) {
+      redirectRoutePath('', true);
+      return;
+    }
+
     this.loading = true;
     try {
       this.workshop = await loadWorkshop(repoPath, { wtid, ocid });
