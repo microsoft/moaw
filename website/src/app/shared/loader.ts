@@ -15,7 +15,11 @@ export interface FileContents extends FrontMatterParseResult {
   githubUrl: string;
 }
 
-export async function loadFile(repoPath: string, options?: LoaderOptions, redirectWrongType = true): Promise<FileContents> {
+export async function loadFile(
+  repoPath: string,
+  options?: LoaderOptions,
+  redirectWrongType = true
+): Promise<FileContents> {
   const gitHubFileUrl = getFileUrl(repoPath);
   const response = await fetch(gitHubFileUrl);
 

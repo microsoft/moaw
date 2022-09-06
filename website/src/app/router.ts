@@ -107,7 +107,7 @@ export function removeRouteChangeListener(listener: RouteChangeListener) {
 
 export function getPathAfterRoute() {
   const currentPath = decodeURIComponent(window.location.pathname);
-  return currentPath.replace(basePath, '').split('/').slice(1).join('/')
+  return currentPath.replace(basePath, '').split('/').slice(1).join('/');
 }
 
 export function redirectRoutePath(routePath: string, cleanUrl = false) {

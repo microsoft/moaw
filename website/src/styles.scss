@@ -15,7 +15,7 @@
   --background: #fff;
   --text-font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 'Segoe UI', Helvetica,
     Arial, sans-serif;
-  --title-font-family: var(--text-font-family)
+  --title-font-family: var(--text-font-family);
   --code-font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', 'Courier New', monospace;
   --text-base-size: 16px;
   --border-color: #ddd;
@@ -132,11 +132,12 @@ blockquote {
   border-radius: var(--border-radius);
 }
 
-pre, code {
+pre,
+code {
   font-family: var(--code-font-family);
 
   // Override prismjs default style
-  &[class*="language-"] {
+  &[class*='language-'] {
     font-family: var(--code-font-family);
   }
 }
@@ -145,7 +146,7 @@ code:not(pre > code) {
   font-family: var(--code-font-family);
   background: var(--neutral-light);
   padding: var(--space-xxxs) var(--space-xxs);
-  border: 1px solid rgba(0,0,0,.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: var(--border-radius);
 }
 
@@ -197,7 +198,7 @@ img {
 }
 
 .heading-anchor {
-  font-size: .85em;
+  font-size: 0.85em;
   opacity: 0;
   transition: opacity var(--transition-duration);
 
@@ -224,10 +225,10 @@ img {
 .external-link {
   color: var(--neutral-dark);
   text-decoration: none;
-  height: .85em;
-  width: .85em;
+  height: 0.85em;
+  width: 0.85em;
   vertical-align: baseline;
-  margin: 0 .1em -.1em var(--space-xxs);
+  margin: 0 0.1em -0.1em var(--space-xxs);
 }
 
 .text-ellipsis {
@@ -265,4 +266,3 @@ img {
     max-width: $breakpoint-lg;
   }
 }
-

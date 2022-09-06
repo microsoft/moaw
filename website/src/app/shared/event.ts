@@ -18,7 +18,7 @@ export class EventDispatcher<T> {
       this.listeners.delete(listener);
     }
   }
-  
+
   dispatch(data: T) {
     this.target.dispatchEvent(new CustomEvent(EventDispatcher.eventName, { detail: data }));
   }
@@ -29,5 +29,5 @@ export function debounce<T>(func: (...args: T[]) => void, timeInMs: number = 100
   return (...args: T[]) => {
     clearTimeout(timeout);
     timeout = window.setTimeout(() => func(...args), timeInMs);
-  }
+  };
 }

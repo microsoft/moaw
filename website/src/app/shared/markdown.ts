@@ -21,25 +21,23 @@ export function markedOptionsFactory(): MarkedOptions {
 
   renderer.heading = (text, level, raw, slugger) => {
     const slug = slugger.slug(raw);
-    const anchorLink =`<a class="heading-anchor" href="#${slug}" aria-hidden="true">#</a>`;
+    const anchorLink = `<a class="heading-anchor" href="#${slug}" aria-hidden="true">#</a>`;
     return `<h${level} id="${slug}" class="heading">${text} ${anchorLink}</h${level}>`;
-  }
+  };
 
   const originalLinkRender = renderer.link;
   renderer.link = (href, title, text) => {
     const link = originalLinkRender.bind(renderer)(href, title, text);
     if (href?.startsWith('http')) {
       const svg = octicons['link-external'].toSVG({ width: 14, class: 'external-link' });
-      return link
-        .replace(/^<a /, `<a target="_blank" `) + svg
-        .replace(/<\/a>/, `${svg}</a>`);
+      return link.replace(/^<a /, `<a target="_blank" `) + svg.replace(/<\/a>/, `${svg}</a>`);
     }
     return link;
-  }
+  };
 
   return {
     renderer: renderer,
-    smartLists: true,
+    smartLists: true
   };
 }
 
@@ -52,6 +50,6 @@ export function getHeadings(markdown: string): MarkdownHeading[] {
     .map((token) => {
       const html = parser.parseInline(token.tokens, parser.textRenderer as any);
       const text = domParser.parseFromString(html, 'text/html').body.textContent || '';
-      return { text, level: token.depth, url: '#' + slugify(text) }
+      return { text, level: token.depth, url: '#' + slugify(text) };
     });
 }

@@ -21,9 +21,18 @@ import { getRepoPath } from '../shared/loader';
       <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
       <div class="content">
         <app-sidebar #sidebar="sidebar" [links]="menuLinks"></app-sidebar>
-        <div id="workshop" *ngIf="workshop; else noWorkshop" class="scrollable" (scroll)="enableScrollEvent && scrolled($event)">
+        <div
+          id="workshop"
+          *ngIf="workshop; else noWorkshop"
+          class="scrollable"
+          (scroll)="enableScrollEvent && scrolled($event)"
+        >
           <div class="container">
-            <markdown (ready)="markdownReady()" ngPreserveWhitespaces [data]="workshop.sections[workshop.step].markdown"></markdown>
+            <markdown
+              (ready)="markdownReady()"
+              ngPreserveWhitespaces
+              [data]="workshop.sections[workshop.step].markdown"
+            ></markdown>
             <app-pagination [workshop]="workshop"></app-pagination>
           </div>
           <app-footer></app-footer>
@@ -34,8 +43,7 @@ import { getRepoPath } from '../shared/loader';
       </ng-template>
     </div>
   `,
-  styles: [`
-  `]
+  styles: [``]
 })
 export class WorkshopComponent {
   loading: boolean = true;
@@ -86,9 +94,9 @@ export class WorkshopComponent {
   updateActiveLink() {
     if (this.workshop) {
       this.menuLinks.forEach((link, index) => {
-        link.active = index === this.workshop!.step
+        link.active = index === this.workshop!.step;
         if (link.active) {
-          link.children?.forEach(sublink => {
+          link.children?.forEach((sublink) => {
             const anchor = decodeURIComponent(getHash());
             sublink.active = sublink.url === anchor;
           });
@@ -113,13 +121,13 @@ export class WorkshopComponent {
       console.error(error);
     }
     this.loading = false;
-    
+
     if (this.workshop && step) {
       this.workshop.step = Number(step);
     }
     addRouteChangeListener(this.routeChanged.bind(this));
   }
-  
+
   updateTitle() {
     if (this.workshop) {
       document.title = `${this.workshop.shortTitle} - ${this.workshop.sections[this.workshop.step].title}`;
@@ -149,6 +157,6 @@ export class WorkshopComponent {
   enableScrollUpdates() {
     // Need to push this to the end of the event loop to avoid received triggers
     // from browser-generated scroll events
-    setTimeout(() => this.enableScrollEvent = true, 0);
+    setTimeout(() => (this.enableScrollEvent = true), 0);
   }
 }

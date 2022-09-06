@@ -27,8 +27,7 @@ import { getQueryParams } from '../router';
       </ng-template>
     </div>
   `,
-  styles: [`
-  `]
+  styles: [``]
 })
 export class PageComponent implements OnInit {
   loading: boolean = true;

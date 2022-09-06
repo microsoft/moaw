@@ -12,21 +12,24 @@ import { IconComponent } from './icon.component';
       <a href="https://github.com/themoaw/moaw" target="_blank">moaw</a> (build: {{ version }})
     </footer>
   `,
-  styles: [`
-    footer {
-      font-size: 0.8em;
-      text-align: center;
-      margin: var(--space-lg) var(--space-md);
+  styles: [
+    `
+      footer {
+        font-size: 0.8em;
+        text-align: center;
+        margin: var(--space-lg) var(--space-md);
 
-      &, a {
-        color: var(--neutral-dark);
+        &,
+        a {
+          color: var(--neutral-dark);
+        }
       }
-    }
-    
-    app-icon {
-      margin-right: var(--space-xxs);
-    }
-  `]
+
+      app-icon {
+        margin-right: var(--space-xxs);
+      }
+    `
+  ]
 })
 export class FooterComponent {
   version = environment.version;

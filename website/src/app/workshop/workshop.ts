@@ -19,13 +19,11 @@ export interface Workshop extends FileContents {
 
 export async function loadWorkshop(repoPath: string, options?: LoaderOptions): Promise<Workshop> {
   const fileContents = await loadFile(repoPath, options);
-  const sections = fileContents.markdown
-    .split(sectionSeparator)
-    .map((markdown, index) => {
-      const headings = getHeadings(markdown);
-      const title = fileContents.meta.sections_title?.[index] ?? headings[0]?.text ?? ''
-      return { title, headings, markdown };
-    });
+  const sections = fileContents.markdown.split(sectionSeparator).map((markdown, index) => {
+    const headings = getHeadings(markdown);
+    const title = fileContents.meta.sections_title?.[index] ?? headings[0]?.text ?? '';
+    return { title, headings, markdown };
+  });
   return {
     ...fileContents,
     title: fileContents.meta.title ?? sections[0].title,
@@ -40,8 +38,8 @@ export function createMenuLinks(workshop: Workshop): MenuLink[] {
     const active = index === workshop.step;
     const children = section.headings
       .slice(1)
-      .filter(heading => heading.level === section.headings[0].level + 1)
-      .map(heading => ({
+      .filter((heading) => heading.level === section.headings[0].level + 1)
+      .map((heading) => ({
         active: false,
         text: heading.text,
         url: heading.url

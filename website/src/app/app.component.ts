@@ -14,9 +14,7 @@ import { PageComponent } from './page/page.component';
     <app-workshop *ngIf="route?.id === 'workshop'"></app-workshop>
     <app-deck *ngIf="route?.id === 'deck'"></app-deck>
     <app-page *ngIf="route?.id === 'page'"></app-page>
-    <div *ngIf="route?.id === 'home'">
-      WIP
-    </div>
+    <div *ngIf="route?.id === 'home'">WIP</div>
   `,
   styles: []
 })

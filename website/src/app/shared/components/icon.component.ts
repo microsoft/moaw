@@ -5,18 +5,20 @@ import * as octicons from '@primer/octicons';
   selector: 'app-icon',
   standalone: true,
   template: ``,
-  styles: [`
-    :host {
-      display: inline-block;
-      vertical-align: text-top;
-    }
-  `]
+  styles: [
+    `
+      :host {
+        display: inline-block;
+        vertical-align: text-top;
+      }
+    `
+  ]
 })
 export class IconComponent implements OnInit {
   @Input() name!: string;
   @Input() size!: string;
 
-  constructor(private element: ElementRef) { }
+  constructor(private element: ElementRef) {}
 
   ngOnInit(): void {
     const icon = octicons[this.name as octicons.IconName];
