@@ -1,9 +1,7 @@
 name: Deploy website to GitHub Pages
 on:
   push:
-    branches: [main, website]
-  pull_request:
-    branches: [main, website]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:

@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && npm run -s tag:version",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "format": "prettier --write 'src/**/*.{ts,json,scss}'",
     "tag:version": "version=\"sha.$(git rev-parse --short HEAD)\" && perl -i -pe \"s/__VERSION__/$version/g\" dist/moaw-website/main.*.js"
