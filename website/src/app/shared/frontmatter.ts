@@ -13,7 +13,7 @@ export type FrontMatterData = Partial<{
   contact: string | string[];
   banner_url: string;
   video_url: string;
-  duration_minutes: string;
+  duration_minutes: number;
   published: boolean;
   tags: string;
   links: Record<string, string>;

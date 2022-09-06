@@ -1,5 +1,4 @@
-import { marked } from 'marked';
-import { MarkedOptions, MarkedRenderer } from 'ngx-markdown';
+import { marked, Renderer } from 'marked';
 import * as octicons from '@primer/octicons';
 
 const slugger = new marked.Slugger();
@@ -12,8 +11,8 @@ export interface MarkdownHeading {
 
 export const slugify = (text: string) => slugger.slug(text);
 
-export function markedOptionsFactory(): MarkedOptions {
-  const renderer = new MarkedRenderer();
+export function markedOptionsFactory() {
+  const renderer = new Renderer();
 
   // renderer.blockquote = (text: string) => {
   //   return '<blockquote class="blockquote"><p>' + text + '</p></blockquote>';
