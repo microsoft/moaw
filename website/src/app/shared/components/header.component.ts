@@ -10,12 +10,17 @@ import { Link } from '../link';
   imports: [CommonModule, IconComponent],
   template: `
     <header class="navbar">
-      <button *ngIf="sidebar" class="menu-toggle" (click)="toggleSidebar($event)">
+      <button *ngIf="sidebar" class="menu-toggle hide-gt-lg" (click)="toggleSidebar($event)">
         <app-icon name="three-bars" size="24"></app-icon>
       </button>
+      <div class="logo" *ngIf="logo"><img [src]="logo" alt="logo"/></div>
       <div class="title text-ellipsis">{{ title }}</div>
-      <div class="links">
-        <a *ngFor="let link of links" [href]="link.url">{{ link.text }}</a>
+      <div class="spacer"></div>
+      <div class="links text-ellipsis show-gt-md">
+        <a *ngFor="let link of links" [href]="link.url" [target]="isExternalLink(link) ? '_blank' : '_self'">
+          <app-icon *ngIf="link.icon" [name]="link.icon" size="20" class="link-icon"></app-icon>{{ link.text
+          }}<app-icon *ngIf="isExternalLink(link)" name="link-external" size="14" class="external-link"></app-icon>
+        </a>
       </div>
     </header>
   `,
@@ -28,7 +33,6 @@ import { Link } from '../link';
         z-index: 10;
         top: 0;
         background: var(--primary);
-        padding: var(--space-xs);
         height: var(--navbar-height);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
         display: flex;
@@ -53,19 +57,48 @@ import { Link } from '../link';
         }
       }
 
-      .menu-toggle {
-        margin-left: calc(-1 * var(--space-md));
+      .spacer {
+        flex: 1;
       }
 
-      @media (min-width: $breakpoint-lg) {
-        .menu-toggle {
-          display: none;
+      .logo img {
+        height: 32px;
+        vertical-align: middle;
+        margin-right: var(--space-md);
+      }
+
+      .links {
+        margin-left: var(--space-md);
+        color: var(--text-light);
+
+        a {
+          color: var(--text-light);
+
+          &:hover {
+            text-decoration: none;
+            opacity: 0.7;
+          }
         }
+      }
+
+      .link-icon {
+        margin-right: var(--space-xs);
+        line-height: 1em;
+      }
+
+      .external-link {
+        color: var(--text-light);
+        opacity: 0.5;
+      }
+
+      .menu-toggle {
+        margin-left: calc(-1 * var(--space-md));
       }
     `
   ]
 })
 export class HeaderComponent {
+  @Input() logo: string | undefined;
   @Input() title: string | undefined;
   @Input() links: Link[] = [];
   @Input() sidebar: SidebarComponent | undefined;
@@ -76,5 +109,9 @@ export class HeaderComponent {
       event.stopPropagation();
       this.sidebar.toggleOpen();
     }
+  }
+
+  isExternalLink(link: Link) {
+    return link.url.startsWith('http');
   }
 }

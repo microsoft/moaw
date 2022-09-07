@@ -39,8 +39,6 @@ export function setupRouter() {
   }
 
   basePath = new URL(document.baseURI).pathname;
-  // Once we know the base path, remove the <base> tag so that anchor links work
-  document.querySelector('base')?.remove();
 
   window.onpopstate = () => updateRoute();
   updateRoute();
@@ -52,6 +50,10 @@ export function getCurrentRoute() {
 
 export function getBasePath() {
   return basePath;
+}
+
+export function getCurrentUrlWithoutHash() {
+  return location.href.split('#')[0];
 }
 
 export function navigate(path: string) {
