@@ -25,9 +25,11 @@ You can link to any workshop from this repository or any publicly available GitH
 
 **Example:** [https://aka.ms/ws?src=themoaw/moaw/main/workshops/swa-gatsby-portfolio/workshop.md](https://aka.ms/ws?src=themoaw/moaw/main/workshops/swa-gatsby-portfolio/workshop.md)
 
-If you need to link a specific section of a workshop, you can add a `step` parameter and an anchor link to the URL: `https://aka.ms/ws?src=<github_repo/path_to_file>&step=<section_index>#<heading_id>`
+#### Additional tips
 
-You can also share any individual markdown-formatted page using the URL format: `https://aka.ms/ws/page?src=<github_repo/path_to_file>`
+- To link to a specific section of a workshop, add a `step` parameter and an anchor link to the URL: `&step=<section_index>#<heading_id>`
+
+- To share any individual markdown-formatted page, use the URL format: `https://aka.ms/ws/page?src=<github_repo/path_to_file>`<br>
 This is useful for sharing prerequisites, notes, etc.
 
 ## 📝 Adapt and modify content
