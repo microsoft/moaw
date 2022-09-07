@@ -6,10 +6,10 @@ authors: Yohan Lasorsa
 contacts: '@sinedied'
 # banner_url: assets/banner.png (optional)
 # video_url: https://youtube.com/link (optional)
-duration_minutes: 90-120
+duration_minutes: 120
 audience: students
 tags: github, gatsby, azure, static web apps, javascript, markdown
-published: false
+published: true
 sections_title:
   - Introduction
   - 1. Bootstrap your app
