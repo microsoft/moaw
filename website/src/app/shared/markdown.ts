@@ -20,7 +20,7 @@ export function markedOptionsFactory() {
 
   renderer.heading = (text, level, raw, slugger) => {
     const slug = slugger.slug(raw);
-    const anchorLink = `<a class="heading-anchor" href="#${slug}" aria-hidden="true">#</a>`;
+    const anchorLink = `<a class="heading-anchor" href="javascript:void(0)" onclick="window.location.hash = '${slug}'" aria-hidden="true">#</a>`;
     return `<h${level} id="${slug}" class="heading">${text} ${anchorLink}</h${level}>`;
   };
 
