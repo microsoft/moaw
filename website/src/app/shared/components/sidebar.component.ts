@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MenuLink } from '../link';
-import { navigate } from '../../router';
+import { navigate, getCurrentUrlWithoutHash } from '../../router';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,10 +11,10 @@ import { navigate } from '../../router';
     <nav class="sidebar" [class.open]="open" rel="menu" aria-label="Navigation menu">
       <ul class="links">
         <li *ngFor="let link of links">
-          <a [href]="link.url" (click)="openLink($event, link.url)" [class.active]="link.active">{{ link.text }}</a>
+          <a [href]="makeUrl(link.url)" (click)="openLink($event, link.url)" [class.active]="link.active">{{ link.text }}</a>
           <ul *ngIf="link.active && link.children" class="sub-links">
             <li *ngFor="let sublink of link.children">
-              <a [href]="sublink.url" (click)="openLink($event, sublink.url)" [class.active]="sublink.active">{{
+              <a [href]="makeUrl(sublink.url)" (click)="openLink($event, sublink.url)" [class.active]="sublink.active">{{
                 sublink.text
               }}</a>
             </li>
@@ -65,7 +65,7 @@ import { navigate } from '../../router';
           font-size: 1.1rem;
           font-weight: bold;
           border-radius: var(--border-radius);
-          padding: var(--space-xxs) var(--space-md);
+          padding: var(--space-xxs) var(--space-xs);
 
           &:hover {
             color: var(--primary);
@@ -107,6 +107,10 @@ export class SidebarComponent {
 
   toggleOpen(open?: boolean) {
     this.open = open ?? !this.open;
+  }
+
+  makeUrl(url: string) {
+    return url.startsWith('#') ? getCurrentUrlWithoutHash() + url : url;
   }
 
   openLink(event: Event, url: string) {

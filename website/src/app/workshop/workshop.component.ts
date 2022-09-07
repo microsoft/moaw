@@ -140,7 +140,6 @@ export class WorkshopComponent {
     if (this.workshop && step) {
       if (this.workshop.step !== stepNumber) {
         this.workshop.step = stepNumber;
-        this.updateAnchor();
         scrollToTop('workshop');
       }
       this.updateTitle();
