@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { githubRepositoryUrl } from '../constants';
 import { IconComponent } from './icon.component';
 
 @Component({
@@ -9,7 +10,7 @@ import { IconComponent } from './icon.component';
   template: `
     <footer>
       <app-icon name="mark-github" size="12"></app-icon>
-      <a href="https://github.com/themoaw/moaw" target="_blank">moaw</a> (build: {{ version }})
+      <a href="${githubRepositoryUrl}" target="_blank">moaw</a> (build: ${environment.version})
     </footer>
   `,
   styles: [
@@ -31,6 +32,4 @@ import { IconComponent } from './icon.component';
     `
   ]
 })
-export class FooterComponent {
-  version = environment.version;
-}
+export class FooterComponent {}
