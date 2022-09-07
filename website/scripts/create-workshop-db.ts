@@ -13,6 +13,7 @@ import glob from 'fast-glob';
 import { marked } from 'marked';
 import { FrontMatterParseResult, parseFrontMatter } from '../src/app/shared/frontmatter.js';
 import { markedOptionsFactory } from '../src/app/shared/markdown.js';
+import { ContentEntry } from '../src/app/catalog/content-entry.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mainBranch = 'main';
@@ -27,17 +28,6 @@ interface FileInfo extends FrontMatterParseResult {
   lastModified: string;
 }
 
-interface ContentEntry {
-  title: string;
-  description: string;
-  tags: string[];
-  url: string;
-  authors: string[];
-  duration: number | undefined;
-  bannerUrl: string | undefined;
-  lastUpdated: string;
-}
-
 (async function run() {
   chdir(workshopsPath);
   baseRepoUrl = await getBaseRepoUrl();
@@ -46,17 +36,16 @@ interface ContentEntry {
   const markdownFiles = await glob('**/*.md');
   const files = await Promise.all(markdownFiles.map(async (file) => readFile(file)));
   const workshops = files.filter((file): file is FileInfo =>
-    Boolean(
-      file?.meta &&
-        file.meta.published &&
-        (file.meta.type === undefined || file.meta.type === 'workshop')
-    )
+    Boolean(file?.meta && file.meta.published && (file.meta.type === undefined || file.meta.type === 'workshop'))
   );
 
   console.log(`Found ${workshops.length} published workshop(s)`);
 
   // Create JSON database
   const entries = workshops.map((workshop) => createEntry(workshop));
+
+  // TODO: sort by lastUpdated
+
   try {
     await fs.writeFile(dbPath, JSON.stringify(entries, null, 2));
     console.log(`Created JSON database at ${dbPath}`);
@@ -99,7 +88,7 @@ function createEntry(file: FileInfo): ContentEntry {
     duration: file.meta.duration_minutes,
     bannerUrl: file.meta.banner_url,
     lastUpdated: file.lastModified,
-    url: `${baseRepoUrl}/${file.path}`,
+    url: `${baseRepoUrl}/${file.path}`
   };
 }
 
@@ -129,7 +118,7 @@ function getFirstHeading(markdown: string): string | undefined {
     const options = markedOptionsFactory();
     options.renderer.heading = (_text, _level, raw, _slugger) => {
       firstHeading = raw;
-      throw new Error();  // Quiclky exit parser
+      throw new Error(); // Quiclky exit parser
     };
     marked(markdown, options);
   } catch {}
