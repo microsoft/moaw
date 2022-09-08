@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../shared/components/header.component';
 import { FooterComponent } from '../shared/components/footer.component';
+import { LoaderComponent } from '../shared/components/loader.component';
 import { githubRepositoryUrl } from '../shared/constants';
 import { ContentEntry, loadCatalog } from './content-entry';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, FooterComponent],
+  imports: [CommonModule, HeaderComponent, FooterComponent, LoaderComponent],
   template: `
     <div class="full-viewport">
       <app-header logo="images/moaw-logo-full.png" [links]="links"></app-header>
@@ -23,7 +24,7 @@ import { ContentEntry, loadCatalog } from './content-entry';
               </div>
             </div>
           </section>
-          <div class="container no-sidebar">
+          <app-loader class="container no-sidebar" [loading]="loading">
             <div class="cards">
               <a [href]="workshop.url" class="card" *ngFor="let workshop of workshops" [title]="workshop.description">
                 <div class="banner" [style]="{ 'background-image': 'url(' + workshop.bannerUrl + ')'}"></div>
@@ -31,7 +32,7 @@ import { ContentEntry, loadCatalog } from './content-entry';
                 <div class="tags">{{ workshop.tags.slice(0, 4).join(', ') }}</div>
               </a>
             </div>
-          </div>
+          </app-loader>
           <div class="fill"></div>
           <app-footer type="big"></app-footer>
         </div>
@@ -117,10 +118,14 @@ export class CatalogComponent implements OnInit {
   workshops: ContentEntry[] = [];
 
   async ngOnInit() {
-    this.workshops = await loadCatalog();
-    this.loading = false;
-
     document.title = 'MOAW - All Workshops';
+    this.loading = true;
+    try {
+      this.workshops = await loadCatalog();
+    } catch (error) {
+      console.error(error);
+    }
+    this.loading = false;
   }
 
   filter(event: Event) {

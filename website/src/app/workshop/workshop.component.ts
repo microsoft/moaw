@@ -5,6 +5,7 @@ import { addRouteChangeListener, getHash, getQueryParams, redirectRoutePath, Rou
 import { HeaderComponent } from '../shared/components/header.component';
 import { FooterComponent } from '../shared/components/footer.component';
 import { SidebarComponent } from '../shared/components/sidebar.component';
+import { LoaderComponent } from '../shared/components/loader.component';
 import { Workshop, loadWorkshop, createMenuLinks } from './workshop';
 import { PaginationComponent } from './pagination.component';
 import { MenuLink } from '../shared/link';
@@ -15,19 +16,14 @@ import { getRepoPath } from '../shared/loader';
 @Component({
   selector: 'app-workshop',
   standalone: true,
-  imports: [CommonModule, MarkdownModule, HeaderComponent, FooterComponent, SidebarComponent, PaginationComponent],
+  imports: [CommonModule, MarkdownModule, HeaderComponent, FooterComponent, SidebarComponent, LoaderComponent, PaginationComponent],
   template: `
     <div (click)="sidebar.toggleOpen(false)" class="full-viewport">
       <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
       <div class="content">
         <app-sidebar #sidebar="sidebar" [links]="menuLinks"></app-sidebar>
-        <div
-          id="workshop"
-          *ngIf="workshop; else noWorkshop"
-          class="scrollable"
-          (scroll)="enableScrollEvent && scrolled($event)"
-        >
-          <div class="container">
+        <app-loader id="workshop" [loading]="loading" class="scrollable" [class.container]="loading" (scroll)="enableScrollEvent && scrolled($event)">
+          <div *ngIf="workshop; else noWorkshop" class="container">
             <markdown
               (ready)="markdownReady()"
               ngPreserveWhitespaces
@@ -36,7 +32,7 @@ import { getRepoPath } from '../shared/loader';
             <app-pagination [workshop]="workshop"></app-pagination>
           </div>
           <app-footer></app-footer>
-        </div>
+        </app-loader>
       </div>
       <ng-template #noWorkshop>
         <p class="container" *ngIf="!loading">Could not load workshop :(</p>
