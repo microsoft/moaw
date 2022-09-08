@@ -30,6 +30,7 @@ jobs:
         cd website
         npm ci
         npm run build:scripts
+        echo $GITHUB_REPO_URL
         npm run create:db
         npm run build -- --base-href /moaw/
         npm run tag:version
