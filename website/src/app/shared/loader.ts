@@ -5,6 +5,7 @@ import { getCurrentRoute, getPathAfterRoute, redirectRoutePath } from '../router
 
 const cdnUrl = 'https://cdn.jsdelivr.net/npm/';
 const assetsFolder = 'assets/';
+const defaultWtid = 'javascript-76678-cxa';
 
 export interface LoaderOptions {
   ocid?: string;
@@ -57,11 +58,9 @@ export function updateAssetsBasePath(markdown: string, baseUrl: string): string 
 }
 
 function updateTrackingCodes(markdown: string, options?: LoaderOptions): string {
-  const { ocid, wtid } = options || {};
-  if (wtid) {
-    markdown = updateTrackingCodeInText(markdown, wtid, true, ocid ? { ocid } : undefined);
-  }
-
+  let { ocid, wtid } = options || {};
+  wtid = wtid || defaultWtid;
+  markdown = updateTrackingCodeInText(markdown, wtid, true, ocid ? { ocid } : undefined);
   return markdown;
 }
 
