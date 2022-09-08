@@ -133,25 +133,26 @@ export class WorkshopComponent {
   routeChanged(_route: Route) {
     const { step } = getQueryParams();
     const stepNumber = Number(step);
-    if (this.workshop && step) {
+    if (this.workshop && step !== undefined) {
       if (this.workshop.step !== stepNumber) {
         this.workshop.step = stepNumber;
         scrollToTop('workshop');
       }
-      this.updateTitle();
       this.enableScrollEvent = false;
       this.updateActiveLink();
       this.enableScrollUpdates();
     }
+    this.updateTitle();
   }
 
   markdownReady() {
-    scrollToId(getHash().substring(1));
+    // Push it down the event loop so that rendering has finished
+    setTimeout(() => scrollToId(getHash().substring(1)));
   }
 
   enableScrollUpdates() {
     // Need to push this to the end of the event loop to avoid received triggers
     // from browser-generated scroll events
-    setTimeout(() => (this.enableScrollEvent = true), 0);
+    setTimeout(() => (this.enableScrollEvent = true));
   }
 }
