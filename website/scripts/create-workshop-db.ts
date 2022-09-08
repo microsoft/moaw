@@ -105,8 +105,11 @@ function parseCsvOrArray(value: string | string[] | undefined): string[] {
 }
 
 async function getBaseRepoUrl() {
-  const { stdout } = await promisify(exec)('git remote get-url origin');
-  const url = stdout.trim();
+  let url: string | undefined = process.env['GITHUB_REPO_URL'];
+  if (!url) {
+    const { stdout } = await promisify(exec)('git remote get-url origin');
+    url = stdout.trim();
+  }
   const match = githubRepoRegex.exec(url);
   if (!match) {
     throw new Error(`Error, could not get current GitHub repository URL!`);
