@@ -1,14 +1,13 @@
 ---
 short_title: Portfolio Workshop
-description: This is a workshop for...
+description: Discover how to create and deploy your personal portfolio website using Gatsby, GitHub and Azure Static Web Apps.
 type: workshop
 authors: Yohan Lasorsa
 contacts: '@sinedied'
-# banner_url: assets/banner.png (optional)
-# video_url: https://youtube.com/link (optional)
+banner_url: assets/portfolio-banner.jpg
 duration_minutes: 120
 audience: students
-tags: github, gatsby, azure, static web apps, javascript, markdown
+tags: github, gatsby, azure, static web apps, javascript, markdown, react
 published: true
 sections_title:
   - Introduction
@@ -20,7 +19,7 @@ sections_title:
 
 # Create and deploy your online portfolio with Gatsby, GitHub and Azure Static Web Apps
 
-TODO: add short description
+In this workshop we'll learn how to create and deploy your personal portfolio website and customize its content.
 
 ## Workshop Objectives
 - Bootstrap a Gatsby app from a template
@@ -199,7 +198,6 @@ Some text in **bold** or *italic* with a [Link](http://link.com).
 - Item 1
 - Item 2
 - Item 3
-]
 
 ### What's [MDX](https://mdxjs.com/)?
 
@@ -222,11 +220,13 @@ Try and change the background color!
 
 - Used by Gatsby to create your website content
 - They use MDX with [Front Matter](https://jekyllrb.com/docs/front-matter/) (metadata in text format at the top)
+    ```frontmatter
     ---
     title: "I'm a Gatsby Starter"
     icon: "waving-hand.png"
     subtitle: "one-page portfolios"
     ---
+    ```
 
 - You can put images next to .mdx files
 - You can add or create as many as you need
