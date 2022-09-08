@@ -4,9 +4,9 @@
 //****************************************************************************
 
 import path from 'path';
+import process from 'process';
 import { promises as fs } from 'fs';
 import { fileURLToPath } from 'url';
-import { chdir } from 'process';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import glob from 'fast-glob';
@@ -19,7 +19,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mainBranch = 'main';
 const workshopsPath = path.join(__dirname, '../../../workshops');
 const dbPath = path.join(__dirname, '../../src/public/workshops.json');
-const githubRepoRegex = /github\.com[:/]([^/]+\/[^/]+)\.git$/;
+const githubRepoRegex = /github\.com[:/]([^/]+\/[^/]+)(?:\.git)?$/;
 
 let baseRepoUrl: string;
 
@@ -29,7 +29,7 @@ interface FileInfo extends FrontMatterParseResult {
 }
 
 (async function run() {
-  chdir(workshopsPath);
+  process.chdir(workshopsPath);
   baseRepoUrl = await getBaseRepoUrl();
 
   // Find all published workshops
