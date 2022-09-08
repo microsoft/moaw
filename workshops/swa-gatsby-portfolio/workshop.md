@@ -220,7 +220,7 @@ Try and change the background color!
 
 - Used by Gatsby to create your website content
 - They use MDX with [Front Matter](https://jekyllrb.com/docs/front-matter/) (metadata in text format at the top)
-    ```frontmatter
+    ```yaml
     ---
     title: "I'm a Gatsby Starter"
     icon: "waving-hand.png"

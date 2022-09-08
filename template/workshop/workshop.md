@@ -1,4 +1,5 @@
 ---
+published: false
 type: workshop
 title: Full workshop title
 short_title: Short title for header
@@ -9,7 +10,7 @@ contacts:
   - Email, Twitter...
 duration_minutes: 20
 tags: javascript, api, node.js
-# banner_url: assets/banner.png (optional)
+# banner_url: assets/banner.jpg (optional)
 # video_url: https://youtube.com/link (optional)
 # audience: students
 # wt_id: <cxa_tracking_id>
@@ -17,7 +18,6 @@ tags: javascript, api, node.js
 # sections_title:
 #   - Section 1 title
 #   - Section 2 title
-published: false
 ---
 
 # Workshop Title
