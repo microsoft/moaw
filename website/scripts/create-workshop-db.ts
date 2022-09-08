@@ -33,7 +33,7 @@ interface FileInfo extends FrontMatterParseResult {
   baseRepoUrl = await getBaseRepoUrl();
 
   // Find all published workshops
-  const markdownFiles = await glob('**/*.md');
+  const markdownFiles = await glob('**/*.md', { ignore: ['**/node_modules/**', '**/translations/*.md'] });
   const files = await Promise.all(markdownFiles.map(async (file) => readFile(file)));
   const workshops = files.filter((file): file is FileInfo =>
     Boolean(file?.meta && file.meta.published && (file.meta.type === undefined || file.meta.type === 'workshop'))
@@ -45,6 +45,8 @@ interface FileInfo extends FrontMatterParseResult {
   const entries = workshops.map((workshop) => createEntry(workshop));
 
   // TODO: sort by lastUpdated
+
+  // TODO: find localized versions
 
   try {
     await fs.writeFile(dbPath, JSON.stringify(entries, null, 2));
@@ -88,7 +90,7 @@ function createEntry(file: FileInfo): ContentEntry {
     duration: file.meta.duration_minutes,
     bannerUrl: file.meta.banner_url,
     lastUpdated: file.lastModified,
-    url: `${baseRepoUrl}/${file.path}`
+    url: `${baseRepoUrl}/workshops/${file.path}`
   };
 }
 

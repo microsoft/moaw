@@ -52,7 +52,7 @@ export async function loadFile(
   };
 }
 
-function updateAssetsBasePath(markdown: string, baseUrl: string): string {
+export function updateAssetsBasePath(markdown: string, baseUrl: string): string {
   return markdown.replace(new RegExp(assetsFolder, 'g'), `${baseUrl}/${assetsFolder}`);
 }
 

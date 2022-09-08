@@ -2,13 +2,12 @@
 
 :root {
   --primary: #17d;
-  --accent: #c54;
   --neutral: #b0b0c0;
   --neutral-light: #f4f4f6;
-  --neutral-dark: #99a;
-  --warning: #f60;
-  --success: #0c0;
-  --danger: #f00;
+  --neutral-dark: #889;
+  --warning: #d71;
+  --success: #7d1;
+  --danger: #d31;
   --info: var(--primary);
   --text: #111;
   --text-light: #fff;
@@ -242,6 +241,10 @@ img {
   flex-direction: column;
 }
 
+.fill {
+  flex: 1;
+}
+
 .content {
   display: flex;
   flex: 1;
@@ -251,6 +254,7 @@ img {
 .container {
   margin: var(--space-lg) auto;
   padding: 0 var(--space-md);
+  width: 100%;
 }
 
 .scrollable {
