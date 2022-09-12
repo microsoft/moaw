@@ -133,7 +133,7 @@ In the Azure portal, in the created resource, select **GitHub Actions runs**.
 
 ---
 
-## Step 3: Create your own content
+## 3. Create your own content
 
 ### Gatsby app structure
 
@@ -246,7 +246,7 @@ Try and change the background color!
 
 ---
 
-## Step 4: Go Further (Bonus)
+## 4. Go Further (Bonus)
 
 ### React components
 
@@ -261,7 +261,7 @@ See `src/components/styles/underlining.js` for example.
 - [ ] Create a custom component
 - [ ] Use it in a content a file
 
-### For home study
+### For further study
 
 #### GraphQL
 
