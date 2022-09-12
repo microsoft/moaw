@@ -2,8 +2,12 @@
 short_title: Static Web Apps Workshop
 description: Learn how to develop an end to end web application with a frontend, a backend, a database and some user authentication using Azure Static Web Apps, Cosmos DB, VSCode and GitHub Actions.
 type: workshop
-authors: Olivier Leplus, Yohan Lasorsa
-contacts: '@olivierleplus', '@sinedied'
+authors:
+  - Olivier Leplus
+  - Yohan Lasorsa
+contacts:
+  - '@olivierleplus'
+  - '@sinedied'
 banner_url: assets/todo-banner.jpg
 duration_minutes: 180
 audience: students, pro devs
