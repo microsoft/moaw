@@ -27,7 +27,9 @@ import { ContentEntry, loadCatalog } from './content-entry';
           <app-loader class="container no-sidebar" [loading]="loading">
             <div class="cards">
               <a [href]="workshop.url" class="card" *ngFor="let workshop of workshops" [title]="workshop.description">
-                <div class="banner" [style]="{ 'background-image': 'url(' + workshop.bannerUrl + ')'}"></div>
+                <div class="banner" [style]="{ 'background-image': 'url(' + workshop.bannerUrl + ')'}">
+                  <div *ngIf="workshop.duration" class="duration">{{ workshop.duration }} min</div>
+                </div>
                 <div class="title">{{ workshop.title }}</div>
                 <div class="tags">{{ workshop.tags.slice(0, 4).join(', ') }}</div>
               </a>
@@ -71,6 +73,8 @@ import { ContentEntry, loadCatalog } from './content-entry';
     }
 
     .card {
+      display: flex;
+      flex-direction: column;
       background: var(--background);
       border-radius: var(--border-radius);
       box-shadow: 0 0px 1px 0 rgba(0 0 0 / 20%),
@@ -89,7 +93,9 @@ import { ContentEntry, loadCatalog } from './content-entry';
     }
 
     .banner {
+      position: relative;
       height: 120px;
+      background-color: var(--neutral-light);
       background-size: cover;
       background-repeat: no-repeat;
       background-position: 50%;
@@ -99,7 +105,20 @@ import { ContentEntry, loadCatalog } from './content-entry';
       }
     }
 
+    .duration {
+      position: absolute;
+      right: var(--space-md);
+      bottom: 0;
+      transform: translateY(50%);
+      font-size: .7em;
+      padding: 0 var(--space-xs);
+      border-radius: var(--border-radius);
+      background: var(--neutral-dark);
+      color: var(--text-light);
+    }
+
     .title {
+      flex: 1;
       font-weight: bold;
       margin: var(--space-md);
     }
