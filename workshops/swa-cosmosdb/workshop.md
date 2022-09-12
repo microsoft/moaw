@@ -15,16 +15,6 @@ tags: azure, static web apps, cosmos db, github actions, vs code
 published: true
 sections_title:
   - Introduction
-  - What's Azure Static Web Apps?
-  - Start with a website
-  - Create an Azure Static Web App
-  - Test you project locally
-  - Let's add a backend
-  - Add authentication
-  - Routes & Roles
-  - Store your data in a database
-  - Bonus
-  - Conclusion
 ---
 
 # Develop and deploy your fullstack web app with Azure Static Web Apps and Cosmos DB
