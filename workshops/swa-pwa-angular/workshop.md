@@ -282,7 +282,7 @@ git add . && git commit -m "add API" && git push
 
 - Go to **Network** tab, switch from `online` to `offline` and refresh.
 
-.big[😱]
+😱
 
 ### Update service worker config
 
@@ -317,7 +317,7 @@ git add . && git commit -m "update SW config" && git push
 
 - Go to **Network** tab, switch from `online` to `offline` and refresh.
 
-.big[😎]
+😎
 
 ### Test home screen install
 

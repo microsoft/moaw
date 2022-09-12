@@ -1,13 +1,18 @@
+@use "sass:color";
 @import 'variables';
 
 :root {
   --primary: #17d;
+  --primary-light: #{color.scale(#17d, $lightness: 90%, $saturation: -40%)};
   --neutral: #b0b0c0;
   --neutral-light: #f4f4f6;
   --neutral-dark: #889;
   --warning: #d71;
+  --warning-light: #{color.scale(#d71, $lightness: 90%, $saturation: -40%)};
   --success: #7d1;
+  --success-light: #{color.scale(#7d1, $lightness: 90%, $saturation: -40%)};
   --danger: #d31;
+  --danger-light: #{color.scale(#d31, $lightness: 90%, $saturation: -40%)};
   --info: var(--primary);
   --text: #111;
   --text-light: #fff;
@@ -129,6 +134,26 @@ blockquote {
   margin: var(--space-md) 0;
   background: var(--neutral-light);
   border-radius: var(--border-radius);
+
+  .warning > & {
+    border-left-color: var(--warning);
+    background: var(--warning-light);
+  }
+
+  .danger > & {
+    border-left-color: var(--danger);
+    background: var(--danger-light);
+  }
+
+  .info > & {
+    border-left-color: var(--primary);
+    background: var(--primary-light);
+  }
+
+  .success > & {
+    border-left-color: var(--success);
+    background: var(--success-light);
+  }
 }
 
 pre,
@@ -147,6 +172,10 @@ code:not(pre > code) {
   padding: var(--space-xxxs) var(--space-xxs);
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: var(--border-radius);
+
+  blockquote & {
+    background: rgba(255, 255, 255, .7);
+  }
 }
 
 pre {
