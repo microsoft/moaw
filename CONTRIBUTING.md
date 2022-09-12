@@ -3,7 +3,7 @@
 We welcome all contributions, including translations, new workshops, bug fixes, etc.
 
 As a contributor, help us keep this project open and inclusive.
-Please read and follow our [Code of Conduct](CODE_OF_CONDUCT).
+Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 - If you find something not working as expected, please [open an issue](https://github.com/themoaw/moaw/issues) and explain what you did and what you expected to happen.
 

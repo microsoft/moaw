@@ -38,12 +38,12 @@ You're free to adapt, modify and localize the content of this repository to bett
 
 The easiest way to do that is to fork this repository and make your changes in your fork. You can then link to your fork using the URL format described above.
 
-If you made changes that you think would be useful to others, please also consider opening a pull request to [contribute](CONTRIBUTING) to this repository.
+If you made changes that you think would be useful to others, please also consider opening a pull request to [contribute](CONTRIBUTING.md) to this repository.
 
 # Contributing
 
 All contributions are welcome, including translations, new workshops, bug fixes, etc.
-If you want to contribute to this repository, please read the [contributing guidelines](CONTRIBUTING).
+If you want to contribute to this repository, please read the [contributing guidelines](CONTRIBUTING.md).
 
 # License
 
