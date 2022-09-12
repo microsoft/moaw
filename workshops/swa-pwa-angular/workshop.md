@@ -33,7 +33,7 @@ After setting up continuous deployment for your app using Azure Static Web Apps 
 - Review caching and updating strategies
 - Handle app updates
 
-## Prerequisites .float-right.small[[aka.ms/spwa-pre](https://aka.ms/spwa-pre)]
+## Prerequisites
 
 | | |
 |---------------|-----------------|
@@ -75,7 +75,11 @@ ng serve --open
 
 1. Create new repo: https://github.com/new
 
-  > **Tip**: With GitHub CLI (https://cli.github.com) you can do it directly from command line: `gh repo create <name> --public`
+    <div class="success">
+  
+    > **Tip**: With GitHub CLI (https://cli.github.com) you can do it directly from command line: `gh repo create <name> --public`
+
+    </div>
 
 2. Push your code to the repo, by copy/pasting the commands shown on GitHub:
 
@@ -83,9 +87,9 @@ ng serve --open
 
 ### What's Azure Static Web Apps?
 
-> It's an all-inclusive **hosting service** for web apps with **serverless APIs**, based on a continuous integration and deployment pipeline from a GitHub or Azure DevOps repository.
+Static Web Apps (or SWA for short) is an all-inclusive **hosting service** for web apps with **serverless APIs**, based on a continuous integration and deployment pipeline from a GitHub or Azure DevOps repository.
 
-#### Provides:
+It provides a lot of features out of the box, like:
 - CI/CD
 - Assets hosting
 - APIs
@@ -152,9 +156,16 @@ ng add @angular/pwa
 git diff
 ```
 
+<div class="info">
+
 > **Note**: there is no `ngsw-worker.js` file, it will be automatically generated during build based on `ngsw-config.json`.
 
+</div>
+<div class="info">
+
 > **Note**: if you're not using Angular, [WorkBox](https://developers.google.com/web/tools/workbox) is an alternative service worker library that works with any website.
+
+</div>
 
 ### Test your app offline
 
@@ -192,7 +203,11 @@ echo "{ \"version\": \"2.0\" }" > host.json
 mkdir hello && cd hello
 ```
 
+<div class="success">
+
 > **Tip**: if you install Azure Functions Core Tools ([aka.ms/tools/func](https://aka.ms/tools/func)) you can just use `func init` instead. You can also test your functions locally with `func start`.
+
+</div>
 
 #### Create new function
 
@@ -312,7 +327,11 @@ Open your app on your mobile phone.
 
 Refresh a few times to see the install banner, or tap menu and choose **Add to home screen**.
 
+<div class="info">
+
 > **Tip**: you can customize install UI using `beforeinstallprompt` event, see https://web.dev/customize-install
+
+</div>
 
 #### iOS
 
@@ -353,7 +372,7 @@ export class AppComponent {
 ```
 
 Edit `src/app/app.component.html` and replace its content with:
-```ts
+```html
 Message: {{ hello }}
 
 <p *ngIf="updateAvailable$ | async; else noUpdate">
