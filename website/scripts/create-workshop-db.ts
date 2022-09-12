@@ -19,7 +19,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mainBranch = 'main';
 const workshopsPath = path.join(__dirname, '../../../workshops');
 const dbPath = path.join(__dirname, '../../src/public/workshops.json');
-const githubRepoRegex = /github\.com[:/]([^/]+\/[^/]+)(?:\.git)?$/;
+const githubRepoRegex = /github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?$/;
 
 let baseRepoUrl: string;
 
