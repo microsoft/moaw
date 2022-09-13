@@ -10,13 +10,18 @@ import { navigate, getCurrentUrlWithoutHash } from '../../router';
   template: `
     <nav class="sidebar" [class.open]="open" rel="menu" aria-label="Navigation menu">
       <ul class="links">
-        <li *ngFor="let link of links; let index = index;">
-          <a [href]="makeUrl(link.url)" (click)="openLink($event, link.url)" [class.active]="link.active">{{ index + 1 }}. {{ link.text }}</a>
+        <li *ngFor="let link of links; let index = index">
+          <a [href]="makeUrl(link.url)" (click)="openLink($event, link.url)" [class.active]="link.active"
+            >{{ index + 1 }}. {{ link.text }}</a
+          >
           <ul *ngIf="link.active && link.children" class="sub-links">
             <li *ngFor="let sublink of link.children">
-              <a [href]="makeUrl(sublink.url)" (click)="openLink($event, sublink.url)" [class.active]="sublink.active">{{
-                sublink.text
-              }}</a>
+              <a
+                [href]="makeUrl(sublink.url)"
+                (click)="openLink($event, sublink.url)"
+                [class.active]="sublink.active"
+                >{{ sublink.text }}</a
+              >
             </li>
           </ul>
         </li>

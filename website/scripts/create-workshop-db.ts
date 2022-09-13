@@ -43,7 +43,7 @@ interface FileInfo extends FrontMatterParseResult {
 
   // Create JSON database
   const entries = workshops.map((workshop) => createEntry(workshop));
-  entries.sort((a, b) => a.lastUpdated > b.lastUpdated ? 1 : -1);
+  entries.sort((a, b) => (a.lastUpdated > b.lastUpdated ? 1 : -1));
 
   // TODO: find localized versions
 

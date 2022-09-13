@@ -13,7 +13,7 @@ import { Link } from '../link';
       <button *ngIf="sidebar" class="menu-toggle hide-gt-lg" (click)="toggleSidebar($event)">
         <app-icon name="three-bars" size="24"></app-icon>
       </button>
-      <div class="logo" *ngIf="logo"><img [src]="logo" alt="logo"/></div>
+      <div class="logo" *ngIf="logo"><img [src]="logo" alt="logo" /></div>
       <div class="title text-ellipsis">{{ title }}</div>
       <div class="spacer"></div>
       <div class="links text-ellipsis show-gt-md">

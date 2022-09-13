@@ -57,5 +57,5 @@ import { IconComponent } from './icon.component';
   ]
 })
 export class FooterComponent {
-  @Input() type: 'small'|'big' = 'small';
+  @Input() type: 'small' | 'big' = 'small';
 }

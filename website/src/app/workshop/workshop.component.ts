@@ -16,13 +16,27 @@ import { getRepoPath } from '../shared/loader';
 @Component({
   selector: 'app-workshop',
   standalone: true,
-  imports: [CommonModule, MarkdownModule, HeaderComponent, FooterComponent, SidebarComponent, LoaderComponent, PaginationComponent],
+  imports: [
+    CommonModule,
+    MarkdownModule,
+    HeaderComponent,
+    FooterComponent,
+    SidebarComponent,
+    LoaderComponent,
+    PaginationComponent
+  ],
   template: `
     <div (click)="sidebar.toggleOpen(false)" class="full-viewport">
       <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
       <div class="content">
         <app-sidebar #sidebar="sidebar" [links]="menuLinks"></app-sidebar>
-        <app-loader id="workshop" [loading]="loading" class="scrollable" [class.container]="loading" (scroll)="enableScrollEvent && scrolled($event)">
+        <app-loader
+          id="workshop"
+          [loading]="loading"
+          class="scrollable"
+          [class.container]="loading"
+          (scroll)="enableScrollEvent && scrolled($event)"
+        >
           <div *ngIf="workshop; else noWorkshop" class="container">
             <markdown
               (ready)="markdownReady()"

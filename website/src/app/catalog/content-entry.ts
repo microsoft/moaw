@@ -1,6 +1,6 @@
-import { getBasePath } from "../router";
-import { getBaseUrl, getFileUrl } from "../shared/github";
-import { updateAssetsBasePath } from "../shared/loader";
+import { getBasePath } from '../router';
+import { getBaseUrl, getFileUrl } from '../shared/github';
+import { updateAssetsBasePath } from '../shared/loader';
 
 const defaultBanner = 'images/workshop-banner-default.jpg';
 
@@ -17,14 +17,14 @@ export interface ContentEntry {
 
 export async function loadCatalog(): Promise<ContentEntry[]> {
   const response = await fetch('workshops.json');
-  
+
   if (response.status !== 200) {
     const error = `Cannot load content catalog: ${response.status} ${response.statusText}`;
     console.error(error);
     throw new Error(error);
   }
 
-  const entries = await response.json() as ContentEntry[];
+  const entries = (await response.json()) as ContentEntry[];
   entries.forEach((entry) => {
     entry.bannerUrl = entry.bannerUrl ? createBannerUrl(entry.url, entry.bannerUrl) : defaultBanner;
     entry.url = createWorkshopUrl(entry.url);
@@ -39,5 +39,5 @@ function createWorkshopUrl(file: string) {
 
 function createBannerUrl(repoPath: string, file: string) {
   const baseUrl = getBaseUrl(getFileUrl(repoPath));
-  return updateAssetsBasePath(file, baseUrl)
+  return updateAssetsBasePath(file, baseUrl);
 }

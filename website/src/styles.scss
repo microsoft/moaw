@@ -1,4 +1,4 @@
-@use "sass:color";
+@use 'sass:color';
 @import 'variables';
 
 :root {
@@ -170,7 +170,7 @@ ul {
 
   & > blockquote {
     background: var(--warning-light);
-    border-left-color: var(--warning);  
+    border-left-color: var(--warning);
   }
 }
 
@@ -182,7 +182,7 @@ ul {
 
   & > blockquote {
     background: var(--danger-light);
-    border-left-color: var(--danger);  
+    border-left-color: var(--danger);
   }
 }
 
@@ -194,7 +194,7 @@ ul {
 
   & > blockquote {
     background: var(--info-light);
-    border-left-color: var(--info);  
+    border-left-color: var(--info);
   }
 }
 
@@ -206,7 +206,7 @@ ul {
 
   & > blockquote {
     background: var(--success-light);
-    border-left-color: var(--success);  
+    border-left-color: var(--success);
   }
 }
 
@@ -218,7 +218,7 @@ ul {
 
   & > blockquote {
     background: var(--task-light);
-    border-left-color: var(--task);  
+    border-left-color: var(--task);
   }
 }
 
@@ -249,7 +249,7 @@ code:not(pre > code) {
   border-radius: var(--border-radius);
 
   blockquote & {
-    background: rgba(255, 255, 255, .7);
+    background: rgba(255, 255, 255, 0.7);
   }
 }
 
@@ -377,7 +377,9 @@ img {
 
 // Responsive helpers --------------------------------------------------------
 
-.show-gt-xs, .show-gt-md, .show-gt-lg {
+.show-gt-xs,
+.show-gt-md,
+.show-gt-lg {
   display: none;
 }
 

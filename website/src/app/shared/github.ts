@@ -1,4 +1,4 @@
-import { defaultWorkshopFile, githubFileScheme, localWorkshopPath } from "./constants";
+import { defaultWorkshopFile, githubFileScheme, localWorkshopPath } from './constants';
 
 export function getFileUrl(repoPath: string) {
   if (repoPath.endsWith('/')) {
