@@ -1,11 +1,16 @@
+import { defaultWorkshopFile, githubFileScheme, localWorkshopPath } from "./constants";
+
 export function getFileUrl(repoPath: string) {
   if (repoPath.endsWith('/')) {
-    repoPath += 'workshop.md';
+    repoPath += defaultWorkshopFile;
   }
   if (!repoPath.endsWith('.md')) {
     repoPath += '.md';
   }
-  return `https://raw.githubusercontent.com/${repoPath}`;
+  if (repoPath.startsWith(githubFileScheme)) {
+    return repoPath.replace(githubFileScheme, `https://raw.githubusercontent.com/`);
+  }
+  return localWorkshopPath + repoPath;
 }
 
 export function getBaseUrl(url: string) {

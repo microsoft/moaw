@@ -89,7 +89,7 @@ function createEntry(file: FileInfo): ContentEntry {
     duration: file.meta.duration_minutes,
     bannerUrl: file.meta.banner_url,
     lastUpdated: file.lastModified,
-    url: `${baseRepoUrl}/workshops/${file.path}`
+    url: `${path.dirname(file.path)}/` //`gh:${baseRepoUrl}/workshops/${file.path}`
   };
 }
 

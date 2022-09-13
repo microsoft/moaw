@@ -17,21 +17,25 @@ All the content is available under the [Creative Commons Attribution-ShareAlike 
 
 # Usage
 
-<!-- ## 📚 Browse the content
+## 📚 Browse the content
 
-The easiest way to browse the available content is to visit the [website](https://aka.ms/ws). -->
+The easiest way to browse the available content is to visit the [website](https://aka.ms/moaw).
 
 ## 👩‍🏫 Conduct a workshop
 
-You can link to any workshop from this repository or any publicly available GitHub repository using the following URL format: `https://aka.ms/ws?src=<github_repo/path_to_file>`
+You can link to any workshop from this repository or any publicly available GitHub repository using the following URL format: `https://aka.ms/ws?src=<workshop_folder>/`
 
-**Example:** [https://aka.ms/ws?src=themoaw/moaw/main/workshops/swa-gatsby-portfolio/workshop.md](https://aka.ms/ws?src=themoaw/moaw/main/workshops/swa-gatsby-portfolio/workshop.md)
+**Example:** [https://aka.ms/ws?src=swa-gatsby-portfolio/](https://aka.ms/ws?src=swa-gatsby-portfolio/)
+
 
 #### Additional tips
 
-- To link to a specific section of a workshop, add a `step` parameter and an anchor link to the URL: `&step=<section_index>#<heading_id>`
+- You can also link to any workshop in a publicly available GitHub repository using: `https://aka.ms/ws?src=gh:<github_repo/path_to_file>`<br>
+  This way you can adapt the content as you need in your fork and use it directly.
 
-- To share any individual markdown-formatted page, use the URL format: `https://aka.ms/ws/page?src=<github_repo/path_to_file>`<br>
+- You can link to a specific section of a workshop, by adding a `step` parameter and an anchor link to the URL: `&step=<section_index>#<heading_id>`
+
+- You can share any individual markdown-formatted page, using the URL format: `https://aka.ms/ws/page?src=<workshop_folder/path_to_file>` or `https://aka.ms/ws/page?src=gh:<github_repo/path_to_file>`<br>
 This is useful for sharing prerequisites, notes, etc.
 
 ## 📝 Adapt and modify content

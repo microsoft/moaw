@@ -52,6 +52,11 @@
                 "glob": "**/*",
                 "input": "src/public",
                 "output": "."
+              },
+              {
+                "glob": "**/*",
+                "input": "../workshops",
+                "output": "workshops"
               }
             ],
             "styles": [

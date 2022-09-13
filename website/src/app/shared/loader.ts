@@ -54,6 +54,9 @@ export async function loadFile(
 }
 
 export function updateAssetsBasePath(markdown: string, baseUrl: string): string {
+  if (baseUrl.endsWith('/')) {
+    baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+  }
   return markdown.replace(new RegExp(assetsFolder, 'g'), `${baseUrl}/${assetsFolder}`);
 }
 

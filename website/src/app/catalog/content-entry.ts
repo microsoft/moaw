@@ -34,10 +34,10 @@ export async function loadCatalog(): Promise<ContentEntry[]> {
 }
 
 function createWorkshopUrl(file: string) {
-  return `${window.location.origin}${getBasePath()}workshop/?src=${file}`;
+  return `${window.location.origin}${getBasePath()}workshop/${file}`;
 }
 
 function createBannerUrl(repoPath: string, file: string) {
-  const gitHubFileUrl = getFileUrl(repoPath);
-  return updateAssetsBasePath(file, getBaseUrl(gitHubFileUrl))
+  const baseUrl = getBaseUrl(getFileUrl(repoPath));
+  return updateAssetsBasePath(file, baseUrl)
 }
