@@ -68,3 +68,17 @@ You can also put in there sample code if needed, but it's usually more convenien
 
 You can add additional pages to your workshop by creating new markdown files in the same folder as the `workshop.md` file.
 This may be useful for proctor instructions, or any other information you want to provide to the workshop participants.
+
+### Testing locally
+
+You can test your workshop locally by running the following command:
+
+```bash
+cd website
+npm install
+npm start
+```
+
+This will start a local development server at `http://localhost:4200`.
+
+You can open your local workshop by navigating to `http://localhost:4200/workshops/?src=<workshop_folder_name>`.
