@@ -9,11 +9,19 @@
   --neutral-dark: #889;
   --warning: #d71;
   --warning-light: #{color.scale(#d71, $lightness: 90%, $saturation: -40%)};
-  --success: #7d1;
-  --success-light: #{color.scale(#7d1, $lightness: 90%, $saturation: -40%)};
+  --warning-text: var(--text-light);
+  --success: #3b1;
+  --success-light: #{color.scale(#3b1, $lightness: 90%, $saturation: -40%)};
+  --success-text: var(--text-light);
   --danger: #d31;
   --danger-light: #{color.scale(#d31, $lightness: 90%, $saturation: -40%)};
+  --danger-text: var(--text-light);
   --info: var(--primary);
+  --info-light: var(--primary-light);
+  --info-text: var(--text-light);
+  --task: #ed7;
+  --task-light: #{color.scale(#dc1, $lightness: 90%, $saturation: -40%)};
+  --task-text: var(--text);
   --text: #111;
   --text-light: #fff;
   --background: #fff;
@@ -128,32 +136,99 @@ ul {
   padding-left: 1.3em;
 }
 
+.warning,
+.danger,
+.info,
+.success,
+.task {
+  position: relative;
+
+  &[data-title]::before {
+    content: attr(data-title);
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0 var(--space-md);
+    font-size: 0.8em;
+    font-weight: bold;
+    border-radius: var(--border-radius);
+    text-transform: uppercase;
+    z-index: 1;
+  }
+
+  &[data-title] > blockquote {
+    padding-top: var(--space-lg);
+  }
+}
+
+.warning {
+  &[data-title]::before {
+    background: var(--warning);
+    color: var(--warning-text);
+  }
+
+  & > blockquote {
+    background: var(--warning-light);
+    border-left-color: var(--warning);  
+  }
+}
+
+.danger {
+  &[data-title]::before {
+    background: var(--danger);
+    color: var(--danger-text);
+  }
+
+  & > blockquote {
+    background: var(--danger-light);
+    border-left-color: var(--danger);  
+  }
+}
+
+.info {
+  &[data-title]::before {
+    background: var(--info);
+    color: var(--info-text);
+  }
+
+  & > blockquote {
+    background: var(--info-light);
+    border-left-color: var(--info);  
+  }
+}
+
+.success {
+  &[data-title]::before {
+    background: var(--success);
+    color: var(--success-text);
+  }
+
+  & > blockquote {
+    background: var(--success-light);
+    border-left-color: var(--success);  
+  }
+}
+
+.task {
+  &[data-title]::before {
+    background: var(--task);
+    color: var(--task-text);
+  }
+
+  & > blockquote {
+    background: var(--task-light);
+    border-left-color: var(--task);  
+  }
+}
+
 blockquote {
-  border-left: solid 6px var(--neutral);
+  position: relative;
   padding: var(--space-xs) var(--space-md);
   margin: var(--space-md) 0;
   background: var(--neutral-light);
+  border-left: solid 6px var(--neutral);
   border-radius: var(--border-radius);
-
-  .warning > & {
-    border-left-color: var(--warning);
-    background: var(--warning-light);
-  }
-
-  .danger > & {
-    border-left-color: var(--danger);
-    background: var(--danger-light);
-  }
-
-  .info > & {
-    border-left-color: var(--primary);
-    background: var(--primary-light);
-  }
-
-  .success > & {
-    border-left-color: var(--success);
-    background: var(--success-light);
-  }
 }
 
 pre,

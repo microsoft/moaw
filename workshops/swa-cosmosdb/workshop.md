@@ -55,7 +55,7 @@ Azure Static Web Apps relies on `Azure Functions` for your application backend. 
 
 <div class="info">
 
-> You can find the official Static Web Apps documentation here: [https://docs.microsoft.com/azure/static-web-apps/](https://docs.microsoft.com/azure/static-web-apps/)
+> You can find the official Static Web Apps documentation here: [docs.microsoft.com/azure/static-web-apps/](https://docs.microsoft.com/azure/static-web-apps/)
 
 </div>
 
@@ -98,9 +98,9 @@ Let's fill it out!
 * Select the Free Plan (we won't need any feature in the Standard Plan for this workshop).
 * Select `West Europe` for your backend.
 
-<div class="success">
+<div class="success" data-title="tip">
 
-> **Tip:** It's recommended to host your backend in a Region closest to your users.
+> It's recommended to host your backend in a Region closest to your users.
 
 </div>
 
@@ -162,7 +162,7 @@ As we want our website to be redeployed automaticaly every time we push on our m
 
 Take a few minutes to read the YAML file and understand what exactly happens when the GitHub Action is triggered. You can see that most of the information you entered when you created your Static Web App on Azure is here.
 
-<div class="success">
+<div class="success" data-title="tip">
 
 > The YAML file is in your GitHub repository so you can edit it! Your frontend site folder name changed? No problem, just edit the file and push it to GitHub!
 
@@ -219,10 +219,11 @@ swa start www --open
 
 A local web server will be started at [http://localhost:4280](http://localhost:4280) to run your app.
 
-<div class="info">
+<div class="warning" data-title="important">
 
-> **Note**: Later on, you will need to add the option `--api-location api`</code>` to also start the Azure Functions API server. You'll be able to test your API at [http://localhost:7071/api/tasks](http://localhost:7071/api/tasks).
-The CLI may take more time than usual to launch your Azure Functions, especially the first time as it may need to download the needed tools.
+> Later on, you will need to add the option `--api-location api` to also start the Azure Functions API server. You'll be able to test your API at [http://localhost:7071/api/tasks](http://localhost:7071/api/tasks).
+> 
+> The CLI may take more time than usual to launch your Azure Functions, especially the first time as it may need to download the needed tools.
 
 </div>
 
@@ -300,10 +301,9 @@ const tasks = [
 ];
 ```
 
-<div class="assignment">
+<div class="task" data-title="todo">
 
-*TODO*
-- [ ] Modify the Azure Function so it returns the list of tasks.
+> Modify the Azure Function so it returns the list of tasks.
 
 </div>
 
@@ -373,10 +373,9 @@ Azure Static Web Apps manages authentication out of the box. There are pre-confi
 
 When I said "out of the box", I really meant it. You don't need to do anything for most of the providers. Let's use the GitHub one for our application. The only thing you will have to do is add a button in your frontend that redirects to `/.auth/login/github`.
 
-<div class="assignment">
+<div class="task" data-title="todo">
 
-*TODO*
-- [ ] Add a button in the login.html so your users can sign in using GitHub. Then, navigate to [http://localhost:4280/login.html](http://localhost:4280/login.html).
+> Add a button in the login.html so your users can sign in using GitHub. Then, navigate to [http://localhost:4280/login.html](http://localhost:4280/login.html).
 
 </div>
 
@@ -403,10 +402,9 @@ Once your user is authenticated, you can retrieve the user's information by fetc
 ```
 The `userId` is unique and can be used to identify the user. We will use it later in our database.
 
-<div class="assignment">
+<div class="task" data-title="todo">
 
-*TODO*
-Complete the `getUser()` method in `www/app.js` to retrieve the logged-in user information and display the username in the `<div id="username></div>` element located at the top left of your web page.
+> Complete the `getUser()` method in `www/app.js` to retrieve the logged-in user information and display the username in the `<div id="username></div>` element located at the top left of your web page.
 
 </div>
 
@@ -482,10 +480,9 @@ Now you have made this change your website root will only be accessible to logge
 
 Here, we simply tell our Static Web App to redirect every 401 response to the `login.html` page.
 
-<div class="assignment">
+<div class="task" data-title="todo">
 
-*TODO*
-- [ ] Create a `custom-404.html` page in your www folder and add a rule to redirect users to this page when they enter a URL which does not exist (HTTP error code 404).
+> Create a `custom-404.html` page in your www folder and add a rule to redirect users to this page when they enter a URL which does not exist (HTTP error code 404).
 
 </div>
 
@@ -655,10 +652,9 @@ const response = await database.collection("tasks").find({
 const tasks = await response.toArray();
 ```
 
-<div class="assignment">
+<div class="task" data-title="todo">
 
-*TODO*
-- [ ] Update your Azure Function so it returns the tasks in the database associated to your logged in user.
+> Update your Azure Function so it returns the tasks in the database associated to your logged in user.
 
 </div>
 
@@ -680,10 +676,9 @@ However, in order to make your TODO app fully functional, you need to add a few 
 
 We have already added the source code to call the API in the frontend so all you need to do is to create the Azure Function and connect it to the database.  
 
-<div class="assignment">
+<div class="task" data-title="todo">
 
-*TODO*
-- [ ] Create one Azure Function to add a new task to the database. You don't need to create a new project, just create new Function in your existing Function App project in VSCode.
+> Create one Azure Function to add a new task to the database. You don't need to create a new project, just create new Function in your existing Function App project in VSCode.
 
 </div>
 
@@ -691,10 +686,9 @@ We have already added the source code to call the API in the frontend so all you
 
 You may have noticed that there is a `status` attribute in every task in your database. The value can be either `""` or `"checked"`. Right now, there is no way to change this status.   
 
-<div class="assignment">
+<div class="task" data-title="todo">
 
-*TODO*
-- [ ] Write an Azure Function and the JavaScript code in your frontend to update this status.
+> Write an Azure Function and the JavaScript code in your frontend to update this status.
 
 </div>
 
@@ -704,10 +698,10 @@ You now know how to create ressources on Azure and how connection string work.
 
 You may have noticed that, once deployed, we don't have any logs for our app which means we have no way to know what happens if there are any issues.
 
-<div class="assignment">
+<div class="task" data-title="todo">
 
-*TODO*
-- [ ] Create an [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) resource in your Resource Group and connect it to your Static Web App.
+> Create an [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) resource in your Resource Group and connect it to your Static Web App.
+
 </div>
 
 ---
@@ -718,4 +712,4 @@ Congratulations, you've reached the end of this workshop!
 
 ### Solution
 
-You can download the completed app code with the features to add and update a task [here](assets/swa-workshop-final.zip)
+You can download the completed app code with the features to add and update a task [here](assets/swa-workshop-final.zip).

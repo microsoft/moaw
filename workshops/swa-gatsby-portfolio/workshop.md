@@ -11,10 +11,10 @@ tags: github, gatsby, azure, static web apps, javascript, markdown, react
 published: true
 sections_title:
   - Introduction
-  - 1. Bootstrap your app
-  - 2. Deploy your app
-  - 3. Add your own content
-  - 4. Go further (Bonus)
+  - Bootstrap your app
+  - Deploy your app
+  - Add your own content
+  - Go further (Bonus)
 ---
 
 # Create and deploy your online portfolio with Gatsby, GitHub and Azure Static Web Apps
@@ -50,7 +50,7 @@ gatsby --version
 
 ---
 
-## 1. Bootstrap Gatsby app
+## Bootstrap Gatsby app
 
 ### What's [Gatsby](http://www.gatsbyjs.com)?
 
@@ -86,7 +86,7 @@ gatsby develop
 
 ---
 
-## 2. Deploy your app on Azure Static Web Apps
+## Deploy your app on Azure Static Web Apps
 
 ### What's the cloud? ☁️
 
@@ -133,7 +133,7 @@ In the Azure portal, in the created resource, select **GitHub Actions runs**.
 
 ---
 
-## 3. Create your own content
+## Create your own content
 
 ### Gatsby app structure
 
@@ -167,11 +167,14 @@ In the Azure portal, in the created resource, select **GitHub Actions runs**.
 - Open a terminal and run `gatsby develop`
 - Edit `/config/index.js` to make it yours 🙂
 
-*TODO*
-- [ ] Change the website title and info
-- [ ] Personalize the colors
-- [ ] Change or hide RSS feed
-- [ ] Set social media links
+<div class="task" data-title="todo">
+
+> - Change the website title and info
+> - Personalize the colors
+> - Change or hide RSS feed
+> - Set social media links
+
+</div>
 
 ### What's [Markdown](https://commonmark.org/help/)?
 
@@ -235,18 +238,25 @@ Try and change the background color!
 
 - Put your own content there! 🌈
 
-> **Tip**: To redeploy, commit and push<br>your changes
+<div class="success" data-title="tip">
 
-*TODO*
-- [ ] Change hero content
-- [ ] Put your story in about section
-- [ ] Change contact details
-- [ ] Feature your skills in interests section
-- [ ] Show your projects
+> To redeploy, commit and push<br>your changes
+
+</div>
+
+<div class="task" data-title="todo">
+
+> - Change hero content
+> - Put your story in about section
+> - Change contact details
+> - Feature your skills in interests section
+> - Show your projects
+
+</div>
 
 ---
 
-## 4. Go Further (Bonus)
+## Go Further (Bonus)
 
 ### React components
 
@@ -255,11 +265,19 @@ The `src` folder contains the React app behind your website.
 You can also create custom components to change the visual look of the content.
 See `src/components/styles/underlining.js` for example.
 
->**Note:** The [Styled Components](https://styled-components.com/) library is used for CSS styling.
+<div class="info" data-title="note">
 
-*TODO*
-- [ ] Create a custom component
-- [ ] Use it in a content a file
+> The [Styled Components](https://styled-components.com/) library is used for CSS styling.
+
+</div>
+
+
+<div class="task" data-title="todo">
+
+> - Create a custom component
+> - Use it in a content a file
+
+</div>
 
 ### For further study
 

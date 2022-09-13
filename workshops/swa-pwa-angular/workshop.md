@@ -11,10 +11,10 @@ tags: pwa, serverless, azure, static web apps, javascript, service worker, offli
 published: true
 sections_title:
   - Introduction
-  - 1. Bootstrap your app
-  - 2. Audit and upgrade to PWA
-  - 3. Add API and update SW config
-  - 4. Manage app updates (Bonus)
+  - Bootstrap your app
+  - Audit and upgrade to PWA
+  - Add API and update SW config
+  - Manage app updates (Bonus)
 ---
 
 # Build, deploy and audit a serverless PWA with Azure Static Web Apps
@@ -75,9 +75,9 @@ ng serve --open
 
 1. Create new repo: https://github.com/new
 
-    <div class="success">
+    <div class="success" data-title="tip">
   
-    > **Tip**: With GitHub CLI (https://cli.github.com) you can do it directly from command line: `gh repo create <name> --public`
+    > With GitHub CLI (https://cli.github.com) you can do it directly from command line: `gh repo create <name> --public`
 
     </div>
 
@@ -156,14 +156,15 @@ ng add @angular/pwa
 git diff
 ```
 
-<div class="info">
+<div class="info" data-title="note">
 
-> **Note**: there is no `ngsw-worker.js` file, it will be automatically generated during build based on `ngsw-config.json`.
+> There is no `ngsw-worker.js` file, it will be automatically generated during build based on `ngsw-config.json`.
 
 </div>
-<div class="info">
 
-> **Note**: if you're not using Angular, [WorkBox](https://developers.google.com/web/tools/workbox) is an alternative service worker library that works with any website.
+<div class="success" data-title="tip">
+
+> If you're not using Angular, [WorkBox](https://developers.google.com/web/tools/workbox) is an alternative service worker library that works with any website.
 
 </div>
 
@@ -203,9 +204,9 @@ echo "{ \"version\": \"2.0\" }" > host.json
 mkdir hello && cd hello
 ```
 
-<div class="success">
+<div class="success" data-title="tip">
 
-> **Tip**: if you install Azure Functions Core Tools ([aka.ms/tools/func](https://aka.ms/tools/func)) you can just use `func init` instead. You can also test your functions locally with `func start`.
+> If you install Azure Functions Core Tools ([aka.ms/tools/func](https://aka.ms/tools/func)) you can just use `func init` instead. You can also test your functions locally with `func start`.
 
 </div>
 
@@ -327,9 +328,9 @@ Open your app on your mobile phone.
 
 Refresh a few times to see the install banner, or tap menu and choose **Add to home screen**.
 
-<div class="info">
+<div class="success" data-title="tip">
 
-> **Tip**: you can customize install UI using `beforeinstallprompt` event, see https://web.dev/customize-install
+> You can customize install UI using `beforeinstallprompt` event, see https://web.dev/customize-install
 
 </div>
 
@@ -414,16 +415,18 @@ git add . && git commit -m "minor update" && git push
 
 - Click **Update**, and the new version should appear.
 
-### Go further
+---
+
+## Go further
 
 Now that you got all the basics, you can go further and build your own PWA!
 You can use these resources to help you in your journey:
 
-#### Public APIs (to get some app ideas)
+### Public APIs (to get some app ideas)
 - https://github.com/public-apis/public-apis
 - https://apilist.fun
 
-#### Additional resources
+### Additional resources
 - Angular Service Worker: https://angular.io/guide/service-worker-intro
 - Workbox: https://developers.google.com/web/tools/workbox
 - Azure Static Web Apps: https://aka.ms/docs/swa
