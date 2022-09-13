@@ -10,8 +10,8 @@ import { navigate, getCurrentUrlWithoutHash } from '../../router';
   template: `
     <nav class="sidebar" [class.open]="open" rel="menu" aria-label="Navigation menu">
       <ul class="links">
-        <li *ngFor="let link of links">
-          <a [href]="makeUrl(link.url)" (click)="openLink($event, link.url)" [class.active]="link.active">{{ link.text }}</a>
+        <li *ngFor="let link of links; let index = index;">
+          <a [href]="makeUrl(link.url)" (click)="openLink($event, link.url)" [class.active]="link.active">{{ index + 1 }}. {{ link.text }}</a>
           <ul *ngIf="link.active && link.children" class="sub-links">
             <li *ngFor="let sublink of link.children">
               <a [href]="makeUrl(sublink.url)" (click)="openLink($event, sublink.url)" [class.active]="sublink.active">{{
@@ -62,7 +62,6 @@ import { navigate, getCurrentUrlWithoutHash } from '../../router';
         a {
           display: block;
           color: var(--text-color);
-          font-size: 1.1rem;
           font-weight: bold;
           border-radius: var(--border-radius);
           padding: var(--space-xxs) var(--space-xs);
