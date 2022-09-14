@@ -13,9 +13,9 @@
   --success: #3b1;
   --success-light: #{color.scale(#3b1, $lightness: 90%, $saturation: -40%)};
   --success-text: var(--text-light);
-  --danger: #d31;
-  --danger-light: #{color.scale(#d31, $lightness: 90%, $saturation: -40%)};
-  --danger-text: var(--text-light);
+  --important: #d31;
+  --important-light: #{color.scale(#d31, $lightness: 90%, $saturation: -40%)};
+  --important-text: var(--text-light);
   --info: var(--primary);
   --info-light: var(--primary-light);
   --info-text: var(--text-light);
@@ -137,9 +137,9 @@ ul {
 }
 
 .warning,
-.danger,
+.important,
 .info,
-.success,
+.tip,
 .task {
   position: relative;
 
@@ -174,15 +174,15 @@ ul {
   }
 }
 
-.danger {
+.important {
   &[data-title]::before {
-    background: var(--danger);
-    color: var(--danger-text);
+    background: var(--important);
+    color: var(--important-text);
   }
 
   & > blockquote {
-    background: var(--danger-light);
-    border-left-color: var(--danger);
+    background: var(--important-light);
+    border-left-color: var(--important);
   }
 }
 
@@ -198,7 +198,7 @@ ul {
   }
 }
 
-.success {
+.tip {
   &[data-title]::before {
     background: var(--success);
     color: var(--success-text);

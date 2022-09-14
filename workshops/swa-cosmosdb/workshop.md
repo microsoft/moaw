@@ -98,7 +98,7 @@ Let's fill it out!
 * Select the Free Plan (we won't need any feature in the Standard Plan for this workshop).
 * Select `West Europe` for your backend.
 
-<div class="success" data-title="tip">
+<div class="tip" data-title="tip">
 
 > It's recommended to host your backend in a Region closest to your users.
 
@@ -162,7 +162,7 @@ As we want our website to be redeployed automaticaly every time we push on our m
 
 Take a few minutes to read the YAML file and understand what exactly happens when the GitHub Action is triggered. You can see that most of the information you entered when you created your Static Web App on Azure is here.
 
-<div class="success" data-title="tip">
+<div class="tip" data-title="tip">
 
 > The YAML file is in your GitHub repository so you can edit it! Your frontend site folder name changed? No problem, just edit the file and push it to GitHub!
 
@@ -382,7 +382,7 @@ When I said "out of the box", I really meant it. You don't need to do anything f
 By default, once logged in, your users are redirected to the same page. However, we would like our users to be redirected to our TODO page after successfully logging in. You can do that by using the `post_login_redirect_uri` query param at the end of the url.  
 Eg. `?post_login_redirect_uri=/index.html` 
 
-<div class="success">
+<div class="tip">
 
 > If you are building a React app, go [check the Microsoft Learn module](https://docs.microsoft.com/learn/modules/publish-static-web-app-authentication/) that will show you how to do it.
 
@@ -488,7 +488,7 @@ Here, we simply tell our Static Web App to redirect every 401 response to the `l
 
 Now, try to go to a non-existent page on your website like `/hello.html`. You should be redirected to the `custom-404.html` page you just created.
 
-<div class="success">
+<div class="tip">
 
 > This is also very useful if you are doing a Single Page Application (SPA) where the routing is managed on the client. You may then need to redirect all your URLs to `index.html`. Check the `navigationFallback` property in the documentation [here](https://docs.microsoft.com/azure/static-web-apps/configuration).
 

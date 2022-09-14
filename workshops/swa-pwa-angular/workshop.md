@@ -75,7 +75,7 @@ ng serve --open
 
 1. Create new repo: https://github.com/new
 
-    <div class="success" data-title="tip">
+    <div class="tip" data-title="tip">
   
     > With GitHub CLI (https://cli.github.com) you can do it directly from command line: `gh repo create <name> --public`
 
@@ -162,7 +162,7 @@ git diff
 
 </div>
 
-<div class="success" data-title="tip">
+<div class="tip" data-title="tip">
 
 > If you're not using Angular, [WorkBox](https://developers.google.com/web/tools/workbox) is an alternative service worker library that works with any website.
 
@@ -204,7 +204,7 @@ echo "{ \"version\": \"2.0\" }" > host.json
 mkdir hello && cd hello
 ```
 
-<div class="success" data-title="tip">
+<div class="tip" data-title="tip">
 
 > If you install Azure Functions Core Tools ([aka.ms/tools/func](https://aka.ms/tools/func)) you can just use `func init` instead. You can also test your functions locally with `func start`.
 
@@ -328,7 +328,7 @@ Open your app on your mobile phone.
 
 Refresh a few times to see the install banner, or tap menu and choose **Add to home screen**.
 
-<div class="success" data-title="tip">
+<div class="tip" data-title="tip">
 
 > You can customize install UI using `beforeinstallprompt` event, see https://web.dev/customize-install
 

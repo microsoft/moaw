@@ -238,7 +238,7 @@ Try and change the background color!
 
 - Put your own content there! 🌈
 
-<div class="success" data-title="tip">
+<div class="tip" data-title="tip">
 
 > To redeploy, commit and push<br>your changes
 

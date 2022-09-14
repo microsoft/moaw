@@ -82,3 +82,56 @@ npm start
 This will start a local development server at `http://localhost:4200`.
 
 You can open your local workshop by navigating to `http://localhost:4200/workshops/?src=<workshop_folder_name>`.
+
+### Admonitions
+
+You can special syntax around blockquotes to create admonitions, to highlight important information in your workshop.
+
+**Examples:**
+
+```markdown
+<!-- This is a standard blockquote -->
+> Lorep ipsum dolor sit amet
+
+<!-- This is an information note -->
+<div class="info">
+
+> Lorep ipsum dolor sit amet
+
+</div>
+
+<!-- You can add an optional title -->
+<div class="info" data-title="note">
+
+> Lorep ipsum dolor sit amet
+
+</div>
+
+<!-- This is a warning note -->
+<div class="warning">
+
+> Lorep ipsum dolor sit amet
+
+</div>
+
+<!-- This is an important note -->
+<div class="important">
+
+> Lorep ipsum dolor sit amet
+
+</div>
+
+<!-- This is a tip note -->
+<div class="tip">
+
+> Lorep ipsum dolor sit amet
+
+</div>
+
+<!-- This is a task or assigment -->
+<div class="task">
+
+> Lorep ipsum dolor sit amet
+
+</div>
+```
