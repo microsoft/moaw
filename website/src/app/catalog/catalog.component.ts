@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../shared/components/header.component';
 import { FooterComponent } from '../shared/components/footer.component';
 import { LoaderComponent } from '../shared/components/loader.component';
-import { githubRepositoryUrl } from '../shared/constants';
+import { defaultLanguage, githubRepositoryUrl } from '../shared/constants';
 import { ContentEntry, loadCatalog } from './content-entry';
+import { getQueryParams } from '../router';
 
 @Component({
   selector: 'app-catalog',
@@ -26,7 +27,7 @@ import { ContentEntry, loadCatalog } from './content-entry';
           </section>
           <app-loader class="container no-sidebar" [loading]="loading">
             <div class="cards">
-              <a [href]="workshop.url" class="card" *ngFor="let workshop of workshops" [title]="workshop.description">
+              <a [href]="workshop.url" class="card" *ngFor="let workshop of filteredWorkshops" [title]="workshop.description">
                 <div class="banner" [style]="{ 'background-image': 'url(' + workshop.bannerUrl + ')' }">
                   <div *ngIf="workshop.duration" class="duration">{{ workshop.duration }} min</div>
                 </div>
@@ -135,6 +136,7 @@ export class CatalogComponent implements OnInit {
   loading: boolean = true;
   links = [{ text: 'GitHub', url: githubRepositoryUrl, icon: 'mark-github' }];
   workshops: ContentEntry[] = [];
+  filteredWorkshops: ContentEntry[] = [];
 
   async ngOnInit() {
     document.title = 'MOAW - All Workshops';
@@ -145,6 +147,10 @@ export class CatalogComponent implements OnInit {
       console.error(error);
     }
     this.loading = false;
+
+    let { lang } = getQueryParams();
+    lang = lang || defaultLanguage;
+    this.filteredWorkshops = this.workshops.filter(workshop => workshop.language === lang);
   }
 
   filter(event: Event) {
