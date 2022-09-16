@@ -14,12 +14,15 @@ import { marked } from 'marked';
 import { FrontMatterParseResult, parseFrontMatter } from '../src/app/shared/frontmatter.js';
 import { markedOptionsFactory } from '../src/app/shared/markdown.js';
 import { ContentEntry } from '../src/app/catalog/content-entry.js';
+import { defaultLanguage, defaultWorkshopFile } from '../src/app/shared/constants.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mainBranch = 'main';
 const workshopsPath = path.join(__dirname, '../../../workshops');
 const dbPath = path.join(__dirname, '../../src/public/workshops.json');
 const githubRepoRegex = /github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?$/;
+const languageRegex = /.*?\.([a-zA-Z]{2})\.md$/;
+const translationsFolder = 'translations';
 
 let baseRepoUrl: string;
 
@@ -34,15 +37,13 @@ interface FileInfo extends FrontMatterParseResult {
 
   // Find all published workshops
   const markdownFiles = await glob('**/*.md', { ignore: ['**/node_modules/**', '**/translations/*.md'] });
-  const files = await Promise.all(markdownFiles.map(async (file) => readFile(file)));
-  const workshops = files.filter((file): file is FileInfo =>
-    Boolean(file?.meta && file.meta.published && (file.meta.type === undefined || file.meta.type === 'workshop'))
-  );
+  const workshops = await getWorkshops(markdownFiles);
 
   console.log(`Found ${workshops.length} published workshop(s)`);
 
   // Create JSON database
-  const entries = workshops.map((workshop) => createEntry(workshop));
+  const entriesPromises = workshops.map((workshop) => createEntry(workshop));
+  const entries = await Promise.all(entriesPromises);
   entries.sort((a, b) => (a.lastUpdated > b.lastUpdated ? 1 : -1));
 
   // TODO: find localized versions
@@ -70,7 +71,7 @@ async function readFile(filePath: string): Promise<FileInfo | undefined> {
   }
 }
 
-function createEntry(file: FileInfo): ContentEntry {
+async function createEntry(file: FileInfo, searchTranslations = true): Promise<ContentEntry> {
   const title = file.meta.title ?? getFirstHeading(file.markdown);
   if (!title) {
     console.error(`No title found for file "${file.path}"`);
@@ -81,6 +82,9 @@ function createEntry(file: FileInfo): ContentEntry {
     console.error(`No description found for file "${file.path}"`);
   }
 
+  //`gh:${baseRepoUrl}/workshops/${file.path}`
+  const url = file.path.endsWith(defaultWorkshopFile) ? `${path.dirname(file.path)}/` : file.path;
+
   return {
     title: title ?? '[NO TITLE!]',
     description: description ?? '',
@@ -89,7 +93,9 @@ function createEntry(file: FileInfo): ContentEntry {
     duration: file.meta.duration_minutes,
     bannerUrl: file.meta.banner_url,
     lastUpdated: file.lastModified,
-    url: `${path.dirname(file.path)}/` //`gh:${baseRepoUrl}/workshops/${file.path}`
+    url,
+    language: getLanguageFromFile(file.path),
+    ...(searchTranslations ? { translations: await findTranslations(file.path) } : {})
   };
 }
 
@@ -127,4 +133,28 @@ function getFirstHeading(markdown: string): string | undefined {
     marked(markdown, options);
   } catch {}
   return firstHeading;
+}
+
+function getLanguageFromFile(filePath: string): string {
+  const match = languageRegex.exec(filePath);
+  return match ? match[1] : defaultLanguage;
+}
+
+async function findTranslations(filePath: string): Promise<ContentEntry[]> {
+  const dir = path.dirname(filePath);
+  const originalLanguage = getLanguageFromFile(filePath);
+  const extension = (originalLanguage !== defaultLanguage ? `.${originalLanguage}` : '') + path.extname(filePath);
+  const baseName = path.basename(filePath, extension);
+  const translationsDir = path.join(dir, translationsFolder);
+  const translations = glob.sync(`${translationsDir}/${baseName}*.md`);
+  const translatedFiles = await getWorkshops(translations);
+  const entriesPromises = translatedFiles.map((file) => createEntry(file, false));
+  return Promise.all(entriesPromises);
+}
+
+async function getWorkshops(filePaths: string[]): Promise<FileInfo[]> {
+  const files = await Promise.all(filePaths.map(async (file) => readFile(file)));
+  return files.filter((file): file is FileInfo =>
+    Boolean(file?.meta && file.meta.published && (file.meta.type === undefined || file.meta.type === 'workshop'))
+  );
 }

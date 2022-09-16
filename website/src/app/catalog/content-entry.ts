@@ -13,6 +13,8 @@ export interface ContentEntry {
   duration: number | undefined;
   bannerUrl: string | undefined;
   lastUpdated: string;
+  language: string;
+  translations?: ContentEntry[];
 }
 
 export async function loadCatalog(): Promise<ContentEntry[]> {
