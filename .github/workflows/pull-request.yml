@@ -1,0 +1,27 @@
+name: Pull request validation
+on:
+  pull_request:
+
+jobs:
+  build_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16
+    - name: Create workshop database
+      run: |
+        cd database
+        npm ci
+        npm run create:db
+      env:
+        GITHUB_REPO_URL: ${{ github.event.repository.html_url }}
+    - name: Build website
+      run: |
+        cd website
+        npm ci
+        npm run build -- --base-href /moaw/
