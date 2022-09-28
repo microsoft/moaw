@@ -7,12 +7,7 @@ Please use this format when adding a link to this list:
 
 ## Workshops created by Microsoft FTEs/MVPs
 
-- [Workshop "Azure Blinking IoT Compressor"](https://iot-workshop.maneu.fr/#/) by Christopher Maneu, François Bouterouche [website][fr]
-  * [GitHub source (updated version)](https://github.com/sinedied/iot-workshop)
-
-- [Nitro workshop - Build and deploy a backend using NestJS and Azure](https://nitro-stack.github.io/nitro-workshop/) by Yohan Lasorsa [website][en]
-  * [Slides](https://aka.ms/nitro-ws-slides)
-  * [GitHub source](https://github.com/nitro-stack/nitro-workshop)
+- [Student Workshop Library](https://microsoft.github.io/workshop-library/)
 
 - [Create a web app using Static Web Apps and Cosmos DB](https://workshops.devcongalaxy.io/#/workshops/swa?repo=sinedied%2Fmy-workshops%2Fmaster%2Fstatic-web-apps&step=1&WT.mc_id=javascript-0000-yolasors&ocid=AID123456789) by Olivier Leplus [website][en]
   * [GitHub source (updated version)](https://github.com/sinedied/my-workshops/tree/master/static-web-apps)
@@ -30,9 +25,6 @@ PWA with Azure Static Web Apps](https://aka.ms/spwa) by Yohan Lasorsa [slides][e
 
 - [Déployer votre premier cluster Kubernetes dans Azure](http://workshops.devcongalaxy.io/#/workshops/aks?repo=thomasrannou%2Faks-workshop%2Fmain%2F&step=1&WT.mc_id=AZ-MVP-5004246&ocid=AID3030268) by Thomas Rannou (MVP) [website][fr]
   * [GitHub source](https://github.com/thomasrannou/aks-workshop/main/)
-
-- [Codez votre premier projet IoT sur MXChip](http://workshops.devcongalaxy.io/#/workshops/mxchip-azure?repo=tagazok%2Fmy-workshops%2Fmaster%2Fmxchip-azure&step=1&WT.mc_id=javascript-0000-yolasors&ocid=AID1234) by Jim Bennet, Christopher Maneu, Wassim Chegham, Olivier Leplus [website][fr]
-  * [GitHub source](https://github.com/tagazok/my-workshops/tree/master/mxchip-azure)
 
 - [Réaliser l'algo quantique de DeutschJoszaAlgorihtm](http://workshops.devcongalaxy.io/#/workshops/deutsch-jozsa?repo=vivienlonde%2Fmy-workshops%2Fmaster%2Fdeutsch-jozsa) by Vivien Londe [website][fr]
   * [GitHub source](https://github.com/vivienlonde/my-workshops/tree/master/deutsch-jozsa)

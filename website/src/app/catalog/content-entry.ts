@@ -10,11 +10,12 @@ export interface ContentEntry {
   tags: string[];
   url: string;
   authors: string[];
-  duration: number | undefined;
-  bannerUrl: string | undefined;
   lastUpdated: string;
   language: string;
+  duration?: number;
+  bannerUrl?: string;
   translations?: ContentEntry[];
+  githubUrl?: string;
 }
 
 export async function loadCatalog(): Promise<ContentEntry[]> {

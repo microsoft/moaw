@@ -1,0 +1,43 @@
+# ****************************************************************************
+# External workshop entries to include in the database
+# ****************************************************************************
+# The entry format is the same as the frontmatter format described in 
+# CONTRIBUTING.md, with these additional fields:
+# - url: Required. The URL of the workshop website
+# - language: Required. The language of the workshop (e.g. "en" for English)
+# - last_updated: Required. The last update date of the workshop (YYYY-MM-DD)
+# - github_url: Optional. The URL of the workshop's GitHub repository
+# ****************************************************************************
+
+- title: Azure Blinking IoT Compressor
+  url: https://iot-workshop.maneu.fr/
+  github_url: https://github.com/cmaneu/Azure-Blinking-IoT-Compressor
+  language: fr
+  last_updated: 2019-10-21
+  type: workshop
+  description: L'objectif de ce workshop est de vous faire découvrir les bases de la création de solutions IoT avec le cloud Microsoft Azure.
+  authors:
+    - Christopher Maneu
+    - François Bouterouche
+  contacts:
+    - '@cmaneu'
+    - '@fbouteruche '
+  banner_url: https://iot-workshop.maneu.fr/img/compresseur-1.jpg
+  duration_minutes: 120
+  audience: students, pro devs
+  tags: iot, mxchip, azure, vscode
+
+- title: Build and deploy a backend using NestJS and Azure
+  url: https://nitro-stack.github.io/nitro-workshop/
+  github_url: https://github.com/nitro-stack/nitro-workshop
+  language: en
+  last_updated: 2020-05-18
+  type: workshop
+  description: Learn how to build and deploy a backend using the fastest growing Node.js framework, NestJS.
+  authors:
+    - Yohan Lasorsa
+  contacts:
+    - '@sinedied'
+  duration_minutes: 180
+  audience: students, pro devs
+  tags: nestjs, api, azure, cosmosdb, storage, functions

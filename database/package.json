@@ -4,24 +4,23 @@
   "type": "module",
   "scripts": {
     "start": "npm run -s create:db",
-    "build": "tsc",
-    "watch": "tsc -w",
-    "create:db": "node dist/src/create-workshop-db.js",
-    "format": "prettier --write '(src|scripts)/**/*.{ts,json,scss}'",
-    "prepare": "npm run -s build"
+    "create:db": "ts-node-esm src/create-workshop-db.ts",
+    "format": "prettier --write '(src|scripts)/**/*.{ts,json,scss}'"
   },
   "private": true,
   "dependencies": {
+    "@primer/octicons": "^17.5.0",
     "cxa-track": "^2.1.0",
     "fast-glob": "^3.2.12",
     "marked": "^4.0.19",
+    "ts-node": "^10.9.1",
     "yaml": "^2.1.1"
   },
   "devDependencies": {
     "@types/marked": "^4.0.7",
     "@types/node": "^16.11.62",
     "prettier": "^2.7.1",
-    "typescript": "~4.7.2"
+    "typescript": "^4.8.4"
   },
   "prettier": {
     "printWidth": 120,
