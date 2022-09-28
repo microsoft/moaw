@@ -1,5 +1,7 @@
 # MOAW Website
 
+This is the source code for the MOAW website. It is built using [Angular](https://angular.io/) components.
+
 ## Usage
 
 - `ng serve`: run dev server at `http://localhost:4200/`
