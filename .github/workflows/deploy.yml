@@ -25,16 +25,19 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 16
+    - name: Create workshop database
+      run: |
+        cd database
+        npm ci
+        npm run create:db
+      env:
+        GITHUB_REPO_URL: ${{ github.event.repository.html_url }}
     - name: Build website
       run: |
         cd website
         npm ci
-        npm run build:scripts
-        npm run create:db
         npm run build -- --base-href /moaw/
         npm run tag:version
-      env:
-        GITHUB_REPO_URL: ${{ github.event.repository.html_url }}
     - name: Setup GitHub Pages
       uses: actions/configure-pages@v2
     - name: Upload artifact

@@ -7,24 +7,19 @@ import path from 'path';
 import process from 'process';
 import { promises as fs } from 'fs';
 import { fileURLToPath } from 'url';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import glob from 'fast-glob';
 import { marked } from 'marked';
-import { FrontMatterParseResult, parseFrontMatter } from '../src/app/shared/frontmatter.js';
-import { markedOptionsFactory } from '../src/app/shared/markdown.js';
-import { ContentEntry } from '../src/app/catalog/content-entry.js';
-import { defaultLanguage, defaultWorkshopFile } from '../src/app/shared/constants.js';
+import { FrontMatterParseResult, parseFrontMatter } from '../../website/src/app/shared/frontmatter.js';
+import { markedOptionsFactory } from '../../website/src/app/shared/markdown.js';
+import { ContentEntry } from '../../website/src/app/catalog/content-entry.js';
+import { defaultLanguage, defaultWorkshopFile } from '../../website/src/app/shared/constants.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mainBranch = 'main';
-const workshopsPath = path.join(__dirname, '../../../workshops');
-const dbPath = path.join(__dirname, '../../src/public/workshops.json');
-const githubRepoRegex = /github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?$/;
+const workshopsPath = path.join(__dirname, '../../workshops');
+const dbPath = path.join(__dirname, '../../website/src/public/workshops.json');
 const languageRegex = /.*?\.([a-zA-Z]{2})\.md$/;
 const translationsFolder = 'translations';
-
-let baseRepoUrl: string;
 
 interface FileInfo extends FrontMatterParseResult {
   path: string;
@@ -33,7 +28,6 @@ interface FileInfo extends FrontMatterParseResult {
 
 (async function run() {
   process.chdir(workshopsPath);
-  baseRepoUrl = await getBaseRepoUrl();
 
   // Find all published workshops
   const markdownFiles = await glob('**/*.md', { ignore: ['**/node_modules/**', '**/translations/*.md'] });
@@ -82,7 +76,6 @@ async function createEntry(file: FileInfo, searchTranslations = true): Promise<C
     console.error(`No description found for file "${file.path}"`);
   }
 
-  //`gh:${baseRepoUrl}/workshops/${file.path}`
   const url = file.path.endsWith(defaultWorkshopFile) ? `${path.dirname(file.path)}/` : file.path;
 
   return {
@@ -107,19 +100,6 @@ function parseCsvOrArray(value: string | string[] | undefined): string[] {
     return value.split(',').map((value) => value.trim());
   }
   return value;
-}
-
-async function getBaseRepoUrl() {
-  let url: string | undefined = process.env['GITHUB_REPO_URL'];
-  if (!url) {
-    const { stdout } = await promisify(exec)('git remote get-url origin');
-    url = stdout.trim();
-  }
-  const match = githubRepoRegex.exec(url);
-  if (!match) {
-    throw new Error(`Error, could not get current GitHub repository URL!`);
-  }
-  return `${match[1]}/${mainBranch}`;
 }
 
 function getFirstHeading(markdown: string): string | undefined {

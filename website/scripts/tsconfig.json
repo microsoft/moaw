@@ -1,9 +1,0 @@
-{
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../dist",
-    "esModuleInterop": true
-  },
-  "types": ["node"],
-  "files": ["create-workshop-db.ts"]
-}
