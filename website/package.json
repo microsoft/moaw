@@ -4,13 +4,11 @@
   "type": "module",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --serve-path moaw",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "format": "prettier --write '(src|scripts)/**/*.{ts,json,scss}'",
-    "tag:version": "version=\"sha.$(git rev-parse --short HEAD)\" && perl -i -pe \"s/__VERSION__/$version/g\" dist/moaw-website/main.*.js",
-    "build:scripts": "tsc -p scripts/tsconfig.json",
-    "create:db": "node dist/scripts/create-workshop-db.js"
+    "tag:version": "version=\"sha.$(git rev-parse --short HEAD)\" && perl -i -pe \"s/__VERSION__/$version/g\" dist/moaw-website/main.*.js"
   },
   "private": true,
   "dependencies": {
