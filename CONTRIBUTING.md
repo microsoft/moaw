@@ -5,7 +5,7 @@ We welcome all contributions, including translations, new workshops, bug fixes, 
 As a contributor, help us keep this project open and inclusive.
 Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
-- If you find something not working as expected, please [open an issue](https://github.com/themoaw/moaw/issues) and explain what you did and what you expected to happen.
+- If you find something not working as expected, please [open an issue](https://github.com/microsoft/moaw/issues) and explain what you did and what you expected to happen.
 
 - If you would like to contribute some changes, fork the repository and open a [Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
   Make sure to follow the guidelines below, and briefly explain the motivation behind your changes.
