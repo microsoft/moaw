@@ -25,17 +25,21 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 16
-    - name: Create workshop database
+    - name: Install dependencies
       run: |
         cd database
         npm ci
+        cd ../website
+        npm ci
+    - name: Create workshop database
+      run: |
+        cd database
         npm run create:db
       env:
         GITHUB_REPO_URL: ${{ github.event.repository.html_url }}
     - name: Build website
       run: |
         cd website
-        npm ci
         npm run build -- --base-href /moaw/
         npm run tag:version
     - name: Setup GitHub Pages
