@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../shared/components/header.component';
 import { FooterComponent } from '../shared/components/footer.component';
 import { TypewriterComponent } from './typewriter.component';
-import { githubRepositoryUrl } from '../shared/constants';
+import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
 
 @Component({
   selector: 'app-home',
@@ -13,7 +13,7 @@ import { githubRepositoryUrl } from '../shared/constants';
     <div class="full-viewport">
       <app-header logo="images/moaw-logo-dark.png" logoUrl="" type="landing" [links]="links"></app-header>
       <div class="content bg-light">
-        <div class="scrollable">
+        <div id="${mainScrollableId}" class="scrollable">
           <section class="container no-sidebar">
             <div class="hero split-layout">
               <div>
@@ -35,8 +35,8 @@ import { githubRepositoryUrl } from '../shared/constants';
             <h1>What's MOAW?</h1>
             <p>VIDEO HERE<br /><br /><br /><br /><br /><br /><br /></p>
             <h4>The Mother of All Workshops is a...</h4>
-            <div class="split">
-              <div>
+            <div class="split-layout">
+              <div class="item">
                 <h2>Catalog</h2>
                 <p>
                   It's a collection of all workshops and practical learning content created by developers from Microsoft
@@ -44,12 +44,12 @@ import { githubRepositoryUrl } from '../shared/constants';
                 </p>
                 <p><a href="catalog/">See all workshops</a></p>
               </div>
-              <div>
+              <div class="item">
                 <h2>Platform</h2>
                 <p>Use it to create and host workshops and associated sample code, slides, and resources.</p>
                 <p><a href="catalog/">How to create and host your workshop</a></p>
               </div>
-              <div>
+              <div class="item">
                 <h2>Community</h2>
                 <p>
                   This is a community-driven project, where everyone can use, adapt and share the content using the

@@ -16,10 +16,29 @@ button {
   &:hover {
     border-color: var(--primary);
   }
+}
 
-  &.button-fill {
-    border-color: var(--primary);
-    background: var(--primary);
-    color: var(--text-light);
+.button-fill {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--text-light);
+}
+
+.button-round {
+  background: var(--background);
+  color: var(--text);
+  border-radius: 50%;
+  border-color: transparent;
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--transition-duration);
+
+  &:hover {
+    border-color: transparent;
+    opacity: 0.8;
   }
 }
