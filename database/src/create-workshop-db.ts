@@ -25,7 +25,7 @@ const dbPath = path.join(__dirname, '../../website/src/public/workshops.json');
 
   entries = [...entries, ...externalEntries];
 
-  entries.sort((a, b) => (a.lastUpdated > b.lastUpdated ? 1 : -1));
+  entries.sort((a, b) => (a.lastUpdated > b.lastUpdated ? -1 : 1));
   console.log(`Total workshops: ${entries.length}`);
 
   try {
