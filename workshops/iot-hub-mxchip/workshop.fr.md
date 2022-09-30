@@ -160,7 +160,7 @@ visite et de vous familiariser avec l'interface du portail Azure.
 
 ## Configurez votre board
 
-<div class="alert">
+<div class="important">
 
 Votre board est normalement déjà configurée. Vous n'avez rien à faire, sauf en cas de souci de connection.
 
