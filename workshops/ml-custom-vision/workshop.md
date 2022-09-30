@@ -117,7 +117,7 @@ Once the project is created, it's time to upload images. These images will be us
 
 </div>
 
-We will provide you with a few images of dogs to train your model. Download the `Training images set` in the `Resources` menu of this workshop and extract the zip file.
+We will provide you with a few images of dogs to train your model. Download this [Training images set](assets/training-images.zip) and extract the zip file.
 
 Now, go in the Custom Vision portal:
 * Click on `Add images`
@@ -148,7 +148,7 @@ With the model trained, it's time to turn our attention to using it. We'll start
 
 ### Test your model in the Custom Vision portal
 
-Let's see how well our model works. **It's important to use images which weren't used to train the model**. After all, if the model has already seen the image it's going to know the answer. Start by downloading the `Testing images set` in the `Resources` menu of this workshop and extract the zip file.
+Let's see how well our model works. **It's important to use images which weren't used to train the model**. After all, if the model has already seen the image it's going to know the answer. Start by downloading the [Testing images set](assets/testing-images.zip) and extract the zip file.
 
 Then, in the Custom Vision portal
 * Click on the `Quick Test` button
