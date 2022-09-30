@@ -8,7 +8,7 @@ authors:
 contacts:
   - '@olivierleplus'
   - '@GeekTrainer'
-banner_url: assets/todo-banner.jpg
+banner_url: assets/ml-banner.jpg
 duration_minutes: 180
 audience: students, pro devs
 tags: azure, static web apps, cosmos db, github actions, vs code
