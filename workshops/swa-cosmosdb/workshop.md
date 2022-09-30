@@ -67,7 +67,7 @@ Oh, and did I forget to mention there is a Free tier for Static Web Apps? You ca
 
 Once upon a time, there was a website that needed a place to live, be visible to the world and have a backend to be more interactive.
 
-Go to [this GitHub repository](https://github.com/tagazok/swa-workshop) and click on `Use this template`. 
+Go to [this GitHub repository](https://github.com/themoaw/swa-workshop) and click on `Use this template`. 
 
 ![Create from template](assets/githubtemplate.png)
 

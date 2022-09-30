@@ -160,8 +160,31 @@ visite et de vous familiariser avec l'interface du portail Azure.
 
 ## Configurez votre board
 
-Votre board est normalement déjà configurée. Si vous deviez la reconnecter au WiFi, vous trouverez
-[les instructions ici](https://github.com/cmaneu/DevRoadShow-IOT/blob/master/docs/configurer-wifi.md).
+<div class="alert">
+
+Votre board est normalement déjà configurée. Vous n'avez rien à faire, sauf en cas de souci de connection.
+
+</div>
+
+### Configurer le Wi-Fi de votre MX Chip
+
+Si vous avec besoin de reconnecter votre board au WiFi, suivez ces instructions.
+
+1. Maintenir appuyé le bouton **B**, appuyer et relacher le bouton **Reset** , puis relâcher le bouton **B**. La board va alors passer en mode _configuration WiFi_. Pour se faire, il va lui-même diffuser un point d'accès auquel se connecter. L'écran affiche ainsi le SSID, ainsi que l'adresse IP à utiliser.
+
+    ![Reset button, button B, and SSID](assets/wifi-ap.jpg)
+
+2. Connectez-vous au réseau WiFi indiqué sur la board. Si votre appareil demande un mot de passe, laissez-le vide.
+
+    ![Network info and Connect button](assets/connect-ssid.png)
+
+3. Ouvrez **192.168.0.1** dans un navigateur. Sélectionnez le réseau sur lequel vous souhaitez vous connecter. Indiquez la clé WEP/WPA, puis cliquez sur **Connect**.
+
+    ![Password box and Connect button](assets/wifi-portal.png)
+
+4. La board va redémarrer quelques secondes après. Elle affichera alors le nom du wifi ainsi que son adresse IP directement sur l'écran: 
+
+    ![Wi-Fi name and IP address](assets/wifi-ip.jpg)
 
 ---
 
@@ -284,7 +307,7 @@ Si vous avez installés tous les prérequis, et que votre board est [connectée 
 
 ![Video - Création d'une Azure Function](assets/creation-projetIoT.gif)
 
-Nous pouvons désormais copier-coller le [contenu du fichier `.ino`](https://raw.githubusercontent.com/cmaneu/DevRoadShow-IOT/master/src/arduino/DevKitState.ino) . A cette étape, il est possible de compiler le code avec la commande `Azure IoT Device Workbench: Compile Device Code`.
+Nous pouvons désormais copier-coller le [contenu du fichier `.ino`](https://raw.githubusercontent.com/themoaw/DevRoadShow-IOT/master/src/arduino/DevKitState.ino) . A cette étape, il est possible de compiler le code avec la commande `Azure IoT Device Workbench: Compile Device Code`.
 
 Il nous reste désormais deux choses à faire: connecter la board à notre IoT Hub, et déployer le code sur le device. Pour la connection, nous allons simplement envoyer la chaîne de connexion - créée au début du tutoriel - sur la board. Au préalable, assurez-vous que Visual Studio a bien sélectionné votre type de board ainsi que le port série (émulé via l'USB).
 
@@ -319,7 +342,7 @@ L'opération peut prendre quelques minutes. Pendant ce temps-là, la LED "progra
 
 </div>
 
-Vous pouvez maintenant copier le code C# de [ce repository GitHub](https://github.com/cmaneu/DevRoadShow-IOT/tree/master/src) dans votre dossier de travail.
+Vous pouvez maintenant copier le code C# de [ce repository GitHub](https://github.com/themoaw/DevRoadShow-IOT/tree/master/src) dans votre dossier de travail.
 
 Afin que le code fonctionne, nous devons inclure le SDK _Azure Devices_ dans notre projet. Cela s'effectue
 au niveu du fichier `.csproj`. Assurez-vous que vous retrouvez les lignes de code suivantes (la ligne `PackageReference` qui inclut `Microsoft.Azure.Devices`).

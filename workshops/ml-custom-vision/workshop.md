@@ -206,7 +206,7 @@ Once upon a time, there was a website that needed a place to live, be visible to
 
 For this workshop, we won't ask you to create a website from scratch. As we want you to focus on the Custom Vision integration, we've built one for you.
 
-Go to [this GitHub repository](https://github.com/tagazok/template-customvision-workshop) and click on `Use this template`. 
+Go to [this GitHub repository](https://github.com/themoaw/template-customvision-workshop) and click on `Use this template`. 
 
 ![GitHub template](assets/githubtemplate.png)
 
@@ -614,7 +614,7 @@ Congratulations, you've reach the end of this workshop! 🚀
 
 Did you know? You had the solution all along ;)
 You can checkout the `solution branch` of the template repository to get the complete code of this workshop.
-Or, you can download it from [here](https://github.com/tagazok/template-customvision-workshop/tree/solution)</a>.
+Or, you can download it from [here](https://github.com/themoaw/template-customvision-workshop/tree/solution)</a>.
 
 ## Credits ❤️
 
