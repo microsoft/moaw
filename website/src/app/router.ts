@@ -12,6 +12,7 @@ export const Routes: Route[] = [
   { path: 'workshop/', id: 'workshop' },
   { path: 'deck/', id: 'deck' },
   { path: 'page/', id: 'page' },
+  { path: 'catalog/', id: 'catalog' },
   { path: '', id: 'home', redirect: true }
 ];
 
@@ -24,7 +25,7 @@ function updateRoute() {
   currentRoute = Routes.find((r) => path.startsWith(basePath + r.path));
 
   if (!currentRoute || (currentRoute.redirect && path !== basePath + currentRoute.path)) {
-    return navigate(currentRoute?.path ?? '');
+    return navigate(currentRoute?.path ?? '', true);
   }
 
   dispatcher.dispatch(currentRoute);
@@ -56,16 +57,18 @@ export function getCurrentUrlWithoutHash() {
   return location.href.split('#')[0];
 }
 
-export function navigate(path: string) {
+export function navigate(path: string, replace = false) {
   if (path.startsWith('#')) {
     setHash(path);
     return;
   }
 
+  const pushState = replace ? window.history.replaceState.bind(history) : window.history.pushState.bind(history);
+
   if (path.startsWith('http')) {
-    window.history.pushState({}, path, path);
+    pushState({}, path, path);
   } else {
-    window.history.pushState({}, path, window.location.origin + basePath + path);
+    pushState({}, path, window.location.origin + basePath + path);
   }
   updateRoute();
 }
