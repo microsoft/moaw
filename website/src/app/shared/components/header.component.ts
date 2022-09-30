@@ -9,18 +9,23 @@ import { Link } from '../link';
   standalone: true,
   imports: [CommonModule, IconComponent],
   template: `
-    <header class="navbar">
-      <button *ngIf="sidebar" class="menu-toggle hide-gt-lg" (click)="toggleSidebar($event)">
-        <app-icon name="three-bars" size="24"></app-icon>
-      </button>
-      <div class="logo" *ngIf="logo"><img [src]="logo" alt="logo" /></div>
-      <div class="title text-ellipsis">{{ title }}</div>
-      <div class="spacer"></div>
-      <div class="links text-ellipsis show-gt-md">
-        <a *ngFor="let link of links" [href]="link.url" [target]="isExternalLink(link) ? '_blank' : '_self'">
-          <app-icon *ngIf="link.icon" [name]="link.icon" size="20" class="link-icon"></app-icon>{{ link.text
-          }}<app-icon *ngIf="isExternalLink(link)" name="link-external" size="14" class="external-link"></app-icon>
-        </a>
+    <header class="navbar" [ngClass]="type">
+      <div class="navbar-container">
+        <button *ngIf="sidebar" class="menu-toggle hide-gt-lg" (click)="toggleSidebar($event)">
+          <app-icon name="three-bars" size="24"></app-icon>
+        </button>
+        <div class="logo" *ngIf="logo">
+          <a *ngIf="logoUrl !== undefined; else logoOnly" [href]="logoUrl"><img [src]="logo" alt="logo" /></a>
+          <ng-template #logoOnly><img [src]="logo" alt="logo" /></ng-template>
+        </div>
+        <div class="title text-ellipsis">{{ title }}</div>
+        <div class="fill"></div>
+        <div class="links text-ellipsis show-gt-md">
+          <a *ngFor="let link of links" [href]="link.url" [target]="isExternalLink(link) ? '_blank' : '_self'">
+            <app-icon *ngIf="link.icon" [name]="link.icon" size="20" class="link-icon"></app-icon>{{ link.text
+            }}<app-icon *ngIf="isExternalLink(link)" name="link-external" size="14" class="external-link"></app-icon>
+          </a>
+        </div>
       </div>
     </header>
   `,
@@ -32,19 +37,11 @@ import { Link } from '../link';
         position: sticky;
         z-index: 10;
         top: 0;
+        display: flex;
+        align-items: center;
         background: var(--primary);
         height: var(--navbar-height);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-        display: flex;
-        align-items: center;
-        padding: var(--space-xs) var(--space-md);
-
-        .title {
-          color: var(--text-light);
-          font-size: 1.5rem;
-          font-weight: 500;
-          line-height: 1.5;
-        }
 
         button {
           border: 0;
@@ -57,8 +54,30 @@ import { Link } from '../link';
         }
       }
 
-      .spacer {
+      .navbar-container {
+        display: flex;
         flex: 1;
+        align-items: center;
+        padding: var(--space-xs) var(--space-md);
+
+        .fixed & {
+          margin: var(--space-lg) auto;
+          padding: 0 var(--space-md);
+          width: 100%;
+
+          @media (min-width: $breakpoint-lg) {
+            & {
+              max-width: $breakpoint-lg;
+            }
+          }
+        }
+      }
+
+      .title {
+        color: var(--text-light);
+        font-size: 1.5rem;
+        font-weight: 500;
+        line-height: 1.5;
       }
 
       .logo img {
@@ -77,6 +96,10 @@ import { Link } from '../link';
           &:hover {
             text-decoration: none;
             opacity: 0.7;
+          }
+
+          + a {
+            margin-left: var(--space-lg);
           }
         }
       }
@@ -99,9 +122,11 @@ import { Link } from '../link';
 })
 export class HeaderComponent {
   @Input() logo: string | undefined;
+  @Input() logoUrl: string | undefined;
   @Input() title: string | undefined;
   @Input() links: Link[] = [];
   @Input() sidebar: SidebarComponent | undefined;
+  @Input() type: string = '';
 
   toggleSidebar(event: Event) {
     if (this.sidebar) {
