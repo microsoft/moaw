@@ -29,7 +29,7 @@ At the end of this workshop, you will have a full understanding on how to develo
 
 To do this workshop, you will need:
 * Basic JavaScript knowledge
-* A Microsoft Azure account
+* [A Microsoft Azure account](https://azure.microsoft.com/free/)
 * [A GitHub account](http://github.com/)
 * [Visual Studio Code](https://code.visualstudio.com/) (VSCode)
 * [Node.js 14 or 16 installed](https://nodejs.org/)
