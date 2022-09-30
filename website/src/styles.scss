@@ -2,11 +2,12 @@
 @import 'variables';
 
 :root {
-  --primary: #17d;
-  --primary-light: #{color.scale(#17d, $lightness: 90%, $saturation: -40%)};
+  --primary: #0078d4;
+  --primary-light: #{color.scale(#0078d4, $lightness: 90%, $saturation: -40%)};
   --neutral: #b0b0c0;
   --neutral-light: #f4f4f6;
   --neutral-dark: #889;
+  --dark: #334;
   --warning: #d71;
   --warning-light: #{color.scale(#d71, $lightness: 90%, $saturation: -40%)};
   --warning-text: var(--text-light);
@@ -22,7 +23,7 @@
   --task: #ed7;
   --task-light: #{color.scale(#dc1, $lightness: 90%, $saturation: -40%)};
   --task-text: var(--text);
-  --text: #111;
+  --text: #222;
   --text-light: #fff;
   --background: #fff;
   --text-font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 'Segoe UI', Helvetica,
@@ -283,7 +284,7 @@ button {
   background: none;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: var(--space-md);
+  padding: var(--space-md) var(--space-md);
   color: var(--text-color);
   transition: border-color var(--transition-duration);
   font-family: var(--text-font-family);
@@ -292,6 +293,12 @@ button {
 
   &:hover {
     border-color: var(--primary);
+  }
+
+  &.button-fill {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--text-light);
   }
 }
 

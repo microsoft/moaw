@@ -52,6 +52,12 @@ import { Link } from '../link';
             opacity: 0.7;
           }
         }
+        
+        &.landing {
+          height: auto;
+          background: var(--background);
+          box-shadow: none;
+        }
       }
 
       .navbar-container {
@@ -60,16 +66,11 @@ import { Link } from '../link';
         align-items: center;
         padding: var(--space-xs) var(--space-md);
 
-        .fixed & {
+        .landing & {
           margin: var(--space-lg) auto;
           padding: 0 var(--space-md);
           width: 100%;
-
-          @media (min-width: $breakpoint-lg) {
-            & {
-              max-width: $breakpoint-lg;
-            }
-          }
+          max-width: $breakpoint-lg;
         }
       }
 
@@ -78,17 +79,29 @@ import { Link } from '../link';
         font-size: 1.5rem;
         font-weight: 500;
         line-height: 1.5;
+
+        .landing & {
+          color: var(--text);
+        }
       }
 
       .logo img {
         height: 32px;
         vertical-align: middle;
         margin-right: var(--space-md);
+
+        .landing & {
+          height: 48px;
+        }
       }
 
       .links {
         margin-left: var(--space-md);
         color: var(--text-light);
+
+        .landing & {
+          color: var(--text);
+        }
 
         a {
           color: var(--text-light);
@@ -101,6 +114,10 @@ import { Link } from '../link';
           + a {
             margin-left: var(--space-lg);
           }
+
+          .landing & {
+            color: var(--text);
+          }
         }
       }
 
@@ -112,6 +129,10 @@ import { Link } from '../link';
       .external-link {
         color: var(--text-light);
         opacity: 0.5;
+
+        .landing & {
+          display: none;
+        }
       }
 
       .menu-toggle {
