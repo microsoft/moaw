@@ -30,7 +30,7 @@ import { navigate, getCurrentUrlWithoutHash } from '../../router';
   `,
   styles: [
     `
-      @import '../../../variables';
+      @import '../../../theme/variables';
 
       .sidebar {
         position: fixed;

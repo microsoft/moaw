@@ -31,7 +31,7 @@ import { Link } from '../link';
   `,
   styles: [
     `
-      @import '../../../variables';
+      @import '../../../theme/variables';
 
       .navbar {
         position: sticky;
@@ -52,7 +52,7 @@ import { Link } from '../link';
             opacity: 0.7;
           }
         }
-        
+
         &.landing {
           height: auto;
           background: var(--background);

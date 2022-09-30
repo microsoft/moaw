@@ -1,0 +1,25 @@
+@import 'variables';
+
+// Button style --------------------------------------------------------------
+
+button {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--space-xs) var(--space-md);
+  color: var(--text-color);
+  transition: border-color var(--transition-duration);
+  font-family: var(--text-font-family);
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--primary);
+  }
+
+  &.button-fill {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--text-light);
+  }
+}

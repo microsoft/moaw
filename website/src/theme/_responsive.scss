@@ -1,0 +1,47 @@
+@import 'variables';
+
+// Responsive helpers --------------------------------------------------------
+
+.show-gt-xs,
+.show-gt-md,
+.show-gt-lg {
+  display: none;
+}
+
+@media (min-width: $breakpoint-xs) {
+  .show-gt-xs {
+    display: initial;
+  }
+  .hide-gt-xs {
+    display: none;
+  }
+}
+
+@media (min-width: $breakpoint-md) {
+  .show-gt-md {
+    display: initial;
+  }
+  .hide-gt-md {
+    display: none;
+  }
+}
+
+@media (min-width: $breakpoint-lg) {
+  .show-gt-lg {
+    display: initial;
+  }
+  .hide-gt-lg {
+    display: none;
+  }
+}
+
+@media (min-width: $breakpoint-lg) {
+  .split-layout {
+    display: flex;
+    flex-direction: row;
+
+    > * {
+      flex: 1;
+    }
+  }
+}

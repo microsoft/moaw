@@ -28,6 +28,10 @@ import { setHash, setQueryParams } from '../router';
         margin: var(--space-xl) 0 var(--space-md) 0;
       }
 
+      button {
+        padding: var(--space-md);
+      }
+
       .previous {
         text-align: left;
 

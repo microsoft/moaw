@@ -1,0 +1,39 @@
+@import 'variables';
+
+// Layout helpers  -----------------------------------------------------------
+
+.full-viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fill {
+  flex: 1;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.container {
+  margin: var(--space-lg) auto;
+  padding: 0 var(--space-md);
+  width: 100%;
+  max-width: 800px;
+
+  &.no-sidebar {
+    max-width: $breakpoint-lg;
+  }
+}
+
+.scrollable {
+  flex: 1;
+  overflow-y: auto;
+}
