@@ -76,7 +76,7 @@ import { Link } from '../link';
 
       .title {
         color: var(--text-light);
-        font-size: 1.5rem;
+        font-size: var(--text-size-xl);
         font-weight: 500;
         line-height: 1.5;
 

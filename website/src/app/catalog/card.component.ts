@@ -59,7 +59,7 @@ import { DatePipe } from '../shared/pipes/date.pipe';
         position: absolute;
         bottom: 0;
         transform: translateY(50%);
-        font-size: 0.7em;
+        font-size: var(--text-size-xs);
         color: var(--text-light);
         background: var(--neutral-dark);
         border-radius: var(--border-radius);
@@ -81,7 +81,7 @@ import { DatePipe } from '../shared/pipes/date.pipe';
       }
 
       .tags {
-        font-size: 0.85em;
+        font-size: var(--text-size-sm);
         margin: var(--space-md);
         text-transform: lowercase;
         opacity: 0.7;

@@ -26,19 +26,19 @@ h6 {
 }
 
 h1 {
-  font-size: 2.2rem;
+  font-size: var(--text-size-xxxl);
   margin: var(--space-lg) 0;
 }
 
 h2 {
-  font-size: 1.65rem;
+  font-size: var(--text-size-xxl);
   margin-top: var(--space-lg);
   padding-bottom: 0.3rem;
   border-bottom: solid 1px var(--border-color);
 }
 
 h3 {
-  font-size: 1.35rem;
+  font-size: var(--text-size-xl);
   margin-top: var(--space-lg);
 }
 
@@ -65,7 +65,7 @@ ul {
     top: 0;
     left: 0;
     padding: 0 var(--space-md);
-    font-size: 0.8em;
+    font-size: var(--text-size-sm);
     font-weight: bold;
     border-radius: var(--border-radius);
     text-transform: uppercase;

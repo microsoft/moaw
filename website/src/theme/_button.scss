@@ -10,7 +10,7 @@ button {
   color: var(--text-color);
   transition: border-color var(--transition-duration);
   font-family: var(--text-font-family);
-  font-size: 1rem;
+  font-size: inherit;
   cursor: pointer;
 
   &:hover {

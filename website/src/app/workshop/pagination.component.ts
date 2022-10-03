@@ -52,7 +52,7 @@ import { setHash, setQueryParams } from '../router';
       }
 
       .label {
-        font-size: 0.8rem;
+        font-size: var(--text-size-sm);
       }
 
       .title {

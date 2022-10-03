@@ -91,7 +91,7 @@ import { navigate, getCurrentUrlWithoutHash } from '../../router';
           margin: 0;
         }
         a {
-          font-size: 1rem;
+          font-size: var(--text-size-md);
           font-weight: normal;
 
           &.active {
