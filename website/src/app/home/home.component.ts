@@ -79,14 +79,14 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
                     If you already have a workshop hosted somewhere else, you can reference it in the catalog. This is
                     the easiest way to get started, and the process takes only a few minutes.
                   </p>
-                  <p><a class="button button-fill" href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md#reference_an_existing_workshop"><app-icon name="arrow-right"></app-icon>How to reference your workshop</a></p>
+                  <p><a class="button button-fill" href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md#reference-an-existing-workshop"><app-icon name="arrow-right"></app-icon>How to reference your workshop</a></p>
                 </div>
                 <div class="item">
                   <h2>Convert it <app-icon name="sync" size="28"></app-icon></h2>
                   <p>
                     If you want get the full benefits of our platform, such as <b>translations</b>, <b>extra pages</b>, <b>analytics</b> and more, you can convert it to our workshop format. If you're already using markdown, it's a breeze!
                   </p>
-                  <p><a class="button button-fill" href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md#convert_an_existing_workshop"><app-icon name="arrow-right"></app-icon>How to convert your workshop</a></p>
+                  <p><a class="button button-fill" href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md#convert-an-existing-workshop"><app-icon name="arrow-right"></app-icon>How to convert your workshop</a></p>
                 </div>
               </div>
             </section>
