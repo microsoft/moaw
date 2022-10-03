@@ -15,10 +15,6 @@ import { CommonModule } from '@angular/common';
         display: contents;
       }
 
-      .writer {
-        color: var(--primary);
-      }
-
       .cursor {
         display: inline-block;
         margin-left: var(--space-xs);

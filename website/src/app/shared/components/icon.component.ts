@@ -16,7 +16,7 @@ import * as octicons from '@primer/octicons';
 })
 export class IconComponent implements OnInit {
   @Input() name!: string;
-  @Input() size!: string;
+  @Input() size: string = '16';
 
   constructor(private element: ElementRef) {}
 

@@ -10,7 +10,7 @@ h4,
 h5,
 h6,
 pre {
-  margin: var(--space-xs) 0;
+  margin: var(--space-md) 0;
 }
 
 h1,
@@ -199,6 +199,17 @@ img {
   margin: var(--space-xs) 0;
 }
 
+em {
+  color: var(--primary);
+  font-style: normal;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border-color);
+  margin: var(--space-lg) 0;
+}
+
 .heading-anchor {
   font-size: 0.85em;
   opacity: 0;
@@ -229,4 +240,23 @@ img {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.video-embed { 
+  overflow: hidden; 
+  padding-bottom: 56.25%; 
+  position: relative; 
+  height: 0;
+}
+
+.video-embed iframe {
+  left:0; 
+  top:0; 
+  height:100%;
+  width:100%;
+  position:absolute;
+}
+
+.text-center {
+  text-align: center;
 }

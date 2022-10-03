@@ -2,7 +2,7 @@
 
 // Button style --------------------------------------------------------------
 
-button {
+button, .button {
   background: none;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
@@ -15,6 +15,7 @@ button {
 
   &:hover {
     border-color: var(--primary);
+    text-decoration: none;
   }
 }
 
@@ -22,6 +23,12 @@ button {
   border-color: var(--primary);
   background: var(--primary);
   color: var(--text-light);
+  transition: opacity var(--transition-duration);
+
+  &:hover {
+    border-color: transparent;
+    opacity: 0.8;
+  }
 }
 
 .button-round {
