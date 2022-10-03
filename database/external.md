@@ -1,13 +1,13 @@
 # Workshops available outside of this repository
 
-Please use this format when adding a link to this list:
-
-- [Workshop Title](http://link.com) by Author1, Author2 [website/slides][language]
-  * [Linked resource title (video, github...)](http://link.com)
+External workshops to reference. This file is a WIP, and will be deleted in the future.
 
 ## Workshops created by Microsoft FTEs/MVPs
 
 - [Student Workshop Library](https://microsoft.github.io/workshop-library/)
+
+- [Create a web app using Static Web Apps and Cosmos DB](https://workshops.devcongalaxy.io/#/workshops/swa?repo=sinedied%2Fmy-workshops%2Fmaster%2Fstatic-web-apps&step=1&WT.mc_id=javascript-0000-yolasors&ocid=AID123456789) by Olivier Leplus [website][en]
+  * [GitHub source (updated version)](https://github.com/sinedied/my-workshops/tree/master/static-web-apps)
 
 - [Create and deploy your online portfolio with Gatsby, GitHub and Azure Static Web Apps](https://aka.ms/swa-portfolio) by Yohan Lasorsa [slides][en]
   * [Starter template](https://github.com/sinedied/gatsby-portfolio)
