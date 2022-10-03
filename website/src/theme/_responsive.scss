@@ -12,6 +12,7 @@
   .show-gt-xs {
     display: initial;
   }
+
   .hide-gt-xs {
     display: none;
   }
@@ -21,8 +22,25 @@
   .show-gt-md {
     display: initial;
   }
+
   .hide-gt-md {
     display: none;
+  }
+
+  .split-layout {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-lg);
+
+    > * {
+      flex: 1;
+    }
+  }
+
+  .split-layout-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-gap: var(--space-lg);
   }
 }
 
@@ -30,18 +48,8 @@
   .show-gt-lg {
     display: initial;
   }
+
   .hide-gt-lg {
     display: none;
-  }
-}
-
-@media (min-width: $breakpoint-lg) {
-  .split-layout {
-    display: flex;
-    flex-direction: row;
-
-    > * {
-      flex: 1;
-    }
   }
 }

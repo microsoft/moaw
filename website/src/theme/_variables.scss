@@ -3,3 +3,8 @@ $breakpoint-xs: 576px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
 $breakpoint-xl: 1200px;
+
+$breakpoint-xs-max: $breakpoint-xs - 1px;
+$breakpoint-md-max: $breakpoint-md - 1px;
+$breakpoint-lg-max: $breakpoint-lg - 1px;
+$breakpoint-xl-max: $breakpoint-xl - 1px;

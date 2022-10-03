@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { getQueryParams } from '../../router';
 import { environment } from '../../../environments/environment';
 import { githubRepositoryUrl, mainScrollableId } from '../constants';
 import { scrollToTop } from '../scroll';
 import { IconComponent } from './icon.component';
+import { updateTrackingCodes } from '../loader';
 
 @Component({
   selector: 'app-footer',
@@ -19,9 +21,13 @@ import { IconComponent } from './icon.component';
           <div>
             <h3>Learn more</h3>
             <ul class="list">
-              <li><a href="https://learn.microsoft.com/training/" target="_blank">Microsoft Training</a></li>
-              <li><a href="https://learn.microsoft.com/certifications/" target="_blank">Certifications</a></li>
-              <li><a href="https://learn.microsoft.com/samples/" target="_blank">Code Samples</a></li>
+              <li>
+                <a [href]="trackUrl('https://learn.microsoft.com/training/')" target="_blank">Microsoft Training</a>
+              </li>
+              <li>
+                <a [href]="trackUrl('https://learn.microsoft.com/certifications/')" target="_blank">Certifications</a>
+              </li>
+              <li><a [href]="trackUrl('https://learn.microsoft.com/samples/')" target="_blank">Code Samples</a></li>
             </ul>
           </div>
           <div>
@@ -40,13 +46,15 @@ import { IconComponent } from './icon.component';
               <li><a href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md" target="_blank">Contribute</a></li>
               <li><a href="${githubRepositoryUrl}/blob/main/CODE_OF_CONDUCT.md" target="_blank">Code Of Conduct</a></li>
               <li>&nbsp;</li>
-              <li class="version">moaw build: ${environment.version}</li>
             </ul>
           </div>
         </div>
-        <button class="button-round back-to-top" (click)="backToTop()">
-          <app-icon name="chevron-up" size="24"></app-icon>
-        </button>
+        <div class="container no-sidebar">
+          <div class="version">moaw build: ${environment.version}</div>
+          <button class="button-round back-to-top" (click)="backToTop()">
+            <app-icon name="chevron-up" size="24"></app-icon>
+          </button>
+        </div>
       </ng-container>
       <ng-template #defaultFooter>
         <app-icon class="with-margin" name="mark-github" size="12"></app-icon>
@@ -97,7 +105,6 @@ import { IconComponent } from './icon.component';
 
         img {
           border-radius: 50%;
-          height: 200px;
           width: 200px;
         }
       }
@@ -119,14 +126,34 @@ import { IconComponent } from './icon.component';
       }
 
       .version {
+        text-align: center;
         font-size: 0.8em;
         opacity: 0.5;
+      }
+
+      @media (max-width: $breakpoint-md-max) {
+        .image {
+          text-align: center;
+        }
       }
     `
   ]
 })
 export class FooterComponent {
+  private wtid?: string;
+  private ocid?: string;
+
   @Input() type: 'small' | 'big' = 'small';
+
+  trackUrl(url: string) {
+    return updateTrackingCodes(url, { wtid: this.wtid, ocid: this.ocid });
+  }
+
+  ngOnInit() {
+    const { wtid, ocid } = getQueryParams();
+    this.wtid = wtid;
+    this.ocid = ocid;
+  }
 
   backToTop() {
     scrollToTop(mainScrollableId, true);
