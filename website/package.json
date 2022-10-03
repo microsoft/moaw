@@ -28,11 +28,11 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.1.0",
-    "@angular/cli": "~14.1.0",
+    "@angular/cli": "^14.2.4",
     "@angular/compiler-cli": "^14.1.0",
     "@types/primer__octicons": "^17.3.0",
     "prettier": "^2.7.1",
-    "typescript": "~4.7.2"
+    "typescript": "^4.8.4"
   },
   "browserslist": [
     "last 1 Chrome version",
