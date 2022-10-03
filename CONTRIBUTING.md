@@ -10,7 +10,7 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 - If you would like to contribute some changes, fork the repository and open a [Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
   Make sure to follow the guidelines below, and briefly explain the motivation behind your changes.
 
-## Translations
+## Add translations
 
 You can localize any workshop in this repository by creating a new folder `translations` in the same directory as the original folder, and naming any translated file `<original_name>.<country_code>.<extension>`.
 For example, the French translation of `workshop.md` would be `translations/workshop.fr.md`.
@@ -19,7 +19,7 @@ You can follow the same rule if you need to localize any asset, for example `ass
 
 > ⚠️ **Important note:** do not forget to update all relative links and URLs accordingly in localized files!
 
-## New workshops
+## Create a new workshop
 
 All workshops should be located under the `/workshops` folder, that's where you should create a new folder for your workshop.
 Try to be descriptive with the folder name, and use only lowercase letters, numbers and dashes.
@@ -135,3 +135,41 @@ You can special syntax around blockquotes to create admonitions, to highlight im
 
 </div>
 ```
+
+## Reference an existing workshop
+
+If you already have a workshop hosted somewhere else, you can reference it in this repository by adding an entry to the [`database/external.yml`](database/external.yml) file.
+
+```yaml
+- title: Full workshop title              # Required. Title of the workshop
+  description: This is a workshop for...  # Required. Short description of the workshop
+  url: https://workshop.url               # Required. URL of the workshop
+  language: en                            # Required. Language of the workshop, using 2-letter ISO code
+  last_updated: 2019-10-21                # Required. Date of the last update of the workshop
+  type: workshop                          # Required. Only 'workshop' is supported for now
+  github_url: https://github.url          # Optional. URL of the workshop's GitHub repository
+  authors:                                # Required. You can add as many authors as needed
+    - Name                          
+  contacts:                               # Required. Must match the number of authors
+    - Author's email, Twitter...
+  banner_url: https://banner.url          # Optional. URL of a banner image for the workshop (1280x640px)
+  video_url: https://youtube.com/link     # Optional. Link to a video of the workshop
+  duration_minutes: 120                   # Required. Estimated duration in minutes
+  audience: students, pro devs            # Optional. Audience of the workshop (students, pro devs, etc.)
+  tags: javascript, api, node.js          # Required. Tags for filtering and searching
+```
+
+After your PR is merged, your workshop will be listed in the workshop catalog page.
+
+### Convert an existing workshop
+
+Another option is to convert your workshop to the [format described above](#create-a-new-workshop), and submit it as a new workshop.
+If your workshop is already in markdown format, it should be fairly quick to convert it.
+
+This would allow you to benefit from the full features of the MOAW platform, such as:
+
+- Ability to localize your workshop
+- Additional pages (proctor instructions, prerequisites, etc.)
+- Allows other people to update, fork and improve your workshop
+- Detailed analytics (coming soon!)
+- Companion slides in markdown (coming soon!)
