@@ -16,7 +16,7 @@ import { updateTrackingCodes } from '../loader';
       <ng-container *ngIf="type === 'big'; else defaultFooter">
         <div class="container no-sidebar split-layout">
           <div class="image">
-            <img src="images/bit-student.png" alt="students" />
+            <img src="images/bit/student.png" alt="students" />
           </div>
           <div>
             <h3>Learn more</h3>
@@ -49,8 +49,9 @@ import { updateTrackingCodes } from '../loader';
             </ul>
           </div>
         </div>
-        <div class="container no-sidebar">
-          <div class="version">moaw build: ${environment.version}</div>
+        <div class="container no-sidebar version">
+          <span class="">moaw build: ${environment.version}</span>
+          <span *ngIf="credits"> - {{ credits }}</span>
           <button class="button-round back-to-top" (click)="backToTop()">
             <app-icon name="chevron-up" size="24"></app-icon>
           </button>
@@ -67,7 +68,7 @@ import { updateTrackingCodes } from '../loader';
       @import '../../../theme/variables';
 
       .small {
-        font-size: 0.8em;
+        font-size: var(--text-size-sm);
         text-align: center;
         margin: var(--space-lg) var(--space-md);
 
@@ -88,7 +89,7 @@ import { updateTrackingCodes } from '../loader';
         }
 
         h3 {
-          font-size: 1.1rem;
+          font-size: var(--text-size-lg);
           font-weight: bold;
           text-transform: uppercase;
           margin-bottom: var(--space-md);
@@ -127,7 +128,7 @@ import { updateTrackingCodes } from '../loader';
 
       .version {
         text-align: center;
-        font-size: 0.8em;
+        font-size: var(--text-size-sm);
         opacity: 0.5;
       }
 
@@ -144,6 +145,7 @@ export class FooterComponent {
   private ocid?: string;
 
   @Input() type: 'small' | 'big' = 'small';
+  @Input() credits?: string;
 
   trackUrl(url: string) {
     return updateTrackingCodes(url, { wtid: this.wtid, ocid: this.ocid });
