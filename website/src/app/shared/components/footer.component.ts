@@ -49,9 +49,11 @@ import { updateTrackingCodes } from '../loader';
             </ul>
           </div>
         </div>
-        <div class="container no-sidebar version">
-          <span class="">moaw build: ${environment.version}</span>
-          <span *ngIf="credits"> - {{ credits }}</span>
+        <div class="container no-sidebar">
+          <div class="version">
+            <span>moaw build: ${environment.version}</span>
+            <span *ngIf="credits"> - {{ credits }}</span>
+          </div>
           <button class="button-round back-to-top" (click)="backToTop()">
             <app-icon name="chevron-up" size="24"></app-icon>
           </button>
