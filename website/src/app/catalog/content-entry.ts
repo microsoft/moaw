@@ -39,9 +39,7 @@ export async function loadCatalog(): Promise<ContentEntry[]> {
 }
 
 function createWorkshopUrl(file: string) {
-  if (file.startsWith(window.location.origin)) {
-    return file.replace(window.location.origin, '');
-  } else if (file.startsWith('http')) {
+  if (file.startsWith('http')) {
     return file;
   }
   return `${window.location.origin}${getBasePath()}workshop/${file}`;
