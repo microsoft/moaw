@@ -3,6 +3,8 @@ import fetch from 'node-fetch';
 import { ExternalEntry } from '../lib/external.js';
 import { ExternalSourceParser } from '../lib/parser.js';
 
+// Format of source index
+// ----------------------
 // | Level | Workshop Title  | Author(s)  | Duration   | What you will learn | Train-the-Trainer Video | Technologies taught, paired Microsoft Learn modules |
 // 2️⃣ | [Build a Machine Learning Model using Custom Vision](./full/ml-model-custom-vision/README.md)|Christopher Harrison | 1 hour |  Use images to train a model to be able to perform inference to classify images | [🎥](https://youtu.be/YWTDxcHAfkA) | Python, Visual Studio Code, Git, [Object detection with Custom Vision](https://docs.microsoft.com/learn/modules/detect-objects-images-custom-vision/?WT.mc_id=academic-49102-chrhar), [Creating custom models with TensorFlow](https://docs.microsoft.com/learn/paths/tensorflow-fundamentals/?WT.mc_id=academic-49102-chrhar) |
 
