@@ -11,7 +11,7 @@ contacts:
 banner_url: assets/ml-banner.jpg
 duration_minutes: 180
 audience: students, pro devs
-tags: azure, static web apps, cosmos db, github actions, vs code
+tags: machine learning, azure, custom vision, static web apps, python, javascript
 published: true
 sections_title:
   - Introduction
