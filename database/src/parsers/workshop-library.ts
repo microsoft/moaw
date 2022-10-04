@@ -42,7 +42,7 @@ const parse: ExternalSourceParser = async function parse() {
         contacts: authorContacts,
         language: 'en',
         // TODO: clone repo and get last commit date for each file!
-        last_updated: new Date().toISOString()
+        last_updated: '2020-01-01',
       };
   
       entries.push(entry);
