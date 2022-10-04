@@ -70,6 +70,8 @@ export function navigate(path: string, replace = false) {
   } else {
     pushState({}, path, window.location.origin + basePath + path);
   }
+
+  trackPageView();
   updateRoute();
 }
 
@@ -119,4 +121,13 @@ export function redirectRoutePath(routePath: string, cleanUrl = false) {
   const url = new URL(cleanUrl ? window.location.origin : window.location.href);
   url.pathname = basePath + routePath + getPathAfterRoute();
   window.location.href = url.href;
+}
+
+export function trackPageView() {
+  const gtag = (window as any).gtag || function () {};
+  gtag('event', 'page_view', {
+    page_title: document.title,
+    page_location: location.href,
+    page_path: location.pathname
+  });
 }
