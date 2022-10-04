@@ -14,7 +14,7 @@ import { CardComponent } from './card.component';
   imports: [CommonModule, HeaderComponent, FooterComponent, LoaderComponent, CardComponent],
   template: `
     <div class="full-viewport">
-      <app-header logo="images/moaw-logo-full.png" [links]="links"></app-header>
+      <app-header logo="images/moaw-logo-full.png" logoUrl="" [links]="links"></app-header>
       <div class="content bg-light">
         <div class="scrollable">
           <section class="hero">
