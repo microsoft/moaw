@@ -56,7 +56,7 @@ Azure Static Web Apps relies on `Azure Functions` for your application backend. 
 
 <div class="info">
 
-> You can find the official Static Web Apps documentation here: [docs.microsoft.com/azure/static-web-apps/](https://docs.microsoft.com/azure/static-web-apps/)
+> You can find the official Static Web Apps documentation here: [learn.microsoft.com/azure/static-web-apps/](https://learn.microsoft.com/azure/static-web-apps/)
 
 </div>
 
@@ -274,7 +274,7 @@ So, let's create our Functions App and a Function to retrieve our task list for 
 
 <div class="info">
 
-> If you want to learn more about the different authorization levels for Functions and how to secure your API, check out the docs [here](https://docs.microsoft.com/azure/azure-functions/security-concepts).
+> If you want to learn more about the different authorization levels for Functions and how to secure your API, check out the docs [here](https://learn.microsoft.com/azure/azure-functions/security-concepts).
 
 </div>
 
@@ -385,7 +385,7 @@ Eg. `?post_login_redirect_uri=/index.html`
 
 <div class="tip">
 
-> If you are building a React app, go [check the Microsoft Learn module](https://docs.microsoft.com/learn/modules/publish-static-web-app-authentication/) that will show you how to do it.
+> If you are building a React app, go [check the Microsoft Learn module](https://learn.microsoft.com/learn/modules/publish-static-web-app-authentication/) that will show you how to do it.
 
 </div>
 
@@ -491,7 +491,7 @@ Now, try to go to a non-existent page on your website like `/hello.html`. You sh
 
 <div class="tip">
 
-> This is also very useful if you are doing a Single Page Application (SPA) where the routing is managed on the client. You may then need to redirect all your URLs to `index.html`. Check the `navigationFallback` property in the documentation [here](https://docs.microsoft.com/azure/static-web-apps/configuration).
+> This is also very useful if you are doing a Single Page Application (SPA) where the routing is managed on the client. You may then need to redirect all your URLs to `index.html`. Check the `navigationFallback` property in the documentation [here](https://learn.microsoft.com/azure/static-web-apps/configuration).
 
 </div>
 
@@ -701,7 +701,7 @@ You may have noticed that, once deployed, we don't have any logs for our app whi
 
 <div class="task" data-title="todo">
 
-> Create an [Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) resource in your Resource Group and connect it to your Static Web App.
+> Create an [Application Insights](https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview) resource in your Resource Group and connect it to your Static Web App.
 
 </div>
 

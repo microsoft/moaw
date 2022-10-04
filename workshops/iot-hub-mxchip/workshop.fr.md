@@ -36,7 +36,7 @@ Afin de réaliser ce workshop, vous aurez besoin:
 
 - D'un PC (ou Mac) de développement, sur lequel il faudra installer un certain nombre d'outils et de drivers,
 - D'un abonnement Azure (d'essai, payant ou MSDN),
-- Dans l'idéal, d'une carte de développement [MXChip](https://docs.microsoft.com/azure/iot-develop/quickstart-devkit-mxchip-az3166) ([acheter](https://www.seeedstudio.com/AZ3166-IOT-Developer-Kit.html)), ou de l'émulateur.
+- Dans l'idéal, d'une carte de développement [MXChip](https://learn.microsoft.com/azure/iot-develop/quickstart-devkit-mxchip-az3166) ([acheter](https://www.seeedstudio.com/AZ3166-IOT-Developer-Kit.html)), ou de l'émulateur.
 
 ---
 
@@ -192,7 +192,7 @@ Si vous avec besoin de reconnecter votre board au WiFi, suivez ces instructions.
 ## Créer vos services dans Azure
 
 Nous allons maintenant utiliser le [portail Azure](https://portal.azure.com/?feature.customportal=false) afin de créer l'ensemble des services dans Azure - 
-appelée _ressources_. Si vous êtes plus bash que clic, vous pouvez utiliser la [Azure CLI](https://docs.microsoft.com/cli/azure/?view=azure-cli-latest) (on vous laisse 
+appelée _ressources_. Si vous êtes plus bash que clic, vous pouvez utiliser la [Azure CLI](https://learn.microsoft.com/cli/azure/?view=azure-cli-latest) (on vous laisse 
 chercher comment faire 😉. 
 
 ### Créer un resource group
@@ -251,7 +251,7 @@ d'unités permet quand à lui de supporter un plus grand nombre de périphériqu
 
 Au sein du IoT Hub, chacun de vos périphériques IoT se doit d'être déclaré afin de pouvoir le gérer et accepter des 
 données. Pour cet atelier simple, nous allons ajouter le périphérique à la main. Si nous avions à déployer des milliers 
-de périphériques, il y a bien évidemment [une solution](https://docs.microsoft.com/fr-fr/azure/iot-dps/)] :)
+de périphériques, il y a bien évidemment [une solution](https://learn.microsoft.com/fr-fr/azure/iot-dps/)] :)
 
 La création d'un device IoT dans le portail est assez simple. Naviguez jusqu'à l'onglet **Appareils IoT**, puis cliquez 
 sur **Ajouter**. Vous avez alors simplement à donner un nom à votre périphérique.

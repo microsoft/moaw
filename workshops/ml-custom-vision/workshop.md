@@ -104,7 +104,7 @@ First, navigate to [Custom Vision](https://www.customvision.ai) and sign-in with
 
 <div class="info">
 
-> You can find more information about the differences between Domains in the [Custom Vision documentation](https://docs.microsoft.com/azure/cognitive-services/custom-vision-service/select-domain).
+> You can find more information about the differences between Domains in the [Custom Vision documentation](https://learn.microsoft.com/azure/cognitive-services/custom-vision-service/select-domain).
 
 </div>
 
@@ -414,7 +414,7 @@ So, let's create our Functions App and a Function to retrieve our task list for 
 
 <div class="info">
 
-> If you want to learn more about the different authorization levels for Functions and how to secure your API, check out the docs [here](https://docs.microsoft.com/azure/azure-functions/security-concepts).
+> If you want to learn more about the different authorization levels for Functions and how to secure your API, check out the docs [here](https://learn.microsoft.com/azure/azure-functions/security-concepts).
 
 </div>
 
