@@ -20,7 +20,8 @@ const parse: ExternalSourceParser = async function parse() {
   let match;
 
   while ((match = parseRegex.exec(sourceIndex)) !== null) {
-    const [, level, workshopTitle, authors, duration, description, video, technologies] = match;
+    const [, _level, workshopTitle, authors, duration, description, video, technologies] = match;
+    const level = match[0].substring(0, 3); // emoji got garbled by the regex, not sure why
     const { title, url } = parseLink(workshopTitle);
     try {
       const [authorNames, authorContacts] = parseAuthors(authors);
@@ -71,7 +72,8 @@ async function getSourceIndex(url: string): Promise<string> {
 }
 
 function getLevel(str: string) {
-  switch (str.trim()) {
+  str = str.trim();
+  switch (str) {
     case '2️⃣':
       return 'intermediate';
     case '3️⃣':
@@ -115,6 +117,7 @@ function parseDuration(str: string) {
 }
 
 function parseTags(str: string) {
+  str = str.replace(/\[(.*?)\]\((.*?)\)/g, '');
   const tags = str.split(',').map((t) => {
     const title = parseLinkOrUndefined(t)?.title;
     return title ? /*title?.trim()*/ undefined : t?.trim();
