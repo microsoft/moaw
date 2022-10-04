@@ -10,7 +10,7 @@ import { ExternalSourceParser } from '../lib/parser.js';
 
 const parseRegex = /^[^|\n](.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|(.*?)\|?[^|\n]*?$/gm;
 const linkRegex = /\[(.*?)\]\((.*?)\)/;
-const durationRegex = /(\d+)(?:-\d+)? ?(hour|minute|min)s?/;
+const durationRegex = /([\d.]+)(?:-[\d.]+)? ?(hour|minute|min)s?/;
 
 const indexUrl = 'https://raw.githubusercontent.com/microsoft/workshop-library/main/README.md';
 const baseUrl = 'https://microsoft.github.io/workshop-library/';
