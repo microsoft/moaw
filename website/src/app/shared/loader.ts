@@ -6,6 +6,7 @@ import { getCurrentRoute, getPathAfterRoute, redirectRoutePath } from '../router
 const cdnUrl = 'https://cdn.jsdelivr.net/npm/';
 const assetsFolder = 'assets/';
 const defaultWtid = 'javascript-76678-cxa';
+const defaultOcid = 'AID3051475';
 
 export interface LoaderOptions {
   ocid?: string;
