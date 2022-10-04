@@ -33,6 +33,8 @@ export async function createEntry(
     url: extraData.url ?? getUrl(file.path),
     githubUrl: extraData.githubUrl ?? undefined,
     language: extraData.language ?? getLanguageFromFile(file.path),
+    level: file.meta.level ?? 'beginner',
+    audience: parseCsvOrArray(file.meta.audience) ?? ['students', 'pro devs'],
     ...(searchTranslations ? { translations: await findTranslations(file.path) } : {})
   };
 }
@@ -49,6 +51,11 @@ function validateEntry(file: FileInfo) {
 
   if (!file.meta.description) {
     console.error(`No description found for file "${file.path}"`);
+    process.exitCode = 1;
+  }
+
+  if (!file.meta.level) {
+    console.error(`No level found for file "${file.path}"`);
     process.exitCode = 1;
   }
 

@@ -25,6 +25,7 @@
   banner_url: https://iot-workshop.maneu.fr/img/compresseur-1.jpg
   duration_minutes: 120
   audience: students, pro devs
+  level: beginner
   tags: iot, mxchip, azure, vscode
 
 - title: Build and deploy a backend using NestJS and Azure
@@ -40,4 +41,5 @@
     - '@sinedied'
   duration_minutes: 180
   audience: students, pro devs
+  level: beginner
   tags: nestjs, api, azure, cosmosdb, storage, functions

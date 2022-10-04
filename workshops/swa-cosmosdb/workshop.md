@@ -11,6 +11,7 @@ contacts:
 banner_url: assets/todo-banner.jpg
 duration_minutes: 180
 audience: students, pro devs
+level: beginner
 tags: azure, static web apps, cosmos db, github actions, vs code
 published: true
 sections_title:

@@ -7,6 +7,7 @@ contacts: '@sinedied'
 banner_url: assets/portfolio-banner.jpg
 duration_minutes: 120
 audience: students
+level: beginner
 tags: github, gatsby, azure, static web apps, javascript, markdown, react
 published: true
 sections_title:

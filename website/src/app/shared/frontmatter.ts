@@ -19,6 +19,8 @@ export type FrontMatterData = Partial<{
   links: Record<string, string>;
   wt_id: string;
   oc_id: string;
+  audience: string;
+  level: string;
 }>;
 
 export interface FrontMatterParseResult {

@@ -41,6 +41,7 @@ type: workshop                          # Required.
 title: Full workshop title              # Required. Full title of the workshop
 short_title: Short title for header     # Optional. Short title displayed in the header
 description: This is a workshop for...  # Required.
+level: beginner                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors:                                # Required. You can add as many authors as needed      
   - Name
 contacts:                               # Required. Must match the number of authors
@@ -147,6 +148,7 @@ If you already have a workshop hosted somewhere else, you can reference it in th
   language: en                            # Required. Language of the workshop, using 2-letter ISO code
   last_updated: 2019-10-21                # Required. Date of the last update of the workshop
   type: workshop                          # Required. Only 'workshop' is supported for now
+  level: beginner                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
   github_url: https://github.url          # Optional. URL of the workshop's GitHub repository
   authors:                                # Required. You can add as many authors as needed
     - Name                          

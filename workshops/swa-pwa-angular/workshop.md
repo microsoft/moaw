@@ -7,6 +7,7 @@ contacts: '@sinedied'
 banner_url: assets/pwa-banner.jpg
 duration_minutes: 120
 audience: students
+level: beginner
 tags: pwa, serverless, azure, static web apps, javascript, service worker, offline
 published: true
 sections_title:

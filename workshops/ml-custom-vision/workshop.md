@@ -11,6 +11,7 @@ contacts:
 banner_url: assets/ml-banner.jpg
 duration_minutes: 180
 audience: students, pro devs
+level: beginner
 tags: machine learning, azure, custom vision, static web apps, python, javascript
 published: true
 sections_title:

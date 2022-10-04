@@ -12,6 +12,8 @@ export interface ContentEntry {
   authors: string[];
   lastUpdated: string;
   language: string;
+  level: string;
+  audience: string[];
   duration?: number;
   bannerUrl?: string;
   translations?: ContentEntry[];

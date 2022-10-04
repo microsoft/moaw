@@ -17,6 +17,7 @@ contacts:
 banner_url: assets/iot-banner.jpg
 duration_minutes: 180
 audience: students, pro devs
+level: beginner
 tags: iot, mxchip, azure, vs code
 published: true
 sections_title:
