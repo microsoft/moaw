@@ -8,6 +8,7 @@ import { promises as fs } from 'fs';
 import { fileURLToPath } from 'url';
 import { getWorkshopEntries } from './lib/workshop.js';
 import { getExternalEntries } from './lib/external.js';
+import { getEntriesFromExternalSources } from './lib/parser.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const workshopsPath = path.join(__dirname, '../../workshops');
@@ -23,7 +24,10 @@ const dbPath = path.join(__dirname, '../../website/src/public/workshops.json');
   const externalEntries = await getExternalEntries(externalEntriesFiles);
   console.log(`Found ${externalEntries.length} external workshop(s)`);
 
-  entries = [...entries, ...externalEntries];
+  const externalSourcesEntries = await getEntriesFromExternalSources();
+  console.log(`Found ${externalSourcesEntries.length} workshop(s) from external sources`);
+
+  entries = [...entries, ...externalEntries, ...externalSourcesEntries];
 
   entries.sort((a, b) => (a.lastUpdated > b.lastUpdated ? -1 : 1));
   console.log(`Total workshops: ${entries.length}`);

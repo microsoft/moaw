@@ -10,7 +10,7 @@ export type FrontMatterData = Partial<{
   sections_title: string[];
   description: string;
   authors: string | string[];
-  contact: string | string[];
+  contacts: string | string[];
   banner_url: string;
   video_url: string;
   duration_minutes: number;

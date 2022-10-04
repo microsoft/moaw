@@ -45,7 +45,7 @@ function validateExtraProperties(entry: ExternalEntry) {
   }
 }
 
-async function createEntryFromExternalEntry(rawEntry: ExternalEntry): Promise<ContentEntry> {
+export async function createEntryFromExternalEntry(rawEntry: ExternalEntry): Promise<ContentEntry> {
   validateExtraProperties(rawEntry);
 
   const file: FileInfo = {

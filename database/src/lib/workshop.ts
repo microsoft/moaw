@@ -45,7 +45,9 @@ export async function getWorkshopEntries(workshopsPath: string): Promise<Content
   const workshops = await getWorkshops(markdownFiles);
   const githubUrl = await getGitHubRepoUrl();
   const entriesPromises = workshops.map((workshop) =>
-    createEntry(workshop, true, { githubUrl: `${githubUrl}/tree/${mainBranch}/workshops/${path.dirname(workshop.path)}` })
+    createEntry(workshop, true, {
+      githubUrl: `${githubUrl}/tree/${mainBranch}/workshops/${path.dirname(workshop.path)}`
+    })
   );
   const entries = await Promise.all(entriesPromises);
 
