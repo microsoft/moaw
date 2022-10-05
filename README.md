@@ -6,6 +6,9 @@
 [![Deploy website to GitHub Pages](https://github.com/microsoft/moaw/actions/workflows/deploy.yml/badge.svg)](https://github.com/microsoft/moaw/actions/workflows/deploy.yml)
 
 https://aka.ms/moaw ↗︎
+<br>
+
+***
 
 </div>
 
