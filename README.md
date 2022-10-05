@@ -1,10 +1,13 @@
-# 🌳 The Mother Of All Workshops (MOAW)
+<div align="center">
+<h1>🌳 The Mother Of All Workshops (MOAW)</h1>
 
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA-black.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 [![Open in Visual Studio Code](https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20Visual%20Studio%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc)](https://github.dev/microsoft/moaw)
 [![Deploy website to GitHub Pages](https://github.com/microsoft/moaw/actions/workflows/deploy.yml/badge.svg)](https://github.com/microsoft/moaw/actions/workflows/deploy.yml)
 
-https://aka.ms/moaw
+https://aka.ms/moaw ↗︎
+
+</div>
 
 This repository contains workshop content about Microsoft technologies.
 
@@ -38,6 +41,7 @@ You can link to any workshop from this repository or any publicly available GitH
 
 - You can share any individual markdown-formatted page, using the URL format: `https://aka.ms/ws/page?src=<workshop_folder/path_to_file>` or `https://aka.ms/ws/page?src=gh:<github_repo/path_to_file>`<br>
 This is useful for sharing prerequisites, notes, etc.
+<br>
 
 ## 📝 Adapt and modify content
 
@@ -46,11 +50,13 @@ You're free to adapt, modify and localize the content of this repository to bett
 The easiest way to do that is to fork this repository and make your changes in your fork. You can then link to your fork using the URL format described above.
 
 If you made changes that you think would be useful to others, please also consider opening a pull request to [contribute](CONTRIBUTING.md) to this repository.
+<br><br>
 
 # Contributing
 
 All contributions are welcome, including translations, new workshops, bug fixes, etc.
 If you want to contribute to this repository, please read the [contributing guidelines](CONTRIBUTING.md).
+<br>
 
 # License
 
