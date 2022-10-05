@@ -32,8 +32,8 @@ const parse: ExternalSourceParser = async function parse() {
         type: 'workshop',
         title,
         description: description?.trim(),
-        url: path.join(baseUrl, path.dirname(url)).replace('https:/,', 'https://'),
-        github_url: path.join(githubBaseUrl, url).replace('https:/,', 'https://'),
+        url: path.join(baseUrl, path.dirname(url)).replace('https:/', 'https://'),
+        github_url: path.join(githubBaseUrl, url).replace('https:/', 'https://'),
         video_url: parseLinkOrUndefined(video)?.url,
         duration_minutes: parseDuration(duration),
         level: getLevel(level),
@@ -44,6 +44,8 @@ const parse: ExternalSourceParser = async function parse() {
         // TODO: clone repo and get last commit date for each file!
         last_updated: '2020-01-01',
       };
+
+      console.log(entry.url);
   
       entries.push(entry);
   
