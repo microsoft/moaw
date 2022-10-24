@@ -288,7 +288,7 @@ git add . && git commit -m "add API" && git push
 
 ### Update service worker config
 
-Edit `ngsw-config.json`: .float-right[**docs:** https://angular.io/guide/service-worker-config]
+Edit `ngsw-config.json`: 
 ```json
 {
   ...
@@ -305,6 +305,12 @@ Edit `ngsw-config.json`: .float-right[**docs:** https://angular.io/guide/service
   ]
 }
 ```
+
+<div class="tip" data-title="tip">
+
+> Read more about Angular service worker configuration [here](https://angular.io/guide/service-worker-config)
+
+</div>
 
 #### Deploy and test API (again)
 
