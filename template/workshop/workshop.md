@@ -1,23 +1,24 @@
 ---
-published: false
-type: workshop
-title: Full workshop title
-short_title: Short title for header
-description: This is a workshop for...
-authors:
+published: false                        # Optional. Set to true to publish the workshop (default: false)
+type: workshop                          # Required.
+title: Full workshop title              # Required. Full title of the workshop
+short_title: Short title for header     # Optional. Short title displayed in the header
+description: This is a workshop for...  # Required.
+level: beginner                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
+authors:                                # Required. You can add as many authors as needed      
   - Name
-contacts:
-  - Email, Twitter...
-duration_minutes: 20
-tags: javascript, api, node.js
-# banner_url: assets/banner.jpg (optional)
-# video_url: https://youtube.com/link (optional)
-# audience: students, pro devs
-# wt_id: <cxa_tracking_id>
-# oc_id: <marketing_tracking_id>
-# sections_title:
-#   - Section 1 title
-#   - Section 2 title
+contacts:                               # Required. Must match the number of authors
+  - Author's email, Twitter...
+duration_minutes: 20                    # Required. Estimated duration in minutes
+tags: javascript, api, node.js          # Required. Tags for filtering and searching
+#banner_url: assets/banner.jpg           # Optional. Should be a 1280x640px image
+#video_url: https://youtube.com/link     # Optional. Link to a video of the workshop
+#audience: students                      # Optional. Audience of the workshop (students, pro devs, etc.)
+#wt_id: <cxa_tracking_id>                # Optional. Set advocacy tracking code for supported links
+#oc_id: <marketing_tracking_id>          # Optional. Set advocacy tracking code for supported links
+#sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
+  - Section 1 title
+  - Section 2 title
 ---
 
 # Workshop Title
