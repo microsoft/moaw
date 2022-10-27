@@ -52,7 +52,7 @@ banner_url: assets/banner.jpg           # Optional. Should be a 1280x640px image
 video_url: https://youtube.com/link     # Optional. Link to a video of the workshop
 audience: students                      # Optional. Audience of the workshop (students, pro devs, etc.)
 wt_id: <cxa_tracking_id>                # Optional. Set advocacy tracking code for supported links
-oc_id: <marketing_tracking_id>          # Optional. Set advocacy tracking code for supported links
+oc_id: <marketing_tracking_id>          # Optional. Set marketing tracking code for supported links
 sections_title:                         # Optional. Set custom titles for each section to be displayed in the side bar
   - Section 1 title
   - Section 2 title
