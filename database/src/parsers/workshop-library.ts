@@ -27,7 +27,7 @@ const parse: ExternalSourceParser = async function parse() {
     const { title, url } = parseLink(workshopTitle);
     try {
       const [authorNames, authorContacts] = parseAuthors(authors);
-  
+
       const entry: ExternalEntry = {
         type: 'workshop',
         title,
@@ -42,13 +42,13 @@ const parse: ExternalSourceParser = async function parse() {
         contacts: authorContacts,
         language: 'en',
         // TODO: clone repo and get last commit date for each file!
-        last_updated: '2020-01-01',
+        last_updated: '2020-01-01'
       };
 
       console.log(entry.url);
-  
+
       entries.push(entry);
-  
+
       // TODO: find translations
     } catch (error: any) {
       console.error(`Error while parsing 'workshop-library' entry (title: ${title}): ${error?.message}`);
