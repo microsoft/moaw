@@ -26,6 +26,8 @@ Try to be descriptive with the folder name, and use only lowercase letters, numb
 
 You can use the [workshop template](template/workshop/) as a starting point, and look at existing [workshops](workshops) for examples.
 
+The easier way to get started is to follow this step-by-step tutorial: [Create a workshop](https://microsoft.github.io/moaw/workshop/create-workshop/).
+
 ### Workshop format
 
 A workshop is built from a single [markdown](https://commonmark.org/help/) file named `workshop.md`, that contains all the content of the workshop.
