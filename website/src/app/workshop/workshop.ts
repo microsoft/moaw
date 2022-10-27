@@ -2,7 +2,7 @@ import { getCurrentUrlWithQueryParams, MenuLink } from '../shared/link';
 import { FileContents, LoaderOptions, loadFile } from '../shared/loader';
 import { MarkdownHeading, getHeadings } from '../shared/markdown';
 
-const sectionSeparator = '\n---\n';
+const sectionSeparator = '\n\n---\n\n';
 
 export interface WorkshopSection {
   title: string;
