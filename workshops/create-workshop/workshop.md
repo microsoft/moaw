@@ -4,6 +4,7 @@ type: workshop
 title: Create a new workshop
 short_title: Create a workshop
 description: This tutorial will show you how to create a new workshop and publish it on the MOAW website.
+level: beginner
 authors:
   - Yohan Lasorsa
 contacts:
