@@ -1,0 +1,27 @@
+{
+  "name": "moaw",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npm run start --workspace=website",
+    "create:db": "npm run create:db --workspace=database",
+    "format": "npm run format --workspaces"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/themoaw/moaw.git"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Yohan Lasorsa",
+    "url": "https://twitter.com/sinedied"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/themoaw/moaw/issues"
+  },
+  "homepage": "https://github.com/themoaw/moaw#readme",
+  "workspaces": [
+    "website",
+    "database"
+  ]
+}
