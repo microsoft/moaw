@@ -58,7 +58,11 @@ export function updateAssetsBasePath(markdown: string, baseUrl: string): string 
   if (baseUrl.endsWith('/')) {
     baseUrl = baseUrl.substring(0, baseUrl.length - 1);
   }
-  return markdown.replace(new RegExp(assetsFolder, 'g'), `${baseUrl}/${assetsFolder}`);
+
+  // Match all occurrences of "assets/" within links and not within a code block
+  const assetsRegex = new RegExp(`[()](?:\./)?${assetsFolder}(?=[^\`]*(?:\`[^\`]*\`[^\`]*)*$)`, 'g');
+
+  return markdown.replace(assetsRegex, `(${baseUrl}/${assetsFolder}`);
 }
 
 export function updateTrackingCodes(markdown: string, options?: LoaderOptions): string {
