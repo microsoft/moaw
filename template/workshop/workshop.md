@@ -15,7 +15,7 @@ tags: javascript, api, node.js          # Required. Tags for filtering and searc
 #video_url: https://youtube.com/link     # Optional. Link to a video of the workshop
 #audience: students                      # Optional. Audience of the workshop (students, pro devs, etc.)
 #wt_id: <cxa_tracking_id>                # Optional. Set advocacy tracking code for supported links
-#oc_id: <marketing_tracking_id>          # Optional. Set advocacy tracking code for supported links
+#oc_id: <marketing_tracking_id>          # Optional. Set marketing tracking code for supported links
 #sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
   - Section 1 title
   - Section 2 title
