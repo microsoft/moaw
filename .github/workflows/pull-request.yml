@@ -14,15 +14,9 @@ jobs:
       with:
         node-version: 18
     - name: Install dependencies
-      run: |
-        cd database
-        npm ci
-        cd ../website
-        npm ci
+      run: npm ci
     - name: Create workshop database
-      run: |
-        cd database
-        npm run create:db
+      run: npm run create:db
       env:
         GITHUB_REPO_URL: ${{ github.event.repository.html_url }}
     - name: Build website
