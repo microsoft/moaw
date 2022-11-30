@@ -46,15 +46,19 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
                 <div class="item">
                   <h2>Catalog <app-icon name="search" size="28"></app-icon></h2>
                   <p>
-                    It's a collection of all workshops and practical learning content created by developers from Microsoft
-                    and its community, aggregated in one place.
+                    It's a collection of all workshops and practical learning content created by developers from
+                    Microsoft and its community, aggregated in one place.
                   </p>
-                  <p><a href="catalog/"><app-icon name="arrow-right"></app-icon>See all workshops</a></p>
+                  <p>
+                    <a href="catalog/"><app-icon name="arrow-right"></app-icon>See all workshops</a>
+                  </p>
                 </div>
                 <div class="item">
                   <h2>Platform <app-icon name="tools" size="28"></app-icon></h2>
                   <p>Use it to create and host workshops and associated sample code, slides, and resources.</p>
-                  <p><a href="catalog/"><app-icon name="arrow-right"></app-icon>How to create and host your workshop</a></p>
+                  <p>
+                    <a href="https://microsoft.github.io/moaw/workshop/create-workshop/"><app-icon name="arrow-right"></app-icon>How to create and host your workshop</a>
+                  </p>
                 </div>
                 <div class="item">
                   <h2>Community <app-icon name="code-of-conduct" size="28"></app-icon></h2>
@@ -62,16 +66,17 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
                     This is a community-driven project, where everyone can use, adapt and share the content using the
                     permissive Creative Commons License.
                   </p>
-                  <p><a href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md"><app-icon name="arrow-right"></app-icon>Contributing guide</a></p>
+                  <p>
+                    <a href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md"
+                      ><app-icon name="arrow-right"></app-icon>Contributing guide</a
+                    >
+                  </p>
                 </div>
               </div>
             </section>
             <section>
               <h1>Want your workshop here?</h1>
-              <p>
-                You already have a workshop? ✨<b>Awesome!</b>✨
-                There are two options to add it to the catalog:
-              </p>
+              <p>You already have a workshop? ✨<b>Awesome!</b>✨ There are two options to add it to the catalog:</p>
               <div class="split-layout">
                 <div class="item">
                   <h2>Reference it <app-icon name="link-external" size="28"></app-icon></h2>
@@ -79,14 +84,28 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
                     If you already have a workshop hosted somewhere else, you can reference it in the catalog. This is
                     the easiest way to get started, and the process takes only a few minutes.
                   </p>
-                  <p><a class="button button-fill" href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md#reference-an-existing-workshop"><app-icon name="arrow-right"></app-icon>How to reference your workshop</a></p>
+                  <p>
+                    <a
+                      class="button button-fill"
+                      href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md#reference-an-existing-workshop"
+                      ><app-icon name="arrow-right"></app-icon>How to reference your workshop</a
+                    >
+                  </p>
                 </div>
                 <div class="item">
                   <h2>Convert it <app-icon name="sync" size="28"></app-icon></h2>
                   <p>
-                    If you want get the full benefits of our platform, such as <b>translations</b>, <b>extra pages</b>, <b>analytics</b> and more, you can convert it to our workshop format. If you're already using markdown, it's a breeze!
+                    If you want get the full benefits of our platform, such as <b>translations</b>, <b>extra pages</b>,
+                    <b>analytics</b> and more, you can convert it to our workshop format. If you're already using
+                    markdown, it's a breeze!
                   </p>
-                  <p><a class="button button-fill" href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md#convert-an-existing-workshop"><app-icon name="arrow-right"></app-icon>How to convert your workshop</a></p>
+                  <p>
+                    <a
+                      class="button button-fill"
+                      href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md#convert-an-existing-workshop"
+                      ><app-icon name="arrow-right"></app-icon>How to convert your workshop</a
+                    >
+                  </p>
                 </div>
               </div>
             </section>
@@ -142,7 +161,9 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
         }
 
         .item:nth-child(1) {
-          app-icon, a, a:hover {
+          app-icon,
+          a,
+          a:hover {
             color: var(--accent-2);
           }
 
@@ -153,7 +174,9 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
         }
 
         .item:nth-child(2) {
-          app-icon, a, a:hover {
+          app-icon,
+          a,
+          a:hover {
             color: var(--accent-3);
           }
 
@@ -161,11 +184,12 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
             background: var(--accent-3);
             color: var(--text-light);
           }
-
         }
 
         .item:nth-child(3) {
-          app-icon, a, a:hover {
+          app-icon,
+          a,
+          a:hover {
             color: var(--accent);
           }
 
