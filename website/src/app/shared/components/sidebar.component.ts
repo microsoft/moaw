@@ -34,7 +34,7 @@ import { navigate, getCurrentUrlWithoutHash } from '../../router';
 
       .sidebar {
         position: fixed;
-        z-index: 1;
+        z-index: 10;
         top: var(--navbar-height);
         left: calc(-1 * var(--sidebar-width));
         bottom: 0;
