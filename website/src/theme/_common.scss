@@ -159,7 +159,7 @@ code {
 code:not(pre > code) {
   font-family: var(--code-font-family);
   background: var(--neutral-light);
-  padding: var(--space-xxxs) var(--space-xxs);
+  padding: var(--space-xxxxs) var(--space-xxs);
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: var(--border-radius);
 
@@ -242,19 +242,19 @@ hr {
   white-space: nowrap;
 }
 
-.video-embed { 
-  overflow: hidden; 
-  padding-bottom: 56.25%; 
-  position: relative; 
+.video-embed {
+  overflow: hidden;
+  padding-bottom: 56.25%;
+  position: relative;
   height: 0;
 }
 
 .video-embed iframe {
-  left:0; 
-  top:0; 
-  height:100%;
-  width:100%;
-  position:absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  position: absolute;
 }
 
 .text-center {
