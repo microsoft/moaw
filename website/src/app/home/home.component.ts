@@ -118,6 +118,8 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
   `,
   styles: [
     `
+      @import '../../theme/variables';
+
       .hero {
         font-size: var(--text-size-lg);
 
@@ -127,6 +129,11 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
 
         p {
           margin: var(--space-lg) 0;
+        }
+
+        em {
+          color: var(--primary);
+          font-style: normal;
         }
 
         .button {
