@@ -74,7 +74,8 @@
               "node_modules/prismjs/components/prism-csharp.min.js",
               "node_modules/prismjs/components/prism-yaml.min.js",
               "node_modules/prismjs/components/prism-python.min.js",
-              "node_modules/prismjs/components/prism-docker.min.js"
+              "node_modules/prismjs/components/prism-docker.min.js",
+              "node_modules/prismjs/components/prism-bicep.min.js"
             ]
           },
           "configurations": {
