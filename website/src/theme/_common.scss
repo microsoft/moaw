@@ -49,6 +49,12 @@ h4 {
 ol,
 ul {
   padding-left: 1.3em;
+
+  ol,
+  ul {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 }
 
 .warning,
