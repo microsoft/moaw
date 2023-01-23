@@ -26,8 +26,8 @@
   --info: var(--primary);
   --info-light: var(--primary-light);
   --info-text: var(--text-light);
-  --task: #ed7;
-  --task-light: #{color.scale(#dc1, $lightness: 90%, $saturation: -40%)};
+  --task: #fd7;
+  --task-light: #{color.scale(#fd7, $lightness: 90%, $saturation: -40%)};
   --task-text: var(--text);
   --text: #222;
   --text-light: #fff;
