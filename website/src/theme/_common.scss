@@ -168,6 +168,9 @@ code:not(pre > code) {
   padding: var(--space-xxxxs) var(--space-xxs);
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: var(--border-radius);
+  word-break: break-all;
+  display: inline-block;
+  line-height: 1.25;
 
   blockquote & {
     background: rgba(255, 255, 255, 0.7);
