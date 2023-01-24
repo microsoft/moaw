@@ -45,8 +45,6 @@ const parse: ExternalSourceParser = async function parse() {
         last_updated: '2020-01-01'
       };
 
-      console.log(entry.url);
-
       entries.push(entry);
 
       // TODO: find translations
