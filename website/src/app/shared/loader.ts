@@ -42,9 +42,8 @@ export async function loadFile(
 
   markdown = updateAssetsBasePath(markdown, getBaseUrl(gitHubFileUrl));
   markdown = updateTrackingCodes(markdown, {
-    wtid: meta.wt_id,
-    ocid: meta?.oc_id,
-    ...options
+    wtid: options?.wtid || meta?.wt_id,
+    ocid: options?.ocid || meta?.oc_id
   });
 
   return {
@@ -68,6 +67,7 @@ export function updateAssetsBasePath(markdown: string, baseUrl: string): string 
 export function updateTrackingCodes(markdown: string, options?: LoaderOptions): string {
   let { ocid, wtid } = options || {};
   wtid = wtid || defaultWtid;
+  ocid = ocid || defaultOcid;
   markdown = updateTrackingCodeInText(markdown, wtid, true, ocid ? { ocid } : undefined);
   return markdown;
 }
