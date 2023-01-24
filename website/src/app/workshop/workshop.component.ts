@@ -42,6 +42,7 @@ import { getRepoPath } from '../shared/loader';
               (ready)="markdownReady()"
               ngPreserveWhitespaces
               [data]="workshop.sections[workshop.step].markdown"
+              clipboard
             ></markdown>
             <app-pagination [workshop]="workshop"></app-pagination>
           </div>

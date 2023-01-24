@@ -18,7 +18,7 @@ import { getQueryParams } from '../router';
       <div class="content">
         <app-loader [loading]="loading" id="page" class="scrollable" [class.container]="loading">
           <div *ngIf="page; else noPage" class="container no-sidebar">
-            <markdown ngPreserveWhitespaces [data]="page.markdown"></markdown>
+            <markdown ngPreserveWhitespaces [data]="page.markdown" clipboard></markdown>
           </div>
           <app-footer></app-footer>
         </app-loader>
