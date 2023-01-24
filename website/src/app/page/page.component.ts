@@ -4,6 +4,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { HeaderComponent } from '../shared/components/header.component';
 import { FooterComponent } from '../shared/components/footer.component';
 import { LoaderComponent } from '../shared/components/loader.component';
+import { CopyComponent } from '../shared/components/copy.component';
 import { getRepoPath } from '../shared/loader';
 import { loadPage, Page } from './page';
 import { getQueryParams } from '../router';
@@ -11,14 +12,19 @@ import { getQueryParams } from '../router';
 @Component({
   selector: 'app-page',
   standalone: true,
-  imports: [CommonModule, MarkdownModule, HeaderComponent, FooterComponent, LoaderComponent],
+  imports: [CommonModule, MarkdownModule, HeaderComponent, FooterComponent, LoaderComponent, CopyComponent],
   template: `
     <div class="full-viewport">
       <app-header [title]="page?.shortTitle || page?.title"></app-header>
       <div class="content">
         <app-loader [loading]="loading" id="page" class="scrollable" [class.container]="loading">
           <div *ngIf="page; else noPage" class="container no-sidebar">
-            <markdown ngPreserveWhitespaces [data]="page.markdown" clipboard></markdown>
+            <markdown
+              ngPreserveWhitespaces
+              [data]="page.markdown"
+              clipboard
+              [clipboardButtonComponent]="copyComponent"
+            ></markdown>
           </div>
           <app-footer></app-footer>
         </app-loader>
@@ -31,6 +37,7 @@ import { getQueryParams } from '../router';
   styles: [``]
 })
 export class PageComponent implements OnInit {
+  readonly copyComponent = CopyComponent;
   loading: boolean = true;
   page: Page | undefined;
 

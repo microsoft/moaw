@@ -6,6 +6,7 @@ import { HeaderComponent } from '../shared/components/header.component';
 import { FooterComponent } from '../shared/components/footer.component';
 import { SidebarComponent } from '../shared/components/sidebar.component';
 import { LoaderComponent } from '../shared/components/loader.component';
+import { CopyComponent } from '../shared/components/copy.component';
 import { Workshop, loadWorkshop, createMenuLinks } from './workshop';
 import { PaginationComponent } from './pagination.component';
 import { MenuLink } from '../shared/link';
@@ -23,7 +24,8 @@ import { getRepoPath } from '../shared/loader';
     FooterComponent,
     SidebarComponent,
     LoaderComponent,
-    PaginationComponent
+    PaginationComponent,
+    CopyComponent
   ],
   template: `
     <div (click)="sidebar.toggleOpen(false)" class="full-viewport">
@@ -43,7 +45,10 @@ import { getRepoPath } from '../shared/loader';
               ngPreserveWhitespaces
               [data]="workshop.sections[workshop.step].markdown"
               clipboard
-            ></markdown>
+              [clipboardButtonComponent]="copyComponent"
+            >
+              ></markdown
+            >
             <app-pagination [workshop]="workshop"></app-pagination>
           </div>
           <app-footer></app-footer>
@@ -57,6 +62,7 @@ import { getRepoPath } from '../shared/loader';
   styles: [``]
 })
 export class WorkshopComponent {
+  readonly copyComponent = CopyComponent;
   loading: boolean = true;
   workshop: Workshop | undefined;
   menuLinks: MenuLink[] = [];
