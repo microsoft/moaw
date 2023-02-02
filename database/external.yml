@@ -43,3 +43,19 @@
   audience: students, pro devs
   level: beginner
   tags: nestjs, api, azure, cosmosdb, storage, functions
+
+- title: APIM Hands-on Lab
+  url: https://azure.github.io/apim-lab/
+  github_url: https://github.com/Azure/apim-lab
+  language: en
+  last_updated: 2022-02-02
+  type: workshop
+  description: This hands-on lab will guide you through the different concepts around Azure API Management, from the creation to the DevOps, including good practices in terms of versioning, security, and so on.
+  authors:
+    - Folks
+  contacts:
+    - '@nibarras'
+  duration_minutes: 180
+  audience: students, pro devs
+  level: beginner
+  tags: api, apim, azure, devops, policy, gateway
