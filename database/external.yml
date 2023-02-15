@@ -59,3 +59,19 @@
   audience: students, pro devs
   level: beginner
   tags: api, apim, azure, devops, policy, gateway
+
+- title: Workshop Powerplatform
+  url: https://microsoft.github.io/Low-Code/docs/intro/
+  github_url: https://github.com/microsoft/Low-Code
+  language: en
+  last_updated: 2023-02-15
+  type: workshop
+  description: This hands-on Workshop  low code application development workshops that can help you skill up with self-guided tutorials and real-world applications. Be sure to check back regularly for updates!.
+  authors:
+    - Folks
+  contacts:
+    - '@juliajuju93'
+  duration_minutes: 240
+  audience: students, pro devs
+  level: beginner
+  tags: powerplatform, azure, cli, function, connector, vscode
