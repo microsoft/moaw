@@ -126,6 +126,7 @@ import { updateTrackingCodes } from '../loader';
         position: absolute;
         right: var(--space-lg);
         bottom: var(--space-lg);
+        font-size: 24px;
       }
 
       .version {
