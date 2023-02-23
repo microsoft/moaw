@@ -10,6 +10,7 @@ import * as octicons from '@primer/octicons';
       :host {
         display: inline-block;
         vertical-align: text-top;
+        height: 1em;
       }
     `
   ]

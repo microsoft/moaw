@@ -7,7 +7,12 @@ import { IconComponent } from './icon.component';
   standalone: true,
   imports: [CommonModule, IconComponent],
   template: `
-    <button class="button-copy" (click)="copyCode()" [class.copied]="copied" [attr.aria-label]="copied ? 'copied' : 'copy'">
+    <button
+      class="button-copy"
+      (click)="copyCode()"
+      [class.copied]="copied"
+      [attr.aria-label]="copied ? 'copied' : 'copy'"
+    >
       <app-icon *ngIf="copied; else copy" name="check" size="16"></app-icon>
       <ng-template #copy>
         <app-icon name="copy" size="16"></app-icon>

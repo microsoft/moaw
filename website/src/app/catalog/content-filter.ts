@@ -14,9 +14,5 @@ export function matchEntry(workshop: ContentEntry, filter: ContentFilter) {
   const matchLanguage = workshop.language === filter.language;
   const matchTags = filter.tags.length === 0 || filter.tags.every((tag) => workshop.tags.includes(tag));
 
-  return (
-    (matchTitle || matchDescription || matchTag) &&
-    matchLanguage &&
-    matchTags
-  );
+  return (matchTitle || matchDescription || matchTag) && matchLanguage && matchTags;
 }

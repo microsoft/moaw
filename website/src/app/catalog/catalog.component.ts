@@ -3,17 +3,18 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../shared/components/header.component';
 import { FooterComponent } from '../shared/components/footer.component';
 import { LoaderComponent } from '../shared/components/loader.component';
+import { ChipComponent } from '../shared/components/chip.component';
 import { defaultLanguage, githubRepositoryUrl } from '../shared/constants';
 import { getQueryParams } from '../router';
 import { ContentEntry, loadCatalog } from './content-entry';
-import { matchEntry } from './content-filter';
+import { ContentFilter, matchEntry } from './content-filter';
 import { CardComponent } from './card.component';
-import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, filter, map, Observable, take } from 'rxjs';
+import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, map, Observable, take } from 'rxjs';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, FooterComponent, LoaderComponent, CardComponent],
+  imports: [CommonModule, HeaderComponent, FooterComponent, LoaderComponent, ChipComponent, CardComponent],
   template: `
     <div class="full-viewport">
       <app-header logo="images/moaw-logo-full.png" logoUrl="" [links]="links"></app-header>
@@ -24,17 +25,30 @@ import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, filter, ma
               <!-- <h1>All Workshops</h1> -->
               <div class="split">
                 <!-- <p>Browse through our collection of workshops to learn new skills and improve your knowledge.</p> -->
-                <input type="text" placeholder="Search workshops" (keyup)="search($event)" aria-label="Search workshops" class="search"/>
+                <input
+                  type="search"
+                  placeholder="Search workshops"
+                  (keyup)="search($event)"
+                  aria-label="Search workshops"
+                  class="search"
+                />
                 <!-- <span class="small">or filter by tag:</span> -->
+                <div class="tags-filter">
+                  <app-chip *ngFor="let tag of tags" (click)="removeTagFilter(tag)" type="clickable removable">
+                    {{ tag }}
+                  </app-chip>
+                </div>
               </div>
             </div>
           </section>
           <app-loader class="container no-sidebar" [loading]="loading">
-            <div *ngIf="(filteredWorkshops$ | async)?.length === 0">
-              No workshops match your search criteria.
-            </div>
+            <div *ngIf="(filteredWorkshops$ | async)?.length === 0">No workshops match your search criteria.</div>
             <div class="cards">
-              <app-card *ngFor="let workshop of filteredWorkshops$ | async; trackBy: trackById" [workshop]="workshop"></app-card>
+              <app-card
+                *ngFor="let workshop of filteredWorkshops$ | async; trackBy: trackById"
+                [workshop]="workshop"
+                (clickTag)="addTagFilter($event)"
+              ></app-card>
             </div>
           </app-loader>
           <div class="fill"></div>
@@ -67,6 +81,10 @@ import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, filter, ma
         max-width: 300px;
       }
 
+      .tags-filter {
+        margin-top: var(--space-xxs);
+      }
+
       .cards {
         display: grid;
         width: 100%;
@@ -83,7 +101,7 @@ export class CatalogComponent implements OnInit {
   workshops: ContentEntry[] = [];
   tags: string[] = [];
   language: string = defaultLanguage;
-  search$ = new BehaviorSubject('');
+  filter$ = new BehaviorSubject<ContentFilter>({ search: '', tags: [], language: defaultLanguage });
   filteredWorkshops$!: Observable<ContentEntry[]>;
 
   async ngOnInit() {
@@ -100,24 +118,36 @@ export class CatalogComponent implements OnInit {
     this.tags = tags ? tags.split(',') : [];
     this.language = lang ?? defaultLanguage;
     const searchText = search ?? '';
-    this.search$.next(searchText);
-    this.filteredWorkshops$ = this.filterWorkshops(this.tags, this.language);
+    this.filter$.next({ search: searchText, tags: this.tags, language: this.language });
+    this.filteredWorkshops$ = this.filterWorkshops();
   }
 
-  filterWorkshops(tags: string[], language: string) {
+  filterWorkshops() {
     return concat(
       // Skip debounce time on first search
-      this.search$.pipe(take(1)),
-      this.search$.pipe(debounceTime(300))
+      this.filter$.pipe(take(1)),
+      this.filter$.pipe(debounceTime(300))
     ).pipe(
-        distinctUntilChanged(),
-        map(search => this.workshops.filter((workshop) => matchEntry(workshop, { search, tags, language })))
+      distinctUntilChanged(),
+      map((filter) => this.workshops.filter((workshop) => matchEntry(workshop, filter)))
     );
   }
 
   search(event: Event) {
     const text = (event.target as HTMLInputElement).value;
-    this.search$.next(text);
+    this.filter$.next({ ...this.filter$.value, search: text });
+  }
+
+  addTagFilter(tag: string) {
+    if (!this.tags.includes(tag)) {
+      this.tags.push(tag);
+      this.filter$.next({ ...this.filter$.value, tags: this.tags });
+    }
+  }
+
+  removeTagFilter(tag: string) {
+    this.tags = this.tags.filter((t) => t !== tag);
+    this.filter$.next({ ...this.filter$.value, tags: this.tags });
   }
 
   trackById(_index: number, workshop: ContentEntry) {
