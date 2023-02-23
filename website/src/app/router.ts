@@ -80,7 +80,9 @@ export function setQueryParams(params: Record<string, any>, replace = false) {
   if (replace) {
     url.search = new URLSearchParams(params).toString();
   } else {
-    Object.entries(params).forEach((entry) => url.searchParams.set(...entry));
+    Object.entries(params).forEach(([name, value]) =>
+      value == undefined ? url.searchParams.delete(name) : url.searchParams.set(name, value)
+    );
   }
   window.history.pushState({}, url.pathname, url);
   updateRoute();

@@ -5,7 +5,7 @@ import { FooterComponent } from '../shared/components/footer.component';
 import { LoaderComponent } from '../shared/components/loader.component';
 import { ChipComponent } from '../shared/components/chip.component';
 import { defaultLanguage, githubRepositoryUrl } from '../shared/constants';
-import { getQueryParams } from '../router';
+import { getQueryParams, setQueryParams } from '../router';
 import { ContentEntry, loadCatalog } from './content-entry';
 import { ContentFilter, matchEntry } from './content-filter';
 import { CardComponent } from './card.component';
@@ -28,9 +28,11 @@ import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, map, Obser
                 <input
                   type="search"
                   placeholder="Search workshops"
-                  (keyup)="search($event)"
+                  (search)="searchText($event)"
+                  (keyup)="searchText($event)"
                   aria-label="Search workshops"
                   class="search"
+                  [value]="search"
                 />
                 <!-- <span class="small">or filter by tag:</span> -->
                 <div class="tags-filter">
@@ -83,6 +85,7 @@ import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, map, Obser
 
       .tags-filter {
         margin-top: var(--space-xxs);
+        text-transform: lowercase;
       }
 
       .cards {
@@ -100,6 +103,8 @@ export class CatalogComponent implements OnInit {
   links = [{ text: 'GitHub', url: githubRepositoryUrl, icon: 'mark-github' }];
   workshops: ContentEntry[] = [];
   tags: string[] = [];
+  search: string = '';
+  sub: string[] = [];
   language: string = defaultLanguage;
   filter$ = new BehaviorSubject<ContentFilter>({ search: '', tags: [], language: defaultLanguage });
   filteredWorkshops$!: Observable<ContentEntry[]>;
@@ -117,8 +122,8 @@ export class CatalogComponent implements OnInit {
     let { lang, tags, search } = getQueryParams();
     this.tags = tags ? tags.split(',') : [];
     this.language = lang ?? defaultLanguage;
-    const searchText = search ?? '';
-    this.filter$.next({ search: searchText, tags: this.tags, language: this.language });
+    this.search = search ?? '';
+    this.filter$.next({ search: this.search, tags: this.tags, language: this.language });
     this.filteredWorkshops$ = this.filterWorkshops();
   }
 
@@ -133,21 +138,24 @@ export class CatalogComponent implements OnInit {
     );
   }
 
-  search(event: Event) {
-    const text = (event.target as HTMLInputElement).value;
+  searchText(event: Event) {
+    const text = (event.target as HTMLInputElement).value?.trim();
     this.filter$.next({ ...this.filter$.value, search: text });
+    setQueryParams({ search: text.length > 0 ? text : undefined });
   }
 
   addTagFilter(tag: string) {
     if (!this.tags.includes(tag)) {
       this.tags.push(tag);
       this.filter$.next({ ...this.filter$.value, tags: this.tags });
+      setQueryParams({ tags: this.tags.length > 0 ? this.tags.join(',') : undefined });
     }
   }
 
   removeTagFilter(tag: string) {
     this.tags = this.tags.filter((t) => t !== tag);
     this.filter$.next({ ...this.filter$.value, tags: this.tags });
+    setQueryParams({ tags: this.tags.length > 0 ? this.tags.join(',') : undefined });
   }
 
   trackById(_index: number, workshop: ContentEntry) {
