@@ -6,7 +6,9 @@ import { LoaderComponent } from '../shared/components/loader.component';
 import { defaultLanguage, githubRepositoryUrl } from '../shared/constants';
 import { getQueryParams } from '../router';
 import { ContentEntry, loadCatalog } from './content-entry';
+import { matchEntry } from './content-filter';
 import { CardComponent } from './card.component';
+import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, filter, map, Observable, take } from 'rxjs';
 
 @Component({
   selector: 'app-catalog',
@@ -19,16 +21,20 @@ import { CardComponent } from './card.component';
         <div class="scrollable">
           <section class="hero">
             <div class="container no-sidebar">
-              <h1>All Workshops</h1>
+              <!-- <h1>All Workshops</h1> -->
               <div class="split">
-                <p>Browse through our collection of workshops to learn new skills and improve your knowledge.</p>
-                <!-- <input type="text" placeholder="Search" (keyup)="filter($event)" aria-label="Search workshops" class="search"/> -->
+                <!-- <p>Browse through our collection of workshops to learn new skills and improve your knowledge.</p> -->
+                <input type="text" placeholder="Search workshops" (keyup)="search($event)" aria-label="Search workshops" class="search"/>
+                <!-- <span class="small">or filter by tag:</span> -->
               </div>
             </div>
           </section>
           <app-loader class="container no-sidebar" [loading]="loading">
+            <div *ngIf="(filteredWorkshops$ | async)?.length === 0">
+              No workshops match your search criteria.
+            </div>
             <div class="cards">
-              <app-card *ngFor="let workshop of filteredWorkshops" [workshop]="workshop"></app-card>
+              <app-card *ngFor="let workshop of filteredWorkshops$ | async" [workshop]="workshop"></app-card>
             </div>
           </app-loader>
           <div class="fill"></div>
@@ -75,7 +81,10 @@ export class CatalogComponent implements OnInit {
   loading: boolean = true;
   links = [{ text: 'GitHub', url: githubRepositoryUrl, icon: 'mark-github' }];
   workshops: ContentEntry[] = [];
-  filteredWorkshops: ContentEntry[] = [];
+  tags: string[] = [];
+  language: string = defaultLanguage;
+  search$ = new BehaviorSubject('');
+  filteredWorkshops$!: Observable<ContentEntry[]>;
 
   async ngOnInit() {
     document.title = 'MOAW - All Workshops';
@@ -87,13 +96,27 @@ export class CatalogComponent implements OnInit {
     }
     this.loading = false;
 
-    let { lang } = getQueryParams();
-    lang = lang || defaultLanguage;
-    this.filteredWorkshops = this.workshops.filter((workshop) => workshop.language === lang);
+    let { lang, tags, search } = getQueryParams();
+    this.tags = tags ? tags.split(',') : [];
+    this.language = lang ?? defaultLanguage;
+    const searchText = search ?? '';
+    this.search$.next(searchText);
+    this.filteredWorkshops$ = this.filterWorkshops(this.tags, this.language);
   }
 
-  filter(event: Event) {
+  filterWorkshops(tags: string[], language: string) {
+    return concat(
+      // Skip debounce time on first search
+      this.search$.pipe(take(1)),
+      this.search$.pipe(debounceTime(300))
+    ).pipe(
+        distinctUntilChanged(),
+        map(search => this.workshops.filter((workshop) => matchEntry(workshop, { search, tags, language })))
+    );
+  }
+
+  search(event: Event) {
     const text = (event.target as HTMLInputElement).value;
-    console.log(text);
+    this.search$.next(text);
   }
 }
