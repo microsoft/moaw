@@ -117,12 +117,21 @@
   level: beginner
   tags: container, docker, helm, cli, kubernetes, azure, aca, dapr, keda, ingress
 
-    - title: [ACA] Azure Container Apps Workshop
+  
+  - title: [ACA] Azure Container Apps Workshop
   url: https://daprbuildworkshop.z6.web.core.windows.net/
+  github_url: https://github.com/lgmorand/workshop-aca # need to change
+  banner_url: assets/dapr.png           # Optional. Should be a 1280x640px image
   language: fr
   last_updated: 2022-02-23
   type: workshop
   description: Ce Hands-on Lab est une introduction à Dapr et à ses concepts. Au travers de différentes activités, le but sera de découvrir les fonctionnalités de Dapr, tout d’abord en isolation, et ensuite en utilisant son intégration dans Azure Container Apps.
+    authors:
+    - Louis-Guillaume MORAND 
+    - Lucas Peirone
+  contacts:
+    - '@lupeiron'
+    - '@lomorand'
   duration_minutes: 180
   audience: students, pro devs
   level: beginner
