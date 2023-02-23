@@ -9,8 +9,8 @@ import { DatePipe } from '../shared/pipes/date.pipe';
   imports: [CommonModule, DatePipe],
   template: `
     <a [href]="workshop.url" [title]="workshop.description" class="card">
-      <div class="banner" [style]="{ 'background-image': 'url(' + workshop.bannerUrl + ')' }">
-        <div *ngIf="workshop.duration" class="duration">{{ workshop.duration }} min</div>
+      <div class="banner">
+        <div *ngIf="workshop.duration" class="duration" [ngClass]="getDurationClass(workshop.duration)">{{ workshop.duration }} min</div>
         <!-- <div class="last-updated">Updated: {{ workshop.lastUpdated | date }}</div> -->
       </div>
       <div class="title">{{ workshop.title }}</div>
@@ -44,13 +44,12 @@ import { DatePipe } from '../shared/pipes/date.pipe';
       .banner {
         position: relative;
         height: 120px;
-        background-color: var(--neutral-light);
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: 50%;
+        height: 20px;
+
 
         img {
           margin: 0;
+          height: 0px;
         }
       }
 
@@ -64,6 +63,16 @@ import { DatePipe } from '../shared/pipes/date.pipe';
         background: var(--neutral-dark);
         border-radius: var(--border-radius);
         padding: 0 var(--space-xs);
+
+        &.short {
+          background: var(--accent-3);
+        }
+        &.medium {
+          background: var(--medium);
+        }
+        &.long {
+          background: var(--primary);
+        }
       }
 
       .last-updated {
@@ -82,7 +91,7 @@ import { DatePipe } from '../shared/pipes/date.pipe';
 
       .tags {
         font-size: var(--text-size-sm);
-        margin: var(--space-md);
+        margin: 0 var(--space-md) var(--space-md) var(--space-md);
         text-transform: lowercase;
         opacity: 0.7;
       }
@@ -91,4 +100,14 @@ import { DatePipe } from '../shared/pipes/date.pipe';
 })
 export class CardComponent {
   @Input() workshop!: ContentEntry;
+
+  getDurationClass(duration: number): string {
+    if (duration <= 30) {
+      return 'short';
+    } else if (duration <= 60) {
+      return 'medium';
+    } else {
+      return 'long';
+    }
+  }
 }

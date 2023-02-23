@@ -6,6 +6,8 @@
   --primary-light: #{color.scale(#0078d4, $lightness: 90%, $saturation: -40%)};
   --accent: #c90040;
   --accent-light: #{color.scale(#c90040, $lightness: 90%, $saturation: -40%)};
+  --medium: #{color.mix(#0078d4, #00a1a1)};
+  --medium-light: #{color.scale(color.mix(#0078d4, #00a1a1), $lightness: 90%, $saturation: -40%)};
   --accent-2: #006680;
   --accent-2-light: #{color.scale(#006680, $lightness: 90%, $saturation: -40%)};
   --accent-3: #00a1a1;
