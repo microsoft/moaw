@@ -26,7 +26,7 @@ export async function createEntry(
   const entryWithoutId: Partial<ContentEntry> = {
     title: file.meta.title ?? '[NO TITLE!]',
     description: file.meta.description ?? '',
-    tags: parseCsvOrArray(file.meta.tags),
+    tags: parseCsvOrArray(file.meta.tags).map((tag) => tag.toLowerCase()),
     authors: parseCsvOrArray(file.meta.authors),
     duration: file.meta.duration_minutes,
     bannerUrl: file.meta.banner_url,
