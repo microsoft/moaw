@@ -34,7 +34,7 @@ import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, filter, ma
               No workshops match your search criteria.
             </div>
             <div class="cards">
-              <app-card *ngFor="let workshop of filteredWorkshops$ | async" [workshop]="workshop"></app-card>
+              <app-card *ngFor="let workshop of filteredWorkshops$ | async; trackBy: trackById" [workshop]="workshop"></app-card>
             </div>
           </app-loader>
           <div class="fill"></div>
@@ -118,5 +118,9 @@ export class CatalogComponent implements OnInit {
   search(event: Event) {
     const text = (event.target as HTMLInputElement).value;
     this.search$.next(text);
+  }
+
+  trackById(_index: number, workshop: ContentEntry) {
+    return workshop.id;
   }
 }

@@ -1,5 +1,6 @@
 import path from 'path';
 import process from 'process';
+import crypto from 'crypto';
 import { defaultWorkshopFile } from '../../../website/src/app/shared/constants.js';
 import { ContentEntry } from '../../../website/src/app/catalog/content-entry.js';
 import { FileInfo } from './workshop.js';
@@ -22,7 +23,7 @@ export async function createEntry(
   extraData = extraData || {};
   file.meta.title = file.meta.title || getFirstHeading(file.markdown);
   validateEntry(file);
-  return {
+  const entryWithoutId: Partial<ContentEntry> = {
     title: file.meta.title ?? '[NO TITLE!]',
     description: file.meta.description ?? '',
     tags: parseCsvOrArray(file.meta.tags),
@@ -37,6 +38,10 @@ export async function createEntry(
     audience: parseCsvOrArray(file.meta.audience) ?? ['students', 'pro devs'],
     ...(searchTranslations ? { translations: await findTranslations(file.path) } : {})
   };
+  return {
+    ...entryWithoutId,
+    id: createHash(entryWithoutId)
+  } as ContentEntry;
 }
 
 function getUrl(filePath: string): string {
@@ -60,4 +65,10 @@ function validateEntry(file: FileInfo) {
   }
 
   // TODO: validate tags, authors, duration, banner_url
+}
+
+function createHash(data: any) {
+  return crypto.createHash("shake256", { outputLength: 16 })
+    .update(JSON.stringify(data))
+    .digest("hex");
 }
