@@ -119,11 +119,12 @@ export class CatalogComponent implements OnInit {
     }
     this.loading = false;
 
-    let { lang, tags, search } = getQueryParams();
+    let { lang, tags, search, sub } = getQueryParams();
     this.tags = tags ? tags.split(',') : [];
+    this.sub = sub ? sub.split(',') : [];
     this.language = lang ?? defaultLanguage;
     this.search = search ?? '';
-    this.filter$.next({ search: this.search, tags: this.tags, language: this.language });
+    this.filter$.next({ search: this.search, tags: [...this.tags, ...this.sub], language: this.language });
     this.filteredWorkshops$ = this.filterWorkshops();
   }
 
@@ -147,14 +148,14 @@ export class CatalogComponent implements OnInit {
   addTagFilter(tag: string) {
     if (!this.tags.includes(tag)) {
       this.tags.push(tag);
-      this.filter$.next({ ...this.filter$.value, tags: this.tags });
+      this.filter$.next({ ...this.filter$.value, tags: [...this.tags, ...this.sub] });
       setQueryParams({ tags: this.tags.length > 0 ? this.tags.join(',') : undefined });
     }
   }
 
   removeTagFilter(tag: string) {
     this.tags = this.tags.filter((t) => t !== tag);
-    this.filter$.next({ ...this.filter$.value, tags: this.tags });
+    this.filter$.next({ ...this.filter$.value, tags: [...this.tags, ...this.sub] });
     setQueryParams({ tags: this.tags.length > 0 ? this.tags.join(',') : undefined });
   }
 
