@@ -68,7 +68,5 @@ function validateEntry(file: FileInfo) {
 }
 
 function createHash(data: any) {
-  return crypto.createHash("shake256", { outputLength: 16 })
-    .update(JSON.stringify(data))
-    .digest("hex");
+  return crypto.createHash('shake256', { outputLength: 16 }).update(JSON.stringify(data)).digest('hex');
 }
