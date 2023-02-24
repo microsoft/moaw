@@ -120,7 +120,7 @@
   
   - title: [ACA] Azure Container Apps Workshop
   url: https://daprbuildworkshop.z6.web.core.windows.net/
-  github_url: https://github.com/lgmorand/workshop-aca # need to change
+  github_url: https://github.com/SoTrx/dapr-build-workshop 
   banner_url: assets/dapr.png           # Optional. Should be a 1280x640px image
   language: fr
   last_updated: 2022-02-23
