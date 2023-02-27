@@ -44,7 +44,7 @@
   level: beginner
   tags: nestjs, api, azure, cosmosdb, storage, functions
 
-- title: Hands-on Lab APIM
+- title: Product Hands-on Lab APIM
   url: https://azure.github.io/apim-lab/
   github_url: https://github.com/Azure/apim-lab
   language: en
@@ -120,8 +120,7 @@
 
 - title: Product Hands-on Lab DAPR - Distributed Application Runtime
   url: https://daprbuildworkshop.z6.web.core.windows.net/
-  github_url: https://github.com/SoTrx/dapr-build-workshop 
-  banner_url: assets/dapr.png           
+  github_url: https://github.com/SoTrx/dapr-build-workshop       
   language: fr
   last_updated: 2022-02-23
   type: workshop
