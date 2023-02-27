@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../shared/components/header.component';
 import { FooterComponent } from '../shared/components/footer.component';
 import { LoaderComponent } from '../shared/components/loader.component';
 import { ChipComponent } from '../shared/components/chip.component';
 import { defaultLanguage, githubRepositoryUrl } from '../shared/constants';
-import { getQueryParams, setQueryParams } from '../router';
+import { addRouteChangeListener, getQueryParams, removeRouteChangeListener, RouteChangeListener, setQueryParams } from '../router';
 import { ContentEntry, loadCatalog } from './content-entry';
 import { ContentFilter, matchEntry } from './content-filter';
 import { CardComponent } from './card.component';
@@ -98,7 +98,7 @@ import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, map, Obser
     `
   ]
 })
-export class CatalogComponent implements OnInit {
+export class CatalogComponent implements OnInit, OnDestroy {
   loading: boolean = true;
   links = [{ text: 'GitHub', url: githubRepositoryUrl, icon: 'mark-github' }];
   workshops: ContentEntry[] = [];
@@ -108,6 +108,7 @@ export class CatalogComponent implements OnInit {
   language: string = defaultLanguage;
   filter$ = new BehaviorSubject<ContentFilter>({ search: '', tags: [], language: defaultLanguage });
   filteredWorkshops$!: Observable<ContentEntry[]>;
+  routeChangeListener!: RouteChangeListener;
 
   async ngOnInit() {
     document.title = 'MOAW - All Workshops';
@@ -118,14 +119,23 @@ export class CatalogComponent implements OnInit {
       console.error(error);
     }
     this.loading = false;
+    this.routeChangeListener = this.updateRoute.bind(this);
 
+    addRouteChangeListener(this.routeChangeListener);
+    this.filteredWorkshops$ = this.filterWorkshops();
+  }
+
+  ngOnDestroy() {
+    removeRouteChangeListener(this.routeChangeListener);
+  }
+
+  updateRoute() {
     let { lang, tags, search, sub } = getQueryParams();
     this.tags = tags ? tags.split(',') : [];
     this.sub = sub ? sub.split(',') : [];
     this.language = lang ?? defaultLanguage;
     this.search = search ?? '';
     this.filter$.next({ search: this.search, tags: [...this.tags, ...this.sub], language: this.language });
-    this.filteredWorkshops$ = this.filterWorkshops();
   }
 
   filterWorkshops() {
@@ -141,21 +151,20 @@ export class CatalogComponent implements OnInit {
 
   searchText(event: Event) {
     const text = (event.target as HTMLInputElement).value?.trim();
-    this.filter$.next({ ...this.filter$.value, search: text });
-    setQueryParams({ search: text.length > 0 ? text : undefined });
+    const hasSearchQuery = getQueryParams()['search']?.length > 0;
+    const addToHistory = (text.length > 0 && !hasSearchQuery) || (text.length === 0 && hasSearchQuery);
+    setQueryParams({ search: text.length > 0 ? text : undefined }, false, addToHistory);
   }
 
   addTagFilter(tag: string) {
     if (!this.tags.includes(tag)) {
       this.tags.push(tag);
-      this.filter$.next({ ...this.filter$.value, tags: [...this.tags, ...this.sub] });
       setQueryParams({ tags: this.tags.length > 0 ? this.tags.join(',') : undefined });
     }
   }
 
   removeTagFilter(tag: string) {
     this.tags = this.tags.filter((t) => t !== tag);
-    this.filter$.next({ ...this.filter$.value, tags: [...this.tags, ...this.sub] });
     setQueryParams({ tags: this.tags.length > 0 ? this.tags.join(',') : undefined });
   }
 

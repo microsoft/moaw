@@ -75,7 +75,7 @@ export function navigate(path: string, replace = false) {
   updateRoute();
 }
 
-export function setQueryParams(params: Record<string, any>, replace = false) {
+export function setQueryParams(params: Record<string, any>, replace = false, addToHistory = true) {
   const url = new URL(window.location.href);
   if (replace) {
     url.search = new URLSearchParams(params).toString();
@@ -84,7 +84,11 @@ export function setQueryParams(params: Record<string, any>, replace = false) {
       value == undefined ? url.searchParams.delete(name) : url.searchParams.set(name, value)
     );
   }
-  window.history.pushState({}, url.pathname, url);
+  if (addToHistory) {
+    window.history.pushState({}, url.pathname, url);
+  } else {
+    window.history.replaceState({}, url.pathname, url);
+  }
   updateRoute();
 }
 
