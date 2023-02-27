@@ -3,15 +3,18 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../shared/components/header.component';
 import { FooterComponent } from '../shared/components/footer.component';
 import { LoaderComponent } from '../shared/components/loader.component';
+import { ChipComponent } from '../shared/components/chip.component';
 import { defaultLanguage, githubRepositoryUrl } from '../shared/constants';
-import { getQueryParams } from '../router';
+import { getQueryParams, setQueryParams } from '../router';
 import { ContentEntry, loadCatalog } from './content-entry';
+import { ContentFilter, matchEntry } from './content-filter';
 import { CardComponent } from './card.component';
+import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, map, Observable, take } from 'rxjs';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, FooterComponent, LoaderComponent, CardComponent],
+  imports: [CommonModule, HeaderComponent, FooterComponent, LoaderComponent, ChipComponent, CardComponent],
   template: `
     <div class="full-viewport">
       <app-header logo="images/moaw-logo-full.png" logoUrl="" [links]="links"></app-header>
@@ -19,16 +22,35 @@ import { CardComponent } from './card.component';
         <div class="scrollable">
           <section class="hero">
             <div class="container no-sidebar">
-              <h1>All Workshops</h1>
+              <!-- <h1>All Workshops</h1> -->
               <div class="split">
-                <p>Browse through our collection of workshops to learn new skills and improve your knowledge.</p>
-                <!-- <input type="text" placeholder="Search" (keyup)="filter($event)" aria-label="Search workshops" class="search"/> -->
+                <!-- <p>Browse through our collection of workshops to learn new skills and improve your knowledge.</p> -->
+                <input
+                  type="search"
+                  placeholder="Search workshops"
+                  (search)="searchText($event)"
+                  (keyup)="searchText($event)"
+                  aria-label="Search workshops"
+                  class="search"
+                  [value]="search"
+                />
+                <!-- <span class="small">or filter by tag:</span> -->
+                <div class="tags-filter">
+                  <app-chip *ngFor="let tag of tags" (click)="removeTagFilter(tag)" type="clickable removable">
+                    {{ tag }}
+                  </app-chip>
+                </div>
               </div>
             </div>
           </section>
           <app-loader class="container no-sidebar" [loading]="loading">
+            <div *ngIf="(filteredWorkshops$ | async)?.length === 0">No workshops match your search criteria.</div>
             <div class="cards">
-              <app-card *ngFor="let workshop of filteredWorkshops" [workshop]="workshop"></app-card>
+              <app-card
+                *ngFor="let workshop of filteredWorkshops$ | async; trackBy: trackById"
+                [workshop]="workshop"
+                (clickTag)="addTagFilter($event)"
+              ></app-card>
             </div>
           </app-loader>
           <div class="fill"></div>
@@ -61,6 +83,11 @@ import { CardComponent } from './card.component';
         max-width: 300px;
       }
 
+      .tags-filter {
+        margin-top: var(--space-xxs);
+        text-transform: lowercase;
+      }
+
       .cards {
         display: grid;
         width: 100%;
@@ -75,7 +102,12 @@ export class CatalogComponent implements OnInit {
   loading: boolean = true;
   links = [{ text: 'GitHub', url: githubRepositoryUrl, icon: 'mark-github' }];
   workshops: ContentEntry[] = [];
-  filteredWorkshops: ContentEntry[] = [];
+  tags: string[] = [];
+  search: string = '';
+  sub: string[] = [];
+  language: string = defaultLanguage;
+  filter$ = new BehaviorSubject<ContentFilter>({ search: '', tags: [], language: defaultLanguage });
+  filteredWorkshops$!: Observable<ContentEntry[]>;
 
   async ngOnInit() {
     document.title = 'MOAW - All Workshops';
@@ -87,13 +119,47 @@ export class CatalogComponent implements OnInit {
     }
     this.loading = false;
 
-    let { lang } = getQueryParams();
-    lang = lang || defaultLanguage;
-    this.filteredWorkshops = this.workshops.filter((workshop) => workshop.language === lang);
+    let { lang, tags, search, sub } = getQueryParams();
+    this.tags = tags ? tags.split(',') : [];
+    this.sub = sub ? sub.split(',') : [];
+    this.language = lang ?? defaultLanguage;
+    this.search = search ?? '';
+    this.filter$.next({ search: this.search, tags: [...this.tags, ...this.sub], language: this.language });
+    this.filteredWorkshops$ = this.filterWorkshops();
   }
 
-  filter(event: Event) {
-    const text = (event.target as HTMLInputElement).value;
-    console.log(text);
+  filterWorkshops() {
+    return concat(
+      // Skip debounce time on first search
+      this.filter$.pipe(take(1)),
+      this.filter$.pipe(debounceTime(300))
+    ).pipe(
+      distinctUntilChanged(),
+      map((filter) => this.workshops.filter((workshop) => matchEntry(workshop, filter)))
+    );
+  }
+
+  searchText(event: Event) {
+    const text = (event.target as HTMLInputElement).value?.trim();
+    this.filter$.next({ ...this.filter$.value, search: text });
+    setQueryParams({ search: text.length > 0 ? text : undefined });
+  }
+
+  addTagFilter(tag: string) {
+    if (!this.tags.includes(tag)) {
+      this.tags.push(tag);
+      this.filter$.next({ ...this.filter$.value, tags: [...this.tags, ...this.sub] });
+      setQueryParams({ tags: this.tags.length > 0 ? this.tags.join(',') : undefined });
+    }
+  }
+
+  removeTagFilter(tag: string) {
+    this.tags = this.tags.filter((t) => t !== tag);
+    this.filter$.next({ ...this.filter$.value, tags: [...this.tags, ...this.sub] });
+    setQueryParams({ tags: this.tags.length > 0 ? this.tags.join(',') : undefined });
+  }
+
+  trackById(_index: number, workshop: ContentEntry) {
+    return workshop.id;
   }
 }

@@ -57,7 +57,9 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
                   <h2>Platform <app-icon name="tools" size="28"></app-icon></h2>
                   <p>Use it to create and host workshops and associated sample code, slides, and resources.</p>
                   <p>
-                    <a href="https://microsoft.github.io/moaw/workshop/create-workshop/"><app-icon name="arrow-right"></app-icon>How to create and host your workshop</a>
+                    <a href="https://microsoft.github.io/moaw/workshop/create-workshop/"
+                      ><app-icon name="arrow-right"></app-icon>How to create and host your workshop</a
+                    >
                   </p>
                 </div>
                 <div class="item">

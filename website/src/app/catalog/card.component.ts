@@ -1,20 +1,27 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContentEntry } from './content-entry';
 import { DatePipe } from '../shared/pipes/date.pipe';
+import { ChipComponent } from '../shared/components/chip.component';
 
 @Component({
   selector: 'app-card',
   standalone: true,
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, ChipComponent],
   template: `
     <a [href]="workshop.url" [title]="workshop.description" class="card">
-      <div class="banner" [style]="{ 'background-image': 'url(' + workshop.bannerUrl + ')' }">
-        <div *ngIf="workshop.duration" class="duration">{{ workshop.duration }} min</div>
+      <div class="banner">
+        <div *ngIf="workshop.duration" class="duration" [ngClass]="getDurationClass(workshop.duration)">
+          {{ workshop.duration }} min
+        </div>
         <!-- <div class="last-updated">Updated: {{ workshop.lastUpdated | date }}</div> -->
       </div>
       <div class="title">{{ workshop.title }}</div>
-      <div class="tags">{{ workshop.tags.slice(0, 4).join(', ') }}</div>
+      <div class="tags">
+        <app-chip *ngFor="let tag of workshop.tags.slice(0, 4)" (click)="selectTag(tag, $event)" type="clickable">
+          {{ tag }}
+        </app-chip>
+      </div>
     </a>
   `,
   styles: [
@@ -44,13 +51,11 @@ import { DatePipe } from '../shared/pipes/date.pipe';
       .banner {
         position: relative;
         height: 120px;
-        background-color: var(--neutral-light);
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: 50%;
+        height: 20px;
 
         img {
           margin: 0;
+          height: 0px;
         }
       }
 
@@ -64,6 +69,16 @@ import { DatePipe } from '../shared/pipes/date.pipe';
         background: var(--neutral-dark);
         border-radius: var(--border-radius);
         padding: 0 var(--space-xs);
+
+        &.short {
+          background: var(--accent-3);
+        }
+        &.medium {
+          background: var(--medium);
+        }
+        &.long {
+          background: var(--primary);
+        }
       }
 
       .last-updated {
@@ -81,14 +96,29 @@ import { DatePipe } from '../shared/pipes/date.pipe';
       }
 
       .tags {
-        font-size: var(--text-size-sm);
-        margin: var(--space-md);
+        margin: 0 var(--space-md) var(--space-md) var(--space-md);
         text-transform: lowercase;
-        opacity: 0.7;
       }
     `
   ]
 })
 export class CardComponent {
   @Input() workshop!: ContentEntry;
+  @Output() clickTag: EventEmitter<string> = new EventEmitter();
+
+  getDurationClass(duration: number): string {
+    if (duration <= 30) {
+      return 'short';
+    } else if (duration <= 60) {
+      return 'medium';
+    } else {
+      return 'long';
+    }
+  }
+
+  selectTag(tag: string, event: Event) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.clickTag.emit(tag);
+  }
 }

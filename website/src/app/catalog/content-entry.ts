@@ -5,6 +5,7 @@ import { updateAssetsBasePath } from '../shared/loader';
 const defaultBanner = 'images/workshop-banner-default.jpg';
 
 export interface ContentEntry {
+  id: string;
   title: string;
   description: string;
   tags: string[];

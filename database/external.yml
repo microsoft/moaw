@@ -21,7 +21,7 @@
     - François Bouteruche
   contacts:
     - '@cmaneu'
-    - '@fbouteruche '
+    - '@fbouteruche'
   banner_url: https://iot-workshop.maneu.fr/img/compresseur-1.jpg
   duration_minutes: 120
   audience: students, pro devs
@@ -44,7 +44,7 @@
   level: beginner
   tags: nestjs, api, azure, cosmosdb, storage, functions
 
-- title: APIM Hands-on Lab
+- title: Hands-on Lab APIM
   url: https://azure.github.io/apim-lab/
   github_url: https://github.com/Azure/apim-lab
   language: en
@@ -58,7 +58,7 @@
   duration_minutes: 180
   audience: students, pro devs
   level: beginner
-  tags: api, apim, azure, devops, policy, gateway
+  tags: api, apim, azure, devops, policy, gateway, csu
 
 - title: Powerplatform Workshop
   url: https://microsoft.github.io/Low-Code/docs/intro/
@@ -75,3 +75,65 @@
   audience: students, pro devs
   level: beginner
   tags: powerplatform, azure, cli, function, connector, vscode
+
+  - title: Product Hands-on Lab AKS - Azure Kubernetes 
+  url: https://aka.ms/aks-workshop
+  github_url: https://github.com/lgmorand/aks-workshop
+  language: en
+  last_updated: 2022-02-23
+  type: workshop
+  description: In this lab, you’ll go through tasks that will help you master the basic and more advanced topics required to deploy a containerized application to Kubernetes on Azure Kubernetes Service (AKS).
+  authors:
+    - Louis-Guillaume MORAND 
+    - Iheb KHEMISSI
+    - Clémence Lesné
+  contacts:
+    - '@clesne'
+    - '@lomorand'
+    - '@ihebkhemissi'
+  duration_minutes: 180
+  audience: students, pro devs, admin, ops
+  level: beginner
+  tags: aks, container, docker, helm, cli, kubernetes, azure, csu
+
+  - title: Product Hands-on Lab ACA - Azure Container Apps 
+  url: https://aka.ms/aca-workshop
+  github_url: https://github.com/lgmorand/workshop-aca
+  language: en
+  last_updated: 2022-02-23
+  type: workshop
+  description: In this Hands-on Lab, you’ll go through tasks that will help you master the basics and more advanced topics required to deploy applications to Azure Container Apps.
+  authors:
+    - Louis-Guillaume MORAND 
+    - Fethi Dilmi
+    - Maxime VILLEGER
+    - Zlatko ARIFHODZIC
+  contacts:
+    - '@fethidilmi'
+    - '@lomorand'
+    - '@mavilleg'
+    - '@zlarifho'
+  duration_minutes: 180
+  audience: students, pro devs, admin, ops
+  level: beginner
+  tags: container, docker, helm, cli, kubernetes, azure, aca, dapr, keda, ingress, csu
+
+  - title: Product Hands-on Lab DAPR - Distributed Application Runtime
+  url: https://daprbuildworkshop.z6.web.core.windows.net/
+  github_url: https://github.com/SoTrx/dapr-build-workshop 
+  banner_url: assets/dapr.png           
+  language: fr
+  last_updated: 2022-02-23
+  type: workshop
+  description: Ce Hands-on Lab est une introduction à Dapr et à ses concepts. Au travers de différentes activités, le but sera de découvrir les fonctionnalités de Dapr, tout d’abord en isolation, et ensuite en utilisant son intégration dans Azure Container Apps.
+    authors:
+    - Louis-Guillaume MORAND 
+    - Lucas Peirone
+  contacts:
+    - '@lupeiron'
+    - '@lomorand'
+  duration_minutes: 180
+  audience: students, pro devs
+  level: beginner
+  tags: container, docker, cli, kubernetes, azure, aca, dapr, keda, ingress, sidecar, csu
+
