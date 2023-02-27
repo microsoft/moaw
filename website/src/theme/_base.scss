@@ -41,3 +41,52 @@ img,
 iframe {
   border: 0;
 }
+
+summary {
+  position: relative;
+  cursor: pointer;
+  list-style: none;
+  padding: var(--space-xs) var(--space-md) var(--space-xs) var(--space-lg);
+  margin-left: calc(-1 * var(--space-md));
+  margin-right: calc(-1 * var(--space-md));
+
+  &::before {
+    content: '';
+    display: block;
+    border-width: 0.4rem;
+    border-style: solid;
+    border-color: transparent transparent transparent var(--dark);
+    position: absolute;
+    top: var(--space-md);
+    left: var(--space-md);
+    transform: rotate(0);
+    transform-origin: 0.2rem 50%;
+    transition: var(--transition-duration) transform ease;
+  }
+
+  &::after {
+    content: '';
+    display: block;
+    position: relative;
+    top: calc(var(--space-xs) + 1px);
+    left: calc(-1 * var(--space-md));
+    width: calc(100% + var(--space-md));
+    height: 1px;
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+
+details {
+  padding: 0 var(--space-md);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+
+  &[open] > summary::before {
+    transform: rotate(90deg);
+  }
+
+  > summary::-webkit-details-marker {
+    display: none;
+  }
+}
