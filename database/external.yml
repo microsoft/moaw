@@ -76,7 +76,7 @@
   level: beginner
   tags: powerplatform, azure, cli, function, connector, vscode
 
-  - title: Product Hands-on Lab AKS - Azure Kubernetes 
+- title: Product Hands-on Lab AKS - Azure Kubernetes 
   url: https://aka.ms/aks-workshop
   github_url: https://github.com/lgmorand/aks-workshop
   language: en
@@ -96,7 +96,7 @@
   level: beginner
   tags: aks, container, docker, helm, cli, kubernetes, azure, csu
 
-  - title: Product Hands-on Lab ACA - Azure Container Apps 
+- title: Product Hands-on Lab ACA - Azure Container Apps 
   url: https://aka.ms/aca-workshop
   github_url: https://github.com/lgmorand/workshop-aca
   language: en
@@ -118,7 +118,7 @@
   level: beginner
   tags: container, docker, helm, cli, kubernetes, azure, aca, dapr, keda, ingress, csu
 
-  - title: Product Hands-on Lab DAPR - Distributed Application Runtime
+- title: Product Hands-on Lab DAPR - Distributed Application Runtime
   url: https://daprbuildworkshop.z6.web.core.windows.net/
   github_url: https://github.com/SoTrx/dapr-build-workshop 
   banner_url: assets/dapr.png           
@@ -126,7 +126,7 @@
   last_updated: 2022-02-23
   type: workshop
   description: Ce Hands-on Lab est une introduction à Dapr et à ses concepts. Au travers de différentes activités, le but sera de découvrir les fonctionnalités de Dapr, tout d’abord en isolation, et ensuite en utilisant son intégration dans Azure Container Apps.
-    authors:
+  authors:
     - Louis-Guillaume MORAND 
     - Lucas Peirone
   contacts:
