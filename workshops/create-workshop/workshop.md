@@ -78,12 +78,18 @@ You're now ready to create a new workshop!
 Open a terminal, and copy the workshop folder `template/workshop` to the `workshops/` folder, and give it a name (you can also do it from your file explorer if you don't have a bash terminal):
 
 ```sh
-cp -r template/workshop workshops/<your-workshop-name>
+cp -r template/workshop workshops/<your-workshop-name>/
 ```
 
 <div class="tip" data-title="tip">
 
 > Pick a short but meaninful name for the folder, using the **kebab-case** convention (e.g. `create-workshop`).
+
+</div>
+
+<div class="warning" data-title="warning">
+
+> Make sure sure to add a trailing `/` in the URL, otherwise you might end up with a 404 error.
 
 </div>
 
@@ -117,6 +123,12 @@ tags: javascript, api, node.js          # Required. Tags for filtering and searc
 ```
 
 Make sure to fill in all the required fields, and remove or comment the optional fields you don't need. These fields will be used to display the workshop in the website, and feed the search index.
+
+<div class="tip" data-title="tip">
+
+> If your file is not loading, it may be because of a syntax error in the front matter. If you open the console in your browser developer tools with `F12`, you should see an error message indicating the error.
+
+</div>
 
 ### Write your workshop
 
@@ -190,6 +202,30 @@ You can also add links to any external resources you may need in your workshop:
 ```md
 [Link text](assets/code-solution.zip)
 ```
+
+### Add foldable sections
+
+You can add foldable sections to your workshop by using the following syntax:
+
+```md
+<details>
+<summary>Click to expand</summary>
+
+This is the content of the foldable section.
+You can user *any* **Markdown** syntax as  usual here.
+
+</details>
+```
+
+This will render as:
+
+<details>
+<summary>Click to expand</summary>
+
+This is the content of the foldable section.
+You can user *any* **Markdown** syntax as  usual here.
+
+</details>
 
 ---
 
