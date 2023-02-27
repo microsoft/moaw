@@ -44,7 +44,7 @@
   level: beginner
   tags: nestjs, api, azure, cosmosdb, storage, functions
 
-- title: APIM Hands-on Lab
+- title: Hands-on Lab APIM
   url: https://azure.github.io/apim-lab/
   github_url: https://github.com/Azure/apim-lab
   language: en
@@ -73,10 +73,10 @@
   duration_minutes: 180
   audience: students, pro devs
   level: beginner
-  tags: api, apim, azure, devops, policy, gateway
+  tags: api, apim, azure, devops, policy, gateway, csu
 
-  - title: [AKS] Azure Kubernetes Workshop
-  url: https://stoakswks.z6.web.core.windows.net/v1/
+  - title: Product Hands-on Lab AKS - Azure Kubernetes 
+  url: https://aka.ms/aks-workshop
   github_url: https://github.com/lgmorand/aks-workshop
   language: en
   last_updated: 2022-02-23
@@ -93,10 +93,10 @@
   duration_minutes: 180
   audience: students, pro devs, admin, ops
   level: beginner
-  tags: aks, container, docker, helm, cli, kubernetes, azure
+  tags: aks, container, docker, helm, cli, kubernetes, azure, csu
 
-  - title: [ACA] Azure Container Apps Workshop
-  url: https://stoacawks.z6.web.core.windows.net/
+  - title: Product Hands-on Lab ACA - Azure Container Apps 
+  url: https://aka.ms/aca-workshop
   github_url: https://github.com/lgmorand/workshop-aca
   language: en
   last_updated: 2022-02-23
@@ -115,13 +115,13 @@
   duration_minutes: 180
   audience: students, pro devs, admin, ops
   level: beginner
-  tags: container, docker, helm, cli, kubernetes, azure, aca, dapr, keda, ingress
+  tags: container, docker, helm, cli, kubernetes, azure, aca, dapr, keda, ingress, csu
 
   
-  - title: [ACA] Azure Container Apps Workshop
+  - title: Product Hands-on Lab DAPR - Distributed Application Runtime
   url: https://daprbuildworkshop.z6.web.core.windows.net/
   github_url: https://github.com/SoTrx/dapr-build-workshop 
-  banner_url: assets/dapr.png           # Optional. Should be a 1280x640px image
+  banner_url: assets/dapr.png           
   language: fr
   last_updated: 2022-02-23
   type: workshop
@@ -135,7 +135,7 @@
   duration_minutes: 180
   audience: students, pro devs
   level: beginner
-  tags: container, docker, cli, kubernetes, azure, aca, dapr, keda, ingress, sidecar
+  tags: container, docker, cli, kubernetes, azure, aca, dapr, keda, ingress, sidecar, csu
 
 
 
