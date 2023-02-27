@@ -20,11 +20,11 @@ All the content is available under the [Creative Commons Attribution-ShareAlike 
 
 ## 📚 Browse the content
 
-The easiest way to browse the available content is to visit the [website](https://aka.ms/moaw).
+The easiest way to browse the available content is to look at the [website](https://aka.ms/moaw/catalog).
 
 ## 👩‍🏫 Conduct a workshop
 
-You can link to any workshop from this repository or any publicly available GitHub repository using the following URL format: `https://aka.ms/ws?src=<workshop_folder>/`
+You can link to any workshop from this repository using the following URL format: `https://aka.ms/ws?src=<workshop_folder>/`
 
 **Example:** [https://aka.ms/ws?src=swa-gatsby-portfolio/](https://aka.ms/ws?src=swa-gatsby-portfolio/)
 
