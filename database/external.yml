@@ -58,22 +58,23 @@
   duration_minutes: 180
   audience: students, pro devs
   level: beginner
-  tags: api, apim, azure, devops, policy, gateway
-- title: APIM Hands-on Lab
-  url: https://azure.github.io/apim-lab/
-  github_url: https://github.com/Azure/apim-lab
+  tags: api, apim, azure, devops, policy, gateway, csu
+
+- title: Powerplatform Workshop
+  url: https://microsoft.github.io/Low-Code/docs/intro/
+  github_url: https://github.com/microsoft/Low-Code
   language: en
-  last_updated: 2022-02-02
+  last_updated: 2023-02-15
   type: workshop
-  description: This hands-on lab will guide you through the different concepts around Azure API Management, from the creation to the DevOps, including good practices in terms of versioning, security, and so on.
+  description: This hands-on Workshop on the subject LowCode/powerplatform can help you skill up with self-guided tutorials and real-world applications. Be sure to check back regularly for updates.
   authors:
     - Folks
   contacts:
-    - '@nibarras'
-  duration_minutes: 180
+    - '@juliajuju93'
+  duration_minutes: 240
   audience: students, pro devs
   level: beginner
-  tags: api, apim, azure, devops, policy, gateway, csu
+  tags: powerplatform, azure, cli, function, connector, vscode
 
   - title: Product Hands-on Lab AKS - Azure Kubernetes 
   url: https://aka.ms/aks-workshop
@@ -117,7 +118,6 @@
   level: beginner
   tags: container, docker, helm, cli, kubernetes, azure, aca, dapr, keda, ingress, csu
 
-  
   - title: Product Hands-on Lab DAPR - Distributed Application Runtime
   url: https://daprbuildworkshop.z6.web.core.windows.net/
   github_url: https://github.com/SoTrx/dapr-build-workshop 
@@ -136,9 +136,4 @@
   audience: students, pro devs
   level: beginner
   tags: container, docker, cli, kubernetes, azure, aca, dapr, keda, ingress, sidecar, csu
-
-
-
-
-
 
