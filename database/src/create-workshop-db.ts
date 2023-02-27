@@ -4,6 +4,7 @@
 //****************************************************************************
 
 import path from 'path';
+import process from 'process';
 import { promises as fs } from 'fs';
 import { fileURLToPath } from 'url';
 import { getWorkshopEntries } from './lib/workshop.js';
@@ -21,16 +22,22 @@ const dbPath = path.join(__dirname, '../../website/src/public/workshops.json');
 
   // TODO: find localized versions
 
-  const externalEntries = await getExternalEntries(externalEntriesFiles);
-  console.log(`Found ${externalEntries.length} external workshop(s)`);
-
-  const externalSourcesEntries = await getEntriesFromExternalSources();
-  console.log(`Found ${externalSourcesEntries.length} workshop(s) from external sources`);
-
-  entries = [...entries, ...externalEntries, ...externalSourcesEntries];
-
-  entries.sort((a, b) => (a.lastUpdated > b.lastUpdated ? -1 : 1));
-  console.log(`Total workshops: ${entries.length}`);
+  try {
+    const externalEntries = await getExternalEntries(externalEntriesFiles);
+    console.log(`Found ${externalEntries.length} external workshop(s)`);
+  
+    const externalSourcesEntries = await getEntriesFromExternalSources();
+    console.log(`Found ${externalSourcesEntries.length} workshop(s) from external sources`);
+  
+    entries = [...entries, ...externalEntries, ...externalSourcesEntries];
+  
+    entries.sort((a, b) => (a.lastUpdated > b.lastUpdated ? -1 : 1));
+    console.log(`Total workshops: ${entries.length}`);
+  } catch (error: any) {
+    console.error(`Error while trying to build database: ${error?.message}`);
+    process.exitCode = 1;
+    return;
+  }
 
   try {
     await fs.writeFile(dbPath, JSON.stringify(entries, null, 2));

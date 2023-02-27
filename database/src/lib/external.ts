@@ -23,8 +23,7 @@ export async function getExternalEntries(filePath: string): Promise<ContentEntry
     const entries = await Promise.all(entriesPromises);
     return entries;
   } catch (error: any) {
-    console.error(`Error while trying to read or parse "${filePath}": ${error?.message}`);
-    return [];
+    throw new Error(`Error while trying to read or parse "${filePath}": ${error?.message}`);
   }
 }
 

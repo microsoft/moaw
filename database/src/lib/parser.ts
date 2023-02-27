@@ -16,7 +16,6 @@ export async function getEntriesFromExternalSources(): Promise<ContentEntry[]> {
     const entries = await Promise.all(entriesPromises);
     return entries.flat();
   } catch (error: any) {
-    console.error(`Error while trying to get entries from external parsers: ${error?.message}`);
-    return [];
+    throw new Error(`Error while trying to get entries from external parsers: ${error?.message}`);
   }
 }
