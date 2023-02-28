@@ -2,7 +2,7 @@
 
 ## 📚 Browse the content
 
-The easiest way to browse the available content is to visit the [website](https://aka.ms/moaw).
+The easiest way to browse the available content on the [website](https://aka.ms/moaw/catalog).
 
 ## 👩‍🏫 Conduct a workshop
 
