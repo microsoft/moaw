@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/themoaw/moaw.git"
+    "url": "git+https://github.com/microsoft/moaw.git"
   },
   "keywords": [],
   "author": {
@@ -18,9 +18,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/themoaw/moaw/issues"
+    "url": "https://github.com/microsoft/moaw/issues"
   },
-  "homepage": "https://github.com/themoaw/moaw#readme",
+  "homepage": "https://github.com/microsoft/moaw#readme",
   "workspaces": [
     "packages/*"
   ]
