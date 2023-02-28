@@ -21,6 +21,14 @@ You can link to any workshop from this repository using the following URL format
 - You can share any individual markdown-formatted page, using the URL format: `https://aka.ms/ws/page?src=<workshop_folder/path_to_file>` or `https://aka.ms/ws/page?src=gh:<github_repo/path_to_file>`<br>
 This is useful for sharing prerequisites, notes, etc.
 
+#### Customized catalog view
+
+You can customize the catalog view by adding the following parameters to the URL:
+
+- `sub=<tag_list>`: Filter the catalog by tags (coma-separated). Tags defined in the `sub` parameter will not be displayed nor changeable by the users, and they'll be able to filter using search or additional tags as usual.
+
+- `lang=<language>`: Filter the catalog by language. The language must be a valid [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) 2-letter code.
+
 ## 🚀 Create a new workshop
 
 You can create a new workshop by creating a new folder in the `workshops` folder, and adding a `workshop.md` file inside it.
