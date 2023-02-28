@@ -136,3 +136,40 @@
   level: beginner
   tags: container, docker, cli, kubernetes, azure, aca, dapr, keda, ingress, sidecar, csu
 
+- title: Microservices in practice with Node.js, Docker and Azure
+  url: https://microsoft.github.io/moaw/workshop/gh:azure-samples/nodejs-microservices/main/docs/
+  github_url: https://github.com/Azure-Samples/nodejs-microservices
+  language: en
+  last_updated: 2023-01-25
+  type: workshop
+  description: Discover the fundamentals of microservices architecture and how to implement it from code to production, using Node.js, Docker and Azure. You'll use Express, Fastify, and NestJS to build 3 microservices, and Vite to create the web interface of our application.
+  authors:
+    - Yohan Lasorsa
+    - Christopher Maneu
+  contacts:
+    - '@sinedied'
+    - '@cmaneu'
+  duration_minutes: 180
+  audience: students, pro devs
+  level: intermediate
+  tags: containers, node.js, microservices, azure, cosmosdb, container apps, docker, npm workspaces, github actions, infrastructure as code, bicep, static web apps, javascript, typescript, api
+
+- title: Java Runtimes and Azure Container Apps Workshop
+  url: https://azure.github.io/aca-java-runtimes-workshop/
+  github_url: https://github.com/Azure/aca-java-runtimes-workshop
+  language: en
+  last_updated: 2022-11-12
+  type: workshop
+  description: "Let's compare the cloud performance of different Java runtimes: from developing microservices written in Quarkus/SpringBoot/Micronaut, to packaging them in Docker containers, deploying them in Azure Container Apps and monitoring the performances."
+  authors:
+    - Antonio Goncalves
+    - Yohan Lasorsa
+    - Julien Dubois
+  contacts:
+    - '@agoncal'
+    - '@sinedied'
+    - '@juliendubois'
+  duration_minutes: 180
+  audience: students, pro devs
+  level: beginner
+  tags: containers, java, microservices, azure, container apps, docker, postgresql, github actions
