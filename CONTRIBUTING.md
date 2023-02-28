@@ -141,7 +141,7 @@ You can special syntax around blockquotes to create admonitions, to highlight im
 
 ## Reference an existing workshop
 
-If you already have a workshop hosted somewhere else, you can reference it in this repository by adding an entry to the [`database/external.yml`](database/external.yml) file.
+If you already have a workshop hosted somewhere else, you can reference it in this repository by adding an entry to the [`packages/database/external.yml`](packages/database/external.yml) file.
 
 ```yaml
 - title: Full workshop title              # Required. Title of the workshop

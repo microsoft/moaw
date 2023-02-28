@@ -2,7 +2,7 @@
 
 ## 📚 Browse the content
 
-The easiest way to browse the available content is to visit the [website](https://aka.ms/moaw).
+The easiest way to browse the available content on the [website](https://aka.ms/moaw/catalog).
 
 ## 👩‍🏫 Conduct a workshop
 
@@ -20,6 +20,14 @@ You can link to any workshop from this repository using the following URL format
 
 - You can share any individual markdown-formatted page, using the URL format: `https://aka.ms/ws/page?src=<workshop_folder/path_to_file>` or `https://aka.ms/ws/page?src=gh:<github_repo/path_to_file>`<br>
 This is useful for sharing prerequisites, notes, etc.
+
+#### Customized catalog view
+
+You can customize the catalog view by adding the following parameters to the URL:
+
+- `sub=<tag_list>`: Filter the catalog by tags (coma-separated). Tags defined in the `sub` parameter will not be displayed nor changeable by the users, and they'll be able to filter using search or additional tags as usual.
+
+- `lang=<language>`: Filter the catalog by language. The language must be a valid [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) 2-letter code. You can also disable the language filter by setting the value to `all`.
 
 ## 🚀 Create a new workshop
 

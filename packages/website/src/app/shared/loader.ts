@@ -1,6 +1,6 @@
 import { updateTrackingCodeInText } from 'cxa-track/tracking';
-import { getFileUrl, getBaseUrl } from '../shared/github';
-import { FrontMatterParseResult, parseFrontMatter } from '../shared/frontmatter';
+import { getFileUrl, getBaseUrl } from './github';
+import { FrontMatterParseResult, parseFrontMatter } from './frontmatter';
 import { getCurrentRoute, getPathAfterRoute, redirectRoutePath } from '../router';
 
 const cdnUrl = 'https://cdn.jsdelivr.net/npm/';

@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "scripts": {
     "start": "npm run start --workspace=website",
+    "build:website": "npm run build --workspace=website",
     "create:db": "npm run create:db --workspace=database",
     "format": "npm run format --workspaces"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/themoaw/moaw.git"
+    "url": "git+https://github.com/microsoft/moaw.git"
   },
   "keywords": [],
   "author": {
@@ -17,11 +18,10 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/themoaw/moaw/issues"
+    "url": "https://github.com/microsoft/moaw/issues"
   },
-  "homepage": "https://github.com/themoaw/moaw#readme",
+  "homepage": "https://github.com/microsoft/moaw#readme",
   "workspaces": [
-    "website",
-    "database"
+    "packages/*"
   ]
 }

@@ -12,7 +12,7 @@ import { ChipComponent } from '../shared/components/chip.component';
     <a [href]="workshop.url" [title]="workshop.description" class="card">
       <div class="banner">
         <div *ngIf="workshop.duration" class="duration" [ngClass]="getDurationClass(workshop.duration)">
-          {{ workshop.duration }} min
+          {{ getDurationText(workshop.duration) }}
         </div>
         <!-- <div class="last-updated">Updated: {{ workshop.lastUpdated | date }}</div> -->
       </div>
@@ -113,6 +113,15 @@ export class CardComponent {
       return 'medium';
     } else {
       return 'long';
+    }
+  }
+
+  getDurationText(duration: number): string {
+    if (duration > 60) {
+      const hours = Math.round(duration / 60 * 10) / 10;
+      return hours + ' hour';
+    } else {
+      return duration + ' min';
     }
   }
 
