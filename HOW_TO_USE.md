@@ -27,7 +27,7 @@ You can customize the catalog view by adding the following parameters to the URL
 
 - `sub=<tag_list>`: Filter the catalog by tags (coma-separated). Tags defined in the `sub` parameter will not be displayed nor changeable by the users, and they'll be able to filter using search or additional tags as usual.
 
-- `lang=<language>`: Filter the catalog by language. The language must be a valid [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) 2-letter code.
+- `lang=<language>`: Filter the catalog by language. The language must be a valid [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) 2-letter code. You can also disable the language filter by setting the value to `all`.
 
 ## 🚀 Create a new workshop
 
