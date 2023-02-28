@@ -22,7 +22,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Setup Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: 18
     - name: Install dependencies
@@ -32,16 +32,13 @@ jobs:
       env:
         GITHUB_REPO_URL: ${{ github.event.repository.html_url }}
     - name: Build website
-      run: |
-        cd website
-        npm run build -- --base-href /moaw/
-        npm run tag:version
+      run: npm run build:website
     - name: Setup GitHub Pages
       uses: actions/configure-pages@v2
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
       with:
-        path: website/dist/moaw-website
+        path: packages/website/dist/moaw-website
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v1

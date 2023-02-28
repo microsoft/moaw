@@ -12,7 +12,7 @@ import { getExternalEntries } from './lib/external.js';
 import { getEntriesFromExternalSources } from './lib/parser.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const workshopsPath = path.join(__dirname, '../../workshops');
+const workshopsPath = path.join(__dirname, '../../../workshops');
 const externalEntriesFiles = path.join(__dirname, '../external.yml');
 const dbPath = path.join(__dirname, '../../website/src/public/workshops.json');
 

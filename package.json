@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "npm run start --workspace=website",
+    "build:website": "npm run build --workspace=website",
     "create:db": "npm run create:db --workspace=database",
     "format": "npm run format --workspaces"
   },
@@ -21,7 +22,6 @@
   },
   "homepage": "https://github.com/themoaw/moaw#readme",
   "workspaces": [
-    "website",
-    "database"
+    "packages/*"
   ]
 }

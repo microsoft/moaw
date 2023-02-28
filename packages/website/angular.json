@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "$schema": "../../node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -55,28 +55,28 @@
               },
               {
                 "glob": "**/*",
-                "input": "../workshops",
+                "input": "../../workshops",
                 "output": "workshops"
               }
             ],
             "styles": [
-              "../node_modules/prismjs/themes/prism-okaidia.css",
+              "../../node_modules/prismjs/themes/prism-okaidia.css",
               "src/styles.scss"
             ],
             "scripts": [
-              "../node_modules/clipboard/dist/clipboard.min.js",
-              "../node_modules/marked/marked.min.js",
-              "../node_modules/prismjs/prism.js",
-              "../node_modules/prismjs/components/prism-javascript.min.js",
-              "../node_modules/prismjs/components/prism-typescript.min.js",
-              "../node_modules/prismjs/components/prism-json.min.js",
-              "../node_modules/prismjs/components/prism-bash.min.js",
-              "../node_modules/prismjs/components/prism-csharp.min.js",
-              "../node_modules/prismjs/components/prism-yaml.min.js",
-              "../node_modules/prismjs/components/prism-python.min.js",
-              "../node_modules/prismjs/components/prism-docker.min.js",
-              "../node_modules/prismjs/components/prism-bicep.min.js",
-              "../node_modules/prismjs/components/prism-sql.min.js"
+              "../../node_modules/clipboard/dist/clipboard.min.js",
+              "../../node_modules/marked/marked.min.js",
+              "../../node_modules/prismjs/prism.js",
+              "../../node_modules/prismjs/components/prism-javascript.min.js",
+              "../../node_modules/prismjs/components/prism-typescript.min.js",
+              "../../node_modules/prismjs/components/prism-json.min.js",
+              "../../node_modules/prismjs/components/prism-bash.min.js",
+              "../../node_modules/prismjs/components/prism-csharp.min.js",
+              "../../node_modules/prismjs/components/prism-yaml.min.js",
+              "../../node_modules/prismjs/components/prism-python.min.js",
+              "../../node_modules/prismjs/components/prism-docker.min.js",
+              "../../node_modules/prismjs/components/prism-bicep.min.js",
+              "../../node_modules/prismjs/components/prism-sql.min.js"
             ],
             "allowedCommonJsDependencies": [
               "@primer/octicons"
