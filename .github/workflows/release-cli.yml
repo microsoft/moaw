@@ -22,8 +22,8 @@ jobs:
       with:
         node-version: 18
     - run: npm ci
-    - run: npm run build
-    - run: npx semantic-release
+    - run: npm run build:cli
+    - run: cd packages/cli && npx semantic-release
       if: success()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
