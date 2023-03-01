@@ -16,10 +16,12 @@
     "start": "node ./bin/moaw.js",
     "build": "npm run clean -s && tsc",
     "build:watch": "tsc -w --sourceMap",
+    "postbuild": "npm run build --workspace=website && npm run copy:assets -s",
+    "copy:assets": "mkdir -p dist && cp -R ../../template dist && cp -R ../website/dist/website dist && rm -rf dist/website/workshops*",
     "lint": "xo",
     "lint:fix": "xo --fix",
     "test": "xo",
-    "clean": "rm -rf lib *.tgz",
+    "clean": "rm -rf lib dist *.tgz",
     "release:check": "semantic-release --dry-run"
   },
   "devDependencies": {

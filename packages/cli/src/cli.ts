@@ -15,7 +15,6 @@ Commands:
 
 General options:
   -v, --version      Show version
-  --verbose          Show detailed logs
   --help             Show this help
 `;
 
@@ -51,7 +50,7 @@ export async function run(args: string[]) {
   switch (command) {
     case 'n':
     case 'new': {
-      await createNew({ name: parameters[0] });
+      await createNew({ name: parameters.join(' ') });
       break;
     }
 
@@ -68,7 +67,7 @@ export async function run(args: string[]) {
 
     default: {
       if (command) {
-        console.error(`Unknown command: ${command}\n`);
+        console.error(`Unknown command: ${command}`);
         process.exitCode = 1;
       }
 

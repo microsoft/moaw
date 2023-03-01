@@ -1,12 +1,14 @@
-import path from 'node:path';
 import fs from 'node:fs/promises';
 import process from 'node:process';
+import path, { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import createDebug from 'debug';
 import kebabCase from 'lodash.kebabcase';
-import { templateFiles } from '../constants.js';
+import { templatePath } from '../constants.js';
 import { pathExists, recursiveCopy } from '../util.js';
 
 const debug = createDebug('init');
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export type NewOptions = {
   name?: string;
@@ -21,13 +23,8 @@ export async function createNew(options: NewOptions = {}): Promise<void> {
 
     const foldername = kebabCase(name);
     await copyTemplate(foldername);
-    console.info('Done!');
-    console.info(
-      `Edit ${path.join(
-        path.resolve(foldername),
-        'workshop.md'
-      )} then run "moaw serve ${foldername}" to preview your workshop.`
-    );
+    console.info(`Created new workshop in '${foldername}'`);
+    console.info(`Edit '${foldername}/workshop.md' and run 'moaw serve ${foldername}' to preview your workshop.`);
   } catch (error: unknown) {
     const error_ = error as Error;
     console.error(error_.message);
@@ -37,17 +34,12 @@ export async function createNew(options: NewOptions = {}): Promise<void> {
 
 async function copyTemplate(destinationPath: string): Promise<void> {
   if (await pathExists(destinationPath)) {
-    debug('Destination path %s already exists', destinationPath);
-    const isFolder = await fs.lstat(destinationPath).then((stats) => stats.isDirectory());
-    if (!isFolder) {
-      throw new Error(`Destination path ${destinationPath} is not a directory`);
-    }
+    throw new Error(`Destination path '${destinationPath}' already exists`);
   } else {
-    debug('Creating destination directory %s', destinationPath);
+    debug('Creating destination path %s', destinationPath);
     await fs.mkdir(destinationPath, { recursive: true });
   }
 
   debug('Copying template to %s', destinationPath);
-  const copyPromises = templateFiles.map(async (templateFile) => recursiveCopy(templateFile, destinationPath));
-  await Promise.all(copyPromises);
+  await recursiveCopy(path.join(__dirname, '../..', templatePath), destinationPath);
 }
