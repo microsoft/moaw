@@ -80,7 +80,7 @@
   url: https://aka.ms/aks-workshop
   github_url: https://github.com/lgmorand/aks-workshop
   language: en
-  last_updated: 2022-02-23
+  last_updated: 2023-02-23
   type: workshop
   description: In this lab, you’ll go through tasks that will help you master the basic and more advanced topics required to deploy a containerized application to Kubernetes on Azure Kubernetes Service (AKS).
   authors:
@@ -100,7 +100,7 @@
   url: https://aka.ms/aca-workshop
   github_url: https://github.com/lgmorand/workshop-aca
   language: en
-  last_updated: 2022-02-23
+  last_updated: 2023-02-23
   type: workshop
   description: In this Hands-on Lab, you’ll go through tasks that will help you master the basics and more advanced topics required to deploy applications to Azure Container Apps.
   authors:
@@ -122,7 +122,7 @@
   url: https://daprbuildworkshop.z6.web.core.windows.net/
   github_url: https://github.com/SoTrx/dapr-build-workshop       
   language: fr
-  last_updated: 2022-02-23
+  last_updated: 2023-02-23
   type: workshop
   description: Ce Hands-on Lab est une introduction à Dapr et à ses concepts. Au travers de différentes activités, le but sera de découvrir les fonctionnalités de Dapr, tout d’abord en isolation, et ensuite en utilisant son intégration dans Azure Container Apps.
   authors:
@@ -173,3 +173,22 @@
   audience: students, pro devs
   level: beginner
   tags: containers, java, microservices, azure, container apps, docker, postgresql, github actions
+
+- title: Product Hands-on Lab ARO - Azure Red Hat OpenShift
+  url: https://microsoft.github.io/aroworkshop/
+  github_url: https://github.com/microsoft/aroworkshop     
+  language: en
+  last_updated: 2023-01-13
+  type: workshop
+  description: Azure Red Hat OpenShift is a fully managed Red Hat OpenShift service in Azure that is jointly engineered and supported by Microsoft and Red Hat. In this lab, you’ll go through a set of tasks that will help you understand some of the concepts of deploying and securing container based applications on top of Azure Red Hat OpenShift.
+    - Louis-Guillaume MORAND 
+    - Oren Kashi
+    - Ahmed Sabbour
+  contacts:
+    - '@b-orankashi'
+    - '@asabbour'
+    - '@lomorand'
+  duration_minutes: 240
+  audience: students, pro devs, ops, admin
+  level: intermediate 
+  tags: container, docker, kubernetes, azure, aro, ocp, openshift, redhat, csu
