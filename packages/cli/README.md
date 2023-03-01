@@ -16,6 +16,17 @@ npm install -g @moaw/cli
 
 ### Usage
 
-```bash
-moaw --help
+```
+Usage: moaw <command> [options]
+
+Commands:
+  n, new <name>      Create a new workshop
+  s, serve [<path>]  Preview workshop in target path (default: .)
+    -p, --port       Port to listen on (default: 4444)
+    -h, --host       Host address to bind to (default: localhost)
+    -o, --open       Open in browser (default: false)
+
+General options:
+  -v, --version      Show version
+  --help             Show this help
 ```

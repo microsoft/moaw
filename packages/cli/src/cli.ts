@@ -4,7 +4,7 @@ import minimist from 'minimist';
 import { createNew, serve } from './commands/index.js';
 import { getPackageJson } from './util.js';
 
-const help = `Usage: moaw <command> [<path>] [options]
+const help = `Usage: moaw <command> [options]
 
 Commands:
   n, new <name>      Create a new workshop
