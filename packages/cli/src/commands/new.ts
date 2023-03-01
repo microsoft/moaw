@@ -4,7 +4,7 @@ import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import createDebug from 'debug';
 import kebabCase from 'lodash.kebabcase';
-import { templatePath } from '../constants.js';
+import { templatePath, defaultWorkshopFile } from '../constants.js';
 import { pathExists, recursiveCopy } from '../util.js';
 
 const debug = createDebug('init');
@@ -24,7 +24,7 @@ export async function createNew(options: NewOptions = {}): Promise<void> {
     const foldername = kebabCase(name);
     await copyTemplate(foldername);
     console.info(`Created new workshop in '${foldername}'`);
-    console.info(`Edit '${foldername}/workshop.md' and run 'moaw serve ${foldername}' to preview your workshop.`);
+    console.info(`Edit '${foldername}/${defaultWorkshopFile}' and run 'moaw serve ${foldername}' to preview your workshop.`);
   } catch (error: unknown) {
     const error_ = error as Error;
     console.error(error_.message);
