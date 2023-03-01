@@ -24,7 +24,9 @@ export async function createNew(options: NewOptions = {}): Promise<void> {
     const foldername = kebabCase(name);
     await copyTemplate(foldername);
     console.info(`Created new workshop in '${foldername}'`);
-    console.info(`Edit '${foldername}/${defaultWorkshopFile}' and run 'moaw serve ${foldername}' to preview your workshop.`);
+    console.info(
+      `Edit '${foldername}/${defaultWorkshopFile}' and run 'moaw serve ${foldername}' to preview your workshop.`
+    );
   } catch (error: unknown) {
     const error_ = error as Error;
     console.error(error_.message);

@@ -6,6 +6,7 @@
     "ng": "ng",
     "start": "ng serve --serve-path moaw",
     "build": "ng build && npm run tag:version -s",
+    "build:cli": "ng build --base-href '/' && npm run tag:version -s",
     "watch": "ng build --watch --configuration development",
     "format": "prettier --write '(src|scripts)/**/*.{ts,json,scss}'",
     "tag:version": "version=\"sha.$(git rev-parse --short HEAD)\" && perl -i -pe \"s/__VERSION__/$version/g\" dist/website/main.*.js"

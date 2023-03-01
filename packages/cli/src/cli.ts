@@ -42,7 +42,7 @@ export async function run(args: string[]) {
   }
 
   if (options.verbose) {
-    debug.enable('*');
+    debug.enable('*,-socket.io*,-engine*');
   }
 
   const [command, ...parameters] = options._;
@@ -59,8 +59,9 @@ export async function run(args: string[]) {
       await serve({
         path: parameters[0],
         port: Number(options.port),
-        host: (options.host as string) ?? 'localhost',
-        open: Boolean(options.open)
+        host: options.host as string,
+        open: Boolean(options.open),
+        verbose: Boolean(options.verbose)
       });
       break;
     }

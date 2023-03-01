@@ -30,6 +30,15 @@ export async function getPackageJson(): Promise<Record<string, any>> {
   return pkg;
 }
 
+export async function isFolder(path: string) {
+  try {
+    const stat = await fs.lstat(path);
+    return stat.isDirectory();
+  } catch {
+    return false;
+  }
+}
+
 export async function pathExists(path: string) {
   try {
     await fs.access(path);
