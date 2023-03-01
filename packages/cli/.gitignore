@@ -1,0 +1,13 @@
+node_modules/
+.vscode/
+coverage/
+report/
+repo/
+lib/
+dist/
+*.log
+*.tgz
+.DS_Store
+Thumbs.db
+.env
+TODO
