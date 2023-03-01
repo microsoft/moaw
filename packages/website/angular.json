@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "moaw-website": {
+    "website": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -42,7 +42,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/moaw-website",
+            "outputPath": "dist/website",
             "index": "src/public/index.html",
             "main": "src/main.ts",
             "tsConfig": "tsconfig.json",
@@ -119,10 +119,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "moaw-website:build:production"
+              "browserTarget": "website:build:production"
             },
             "development": {
-              "browserTarget": "moaw-website:build:development"
+              "browserTarget": "website:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -130,7 +130,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "moaw-website:build"
+            "browserTarget": "website:build"
           }
         }
       }

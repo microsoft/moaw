@@ -8,7 +8,7 @@
     "build": "ng build && npm run tag:version -s",
     "watch": "ng build --watch --configuration development",
     "format": "prettier --write '(src|scripts)/**/*.{ts,json,scss}'",
-    "tag:version": "version=\"sha.$(git rev-parse --short HEAD)\" && perl -i -pe \"s/__VERSION__/$version/g\" dist/moaw-website/main.*.js"
+    "tag:version": "version=\"sha.$(git rev-parse --short HEAD)\" && perl -i -pe \"s/__VERSION__/$version/g\" dist/website/main.*.js"
   },
   "private": true,
   "dependencies": {
