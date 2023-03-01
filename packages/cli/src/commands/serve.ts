@@ -1,7 +1,7 @@
 import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import process from 'node:process';
-import { create, Options } from 'browser-sync';
+import { create, type Options } from 'browser-sync';
 import createDebug from 'debug';
 import glob from 'fast-glob';
 import { defaultWorkshopFile, websitePath } from '../constants.js';
