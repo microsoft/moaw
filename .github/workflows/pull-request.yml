@@ -23,3 +23,5 @@ jobs:
       run: npm run build:website
     - name: Build CLI
       run: npm run build:cli
+    - name: Run linters & tests
+      run: npm test --if-present --workspaces
