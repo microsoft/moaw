@@ -39,10 +39,7 @@ export async function pathExists(path: string) {
   }
 }
 
-export async function recursiveCopy(
-  source: string,
-  dest: string
-): Promise<void> {
+export async function recursiveCopy(source: string, dest: string): Promise<void> {
   try {
     await fs.mkdir(dest, { recursive: true });
   } catch {
@@ -56,9 +53,7 @@ export async function recursiveCopy(
       entries.map(async (entry) => {
         const sourcePath = path.join(source, entry.name);
         const destPath = path.join(dest, entry.name);
-        return entry.isDirectory()
-          ? recursiveCopy(sourcePath, destPath)
-          : fs.copyFile(sourcePath, destPath);
+        return entry.isDirectory() ? recursiveCopy(sourcePath, destPath) : fs.copyFile(sourcePath, destPath);
       })
     );
   } else {

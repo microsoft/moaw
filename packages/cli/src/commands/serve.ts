@@ -14,7 +14,6 @@ export type ServeOptions = {
 export async function serve(options: ServeOptions = {}) {
   try {
     // TODO: search for workshop.md
-
   } catch (error: unknown) {
     const error_ = error as Error;
     console.error(error_.message);

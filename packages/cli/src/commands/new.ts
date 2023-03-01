@@ -22,7 +22,12 @@ export async function createNew(options: NewOptions = {}): Promise<void> {
     const foldername = kebabCase(name);
     await copyTemplate(foldername);
     console.info('Done!');
-    console.info(`Edit ${path.join(path.resolve(foldername), 'workshop.md')} then run "moaw serve ${foldername}" to preview your workshop.`);
+    console.info(
+      `Edit ${path.join(
+        path.resolve(foldername),
+        'workshop.md'
+      )} then run "moaw serve ${foldername}" to preview your workshop.`
+    );
   } catch (error: unknown) {
     const error_ = error as Error;
     console.error(error_.message);

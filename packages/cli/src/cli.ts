@@ -27,7 +27,7 @@ export async function run(args: string[]) {
       v: 'version',
       p: 'port',
       h: 'host',
-      o: 'open',
+      o: 'open'
     }
   });
 
@@ -50,23 +50,29 @@ export async function run(args: string[]) {
 
   switch (command) {
     case 'n':
-    case 'new':
+    case 'new': {
       await createNew({ name: parameters[0] });
       break;
+    }
+
     case 's':
-    case 'serve':
+    case 'serve': {
       await serve({
         path: parameters[0],
         port: Number(options.port),
-        host: options.host ?? 'localhost',
-        open: options.open ?? false,
+        host: (options.host as string) ?? 'localhost',
+        open: Boolean(options.open)
       });
       break;
-    default:
+    }
+
+    default: {
       if (command) {
         console.error(`Unknown command: ${command}\n`);
-        process.exit(1);
+        process.exitCode = 1;
       }
+
       console.info(help);
+    }
   }
 }
