@@ -65,6 +65,7 @@
       "semantic-release-monorepo",
       "semantic-release-npm-github"
     ],
+    "tagFormat": "cli-${version}",
     "branches": "main"
   },
   "prettier": {
