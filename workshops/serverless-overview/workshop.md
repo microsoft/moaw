@@ -17,16 +17,18 @@ tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, emai
 #wt_id: <cxa_tracking_id>                # Optional. Set advocacy tracking code for supported links
 #oc_id: <marketing_tracking_id>          # Optional. Set marketing tracking code for supported links
 sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
-  - Before you start
+  - The Serverless Workshop
 ---
 
-# The Serverless Workshop
+## The Serverless Workshop
+
+### Before you start
 
 Welcome to this Azure Serverless Workshop. In this lab, you will use different types of serverless services on Azure to achieve a real world scenario. Don't worry, this is a step by step lab, you will be guided through it.
 
 During this workshop you will have the instructions to complete each steps, try to find the answer before looking at the solution.
 
-## Prerequisites
+### Prerequisites
 
 Before starting this workshop, be sure you have:
 
@@ -39,7 +41,6 @@ Before starting this workshop, be sure you have:
 > Before starting, login to your Azure subscription locally using Azure CLI and inside the [Azure Portal][az-portal] using your own credentials.
 
 </div>
-
 
 <details>
 <summary>Toggle solution</summary>
@@ -55,7 +56,7 @@ az account set --subscription <subscription-id>
 
 </details>
 
-## Scenario overview
+### Scenario overview
 
 The goal of the lab is to upload an audio file to Azure and receive the content inside a Single Page Application. Here is a diagram to explain it:
 
@@ -79,7 +80,7 @@ The goal of the lab is to upload an audio file to Azure and receive the content 
 
 You will get more details about each of these services during the Hands On Lab.
 
-## Naming convention
+### Naming convention
 
 Before starting to deploy any Azure services, it's important to follow a naming convention. Based on the official [documentation][az-naming-convention] we need to define a few things:
 
@@ -92,19 +93,22 @@ We will also add an owner property, so for the purpose of this lab the values wi
 
 - The application name: `hol` (for Hands On Lab)
 - The environment: `dev`
-- The region: `frc`
+- The region: `we`
 - The instance: `01`
 - The owner: `ms`
 
 So we will use this convention:
 
 ```xml
+<!--If the resource dashes: -->
+<service-prefix>-<environment>-<region>-<application-name>-<owner>-<instance>
+<!--If the resource does not autorize any special caracters: -->
 <service-prefix><environment><region><application-name><owner><instance>
 ```
 
 <div class="info" data-title="Note">
 
-> Feel free to use your own values to be sure to have something unique and use your own convention. 
+> Be sure to use your own value to have unique names or use your own convention. 
 
 </div>
 
@@ -118,21 +122,205 @@ With everything ready let's start the lab!
 
 ---
 
+## Create a resource group
+
+Let's start by creating the resource group for this Hand's On Lab.
+
+<div class="info" data-title="Information">
+
+> For the purpose of this lab we will create all the resources in the same region, for instance West US (westus) or West Europe (westeurope).
+
+</div>
+
+Remember, the naming convension for resource groups will be: `rg-<environment>-<region>-<application-name>-<owner>-<instance>`
+
+<div class="task" data-title="Resources">
+
+> https://learn.microsoft.com/fr-fr/cli/azure/group?view=azure-cli-latest
+
+</div>
+
+<details>
+<summary>Toggle solution</summary>
+
+```bash
+# Use az account list-locations to get a location:
+
+az account list-locations -o table
+
+# Then create the resource group using the selected location:
+
+az group create --name <resource-group> --location <region>
+```
+
+</details>
+
+---
+
 ## Configure the storage account
 
-### Create the storage account
+With the resource group ready, let's create a storage account with a container named `audios` that will store all audios. The naming convention for Storage Accounts is: `st<environment><region><application-name><owner><instance>`.
 
-Open the [Azure Portal][az-portal], sign in and search for `Storage Accounts` and create one based on this syntax: st<environment><region><application-name><owner><instance>, `st` is the prefix for Storage Accounts, so it will be named `stdevfrcholms01`
+Choose a Locally redundant storage: Standard LRS
 
-[IMAGE of creation with parameters]
+<div class="task" data-title="Resources">
 
-Fill all the *Basics* tab parameters like in the image above and skip other tabs.
+> https://learn.microsoft.com/fr-fr/cli/azure/storage/account?view=azure-cli-latest
+> https://learn.microsoft.com/fr-fr/cli/azure/storage/container?view=azure-cli-latest
 
-### Create the container
+</div>
 
-With the storage account ready, it's time to create the container to drop the audios to proceed. So, go to the `containers` and create one called `audios`:
+<details>
+<summary>Toggle solution</summary>
 
-[IMAGE of creation with parameters]
+```bash
+# Create the Storage Account with Standard LRS
+
+az storage account create -n <storage-account-name> \
+                          -g <resource-group> \
+                          -l <region> \
+                          --sku Standard_LRS
+```
+
+Based on the command line below, to create the container for the audios files you need to get one of the access key:
+
+![Storage account access keys](assets/storage-account-access-keys.png)
+
+```bash
+# Then create the audios container inside it
+
+az storage container create -n audios \
+                            --account-name <storage-account-name> \
+                            --account-key <storage-account-key>
+```
+
+If everything is fine, open the [Azure Portal][az-portal] and you will retreive your container:
+
+![Storage account access keys](assets/storage-account-show-container.png)
+</details>
+
+[az-portal]: https://portal.azure.com
+
+---
+
+## Detect the audio uploaded
+
+### Create an Event Grid
+
+Next step is to setup a way to listen to the audios files uploaded by the user in the storage account container. To start, we will upload them directly using the [Azure Portal][az-portal] and further in the lab we will use a user interface and a dedicated API.
+
+To detect the upload you will use a service called Event Grid, and use the `System topic`.
+
+The naming convention for Event Grid topics is: `egst-<environment>-<region>-<application-name>-<owner>-<instance>`.
+
+<div class="task" data-title="Resources">
+
+> https://learn.microsoft.com/en-us/cli/azure/eventgrid/system-topic?view=azure-cli-latest
+
+</div>
+
+</div>
+
+<details>
+<summary>Toggle solution</summary>
+
+```bash
+# Create the Event Grid system topic
+az eventgrid system-topic create -g <resource-group> \
+                                 --name <event-grid-system-topic-name> \
+                                 --location <region> --topic-type microsoft.storage.storageaccounts \
+                                 --source /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Storage/storageAccounts/<storage-account-name>
+```
+
+</details>
+
+### Create an Event Hub
+
+The Event Grid previously created will listen to the Storage Account, but before adding this mecanism we need to create another service: The Event Hub. This one is responsible for broadcasting the event creating by the Event Grid service. With that in placethe event can be consumed by multiple services. In our case, a Logic App will be triggered based on the Event Hub broadcasting.
+
+The naming convention for Event Hub Namespace is: `evhns-<environment>-<region>-<application-name>-<owner>-<instance>` and for the event hub: `evh-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`.
+
+- Use the `Basic` SKU for the Event Hub Namespace.
+- Define the message retention to 1 and partition count to 2 for the Event Hub.
+
+<div class="task" data-title="Resources">
+
+> https://learn.microsoft.com/en-us/cli/azure/eventhubs/namespace?view=azure-cli-latest
+> https://learn.microsoft.com/en-us/cli/azure/eventhubs/eventhub?view=azure-cli-latest
+
+</div>
+
+<details>
+<summary>Toggle solution</summary>
+
+```bash
+# Create the Event Hub Namespace
+az eventhubs namespace create --resource-group <resource-group> \
+                              --name <event-hub-namespace> \
+                              --location <region> \
+                              --sku Basic 
+
+# Create the Event Hub Instance
+az eventhubs eventhub create --resource-group <resource-group> \
+                             --namespace-name <event-hub-namespace> \
+                             --name <event-hub-name> \
+                             --message-retention 1 \
+                             --partition-count 2
+```
+
+![Event Hub Namespace](assets/event-hub-namespace.png)
+
+</details>
+
+### Add an Event Subscription
+
+Now, you will need to subscribe to the Storage Account with your Event Grid and use the Event Hub as a broadcaster.
+To achieve this, you need to meet these triggers criterias:
+- Only on blob creation
+- If the file is uploaded in the `audios` container otherwise ignore it
+- If the file extension is `.wav`
+- The Event Grid trigger the Event Hub
+
+The naming convention for Event Subscription is: `evgs-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`
+
+<div class="tips" data-title="Tip">
+
+> To get access to the identifier of a resource, go to the `Overview` tab and click en `Json View` on the top right and you will see it.
+
+</div>
+
+<div class="task" data-title="Resources">
+
+> https://learn.microsoft.com/en-us/cli/azure/eventgrid/system-topic/event-subscription?view=azure-cli-latest
+
+</div>
+
+<details>
+<summary>Toggle solution</summary>
+
+```bash
+# Create the event grid system topic subscription
+az eventgrid system-topic event-subscription create --name <event-grid-system-topic-subscription-name> \
+                                             -g <resource-group> \
+                                             --system-topic-name <event-grid-system-topic-name> \
+                                             --event-delivery-schema eventgridschema \
+                                             --included-event-types Microsoft.Storage.BlobCreated \
+                                             --subject-begins-with /blobServices/default/containers/audios/blobs \
+                                             --subject-ends-with .wav \
+                                             --endpoint-type eventhub \
+                                             --endpoint /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.EventHub/namespaces/<event-grid-system-topic-name>/eventhubs/<event-hub-name>
+```
+
+If you did everything correctly you should see the event subscription like this:
+
+![Event Grid System Topic Subscription](assets/event-grid-system-topic-subscription.png)
+
+</details>
+
+
+
+
+
 
 ## Create an Azure Function
 
@@ -150,13 +338,6 @@ Then select the language you want to use for it. In this lab we will use `python
 
 Leave other default options as is and press the `Create` button.
 
-## Create the Event Grid
-
-Next step is to setup a way to listen to the audios files that the user will upload to the storage account. As you probably already guess the Event Grid service will be used for this.
-
-Back to [Azure Portal][az-portal] and search for `Event Grid`, and because the goal is to listen to an other Azure service you need to select the `System topic` section. So let's create one:
-
-[IMAGE of creation with parameters]
 
 ## Create the Event Grid function
 
