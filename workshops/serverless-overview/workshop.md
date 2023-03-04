@@ -1,65 +1,83 @@
 ---
-published: true                        # Optional. Set to true to publish the workshop (default: false)
-type: workshop                          # Required.
-title: Serverless Workshop             # Required. Full title of the workshop
-short_title: Short title for header     # Optional. Short title displayed in the header
+published: true
+type: workshop
+title: Serverless Workshop
+short_title: Short title for header
 description: This workshop will cover multiple serverless services that you will use to build a complete scenario.
 level: beginner                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors:                                # Required. You can add as many authors as needed      
   - Damien Aicheh
 contacts:                               # Required. Must match the number of authors
-  - @damienaicheh
-duration_minutes: 20                    # Required. Estimated duration in minutes
-tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email          # Required. Tags for filtering and searching
+  - '@damienaicheh'
+duration_minutes: 20
+tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email
 #banner_url: assets/banner.jpg           # Optional. Should be a 1280x640px image
 #video_url: https://youtube.com/link     # Optional. Link to a video of the workshop
 #audience: students                      # Optional. Audience of the workshop (students, pro devs, etc.)
 #wt_id: <cxa_tracking_id>                # Optional. Set advocacy tracking code for supported links
 #oc_id: <marketing_tracking_id>          # Optional. Set marketing tracking code for supported links
-#sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
-  - Section 1 title
-  - Section 2 title
+sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
+  - Before you start
 ---
-
-# Workshop Title
-
-Content for first section
-
----
-
-## Second section
-
-Content for second section
 
 # The Serverless Workshop
 
 Welcome to this Azure Serverless Workshop. In this lab, you will use different types of serverless services on Azure to achieve a real world scenario. Don't worry, this is a step by step lab, you will be guided through it.
 
+During this workshop you will have the instructions to complete each steps, try to find the answer before looking at the solution.
+
 ## Prerequisites
 
 Before starting this workshop, be sure you have:
 
-- An Azure Subscription with enough right to create and manage services
-- The [Az Cli][az-cli-install] installed on your machine
+- An Azure Subscription with **enough right** to create and manage services
+- The [Azure CLI][az-cli-install] installed on your machine
 - The [Azure Functions Core Tools][az-func-core-tools] installed, this will be useful for creating the scaffold of your Azure Functions using command line.
 
-## Scenario
+<div class="task" data-title="Task">
 
-The goal of the lab is to upload an audio file to Azure and receive the content inside an email as text. Here is a diagram to explain it:
+> Before starting, login to your Azure subscription locally using Azure CLI and inside the [Azure Portal][az-portal] using your own credentials.
+
+</div>
+
+
+<details>
+<summary>Toggle solution</summary>
+
+```bash
+# Login to Azure
+az login
+# Display your account details
+az account show
+# Select a specific subscription if you have more than one or the wrong one selected
+az account set --subscription <subscription-id>
+```
+
+</details>
+
+## Scenario overview
+
+The goal of the lab is to upload an audio file to Azure and receive the content inside a Single Page Application. Here is a diagram to explain it:
 
 ![global shema]
 
-1) The user upload an audio file to a Storage Account
-2) Event Grid is notified that the Storage Account has been updated
-3) A specific Azure Function listen the Event Grid to be notified when a new file is uploaded
-4) The Azure Function download the file
-5) The Azure Function upload the audio file to the speach to text service to process it
-6) The Azure Function receive the text result
-7) The result text is saved inside Cosmos Db document database using Azure Function 
-8) The Logic App is connected to Cosmos and detect this new result
-9) Finally, the Logic App send an email to the user with the text
+1) The user upload the audio file to the Web application
+2) The web application communicate if an APIM (API Management) which is a facade for multiple APIs
+3) An Azure Function which works as a simple API will upload the file to a Storage Account.
+4) When the file is uploaded the Event Grid service will detect it and send a "Blob created event" to an event Hub
+5) The Event Hub will be consumed by a Logic App which will be responsible from sending the audio file from the Storage Account to the Azure cognitive service.
+6) The speech to text service will proceed the file and return the result to the Logic App.
+7) The Logic App will then store it inside a Cosmos Db database
+8) An other Azure Function will listen to this Cosmos Db and get the text just uploaded to send it to the Web pub/sub service.
+9) Finally the Web pub/sub service which works like a websocket will notify the Web Application with the content of the audio file.
 
-An Azure Key Vault will be used to store the different secrets needed for this scenario.
+<div class="info" data-title="Note">
+
+> The Azure Key Vault will be used to store the different secrets needed for this scenario.
+
+</div>
+
+You will get more details about each of these services during the Hands On Lab.
 
 ## Naming convention
 
@@ -68,7 +86,7 @@ Before starting to deploy any Azure services, it's important to follow a naming 
 - The application name
 - The environment
 - The region
-- The instance
+- The instance number
 
 We will also add an owner property, so for the purpose of this lab the values will be:
 
@@ -78,14 +96,27 @@ We will also add an owner property, so for the purpose of this lab the values wi
 - The instance: `01`
 - The owner: `ms`
 
-For this lab we will use this convention: 
-```
+So we will use this convention:
+
+```xml
 <service-prefix><environment><region><application-name><owner><instance>
 ```
 
-Feel free to use your own values to be sure to have something unique and use your own convention. 
+<div class="info" data-title="Note">
+
+> Feel free to use your own values to be sure to have something unique and use your own convention. 
+
+</div>
 
 With everything ready let's start the lab!
+
+[az-cli-install]: https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
+[az-func-core-tools]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools
+[az-naming-convention]: https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming
+[az-portal]: https://portal.azure.com
+[vs-code]: https://code.visualstudio.com/
+
+---
 
 ## Configure the storage account
 
@@ -150,11 +181,7 @@ The most important parameter is the Event Grid Trigger option, without this one,
 ## Create the Event Subscription
 
 
-[az-cli-install]: https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
-[az-func-core-tools]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools
-[az-naming-convention]: https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming
-[az-portal]: https://portal.azure.com
-[vs-code]: https://code.visualstudio.com/
+
 
 Next step is to create the Azure Function that will
 
