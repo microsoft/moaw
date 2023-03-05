@@ -317,6 +317,142 @@ If you did everything correctly you should see the event subscription like this:
 
 </details>
 
+---
+
+## Process the event
+
+### Create the Logic App
+
+The action of uploading an audio file is now exposed by the event hub. It's time to consume this event.
+
+Let's create a Logic App in consumption mode which is triggered by the event hub every 10 seconds.
+
+The default workflow to use is:
+
+```json
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {},
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {},
+        "triggers": {}
+    },
+    "parameters": {}
+}
+```
+
+The naming convention for Logic Apps is: `logic-<environment>-<region>-<application-name>-<owner>-<instance>`
+
+<div class="task" data-title="Resources">
+
+> https://learn.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview
+> https://learn.microsoft.com/en-us/cli/azure/logic/workflow?view=azure-cli-latest
+
+</div>
+
+<details>
+<summary>Toggle solution</summary>
+
+```bash
+# Install the logic extension
+az extension add --name logic
+
+# Create a logic app in consumption mode
+az logic workflow create --resource-group <resource-group> 
+                         --location <region> 
+                         --name <logic-app-name> 
+                         --definition <path-to-default-workflow.json>
+```
+
+</details>
+
+### Trigger the logic app
+
+Next step is to trigger the Logic App based on the Event Hub when a file is uploaded to the audios container.
+
+A basic audio file to test the trigger can be download [here][audio-file].
+
+<div class="task" data-title="Resources">
+
+> https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-azure-event-hubs
+
+</div>
+
+<details>
+<summary>Toggle solution</summary>
+
+In the [Azure Portal][az-portal] inside the Logic App just created click on the `Edit` button. Then select `Blanc Logic App`. In the triggers list search for `Event Hub` and select the `When events are available in Event Hub` trigger.
+
+You will need to go to the `Shared Access Policies` inside your event hub to create an access key with `Listen` *only* property:
+
+![Event Hub Shared Access Policies](assets/event-hub-shared-access-policies.png)
+
+With that done, you will be able to connect to the Event Hub using the primary or secondary connection string:
+
+![Event Hub Connection Settings](assets/event-hub-connection-settings.png)
+
+Next step, you can configure the event hub trigger:
+
+![Event Hub Trigger Settings](assets/event-hub-trigger-settings.png)
+
+Finally, if you upload a file in the audios container, after a few seconds, if you look at your logic app `Runs history` you will see a succeeded status.
+</details>
+
+
+[az-portal]: https://portal.azure.com
+[audio-file]: z
+
+### Download the blob
+
+With the trigger ready, you need to extract the audios blob path and prepare it to be consumed by the cognitive services.
+
+<div class="task" data-title="Resources">
+
+> https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-perform-data-operations?tabs=consumption#parse-json-action
+> https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-azureblobstorage?tabs=consumption
+
+</div>
+
+<details>
+<summary>Toggle solution</summary>
+
+First thing to do is to parse the json content. To do so, search for `parse json` in the workflow editor and choose the content input with `Content` which is the event hub content data. 
+For the schema part, just click on `Use sample payload to generate schema` and copy paste one of the json object inside the output `Content` received from a previous successfull run.
+
+![Parse json with logic app](assets/logic-app-parse-json.png)
+
+Because the Content is an array, you need to loop over it for the next action. To do so, search `For each` action and then select `Body` as input.
+
+![Logic app for each](assets/logic-app-loop.png)
+
+Then, search for `Azure Blob Storage` and select the `Get blob content using path (V2)` action. As we did previously, create a connection service with the `Access Keys` of the Storage account:
+
+![Storage account connection service](assets/logic-app-storage-account-connection-string.png)
+
+Finally, update the information to get the path of the audio file just uploaded using a `split` query:
+
+```js
+split(items('For_each')['data']['url'], '.blob.core.windows.net')[1]
+```
+
+![Logic app](assets/logic-app-download-blob.png)
+
+</details>
+
+---
+
+
+
+
+
+Download file
+Link display
+
+
+
+
 
 
 
