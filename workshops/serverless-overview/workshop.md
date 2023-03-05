@@ -441,6 +441,12 @@ split(items('For_each')['data']['url'], '.blob.core.windows.net')[1]
 
 </details>
 
+### Use the cognitive services
+
+https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started-speech-to-text?tabs=macos%2Cterminal&pivots=programming-language-python
+
+### Store data to Cosmos Db
+
 ---
 
 
@@ -474,68 +480,7 @@ Then select the language you want to use for it. In this lab we will use `python
 
 Leave other default options as is and press the `Create` button.
 
-
-## Create the Event Grid function
-
-The goal now is to ask Event Grid to listen to the audios container of the storage account and then trigger the Azure Function to proceed the new file. To achieve this, you first need to create the code for the Azure Function and deploy it once. 
-In fact, to create this the Event Grid will ask for a Function named to trigger.
-
-To create your Azure Function you have multiples options, but let's talk about two:
-
-- Use the [Azure Functions Core Tools][az-func-core-tools] using command lines
-- Use the Azure Functions extensions inside [VS Code][vs-code]
-  
-Using the command line, **inside a specific folder** just run:
-
-```
-func new ...
-```
-
-The most important parameter is the Event Grid Trigger option, without this one, the function won't be compatible with the Event Grid.
-
-[ADD MORE DETAILS]
-
-## Create the Event Subscription
-
-
-
-
-Next step is to create the Azure Function that will
-
-Lab section order
-
-1) Create the Azure Function
-
-2) Create the Event Hub
-
-3) Create the Azure Function code to download the audio file
-
-4) Create the Text to Speech service
-
-5) Send the file to the Speech to Text service
-
-6) Create the Cosmos Db 
-
-7) Send the result of the Text to Speech service
-
-8) Create the Logic App
-
-9)  Send the email to the user 
-10) 
-création storage account
-création du container audios
-
-création du Event Grid System Topic pour s'abonner au storage account
--> création d'un Event Subscription: ev-audio-publisher
-
-création d'un Event Hubs Namespace pour écouter le Event Subscription et exposer un Event Hub topic: ev-audio-hub
-
-création d'une Azure Function avec Event Hub comme trigger
--> création de la connection string pour l'Azure Function à l'ev-audio-hub
--> récupération de la connection string pour le Storage Account
-
-créer la function avec func new
-
+   
 ajouter les SPEECH_KEY et SPEECH_REGION dans les app settings
 https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started-speech-to-text?tabs=macos%2Cterminal&pivots=programming-language-python
 
