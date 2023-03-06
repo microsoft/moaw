@@ -283,7 +283,7 @@ To achieve this, you need to meet these triggers criterias:
 
 The naming convention for Event Subscription is: `evgs-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`
 
-<div class="tips" data-title="Tip">
+<div class="tip" data-title="tip">
 
 > To get access to the identifier of a resource, go to the `Overview` tab and click en `Json View` on the top right and you will see it.
 
@@ -588,3 +588,5 @@ Identité à ta function app
 supprimer SAS token et utiliser identité managé
 ajouter au keyvault les clés
 Output binding cosmosdb
+
+<audio controls><source src="audio.mp3" type="audio/mp3"></audio>
