@@ -443,11 +443,108 @@ split(items('For_each')['data']['url'], '.blob.core.windows.net')[1]
 
 ### Use the cognitive services
 
-https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started-speech-to-text?tabs=macos%2Cterminal&pivots=programming-language-python
+Next step is to transform the audio file into text using the cognitive service with the speech to text service. 
+To do this, you will have to:
+- Instanciate the cognitive service
+- Call the speech to text API
+
+<div class="important" data-title="Security">
+
+> Remember to store secrets values if necessary in a Key Vault before using them.
+
+</div>
+
+The naming conventions are:
+Cognitive services: ``
+Key Vault: `kv-`
+
+<div class="info" data-title="Resources">
+
+> https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started-speech-to-text?tabs=macos%2Cterminal&pivots=programming-language-rest
+> Cognitive service
+> Key Vault
+
+</div>
+
+SOLUTION:
+
+```bash
+# Let's create the cognitive service
+
+# Create the Key Vault to secure the speech to text API key
+
+```
+
+To give access to the Key Vault from the Logic App, you need to grant access to it. Go to your Logic App and inside the identity tab, turn on the `System Identity`:
+
+IMAGE
+
+Then in your Key Vault, go to `Access policies` and create a new one, search for your logic app and set the Secret access to `Get` and `List`.
+
+IMAGE
+
+Now inside your Key Vault, in the `Secret` section add a new one called: `SpeechToTextApiKey` and set an access key from the cognitive service.
+
+IMAGE
+
+With all of these ready, add a new action before the loop by searching for `Key Vault` and then select `Get Secret`. This will load the speech to text API key once. Select the Key Vault and the name of the secret.
+
+IMAGE
+
+With that ready, add a new action by searching for `Http`, then fill the different parameters like this:
+
+IMAGE
+
+Upload the audio file and you should see the content as a text.
 
 ### Store data to Cosmos Db
 
+With the audio transformed to text, you will have to store it in a NoSQL database inside Cosmos Db:
+- Database info: `HolDb`
+- Collection to store the texts: `audios_resumes`
+
+<div class="info" data-title="Resources">
+
+> Cosmos Db
+
+</div>
+
+SOLUTION:
+
+```bash
+# Create the Cosmos Db
+
+```
+
+Inside `Data Explorer` create the database and the collection.
+
+IMAGE
+
+Go back to the Logic App and add add a new action, search for `Cosmos Db` and select `action`:
+
+Create the connection with your Cosmos Db Instance:
+
+
+Finally, it's time to compose the document object to insert using JSON:
+
+```json
+{
+    "id": "",
+    "text": ""
+}
+```
+
+Give a try and fortunately, you will see a new item in your Cosmos Db!
+
+
+
 ---
+
+
+
+
+
+
 
 
 
