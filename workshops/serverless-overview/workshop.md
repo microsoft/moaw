@@ -426,8 +426,8 @@ With the trigger ready, you need to extract the audios blob path and prepare it 
 
 <div class="task" data-title="Resources">
 
-> [Logic Apps Consumption mode][logic-app]<br>
-> [Logic App Storage Account Action][logic-app-storage-action]
+> [Logic Apps Consumption mode][logic-app] <br>
+> [Logic App Storage Account Action][logic-app-storage-action] <br>
 
 </div>
 
@@ -477,7 +477,7 @@ The naming conventions are:
 - Cognitive services: `cog-<environment>-<region>-<application-name>-<owner>-<instance>`
 - Key Vault: `kv-<environment>-<region>-<application-name>-<owner>-<instance>`
 
-<div class="info" data-title="Resources">
+<div class="task" data-title="Resources">
 
 > [Cognitive service][cognitive-service] <br>
 > [Key Vault][key-vault] <br>
@@ -485,7 +485,7 @@ The naming conventions are:
 
 </div>
 
-[cognitive-service]:
+[cognitive-service]:https://learn.microsoft.com/en-us/cli/azure/cognitiveservices/account?view=azure-cli-latest
 [key-vault]: https://learn.microsoft.com/fr-fr/cli/azure/keyvault?view=azure-cli-latest
 [cognitive-service-api]:https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started-speech-to-text?tabs=macos%2Cterminal&pivots=programming-language-rest
 
@@ -527,11 +527,20 @@ With that ready, add a new action in the for loop by searching for `Http`, then 
 
 ![Logic App HTTP Action](assets/logic-app-http-action.png)
 
-Upload the audio file and you should see the content as a text.
+Notice the region of your cognntive service account and the language to use is specified in the url.
+
+Finally as you need previously, upload the audio file and you should see the content as a text.
 
 </details>
 
 ### Store data to Cosmos Db
+
+{
+  "RecognitionStatus": "Success",
+  "Offset": 12000000,
+  "Duration": 89200000,
+  "DisplayText": "But also see that this bullheads and labs serverless."
+}
 
 With the audio transformed to text, you will have to store it in a NoSQL database inside Cosmos Db:
 - Database info: `HolDb`
@@ -585,7 +594,6 @@ Give a try and fortunately, you will see a new item in your Cosmos Db!
 
 
 Download file
-Link display
 
 
 
