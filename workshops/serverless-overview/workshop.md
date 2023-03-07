@@ -136,9 +136,11 @@ Remember, the naming convension for resource groups will be: `rg-<environment>-<
 
 <div class="task" data-title="Resources">
 
-> https://learn.microsoft.com/fr-fr/cli/azure/group?view=azure-cli-latest
+> [Resource Groups][resource-group]
 
 </div>
+
+[resource-group]:https://learn.microsoft.com/fr-fr/cli/azure/group?view=azure-cli-latest
 
 <details>
 <summary>Toggle solution</summary>
@@ -165,10 +167,13 @@ Choose a Locally redundant storage: Standard LRS
 
 <div class="task" data-title="Resources">
 
-> https://learn.microsoft.com/fr-fr/cli/azure/storage/account?view=azure-cli-latest
-> https://learn.microsoft.com/fr-fr/cli/azure/storage/container?view=azure-cli-latest
+> [Storage Account][storage-account]<br>
+> [Storage Account Container][storage-account-container]
 
 </div>
+
+[storage-account]:[https://learn.microsoft.com/fr-fr/cli/azure/storage/account?view=azure-cli-latest]
+[storage-account-container]:[https://learn.microsoft.com/fr-fr/cli/azure/storage/container?view=azure-cli-latest]
 
 <details>
 <summary>Toggle solution</summary>
@@ -215,11 +220,11 @@ The naming convention for Event Grid topics is: `egst-<environment>-<region>-<ap
 
 <div class="task" data-title="Resources">
 
-> https://learn.microsoft.com/en-us/cli/azure/eventgrid/system-topic?view=azure-cli-latest
+> [Event Grid][event-grid]
 
 </div>
 
-</div>
+[event-grid]:https://learn.microsoft.com/en-us/cli/azure/eventgrid/system-topic?view=azure-cli-latest
 
 <details>
 <summary>Toggle solution</summary>
@@ -245,10 +250,13 @@ The naming convention for Event Hub Namespace is: `evhns-<environment>-<region>-
 
 <div class="task" data-title="Resources">
 
-> https://learn.microsoft.com/en-us/cli/azure/eventhubs/namespace?view=azure-cli-latest
-> https://learn.microsoft.com/en-us/cli/azure/eventhubs/eventhub?view=azure-cli-latest
+> [Event Hubs Namespace][event-hubs-namespace]<br>
+> [Event Hubs Event][event-hubs-event]
 
 </div>
+
+[event-hubs-namespace]:[https://learn.microsoft.com/en-us/cli/azure/eventhubs/namespace?view=azure-cli-latest]
+[event-hubs-event]:[https://learn.microsoft.com/en-us/cli/azure/eventhubs/eventhub?view=azure-cli-latest]
 
 <details>
 <summary>Toggle solution</summary>
@@ -291,9 +299,11 @@ The naming convention for Event Subscription is: `evgs-audios-uploaded-<environm
 
 <div class="task" data-title="Resources">
 
-> https://learn.microsoft.com/en-us/cli/azure/eventgrid/system-topic/event-subscription?view=azure-cli-latest
+> [Event Grid Topic Subscription][event-grid-topic-subscription]
 
 </div>
+
+[event-grid-topic-subscription]:https://learn.microsoft.com/en-us/cli/azure/eventgrid/system-topic/event-subscription?view=azure-cli-latest
 
 <details>
 <summary>Toggle solution</summary>
@@ -347,10 +357,13 @@ The naming convention for Logic Apps is: `logic-<environment>-<region>-<applicat
 
 <div class="task" data-title="Resources">
 
-> https://learn.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview
-> https://learn.microsoft.com/en-us/cli/azure/logic/workflow?view=azure-cli-latest
+> [Azure Cli Extension][azure-cli-extension]
+> [Azure Logic App][azure-logic-app]
 
 </div>
+
+[azure-cli-extension]:https://learn.microsoft.com/en-us/cli/azure/azure-cli-extensions-overview
+[azure-logic-app]:https://learn.microsoft.com/en-us/cli/azure/logic/workflow?view=azure-cli-latest
 
 <details>
 <summary>Toggle solution</summary>
@@ -372,13 +385,18 @@ az logic workflow create --resource-group <resource-group>
 
 Next step is to trigger the Logic App based on the Event Hub when a file is uploaded to the audios container.
 
-A basic audio file to test the trigger can be download [here][audio-file].
+A basic audio file to test the trigger can be download here:
+<audio controls>
+  <source src="audio.mp3" type="audio/wav">
+</audio>
 
 <div class="task" data-title="Resources">
 
-> https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-azure-event-hubs
+> [Logic Apps Triggers][logic-apps-triggers]
 
 </div>
+
+[logic-apps-triggers]:https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-azure-event-hubs
 
 <details>
 <summary>Toggle solution</summary>
@@ -400,9 +418,7 @@ Next step, you can configure the event hub trigger:
 Finally, if you upload a file in the audios container, after a few seconds, if you look at your logic app `Runs history` you will see a succeeded status.
 </details>
 
-
 [az-portal]: https://portal.azure.com
-[audio-file]: z
 
 ### Download the blob
 
@@ -410,10 +426,13 @@ With the trigger ready, you need to extract the audios blob path and prepare it 
 
 <div class="task" data-title="Resources">
 
-> https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-perform-data-operations?tabs=consumption#parse-json-action
-> https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-azureblobstorage?tabs=consumption
+> [Logic Apps Consumption mode][logic-app]<br>
+> [Logic App Storage Account Action][logic-app-storage-action]
 
 </div>
+
+[logic-app]:[https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-perform-data-operations?tabs=consumption#parse-json-action]
+[logic-app-storage-action]:[https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-azureblobstorage?tabs=consumption]
 
 <details>
 <summary>Toggle solution</summary>
@@ -455,47 +474,62 @@ To do this, you will have to:
 </div>
 
 The naming conventions are:
-Cognitive services: ``
-Key Vault: `kv-`
+- Cognitive services: `cog-<environment>-<region>-<application-name>-<owner>-<instance>`
+- Key Vault: `kv-<environment>-<region>-<application-name>-<owner>-<instance>`
 
 <div class="info" data-title="Resources">
 
-> https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started-speech-to-text?tabs=macos%2Cterminal&pivots=programming-language-rest
-> Cognitive service
-> Key Vault
+> [Cognitive service][cognitive-service] <br>
+> [Key Vault][key-vault] <br>
+> [Cognitive Service Api][cognitive-service-api]
 
 </div>
 
-SOLUTION:
+[cognitive-service]:
+[key-vault]: https://learn.microsoft.com/fr-fr/cli/azure/keyvault?view=azure-cli-latest
+[cognitive-service-api]:https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started-speech-to-text?tabs=macos%2Cterminal&pivots=programming-language-rest
+
+<details>
+<summary>Toggle solution</summary>
 
 ```bash
-# Let's create the cognitive service
-
+# Let's create the cognitive service account with speech to text service
+az cognitiveservices account create -n cog-dev-we-hol-ms-01 -g rg-dev-we-hol-ms-01 --kind SpeechServices --sku F0 -l WestEurope --yes
 # Create the Key Vault to secure the speech to text API key
-
+az keyvault create --location westeurope --name kv-dev-we-hol-ms-01 --resource-group rg-dev-we-hol-ms-01
 ```
 
-To give access to the Key Vault from the Logic App, you need to grant access to it. Go to your Logic App and inside the identity tab, turn on the `System Identity`:
+To allow the Logic App to access the Key Vault, you need to grant access to it. Go to your Logic App and inside the identity tab, turn on the `System Identity`:
 
-IMAGE
+![System Identity](assets/logic-app-system-identity.png)
 
-Then in your Key Vault, go to `Access policies` and create a new one, search for your logic app and set the Secret access to `Get` and `List`.
+Then in your Key Vault, go to `Access policies` and create a new one, set the Secret access to `Get` and `List`:
 
-IMAGE
+![Key Vault Access](assets/key-vault-secret-access.png)
 
-Now inside your Key Vault, in the `Secret` section add a new one called: `SpeechToTextApiKey` and set an access key from the cognitive service.
+Then search for your logic app.
 
-IMAGE
+![Key Vault Access Logic App](assets/key-vault-access-logic-app.png)
 
-With all of these ready, add a new action before the loop by searching for `Key Vault` and then select `Get Secret`. This will load the speech to text API key once. Select the Key Vault and the name of the secret.
+Now inside your Key Vault, in the `Secret` section add a new one called: `SpeechToTextApiKey` and set a key from the cognitive service.
 
-IMAGE
+![Key Vault Cognitive Secret](assets/key-vault-cognitive-secret.png)
 
-With that ready, add a new action by searching for `Http`, then fill the different parameters like this:
+With all of these ready, add a new action before the loop by searching for `Key Vault` and then select `Get Secret`. This will load the speech to text API key once. 
 
-IMAGE
+![Logic App Key Vault Connection](assets/logic-app-key-vault-connection.png)
+
+Select the Key Vault and the name of the secret.
+
+![Logic App Get Secret](assets/logic-app-get-secret.png)
+
+With that ready, add a new action in the for loop by searching for `Http`, then fill the different parameters like this:
+
+![Logic App HTTP Action](assets/logic-app-http-action.png)
 
 Upload the audio file and you should see the content as a text.
+
+</details>
 
 ### Store data to Cosmos Db
 
