@@ -60,17 +60,20 @@ az account set --subscription <subscription-id>
 
 The goal of the lab is to upload an audio file to Azure and receive the content inside a Single Page Application. Here is a diagram to explain it:
 
-![global shema]
+![Hand's On Lab Architecture](assets/hands-on-lab-architecture.png)
 
-1) The user upload the audio file to the Web application
-2) The web application communicate if an APIM (API Management) which is a facade for multiple APIs
+1) The user upload the audio file from the Web application
+2) The web application communicate with an APIM (API Management) which is a facade for multiple APIs
 3) An Azure Function which works as a simple API will upload the file to a Storage Account.
-4) When the file is uploaded the Event Grid service will detect it and send a "Blob created event" to an event Hub
-5) The Event Hub will be consumed by a Logic App which will be responsible from sending the audio file from the Storage Account to the Azure cognitive service.
-6) The speech to text service will proceed the file and return the result to the Logic App.
-7) The Logic App will then store it inside a Cosmos Db database
-8) An other Azure Function will listen to this Cosmos Db and get the text just uploaded to send it to the Web pub/sub service.
-9) Finally the Web pub/sub service which works like a websocket will notify the Web Application with the content of the audio file.
+4) When the file is uploaded the Event Grid service will detect it and send a "Blob created event" to an Event Hub
+5) The Event Hub will be consumed by a Logic App 
+6) The Logic App retreive the new audio file
+7) The audio file is sent to the Azure cognitive service.
+8) The speech to text service will proceed the file and return the result to the Logic App.
+9) The Logic App will then store the text from the audio file inside a Cosmos Db database
+10) An other Azure Function will listen to this Cosmos Db and get the text just uploaded 
+11) The Azure Function send it to the Web pub/sub service.
+12) Finally the Web pub/sub service which works like a websocket will notify the Web Application with the content of the audio file.
 
 <div class="info" data-title="Note">
 
@@ -535,51 +538,82 @@ Finally as you need previously, upload the audio file and you should see the con
 
 ### Store data to Cosmos Db
 
-{
-  "RecognitionStatus": "Success",
-  "Offset": 12000000,
-  "Duration": 89200000,
-  "DisplayText": "But also see that this bullheads and labs serverless."
-}
-
 With the audio transformed to text, you will have to store it in a NoSQL database inside Cosmos Db:
 - Database info: `HolDb`
 - Collection to store the texts: `audios_resumes`
 
+The naming conventions for Cosmos Db is: `cosmos-<environment>-<region>-<application-name>-<owner>-<instance>`
+- 
 <div class="info" data-title="Resources">
 
-> Cosmos Db
+> [Cosmos Db][cosmos-db]
 
 </div>
 
-SOLUTION:
+[cosmos-db]: https://learn.microsoft.com/en-us/azure/cosmos-db/scripts/cli/nosql/serverless
+
+<details>
+<summary>Toggle solution</summary>
 
 ```bash
-# Create the Cosmos Db
+# Create the Cosmos Db account using serverless
+az cosmosdb create --name cosmos-dev-we-hol-ms-01 \
+                   --resource-group rg-dev-we-hol-ms-01 \
+                   --default-consistency-level Eventual \
+                   --locations regionName="westeurope" \
+                   failoverPriority=0 isZoneRedundant=False \
+                   --capabilities EnableServerless
 
+# Instanciate the database inside it
+az cosmosdb sql database create --account-name cosmos-dev-we-hol-ms-01 \
+                                --resource-group rg-dev-we-hol-ms-01 \
+                                --name HolDb
+
+# Create the item collection
+az cosmosdb sql container create --account-name cosmos-dev-we-hol-ms-01 \
+                                 --resource-group rg-dev-we-hol-ms-01 \
+                                 --database-name HolDb \
+                                 --name audios_resumes \
+                                 --partition-key-path "/id"
 ```
 
-Inside `Data Explorer` create the database and the collection.
+In the last run of your Logic App just look at the output body of your HTTP action and you should see something like this:
 
-IMAGE
+```json
+{
+  "RecognitionStatus": "Success",
+  "Offset": 1500000,
+  "Duration": 32400000,
+  "DisplayText": "What's the weather like?"
+}
+```
 
-Go back to the Logic App and add add a new action, search for `Cosmos Db` and select `action`:
+Copy it, and like previously add a `Parse Json` action into the Logic App and use this as a "Sample payload to generate schema" and chose the `Body` response as input:
+
+![Parse HTTP response](assets/logic-app-parse-http-response.png)
+
+Then add a new action, search for `Cosmos Db` and select `Create or update document (V3)`:
 
 Create the connection with your Cosmos Db Instance:
 
+![Cosmos Db Connection](assets/cosmos-db-connection.png)
 
 Finally, it's time to compose the document object to insert using JSON:
 
 ```json
 {
-    "id": "",
-    "text": ""
+  "id": <guid-here>,
+  "path": <audio-file-storage-account-path>,
+  "result": <cognitive-service-text-result>,
+  "status": <cognitive-service-status-result>
 }
 ```
 
+![Cosmos Db Insert Document](assets/cosmos-db-insert-document.png)
+
 Give a try and fortunately, you will see a new item in your Cosmos Db!
 
-
+</details>
 
 ---
 
