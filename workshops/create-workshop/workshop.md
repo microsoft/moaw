@@ -245,6 +245,22 @@ This will start a local development server on port 4200.
 
 You can then open [`http://localhost:4200/moaw/workshop/<your-workshop-name>`](http://localhost:4200/moaw/workshop/<your-workshop-name>) in your browser to preview your workshop.
 
+
+#### Use MOAW CLI
+
+You can also use the MOAW cli to preview your workshop locally, even if you are **writing your workshop in another repository**. First, you need to install the MOAW CLI with npm.
+
+```sh
+npm install -g @moaw/cli
+```
+
+You can then launch the CLI with the `s` command (as in _serve_) and passing the path to your workshop file.
+
+```sh
+moaw s docs/workshop.md
+```
+
+
 ### Host workshop from your fork
 
 You can also host your workshop directly from your GitHub fork, so that you can share it with your colleagues or friends.
