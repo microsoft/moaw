@@ -112,6 +112,7 @@ So we will use this convention:
 <div class="info" data-title="Note">
 
 > Be sure to use your own value to have unique names or use your own convention. 
+> [Official resource abbreviations][az-abrevation]
 
 </div>
 
@@ -120,6 +121,7 @@ With everything ready let's start the lab!
 [az-cli-install]: https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
 [az-func-core-tools]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools
 [az-naming-convention]: https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming
+[az-abrevation]: https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations
 [az-portal]: https://portal.azure.com
 [vs-code]: https://code.visualstudio.com/
 
