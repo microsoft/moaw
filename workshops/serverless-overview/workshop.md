@@ -619,52 +619,107 @@ Give a try and fortunately, you will see a new item in your Cosmos Db!
 
 ---
 
+### Add an API
 
+At this point you have the first sceneario quite complete. The last things you need to add is an API to upload the audio file to your storage account. For this step you will use `Azure Functions`.
 
+VS CODE + HTTP Trigger
 
+Make sure to create one Azure Function with:
+- The `Linux` Operating System
+- A plan type set to `Consumption (Serverless)`
+- The language the most confortable for you
 
+For the answer, the Azure Function will be done in Python.
 
+The naming format to use must be: `func-<environment><region><application-name><owner><instance>`
 
+<div class="info" data-title="Resources">
 
+> [Azure Functions][azure-function]<br>
+> [Azure Function Core Tools][azure-function-core-tools]<br>
+> [Basics of Azure Functions][azure-function-basics]<br>
 
+</div>
 
+<details>
+<summary>Toggle solution</summary>
 
-Download file
+```bash
+# Create an Azure storage account dedicated to the Azure Function (This will be used to store files cache...)
+az storage account create --name $storage --location "westeurope" --resource-group rg-dev-we-hol-ms-01 --sku Standard_LRS
 
+# Create a serverless function app in the resource group.
+az functionapp create --name func-dev-we-hol-ms-01 --storage-account $storage --consumption-plan-location "westeurope" --resource-group rg-dev-we-hol-ms-01 --functions-version 4
+```
 
+For the coding part, let's create a function using the [Azure Function Core Tools][azure-function-core-tools], **create a folder** and then run:
 
+```bash
+func new
+```
 
+Then select `python` and `Http Trigger`. Open the project inside VS Code and then:
 
+Create a dev environment for the project:
 
+```sh
+python3 -m venv .venv
+```
 
+Activate the dev environment for Linux:
 
+```sh
+source .venv/bin/activate
+```
 
-## Create an Azure Function
+Activate the dev environment for Windows:
 
-In the [Azure Portal][az-portal], search for `Azure Functions` and create a new one:
+```sh
+.\.venv\Scripts\activate
+```
 
-[IMAGE of creation with parameters]
+Install python packages for the project:
+```sh
+pip install -r requirements.txt
+```
 
-The naming format to use must be: func-<environment><region><application-name><owner><instance>
+If you install some packages, you can save them into the `requirements.txt`:
+```sh
+pip freeze > requirements.txt
+```
 
-Make sure to:
-- Select the `Linux` Operating System
-- Have a plan type set to `Consumption (Serverless)`
+- Create a `func.py` at the same level of `__init__.py`. 
+- Copy all the content of `__init__.py` into `func.py`.
+- Leave the `__init__.py` empty.
 
-Then select the language you want to use for it. In this lab we will use `python`, however if you want to use any other language in the list you are confortable with it, of course do it!
+Update the `function.json` with the storage account container to target and give an environment variable name to the Storage Account connection string.
 
-Leave other default options as is and press the `Create` button.
+Change the `scriptFile` to use `func.py`
 
-   
-ajouter les SPEECH_KEY et SPEECH_REGION dans les app settings
-https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started-speech-to-text?tabs=macos%2Cterminal&pivots=programming-language-python
+```json
+{
 
-Namming:
-https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming
+}
+```
 
-Identité à ta function app
-supprimer SAS token et utiliser identité managé
-ajouter au keyvault les clés
-Output binding cosmosdb
+Go to [Azure Portal][az-portal] and go to the `Configuration` and add it to the app settings.
 
-<audio controls><source src="audio.mp3" type="audio/mp3"></audio>
+Update the `func.py` to:
+
+```python
+
+```
+
+Deploy your function using VS Code or command line:
+
+```
+azure functionapp publish func-<environment><region><application-name><owner><instance>
+```
+
+</details>
+
+[az-portal]: https://portal.azure.com
+[azure-function]: https://learn.microsoft.com/en-us/cli/azure/functionapp?view=azure-cli-latest
+[azure-function-core-tools]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash
+[azure-function-basics]: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
