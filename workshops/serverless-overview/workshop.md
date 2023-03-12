@@ -11,16 +11,11 @@ contacts:                               # Required. Must match the number of aut
   - '@damienaicheh'
 duration_minutes: 20
 tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email
-#banner_url: assets/banner.jpg           # Optional. Should be a 1280x640px image
-#video_url: https://youtube.com/link     # Optional. Link to a video of the workshop
-#audience: students                      # Optional. Audience of the workshop (students, pro devs, etc.)
-#wt_id: <cxa_tracking_id>                # Optional. Set advocacy tracking code for supported links
-#oc_id: <marketing_tracking_id>          # Optional. Set marketing tracking code for supported links
-sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
+sections_title:
   - The Serverless Workshop
 ---
 
-## The Serverless Workshop
+# The Serverless Workshop
 
 ### Before you start
 
@@ -35,6 +30,7 @@ Before starting this workshop, be sure you have:
 - An Azure Subscription with **enough right** to create and manage services
 - The [Azure CLI][az-cli-install] installed on your machine
 - The [Azure Functions Core Tools][az-func-core-tools] installed, this will be useful for creating the scaffold of your Azure Functions using command line.
+- If you use VS Code you can also install the [Azure Function extension][azure-function-vs-code-extension]
 
 <div class="task" data-title="Task">
 
@@ -124,8 +120,15 @@ With everything ready let's start the lab!
 [az-abrevation]: https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations
 [az-portal]: https://portal.azure.com
 [vs-code]: https://code.visualstudio.com/
+[azure-function-vs-code-extension]: https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions
 
 ---
+
+# Lab 1
+
+For this first part, you will be focus on this part of the scenario:
+
+![Hand's On Lab Architecture Lab 1](assets/hands-on-lab-architecture-lab-1.png)
 
 ## Create a resource group
 
@@ -544,7 +547,7 @@ With the audio transformed to text, you will have to store it in a NoSQL databas
 - Database info: `HolDb`
 - Collection to store the texts: `audios_resumes`
 
-The naming conventions for Cosmos Db is: `cosmos-<environment>-<region>-<application-name>-<owner>-<instance>`
+The naming conventions for Cosmos Db account is: `cosmos-<environment>-<region>-<application-name>-<owner>-<instance>`
 - 
 <div class="info" data-title="Resources">
 
@@ -559,21 +562,21 @@ The naming conventions for Cosmos Db is: `cosmos-<environment>-<region>-<applica
 
 ```bash
 # Create the Cosmos Db account using serverless
-az cosmosdb create --name cosmos-dev-we-hol-ms-01 \
-                   --resource-group rg-dev-we-hol-ms-01 \
+az cosmosdb create --name <cosmos-db-account-name> \
+                   --resource-group <resource-group> \
                    --default-consistency-level Eventual \
-                   --locations regionName="westeurope" \
+                   --locations regionName="<region>" \
                    failoverPriority=0 isZoneRedundant=False \
                    --capabilities EnableServerless
 
 # Instanciate the database inside it
-az cosmosdb sql database create --account-name cosmos-dev-we-hol-ms-01 \
-                                --resource-group rg-dev-we-hol-ms-01 \
+az cosmosdb sql database create --account-name <cosmos-db-account-name> \
+                                --resource-group <resource-group> \
                                 --name HolDb
 
 # Create the item collection
-az cosmosdb sql container create --account-name cosmos-dev-we-hol-ms-01 \
-                                 --resource-group rg-dev-we-hol-ms-01 \
+az cosmosdb sql container create --account-name <cosmos-db-account-name> \
+                                 --resource-group <resource-group> \
                                  --database-name HolDb \
                                  --name audios_resumes \
                                  --partition-key-path "/id"
@@ -621,9 +624,7 @@ Give a try and fortunately, you will see a new item in your Cosmos Db!
 
 ### Add an API
 
-At this point you have the first sceneario quite complete. The last things you need to add is an API to upload the audio file to your storage account. For this step you will use `Azure Functions`.
-
-VS CODE + HTTP Trigger
+At this point you have the first sceneario quite complete. The last thing you need to add is an API to upload the audio file to your storage account. For this step you will use `Azure Functions`.
 
 Make sure to create one Azure Function with:
 - The `Linux` Operating System
@@ -632,7 +633,10 @@ Make sure to create one Azure Function with:
 
 For the answer, the Azure Function will be done in Python.
 
-The naming format to use must be: `func-<environment><region><application-name><owner><instance>`
+The naming formats to use are:
+For the Azure function: `func-<environment>-<region>-<application-name>-<owner>-<instance>`
+For the storage account associated to it: `stfunc<environment><region><application-name><owner><instance>`
+
 
 <div class="info" data-title="Resources">
 
@@ -647,11 +651,22 @@ The naming format to use must be: `func-<environment><region><application-name><
 
 ```bash
 # Create an Azure storage account dedicated to the Azure Function (This will be used to store files cache...)
-az storage account create --name $storage --location "westeurope" --resource-group rg-dev-we-hol-ms-01 --sku Standard_LRS
+az storage account create --name <function-storage-account-name> \
+                          --location <region>  \
+                          --resource-group <resource-group> \
+                          --sku Standard_LRS
 
 # Create a serverless function app in the resource group.
-az functionapp create --name func-dev-we-hol-ms-01 --storage-account $storage --consumption-plan-location "westeurope" --resource-group rg-dev-we-hol-ms-01 --functions-version 4
+az functionapp create --name <function-name> \ 
+                      --storage-account <function-storage-account-name> \ 
+                      --consumption-plan-location <region>
+                      --runtime python
+                      --os-type Linux
+                      --resource-group <resource-group> \
+                      --functions-version 4
 ```
+
+You must create a storage account dedicated to your Azure Function in order to not mix the audios files and the Azure Function specificities.
 
 For the coding part, let's create a function using the [Azure Function Core Tools][azure-function-core-tools], **create a folder** and then run:
 
@@ -659,7 +674,7 @@ For the coding part, let's create a function using the [Azure Function Core Tool
 func new
 ```
 
-Then select `python` and `Http Trigger`. Open the project inside VS Code and then:
+Then select `python` and `Http Trigger`, name your function `AudioUpload`. Open the project inside VS Code and then:
 
 Create a dev environment for the project:
 
@@ -667,15 +682,15 @@ Create a dev environment for the project:
 python3 -m venv .venv
 ```
 
-Activate the dev environment for Linux:
+This will ensure the packages needed for your project are installed only for it.
+
+Then, activate the dev environment:
 
 ```sh
+# Linux
 source .venv/bin/activate
-```
 
-Activate the dev environment for Windows:
-
-```sh
+# Windows
 .\.venv\Scripts\activate
 ```
 
@@ -684,38 +699,77 @@ Install python packages for the project:
 pip install -r requirements.txt
 ```
 
-If you install some packages, you can save them into the `requirements.txt`:
-```sh
-pip freeze > requirements.txt
-```
-
 - Create a `func.py` at the same level of `__init__.py`. 
 - Copy all the content of `__init__.py` into `func.py`.
-- Leave the `__init__.py` empty.
+- Leave the `__init__.py` empty, this is mandatory for Python to find the files in that foler
 
-Update the `function.json` with the storage account container to target and give an environment variable name to the Storage Account connection string.
+Update the `function.json` with two environment variables:
+- the storage account container
+- the Storage Account connection string.
 
-Change the `scriptFile` to use `func.py`
+And don't forget to change the `scriptFile` to use `func.py`:
 
 ```json
 {
-
+  "scriptFile": "func.py",
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "post"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "$return"
+    },
+    {
+      "name": "outputblob",
+      "type": "blob",
+      "path": "%STORAGE_ACCOUNT_CONTAINER%/audio.wav",
+      "connection": "STORAGE_ACCOUNT_CONNECTION_STRING",
+      "direction": "out"
+    }
+  ]
 }
 ```
 
-Go to [Azure Portal][az-portal] and go to the `Configuration` and add it to the app settings.
+Go to [Azure Portal][az-portal] and go to the `Configuration` and update the app settings with the `STORAGE_ACCOUNT_CONTAINER` to `audios` and get a connection string from the storage account with your audios container and set the `STORAGE_ACCOUNT_CONNECTION_STRING`.
 
 Update the `func.py` to:
 
 ```python
+import logging
 
+import azure.functions as func
+
+def main(req: func.HttpRequest, outputblob: func.Out[bytes]) -> func.HttpResponse:
+    for input_file in req.files.values():
+        filename = input_file.filename
+        contents = input_file.stream.read()
+
+        logging.info('Filename: %s' % filename)
+        outputblob.set(contents)
+
+    return func.HttpResponse(
+        "This HTTP triggered function executed successfully.",
+        status_code=200
+    )
 ```
 
-Deploy your function using VS Code or command line:
+Deploy your function using the VS Code extension or by command line:
 
 ```
-azure functionapp publish func-<environment><region><application-name><owner><instance>
+func azure functionapp publish func-<environment>-<region>-<application-name>-<owner>-<instance>
 ```
+
+Let's give a try using Postman:
+
+![Postman](assets/func-postman.png)
 
 </details>
 
@@ -723,3 +777,5 @@ azure functionapp publish func-<environment><region><application-name><owner><in
 [azure-function]: https://learn.microsoft.com/en-us/cli/azure/functionapp?view=azure-cli-latest
 [azure-function-core-tools]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash
 [azure-function-basics]: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
+
+---
