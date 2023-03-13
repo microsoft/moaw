@@ -192,3 +192,19 @@
   audience: students, pro devs, ops, admin
   level: intermediate 
   tags: container, docker, kubernetes, azure, aro, ocp, openshift, redhat, csu
+
+- title: Product Hands-on Lab App Service
+  url: https://appservicebuild.z28.web.core.windows.net/
+  github_url: https://github.com/franckfotso1/app-service-workshop    
+  language: fr
+  last_updated: 2023-03-13
+  type: workshop
+  description: Ce document est un support pour une introduction à App Service et ses concepts
+  authors:
+    - Franck Fotso
+  contacts:
+    - '@franckfotso1'
+  duration_minutes: 120
+  audience: students, pro devs, ops, admin
+  level: beginner 
+  tags: azure, csu, web apps, api apps, app service plan, container, docker, app service
