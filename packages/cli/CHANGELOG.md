@@ -1,3 +1,5 @@
+# [@moaw/cli-v1.0.1](https://github.com/microsoft/moaw/compare/cli-1.0.0...cli-1.0.1) (2023-03-13)
+
 # @moaw/cli-v1.0.0 (2023-03-02)
 
 
