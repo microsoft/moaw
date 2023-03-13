@@ -13,17 +13,18 @@ duration_minutes: 20
 tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email
 sections_title:
   - The Serverless Workshop
+  - Lab 1
 ---
 
 # The Serverless Workshop
 
-### Before you start
+## Before you start
 
 Welcome to this Azure Serverless Workshop. In this lab, you will use different types of serverless services on Azure to achieve a real world scenario. Don't worry, this is a step by step lab, you will be guided through it.
 
 During this workshop you will have the instructions to complete each steps, try to find the answer before looking at the solution.
 
-### Prerequisites
+## Prerequisites
 
 Before starting this workshop, be sure you have:
 
@@ -52,7 +53,7 @@ az account set --subscription <subscription-id>
 
 </details>
 
-### Scenario overview
+## Scenario overview
 
 The goal of the lab is to upload an audio file to Azure and receive the content inside a Single Page Application. Here is a diagram to explain it:
 
@@ -79,7 +80,7 @@ The goal of the lab is to upload an audio file to Azure and receive the content 
 
 You will get more details about each of these services during the Hands On Lab.
 
-### Naming convention
+## Naming convention
 
 Before starting to deploy any Azure services, it's important to follow a naming convention. Based on the official [documentation][az-naming-convention] we need to define a few things:
 
@@ -547,8 +548,8 @@ With the audio transformed to text, you will have to store it in a NoSQL databas
 - Database info: `HolDb`
 - Collection to store the texts: `audios_resumes`
 
-The naming conventions for Cosmos Db account is: `cosmos-<environment>-<region>-<application-name>-<owner>-<instance>`
-- 
+The naming conventions for Cosmos Db account is `cosmos-<environment>-<region>-<application-name>-<owner>-<instance>`
+
 <div class="info" data-title="Resources">
 
 > [Cosmos Db][cosmos-db]
@@ -622,7 +623,9 @@ Give a try and fortunately, you will see a new item in your Cosmos Db!
 
 ---
 
-### Add an API
+## Add an API
+
+### Azure Function
 
 At this point you have the first sceneario quite complete. The last thing you need to add is an API to upload the audio file to your storage account. For this step you will use `Azure Functions`.
 
@@ -763,7 +766,7 @@ def main(req: func.HttpRequest, outputblob: func.Out[bytes]) -> func.HttpRespons
 
 Deploy your function using the VS Code extension or by command line:
 
-```
+```bash
 func azure functionapp publish func-<environment>-<region>-<application-name>-<owner>-<instance>
 ```
 
