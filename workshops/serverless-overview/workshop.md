@@ -2,8 +2,8 @@
 published: true
 type: workshop
 title: Serverless Workshop
-short_title: Short title for header
-description: This workshop will cover multiple serverless services that you will use to build a complete scenario.
+short_title: Serverless Overview
+description: This workshop will cover multiple serverless services that you will use to build a complete real world scenario.
 level: beginner                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors:                                # Required. You can add as many authors as needed      
   - Damien Aicheh
@@ -13,7 +13,6 @@ duration_minutes: 20
 tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email
 sections_title:
   - The Serverless Workshop
-  - Lab 1
 ---
 
 # The Serverless Workshop
@@ -23,6 +22,10 @@ sections_title:
 Welcome to this Azure Serverless Workshop. In this lab, you will use different types of serverless services on Azure to achieve a real world scenario. Don't worry, this is a step by step lab, you will be guided through it.
 
 During this workshop you will have the instructions to complete each steps, try to find the answer before looking at the solution.
+
+---
+
+# The Workshop
 
 ## Prerequisites
 
@@ -53,7 +56,7 @@ az account set --subscription <subscription-id>
 
 </details>
 
-## Scenario overview
+## Scenario
 
 The goal of the lab is to upload an audio file to Azure and receive the content inside a Single Page Application. Here is a diagram to explain it:
 
@@ -166,8 +169,6 @@ az group create --name <resource-group> --location <region>
 
 </details>
 
----
-
 ## Configure the storage account
 
 With the resource group ready, let's create a storage account with a container named `audios` that will store all audios. The naming convention for Storage Accounts is: `st<environment><region><application-name><owner><instance>`.
@@ -215,7 +216,6 @@ If everything is fine, open the [Azure Portal][az-portal] and you will retreive 
 
 [az-portal]: https://portal.azure.com
 
----
 
 ## Detect the audio uploaded
 
@@ -264,8 +264,8 @@ The naming convention for Event Hub Namespace is: `evhns-<environment>-<region>-
 
 </div>
 
-[event-hubs-namespace]:[https://learn.microsoft.com/en-us/cli/azure/eventhubs/namespace?view=azure-cli-latest]
-[event-hubs-event]:[https://learn.microsoft.com/en-us/cli/azure/eventhubs/eventhub?view=azure-cli-latest]
+[event-hubs-namespace]:https://learn.microsoft.com/en-us/cli/azure/eventhubs/namespace?view=azure-cli-latest
+[event-hubs-event]:https://learn.microsoft.com/en-us/cli/azure/eventhubs/eventhub?view=azure-cli-latest
 
 <details>
 <summary>Toggle solution</summary>
@@ -336,7 +336,6 @@ If you did everything correctly you should see the event subscription like this:
 
 </details>
 
----
 
 ## Process the event
 
@@ -366,7 +365,7 @@ The naming convention for Logic Apps is: `logic-<environment>-<region>-<applicat
 
 <div class="task" data-title="Resources">
 
-> [Azure Cli Extension][azure-cli-extension]
+> [Azure Cli Extension][azure-cli-extension]<br>
 > [Azure Logic App][azure-logic-app]
 
 </div>
@@ -395,9 +394,7 @@ az logic workflow create --resource-group <resource-group>
 Next step is to trigger the Logic App based on the Event Hub when a file is uploaded to the audios container.
 
 A basic audio file to test the trigger can be download here:
-<audio controls>
-  <source src="audio.mp3" type="audio/wav">
-</audio>
+[Audio demo](assets/whatstheweatherlike.wav)
 
 <div class="task" data-title="Resources">
 
@@ -435,13 +432,13 @@ With the trigger ready, you need to extract the audios blob path and prepare it 
 
 <div class="task" data-title="Resources">
 
-> [Logic Apps Consumption mode][logic-app] <br>
-> [Logic App Storage Account Action][logic-app-storage-action] <br>
+> [Logic Apps Consumption mode][logic-app]<br>
+> [Logic App Storage Account Action][logic-app-storage-action]<br>
 
 </div>
 
-[logic-app]:[https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-perform-data-operations?tabs=consumption#parse-json-action]
-[logic-app-storage-action]:[https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-azureblobstorage?tabs=consumption]
+[logic-app]:https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-perform-data-operations?tabs=consumption#parse-json-action
+[logic-app-storage-action]:https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-azureblobstorage?tabs=consumption
 
 <details>
 <summary>Toggle solution</summary>
@@ -621,8 +618,6 @@ Give a try and fortunately, you will see a new item in your Cosmos Db!
 
 </details>
 
----
-
 ## Add an API
 
 ### Azure Function
@@ -782,3 +777,7 @@ Let's give a try using Postman:
 [azure-function-basics]: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
 
 ---
+
+# Lab 2
+
+Coming soon...
