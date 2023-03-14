@@ -25,7 +25,7 @@ You can link to any workshop from this repository using the following URL format
 
 **Example:** [https://aka.ms/ws?src=create-workshop/](https://aka.ms/ws?src=create-workshop/)
 
-For more details, see the [HOW_TO_USE](HOW_TO_USE.md#-conduct-a-workshop) guide.
+For more details, see the [how to use](HOW_TO_USE.md#-conduct-a-workshop) guide.
 
 ### 🚀 Want to create a new workshop?
 
