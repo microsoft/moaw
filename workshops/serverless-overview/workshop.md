@@ -103,7 +103,7 @@ We will also add an owner property, so for the purpose of this lab the values wi
 So we will use this convention:
 
 ```xml
-<!--If the resource dashes: -->
+<!--If the resource prefix has a dash: -->
 <service-prefix>-<environment>-<region>-<application-name>-<owner>-<instance>
 <!--If the resource does not autorize any special caracters: -->
 <service-prefix><environment><region><application-name><owner><instance>
