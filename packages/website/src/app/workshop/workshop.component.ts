@@ -46,6 +46,7 @@ import { getRepoPath } from '../shared/loader';
               [data]="workshop.sections[workshop.step].markdown"
               clipboard
               [clipboardButtonComponent]="copyComponent"
+              [style.--authors]="workshop.step === 0 ? authors : ''"
             >
               ></markdown
             >
@@ -59,12 +60,25 @@ import { getRepoPath } from '../shared/loader';
       </ng-template>
     </div>
   `,
-  styles: [``]
+  styles: [`
+    :host ::ng-deep markdown {
+      h1::after {
+        display: block;
+        content: var(--authors);
+        font-style: italic;
+        font-size: var(--text-size-md);
+        font-weight: normal;
+        margin-top: var(--space-xs);
+        opacity: 0.7;
+      }
+    }
+  `]
 })
 export class WorkshopComponent {
   readonly copyComponent = CopyComponent;
   loading: boolean = true;
   workshop: Workshop | undefined;
+  authors: string = '';
   menuLinks: MenuLink[] = [];
   scrollInit: boolean = false;
   enableScrollEvent: boolean = false;
@@ -134,6 +148,7 @@ export class WorkshopComponent {
     try {
       this.workshop = await loadWorkshop(repoPath, { wtid, ocid });
       this.menuLinks = createMenuLinks(this.workshop);
+      this.updateAuthors();
     } catch (error) {
       console.error(error);
     }
@@ -143,6 +158,16 @@ export class WorkshopComponent {
       this.workshop.step = Number(step);
     }
     addRouteChangeListener(this.routeChanged.bind(this));
+  }
+
+  updateAuthors() {
+    if (this.workshop) {
+      const rawAuthors = this.workshop.meta?.authors ?? [];
+      const authors = Array.isArray(rawAuthors) ? rawAuthors : [rawAuthors];
+      this.authors = `'${authors.join(', ')}'`;
+    } else {
+      this.authors = '';
+    }
   }
 
   updateTitle() {
