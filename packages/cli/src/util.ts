@@ -25,9 +25,7 @@ export async function askForConfirmation(question: string): Promise<boolean> {
 }
 
 export async function getPackageJson(): Promise<Record<string, any>> {
-  const file = await fs.readFile(path.join(__dirname, '..', 'package.json'), 'utf8');
-  const pkg = JSON.parse(file) as Record<string, any>;
-  return pkg;
+  return readJson(path.join(__dirname, '..', 'package.json'));
 }
 
 export async function isFolder(path: string) {
@@ -45,6 +43,15 @@ export async function pathExists(path: string) {
     return true;
   } catch {
     return false;
+  }
+}
+
+export async function readJson(path: string) {
+  try {
+    const contents = await fs.readFile(path, 'utf8');
+    return JSON.parse(contents) as Record<string, any>;
+  } catch {
+    return {};
   }
 }
 
@@ -68,4 +75,30 @@ export async function recursiveCopy(source: string, dest: string): Promise<void>
   } else {
     await fs.copyFile(source, path.join(dest, path.basename(source)));
   }
+}
+
+export function escapeForHtml(unsafe?: string) {
+  return (
+    unsafe
+      ?.replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;') ?? ''
+  );
+}
+
+export function unescapeHtml(html?: string) {
+  return (
+    html
+      ?.replace(/&(amp|#38);/gi, '&')
+      .replace(/&(lt|#60);/gi, '<')
+      .replace(/&(gt|#62);/gi, '>')
+      .replace(/&(quot|#34);/gi, '"')
+      .replace(/&(apos|#39);/gi, "'")
+      .replace(/&#(\d+);/gi, (match, numberString) => {
+        const number_ = Number.parseInt(numberString, 10);
+        return String.fromCodePoint(number_);
+      }) ?? ''
+  );
 }

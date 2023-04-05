@@ -24,6 +24,9 @@ Commands:
     -p, --port       Port to listen on (default: 4444)
     -h, --host       Host address to bind to (default: localhost)
     -o, --open       Open in browser (default: false)
+  c, convert <file>  Convert asciidoc to markdown
+    -a, --attr <json_file>  Attributes to use for conversion
+    -d, --dest <file>       Destination file (default: workshop.md)
 
 General options:
   -v, --version      Show version
