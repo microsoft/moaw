@@ -59,7 +59,7 @@ export function updateAssetsBasePath(markdown: string, baseUrl: string): string 
   }
 
   // Match all occurrences of "assets/" not within a code block
-  const assetsRegex = new RegExp(`(?:\.\/)?${assetsFolder}(?=[^\`]*(?:\`[^\`]*\`[^\`]*)*$)`, 'g');
+  const assetsRegex = new RegExp(`(?:\.\/)?${assetsFolder}(?=[^\`]*(?:\`[^\`]*\`[^\`]*)*$)`, 'gm');
 
   return markdown.replace(assetsRegex, `${baseUrl}/${assetsFolder}`);
 }
