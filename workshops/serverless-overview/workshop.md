@@ -17,8 +17,6 @@ sections_title:
 
 # The Serverless Workshop
 
-## Before you start
-
 Welcome to this Azure Serverless Workshop. In this lab, you will use different types of serverless services on Azure to achieve a real world scenario. Don't worry, this is a step by step lab, you will be guided through it.
 
 During this workshop you will have the instructions to complete each steps, try to find the answer before looking at the solution.
@@ -35,7 +33,7 @@ Before starting this workshop, be sure you have:
 - The [Azure CLI][az-cli-install] installed on your machine
 - The [Azure Functions Core Tools][az-func-core-tools] installed, this will be useful for creating the scaffold of your Azure Functions using command line.
 - If you use VS Code you can also install the [Azure Function extension][azure-function-vs-code-extension]
-
+- Register the Azure providers: `Microsoft.Logic`, `Microsoft.EventGrid`, `Microsoft.EventHub`
 <div class="task" data-title="Task">
 
 > Before starting, login to your Azure subscription locally using Azure CLI and inside the [Azure Portal][az-portal] using your own credentials.
@@ -52,6 +50,10 @@ az login
 az account show
 # Select a specific subscription if you have more than one or the wrong one selected
 az account set --subscription <subscription-id>
+# Register the Azure providers
+az provider register --namespace 'Microsoft.Logic'
+az provider register --namespace 'Microsoft.EventGrid'
+az provider register --namespace 'Microsoft.EventHub'
 ```
 
 </details>
@@ -136,7 +138,7 @@ For this first part, you will be focus on this part of the scenario:
 
 ## Create a resource group
 
-Let's start by creating the resource group for this Hand's On Lab.
+Let's start by creating the resource group for this Hand's On Lab. The resource group is a logical structure to store Azure components used to group your Azure resources.
 
 <div class="info" data-title="Information">
 
@@ -171,6 +173,8 @@ az group create --name <resource-group> --location <region>
 
 ## Configure the storage account
 
+The Azure storage account is used to store data objects, including blobs, file shares, queues, tables, and disks. You will use it to store the audios files inside an audios container.
+
 With the resource group ready, let's create a storage account with a container named `audios` that will store all audios. The naming convention for Storage Accounts is: `st<environment><region><application-name><owner><instance>`.
 
 Choose a Locally redundant storage: Standard LRS
@@ -182,8 +186,8 @@ Choose a Locally redundant storage: Standard LRS
 
 </div>
 
-[storage-account]:[https://learn.microsoft.com/fr-fr/cli/azure/storage/account?view=azure-cli-latest]
-[storage-account-container]:[https://learn.microsoft.com/fr-fr/cli/azure/storage/container?view=azure-cli-latest]
+[storage-account]:https://learn.microsoft.com/fr-fr/cli/azure/storage/account?view=azure-cli-latest
+[storage-account-container]:https://learn.microsoft.com/fr-fr/cli/azure/storage/container?view=azure-cli-latest
 
 <details>
 <summary>Toggle solution</summary>
@@ -221,9 +225,11 @@ If everything is fine, open the [Azure Portal][az-portal] and you will retreive 
 
 ### Create an Event Grid
 
-Next step is to setup a way to listen to the audios files uploaded by the user in the storage account container. To start, we will upload them directly using the [Azure Portal][az-portal] and further in the lab we will use a user interface and a dedicated API.
+The Event Grid is an event broker that you can use to integrate applications using events. The different events are delivered by Event Grid to subscribers such as applications, Azure services, or any endpoint to which Event Grid has network access. The source of those events can be other applications, SaaS services and Azure services
 
-To detect the upload you will use a service called Event Grid, and use the `System topic`.
+Next step is to setup a way to listen to the audios files uploaded by the user in the storage account container. To start, we will upload them directly using the [Azure Portal][az-portal] and further in the labs we will use a user interface and a dedicated API.
+
+To detect the upload you will use the `System topic` functionality of the Event Grid service.
 
 The naming convention for Event Grid topics is: `egst-<environment>-<region>-<application-name>-<owner>-<instance>`.
 
@@ -250,7 +256,7 @@ az eventgrid system-topic create -g <resource-group> \
 
 ### Create an Event Hub
 
-The Event Grid previously created will listen to the Storage Account, but before adding this mecanism we need to create another service: The Event Hub. This one is responsible for broadcasting the event creating by the Event Grid service. With that in placethe event can be consumed by multiple services. In our case, a Logic App will be triggered based on the Event Hub broadcasting.
+The Event Grid previously created will listen to the Storage Account, but before adding this mecanism we need to create another service: The Event Hub. This one is responsible for broadcasting the event creating by the Event Grid service. With that in place the event can be consumed by multiple services. In our case, a Logic App will be triggered based on the Event Hub broadcasting.
 
 The naming convention for Event Hub Namespace is: `evhns-<environment>-<region>-<application-name>-<owner>-<instance>` and for the event hub: `evh-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`.
 
@@ -327,7 +333,7 @@ az eventgrid system-topic event-subscription create --name <event-grid-system-to
                                              --subject-begins-with /blobServices/default/containers/audios/blobs \
                                              --subject-ends-with .wav \
                                              --endpoint-type eventhub \
-                                             --endpoint /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.EventHub/namespaces/<event-grid-system-topic-name>/eventhubs/<event-hub-name>
+                                             --endpoint /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.EventHub/namespaces/<event-hub-namespace-name>/eventhubs/<event-hub-name>
 ```
 
 If you did everything correctly you should see the event subscription like this:
@@ -340,6 +346,8 @@ If you did everything correctly you should see the event subscription like this:
 ## Process the event
 
 ### Create the Logic App
+
+Azure Logic Apps is a cloud platform where you can create and run automated workflows with little to no code. A visual designer can be used to select prebuilt operations which can quickly build a workflow that integrates and manages your apps, data, services, and systems.
 
 The action of uploading an audio file is now exposed by the event hub. It's time to consume this event.
 
@@ -462,11 +470,23 @@ Finally, update the information to get the path of the audio file just uploaded 
 split(items('For_each')['data']['url'], '.blob.core.windows.net')[1]
 ```
 
+The split query will get the container name and the audio file name from the url which always finish by: `.blob.core.windows.net`.
+
 ![Logic app](assets/logic-app-download-blob.png)
 
 </details>
 
 ### Use the cognitive services
+
+The Azure Cognitive Services are cloud-based artificial intelligence services that give the ability to developers to build cognitive intelligence into their applications without having skills in AI or data science. They are available through client library SDKs in popular development languages and REST APIs.
+
+Cognitive Services can be categorized into five main areas:
+
+- Decision
+- Language
+- Speech
+- Vision
+- Azure OpenAI Service
 
 Next step is to transform the audio file into text using the cognitive service with the speech to text service. 
 To do this, you will have to:
@@ -540,6 +560,8 @@ Finally as you need previously, upload the audio file and you should see the con
 </details>
 
 ### Store data to Cosmos Db
+
+The Azure Cosmos DB is a fully managed NoSQL and relational database. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL.
 
 With the audio transformed to text, you will have to store it in a NoSQL database inside Cosmos Db:
 - Database info: `HolDb`
@@ -622,7 +644,9 @@ Give a try and fortunately, you will see a new item in your Cosmos Db!
 
 ### Azure Function
 
-At this point you have the first sceneario quite complete. The last thing you need to add is an API to upload the audio file to your storage account. For this step you will use `Azure Functions`.
+Azure Functions is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. You don't need to worry about deploying and maintaining servers, Azure provides all the up-to-date resources needed to keep your applications running. You just need to focus on your code.
+
+At this point you have the first scenario quite complete. The last thing you need to add is an API to upload the audio file to your storage account. For this step you will use `Azure Functions`.
 
 Make sure to create one Azure Function with:
 - The `Linux` Operating System
