@@ -59,11 +59,11 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     const type = node.getNodeName();
     switch (type) {
       case 'preamble': {
-        return this.convertPreamble(node as Asciidoctor.AbstractBlock);
+        return this.convertPreamble(node as Asciidoctor.Block);
       }
 
       case 'paragraph': {
-        return this.convertParagraph(node as Asciidoctor.AbstractBlock);
+        return this.convertParagraph(node as Asciidoctor.Block);
       }
 
       case 'ulist': {
@@ -75,11 +75,11 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
       }
 
       case 'admonition': {
-        return this.convertAdmonition(node as Asciidoctor.AbstractBlock);
+        return this.convertAdmonition(node as Asciidoctor.Block);
       }
 
       case 'image': {
-        return this.convertImage(node as Asciidoctor.AbstractBlock);
+        return this.convertImage(node as Asciidoctor.Block);
       }
 
       case 'inline_quoted': {
@@ -103,15 +103,19 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
       }
 
       case 'page_break': {
-        return this.convertPageBreak(node as Asciidoctor.AbstractBlock);
+        return this.convertPageBreak(node as Asciidoctor.Block);
       }
 
       case 'thematic_break': {
-        return this.convertThematicBreak(node as Asciidoctor.AbstractBlock);
+        return this.convertThematicBreak(node as Asciidoctor.Block);
       }
 
       case 'table': {
         return this.convertTable(node as Asciidoctor.Table);
+      }
+
+      case 'quote': {
+        return this.convertQuote(node as Asciidoctor.Block);
       }
 
       // Case 'literal': return convert_literal(node);
@@ -129,7 +133,6 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
       // case 'inline_kbd': return convert_inline_kbd(node);
       // case 'inline_menu': return convert_inline_menu(node);
       // case 'open': return convert_open(node);
-      // case 'quote': return convert_quote(node);
       // case 'sidebar': return convert_sidebar(node);
       // case 'stem': return convert_stem(node);
       // case 'verse': return convert_verse(node);
@@ -144,11 +147,11 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     }
   }
 
-  convertParagraph(node: Asciidoctor.AbstractBlock) {
+  convertParagraph(node: Asciidoctor.Block) {
     return `${node.getContent()}\n`;
   }
 
-  convertPreamble(node: Asciidoctor.AbstractBlock) {
+  convertPreamble(node: Asciidoctor.Block) {
     const doc = node.getDocument();
     const tocPlacement = doc.getAttribute('toc-placement') as string;
     let toc = '';
@@ -180,7 +183,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return result.join('\n');
   }
 
-  convertAdmonition(node: Asciidoctor.AbstractBlock) {
+  convertAdmonition(node: Asciidoctor.Block) {
     const content = unescapeHtml(node.getContent().split('\n').join('\n> '));
     const name = (node.getAttribute('name') as string | undefined)?.toLowerCase() ?? '';
     const title = escapeForHtml(node.getTitle() ?? name);
@@ -196,7 +199,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return result;
   }
 
-  convertImage(node: Asciidoctor.AbstractBlock) {
+  convertImage(node: Asciidoctor.Block) {
     const target = node.getAttribute('target') as string;
     const caption = node.getCaption();
     const alt = unescapeHtml(node.getAlt());
@@ -337,11 +340,11 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return result;
   }
 
-  convertPageBreak(node: Asciidoctor.AbstractNode) {
+  convertPageBreak(_node: Asciidoctor.Block) {
     return `\n---\n`;
   }
 
-  convertThematicBreak(node: Asciidoctor.AbstractNode) {
+  convertThematicBreak(_node: Asciidoctor.Block) {
     return `***\n`;
   }
 
@@ -419,5 +422,14 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     }
 
     return result;
+  }
+
+  convertQuote(node: Asciidoctor.Block) {
+    const attribution = (node.getAttribute('attribution') as string | undefined) ?? '';
+    const citetitle = (node.getAttribute('citetitle') as string | undefined) ?? '';
+    const content = unescapeHtml(node.getContent().split('\n').join('\n> '));
+    const citeContent = citetitle ? `<cite>${citetitle}</cite>` : '';
+    const attributionText = attribution ? `— ${attribution}${citetitle ? '<br>\n> ' : ''}` : '';
+    return `> ${content}${attribution || citetitle ? '\n> ' + attributionText + citeContent : ''}`;
   }
 }

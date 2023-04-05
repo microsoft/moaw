@@ -38,10 +38,11 @@ export async function convert(options: ConvertOptions = {}): Promise<void> {
 
     const { markdown, warnings, errors } = await convertToMarkdown(file, attributes);
     const destFolder = dirname(destination);
-    if (!await pathExists(destFolder)) {
+    if (!(await pathExists(destFolder))) {
       debug(`Destination folder not found, creating: ${destFolder}}`);
       await fs.mkdir(destFolder, { recursive: true });
     }
+
     await fs.writeFile(destination, markdown);
 
     if (warnings.length === 0 && errors.length === 0) {
