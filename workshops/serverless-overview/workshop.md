@@ -500,9 +500,9 @@ The naming conventions are:
 
 ```bash
 # Let's create the cognitive service account with speech to text service
-az cognitiveservices account create -n cog-dev-we-hol-ms-01 -g rg-dev-we-hol-ms-01 --kind SpeechServices --sku F0 -l WestEurope --yes
+az cognitiveservices account create -n <cognitive-service-name> -g <resource-group> --kind SpeechServices --sku F0 -l <region> --yes
 # Create the Key Vault to secure the speech to text API key
-az keyvault create --location westeurope --name kv-dev-we-hol-ms-01 --resource-group rg-dev-we-hol-ms-01
+az keyvault create --location <region> --name <key-vault-name> --resource-group <resource-group>
 ```
 
 To allow the Logic App to access the Key Vault, you need to grant access to it. Go to your Logic App and inside the identity tab, turn on the `System Identity`:
