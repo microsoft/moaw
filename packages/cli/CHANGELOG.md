@@ -1,3 +1,11 @@
+# [@moaw/cli-v1.2.0](https://github.com/microsoft/moaw/compare/cli-1.1.0...cli-1.2.0) (2023-04-06)
+
+
+### Features
+
+* add update notification ([3c5c250](https://github.com/microsoft/moaw/commit/3c5c250e45be7bc08a2bceb211faf849c2f3591b))
+* **cli:** add link command ([9a1f8bc](https://github.com/microsoft/moaw/commit/9a1f8bc8c2312679d7bda92a8d327bc6a30f9505))
+
 # [@moaw/cli-v1.1.0](https://github.com/microsoft/moaw/compare/cli-1.0.1...cli-1.1.0) (2023-04-05)
 
 
