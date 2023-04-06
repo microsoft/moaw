@@ -60,19 +60,21 @@ import { getRepoPath } from '../shared/loader';
       </ng-template>
     </div>
   `,
-  styles: [`
-    :host ::ng-deep markdown {
-      h1::after {
-        display: block;
-        content: var(--authors);
-        font-style: italic;
-        font-size: var(--text-size-md);
-        font-weight: normal;
-        margin-top: var(--space-xs);
-        opacity: 0.7;
+  styles: [
+    `
+      :host ::ng-deep markdown {
+        h1::after {
+          display: block;
+          content: var(--authors);
+          font-style: italic;
+          font-size: var(--text-size-md);
+          font-weight: normal;
+          margin-top: var(--space-xs);
+          opacity: 0.7;
+        }
       }
-    }
-  `]
+    `
+  ]
 })
 export class WorkshopComponent {
   readonly copyComponent = CopyComponent;

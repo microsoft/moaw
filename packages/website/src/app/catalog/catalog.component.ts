@@ -5,7 +5,13 @@ import { FooterComponent } from '../shared/components/footer.component';
 import { LoaderComponent } from '../shared/components/loader.component';
 import { ChipComponent } from '../shared/components/chip.component';
 import { defaultLanguage, githubRepositoryUrl } from '../shared/constants';
-import { addRouteChangeListener, getQueryParams, removeRouteChangeListener, RouteChangeListener, setQueryParams } from '../router';
+import {
+  addRouteChangeListener,
+  getQueryParams,
+  removeRouteChangeListener,
+  RouteChangeListener,
+  setQueryParams
+} from '../router';
 import { ContentEntry, loadCatalog } from './content-entry';
 import { ContentFilter, matchEntry } from './content-filter';
 import { CardComponent } from './card.component';

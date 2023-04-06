@@ -118,7 +118,7 @@ export class CardComponent {
 
   getDurationText(duration: number): string {
     if (duration > 60) {
-      const hours = Math.round(duration / 60 * 10) / 10;
+      const hours = Math.round((duration / 60) * 10) / 10;
       return hours + ' hour';
     } else {
       return duration + ' min';
