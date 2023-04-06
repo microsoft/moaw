@@ -1,5 +1,6 @@
 import process from 'node:process';
 import debug from 'debug';
+import updateNotifier, { Package } from 'update-notifier';
 import minimist from 'minimist';
 import { convert, createNew, serve } from './commands/index.js';
 import { getPackageJson } from './util.js';
@@ -35,8 +36,10 @@ export async function run(args: string[]) {
     }
   });
 
+  const pkg = await getPackageJson();
+  updateNotifier({ pkg: pkg as Package }).notify();
+
   if (options.version) {
-    const pkg = await getPackageJson();
     console.info(pkg.version);
     return;
   }
