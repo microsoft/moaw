@@ -27,6 +27,9 @@ Commands:
   c, convert <file>  Convert asciidoc to markdown
     -a, --attr <json_file>  Attributes to use for conversion
     -d, --dest <file>       Destination file (default: workshop.md)
+  l, link <file>     Get link to target file
+    -r, --repo       Set GitHub repo instead of fetching it from git
+    -b, --branch <name>     Set branch name (default: current branch)
 
 General options:
   -v, --version      Show version

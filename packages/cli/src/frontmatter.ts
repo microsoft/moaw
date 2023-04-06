@@ -1,7 +1,10 @@
 import process from 'node:process';
-import yaml from 'yaml';
+import { stringify, parse } from 'yaml';
 
-// TODO: this code should be moved in a shared common package
+// TODO: this file should be moved in a shared common package
+
+const frontMatterRegex = /^(?:---\r?\n([\s\S]+?)\r?\n---\r?\n)?([\s\S]*?)$/;
+
 export type FrontMatterData = Partial<{
   type: 'workshop' | 'deck' | 'page';
   deckType: 'reveal' | 'remark';
@@ -24,7 +27,7 @@ export type FrontMatterData = Partial<{
 }>;
 
 export function createFrontmatter(metadata: FrontMatterData) {
-  return `---\n${yaml.stringify(metadata, { lineWidth: 0 })}---\n`;
+  return `---\n${stringify(metadata, { lineWidth: 0 })}---\n`;
 }
 
 export function validateMetadata(metadata: FrontMatterData) {
@@ -63,4 +66,18 @@ export function validateMetadata(metadata: FrontMatterData) {
   }
 
   return errors;
+}
+
+export type FrontMatterParseResult = {
+  meta: FrontMatterData;
+  markdown: string;
+};
+
+export function parseFrontMatter(text: string): FrontMatterParseResult {
+  const [, yaml, markdown] = frontMatterRegex.exec(text) || [];
+  if (!yaml) {
+    return { meta: {}, markdown: text };
+  }
+
+  return { meta: parse(yaml) as FrontMatterData, markdown };
 }

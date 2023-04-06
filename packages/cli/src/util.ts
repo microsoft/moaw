@@ -1,8 +1,10 @@
 import { createInterface } from 'node:readline';
-import path, { dirname } from 'node:path';
+import { dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import process from 'node:process';
 import fs from 'node:fs/promises';
+import { promisify } from 'node:util';
+import { exec } from 'node:child_process';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -25,7 +27,7 @@ export async function askForConfirmation(question: string): Promise<boolean> {
 }
 
 export async function getPackageJson(): Promise<Record<string, any>> {
-  return readJson(path.join(__dirname, '..', 'package.json'));
+  return readJson(join(__dirname, '..', 'package.json'));
 }
 
 export async function isFolder(path: string) {
@@ -67,13 +69,13 @@ export async function recursiveCopy(source: string, dest: string): Promise<void>
     const entries = await fs.readdir(source, { withFileTypes: true });
     await Promise.all(
       entries.map(async (entry) => {
-        const sourcePath = path.join(source, entry.name);
-        const destPath = path.join(dest, entry.name);
+        const sourcePath = join(source, entry.name);
+        const destPath = join(dest, entry.name);
         return entry.isDirectory() ? recursiveCopy(sourcePath, destPath) : fs.copyFile(sourcePath, destPath);
       })
     );
   } else {
-    await fs.copyFile(source, path.join(dest, path.basename(source)));
+    await fs.copyFile(source, join(dest, basename(source)));
   }
 }
 
@@ -96,9 +98,14 @@ export function unescapeHtml(html?: string) {
       .replace(/&(gt|#62);/gi, '>')
       .replace(/&(quot|#34);/gi, '"')
       .replace(/&(apos|#39);/gi, "'")
-      .replace(/&#(\d+);/gi, (match, numberString) => {
+      .replace(/&#(\d+);/gi, (_match, numberString) => {
         const number_ = Number.parseInt(numberString, 10);
         return String.fromCodePoint(number_);
       }) ?? ''
   );
+}
+
+export async function runCommand(command: string): Promise<string> {
+  const result = await promisify(exec)(command);
+  return result.stdout.toString();
 }

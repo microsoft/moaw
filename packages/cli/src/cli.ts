@@ -1,8 +1,8 @@
 import process from 'node:process';
 import debug from 'debug';
-import updateNotifier, { Package } from 'update-notifier';
+import updateNotifier, { type Package } from 'update-notifier';
 import minimist from 'minimist';
-import { convert, createNew, serve } from './commands/index.js';
+import { convert, createNew, link, serve } from './commands/index.js';
 import { getPackageJson } from './util.js';
 
 const help = `Usage: moaw <command> [options]
@@ -16,6 +16,9 @@ Commands:
   c, convert <file>  Convert asciidoc to markdown
     -a, --attr <json_file>  Attributes to use for conversion
     -d, --dest <file>       Destination file (default: workshop.md)
+  l, link [<file>]   Get link to target file (default: workshop.md)
+    -r, --repo       Set GitHub repo instead of fetching it from git
+    -b, --branch <name>     Set branch name (default: current branch)
 
 General options:
   -v, --version      Show version
@@ -24,7 +27,7 @@ General options:
 
 export async function run(args: string[]) {
   const options = minimist(args, {
-    string: ['host', 'attr', 'dest'],
+    string: ['host', 'attr', 'dest', 'repo', 'branch'],
     boolean: ['verbose', 'version', 'help', 'open'],
     alias: {
       v: 'version',
@@ -32,7 +35,9 @@ export async function run(args: string[]) {
       h: 'host',
       o: 'open',
       a: 'attr',
-      d: 'dest'
+      d: 'dest',
+      r: 'repo',
+      b: 'branch'
     }
   });
 
@@ -81,6 +86,16 @@ export async function run(args: string[]) {
         attributes: options.attr as string,
         destination: options.dest as string,
         verbose: Boolean(options.verbose)
+      });
+      break;
+    }
+
+    case 'l':
+    case 'link': {
+      await link({
+        file: parameters[0],
+        repo: options.repo as string,
+        branch: options.branch as string
       });
       break;
     }
