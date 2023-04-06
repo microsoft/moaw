@@ -17,6 +17,7 @@ export type ConvertOptions = {
 
 export async function convert(options: ConvertOptions = {}): Promise<void> {
   try {
+    debug('Options %o', options);
     const { file } = options;
     const destination = options.destination ?? defaultWorkshopFile;
 

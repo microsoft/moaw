@@ -208,7 +208,6 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     const result = `![${alt}](${url}${title ? ` "${title}"` : ''})\n`;
 
     if (caption) {
-      // TODO: handle caption
       const warning = 'Image caption is not supported';
       this.warnings.push(warning);
       debug('Warning: ' + warning);
@@ -415,7 +414,6 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     }
 
     if (title) {
-      // TODO: handle caption
       const warning = 'Table caption is not supported';
       this.warnings.push(warning);
       debug('Warning: ' + warning);
