@@ -34,21 +34,26 @@ export async function loadWorkshop(repoPath: string, options?: LoaderOptions): P
 }
 
 export function createMenuLinks(workshop: Workshop): MenuLink[] {
+  const navigationLevels = (workshop.meta as any)?.navigation_levels ?? 2;
   return workshop.sections.map((section, index) => {
     const active = index === workshop.step;
+    const baseLevel = section.headings[0].level;
+    const allowedLevels = baseLevel + Math.max(navigationLevels - 1, 0);
     const children = section.headings
       .slice(1)
-      .filter((heading) => heading.level === section.headings[0].level + 1)
+      .filter((heading) => heading.level <= allowedLevels)
       .map((heading) => ({
         active: false,
         text: heading.text,
-        url: heading.url
+        url: heading.url,
+        level: heading.level - baseLevel
       }));
     return {
       active,
       text: section.title,
       url: getCurrentUrlWithQueryParams({ step: index }),
-      children
+      children,
+      level: 0
     };
   });
 }
