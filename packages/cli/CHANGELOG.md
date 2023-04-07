@@ -1,3 +1,10 @@
+# [@moaw/cli-v1.2.1](https://github.com/microsoft/moaw/compare/cli-1.2.0...cli-1.2.1) (2023-04-07)
+
+
+### Bug Fixes
+
+* **cli:** add missing line break after lists when converting asciidoc ([fcf720c](https://github.com/microsoft/moaw/commit/fcf720ce1a02d1c1e46b3f87ce31c8320884f3e6))
+
 # [@moaw/cli-v1.2.0](https://github.com/microsoft/moaw/compare/cli-1.1.0...cli-1.2.0) (2023-04-06)
 
 
