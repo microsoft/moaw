@@ -169,7 +169,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
       const check = checklist ? (item.getAttribute('checked') ? '[x] ' : '[ ] ') : '';
       return `- ${check}${unescapeHtml(item.getText())}`;
     });
-    return result.join('\n');
+    return result.join('\n') + '\n';
   }
 
   convertOlist(node: Asciidoctor.List) {
@@ -180,7 +180,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
       const number_ = reversed ? start - index : start + index;
       return `${number_}. ${unescapeHtml(item.getText())}`;
     });
-    return result.join('\n');
+    return result.join('\n') + '\n';
   }
 
   convertAdmonition(node: Asciidoctor.Block) {
