@@ -222,27 +222,27 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     const result = escapeForHtml(text);
     switch (type) {
       case 'monospaced': {
-        return `\`${result}\``;
+        return `\`${result.replace(/`/g, '\\`')}\``;
       }
 
       case 'emphasis': {
-        return `*${result}*`;
+        return `*${result.replace(/[*]/g, '\\*')}*`;
       }
 
       case 'strong': {
-        return `**${result}**`;
+        return `**${result.replace(/[*][*]/g, '\\*\\*')}**`;
       }
 
       case 'mark': {
-        return `==${result}==`;
+        return `==${result.replace(/==/g, '\\=\\=')}==`;
       }
 
       case 'superscript': {
-        return `^${result}^`;
+        return `^${result.replace(/[^]/g, '\\^')}^`;
       }
 
       case 'subscript': {
-        return `~${result}~`;
+        return `~${result.replace(/[~]/g, '\\~')}~`;
       }
 
       case 'double': {
@@ -307,8 +307,12 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     const text = unescapeHtml(node.getText());
     const type = node.getType();
     const target = node.getTarget() ?? '';
+
     switch (type) {
       case 'ref':
+        return `<a id="${node.getId()}"></a>`;
+      case 'bibref':
+        return `<a id="${node.getId()}"></a>[${node.getReftext() || node.getId()}]`;
       case 'xref':
       case 'link': {
         return `[${text}](${target})`;
