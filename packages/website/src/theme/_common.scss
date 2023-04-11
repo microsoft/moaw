@@ -43,7 +43,19 @@ h3 {
 }
 
 h4 {
+  font-size: var(--text-size-lg);
   margin-top: var(--space-md);
+}
+
+h5 {
+  font-size: var(--text-base-size);
+  margin-top: var(--space-md);
+}
+
+h6 {
+  font-size: var(--text-base-size);
+  margin-top: var(--space-md);
+  font-style: italic;
 }
 
 ol,

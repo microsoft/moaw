@@ -25,12 +25,12 @@ const dbPath = path.join(__dirname, '../../website/src/public/workshops.json');
   try {
     const externalEntries = await getExternalEntries(externalEntriesFiles);
     console.log(`Found ${externalEntries.length} external workshop(s)`);
-  
+
     const externalSourcesEntries = await getEntriesFromExternalSources();
     console.log(`Found ${externalSourcesEntries.length} workshop(s) from external sources`);
-  
+
     entries = [...entries, ...externalEntries, ...externalSourcesEntries];
-  
+
     entries.sort((a, b) => (a.lastUpdated > b.lastUpdated ? -1 : 1));
     console.log(`Total workshops: ${entries.length}`);
   } catch (error: any) {

@@ -66,7 +66,7 @@ export async function serve(options: ServeOptions = {}) {
         notify: false,
         ghostMode: false,
         ignore: ['node_modules'],
-        files: [`${path.basename(targetPath)}/**/*`],
+        files: [`${path.dirname(targetPath)}/**/*`],
         server: {
           baseDir: [path.join(__dirname, '../..', websitePath)],
           directory: true,

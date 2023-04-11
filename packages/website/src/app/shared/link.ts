@@ -7,6 +7,7 @@ export interface Link {
 export interface MenuLink extends Link {
   active: boolean;
   children?: MenuLink[];
+  level: number;
 }
 
 export function createLinks(links: Record<string, string>): Link[] {

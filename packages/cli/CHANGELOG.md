@@ -1,3 +1,33 @@
+# [@moaw/cli-v1.2.1](https://github.com/microsoft/moaw/compare/cli-1.2.0...cli-1.2.1) (2023-04-07)
+
+
+### Bug Fixes
+
+* **cli:** add missing line break after lists when converting asciidoc ([fcf720c](https://github.com/microsoft/moaw/commit/fcf720ce1a02d1c1e46b3f87ce31c8320884f3e6))
+
+# [@moaw/cli-v1.2.0](https://github.com/microsoft/moaw/compare/cli-1.1.0...cli-1.2.0) (2023-04-06)
+
+
+### Features
+
+* add update notification ([3c5c250](https://github.com/microsoft/moaw/commit/3c5c250e45be7bc08a2bceb211faf849c2f3591b))
+* **cli:** add link command ([9a1f8bc](https://github.com/microsoft/moaw/commit/9a1f8bc8c2312679d7bda92a8d327bc6a30f9505))
+
+# [@moaw/cli-v1.1.0](https://github.com/microsoft/moaw/compare/cli-1.0.1...cli-1.1.0) (2023-04-05)
+
+
+### Bug Fixes
+
+* **cli:** file watcher ([3c0442a](https://github.com/microsoft/moaw/commit/3c0442ac8dfc4c179bd58b23cac306a6a48d56b1))
+
+
+### Features
+
+* **cli:** add blockquote conversion support ([c96c828](https://github.com/microsoft/moaw/commit/c96c82897b92fe3dc82dd5de4142d17c4bd68070))
+* **cli:** add convert command for asciidoc ([2a8f3e7](https://github.com/microsoft/moaw/commit/2a8f3e7218b3333875c57d63fe51c300e501c349))
+
+# [@moaw/cli-v1.0.1](https://github.com/microsoft/moaw/compare/cli-1.0.0...cli-1.0.1) (2023-03-13)
+
 # @moaw/cli-v1.0.0 (2023-03-02)
 
 

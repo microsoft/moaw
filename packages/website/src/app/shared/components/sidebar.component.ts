@@ -15,7 +15,7 @@ import { navigate, getCurrentUrlWithoutHash } from '../../router';
             >{{ index + 1 }}. {{ link.text }}</a
           >
           <ul *ngIf="link.active && link.children" class="sub-links">
-            <li *ngFor="let sublink of link.children">
+            <li *ngFor="let sublink of link.children" [ngClass]="'level-' + sublink.level">
               <a
                 [href]="makeUrl(sublink.url)"
                 (click)="openLink($event, sublink.url)"
@@ -98,6 +98,18 @@ import { navigate, getCurrentUrlWithoutHash } from '../../router';
             background: none;
             font-weight: bold;
           }
+        }
+        .level-2 {
+          margin-left: var(--space-md);
+        }
+        .level-3 {
+          margin-left: calc(var(--space-md) * 2);
+        }
+        .level-4 {
+          margin-left: calc(var(--space-md) * 3);
+        }
+        .level-5 {
+          margin-left: calc(var(--space-md) * 4);
         }
       }
     `
