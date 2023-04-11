@@ -339,7 +339,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     const caption = node.getCaption();
     const content = unescapeHtml(node.getContent());
     const language = (node.getAttribute('language') as string | undefined) ?? '';
-    const result = `\`\`\`${language}\n${content}\n\`\`\``;
+    const result = `\`\`\`${language}\n${content}\n\`\`\`\n`;
     return result;
   }
 
