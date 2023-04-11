@@ -11,6 +11,7 @@ contacts:                               # Required. Must match the number of aut
   - '@damienaicheh'
 duration_minutes: 20
 tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email
+navigation_levels: 3
 sections_title:
   - The Serverless Workshop
 ---
