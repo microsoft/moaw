@@ -643,8 +643,6 @@ Give a try and fortunately, you will see a new item in your Cosmos Db!
 
 ## Add an API
 
-### Azure Function
-
 Azure Functions is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. You don't need to worry about deploying and maintaining servers, Azure provides all the up-to-date resources needed to keep your applications running. You just need to focus on your code.
 
 At this point you have the first scenario quite complete. The last thing you need to add is an API to upload the audio file to your storage account. For this step you will use `Azure Functions`.
