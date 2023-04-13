@@ -30,14 +30,14 @@ During this workshop you will have the instructions to complete each steps, try 
 
 Before starting this workshop, be sure you have:
 
-- An Azure Subscription with **enough right** to create and manage services
+- An Azure Subscription with the **required permissions** to create and manage services
 - The [Azure CLI][az-cli-install] installed on your machine
 - The [Azure Functions Core Tools][az-func-core-tools] installed, this will be useful for creating the scaffold of your Azure Functions using command line.
-- If you use VS Code you can also install the [Azure Function extension][azure-function-vs-code-extension]
+- If you are using VS Code, you can also install the [Azure Function extension][azure-function-vs-code-extension]
 - Register the Azure providers: `Microsoft.Logic`, `Microsoft.EventGrid`, `Microsoft.EventHub`
 <div class="task" data-title="Task">
 
-> Before starting, login to your Azure subscription locally using Azure CLI and inside the [Azure Portal][az-portal] using your own credentials.
+> Before starting, login to your Azure subscription locally using Azure CLI and on the [Azure Portal][az-portal] using your own credentials.
 
 </div>
 
@@ -61,26 +61,27 @@ az provider register --namespace 'Microsoft.EventHub'
 
 ## Scenario
 
-The goal of the lab is to upload an audio file to Azure and receive the content inside a Single Page Application. Here is a diagram to explain it:
+The goal of the lab is to upload an audio file to Azure and get back the transcription using a Web Application.
+
+Here is a diagram to illustrate the flow:
 
 ![Hand's On Lab Architecture](assets/hands-on-lab-architecture.png)
 
-1) The user upload the audio file from the Web application
-2) The web application communicate with an APIM (API Management) which is a facade for multiple APIs
-3) An Azure Function which works as a simple API will upload the file to a Storage Account.
+1) The user uploads the audio file from the Web application
+2) The web application sends an HTTP request to APIM (API Management) which is a facade for multiple APIs
+3) An Azure Function will process the request and upload the file to a Storage Account
 4) When the file is uploaded the Event Grid service will detect it and send a "Blob created event" to an Event Hub
-5) The Event Hub will be consumed by a Logic App 
-6) The Logic App retreive the new audio file
-7) The audio file is sent to the Azure cognitive service.
-8) The speech to text service will proceed the file and return the result to the Logic App.
-9) The Logic App will then store the text from the audio file inside a Cosmos Db database
-10) An other Azure Function will listen to this Cosmos Db and get the text just uploaded 
-11) The Azure Function send it to the Web pub/sub service.
-12) Finally the Web pub/sub service which works like a websocket will notify the Web Application with the content of the audio file.
+5) The Event Hub will trigger a Logic App 
+6) The Logic App retrieves the new audio file
+7) The audio file is sent to to Azure Cognitive Services
+8) The speech to text service will process the file and return the result to the Logic App
+9) The Logic App will then store the transcription of the audio file in a Cosmos DB database
+10) A second Azure Function will be triggered by the update in CosmosDB. It will fetch the transcription from CosmosDB and send it to Web Pub/Sub
+11) Finally Web Pub/Sub will notify the Web Application about the new transcription using websockets
 
 <div class="info" data-title="Note">
 
-> The Azure Key Vault will be used to store the different secrets needed for this scenario.
+> Azure Key Vault will be used to store the secrets needed for this scenario.
 
 </div>
 
@@ -119,7 +120,11 @@ So we will use this convention:
 
 </div>
 
-With everything ready let's start the lab!
+## Programming language
+
+We will have to create few functions in this workshop to address various problems. You can choose the programming language you are most confortable with among the ones [supported by Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions#languages) but please keep in mind that solutions will only be provided in Python.
+
+With everything ready let's start the lab 🚀
 
 [az-cli-install]: https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
 [az-func-core-tools]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools
@@ -133,7 +138,7 @@ With everything ready let's start the lab!
 
 # Lab 1
 
-For this first part, you will be focus on this part of the scenario:
+On this first lab, you will be focus on this part of the scenario:
 
 ![Hand's On Lab Architecture Lab 1](assets/hands-on-lab-architecture-lab-1.png)
 
@@ -228,7 +233,7 @@ If everything is fine, open the [Azure Portal][az-portal] and you will retreive 
 
 The Event Grid is an event broker that you can use to integrate applications using events. The different events are delivered by Event Grid to subscribers such as applications, Azure services, or any endpoint to which Event Grid has network access. The source of those events can be other applications, SaaS services and Azure services
 
-Next step is to setup a way to listen to the audios files uploaded by the user in the storage account container. To start, we will upload them directly using the [Azure Portal][az-portal] and further in the labs we will use a user interface and a dedicated API.
+Next step is to setup a way to listen to the audio files uploaded by the user in the storage account container. To start, we will upload them directly using the [Azure Portal][az-portal] and further in the labs we will use a user interface and a dedicated API.
 
 To detect the upload you will use the `System topic` functionality of the Event Grid service.
 
@@ -257,7 +262,7 @@ az eventgrid system-topic create -g <resource-group> \
 
 ### Create an Event Hub
 
-The Event Grid previously created will listen to the Storage Account, but before adding this mecanism we need to create another service: The Event Hub. This one is responsible for broadcasting the event creating by the Event Grid service. With that in place the event can be consumed by multiple services. In our case, a Logic App will be triggered based on the Event Hub broadcasting.
+The Event Grid previously created will listen to the Storage Account, but before adding this mechanism we need to create another service: The Event Hub. This one is responsible for broadcasting the event creating by the Event Grid service. With that in place the event can be consumed by multiple services. In our case, a Logic App will be triggered based on the Event Hub broadcasting.
 
 The naming convention for Event Hub Namespace is: `evhns-<environment>-<region>-<application-name>-<owner>-<instance>` and for the event hub: `evh-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`.
 
@@ -299,7 +304,7 @@ az eventhubs eventhub create --resource-group <resource-group> \
 ### Add an Event Subscription
 
 Now, you will need to subscribe to the Storage Account with your Event Grid and use the Event Hub as a broadcaster.
-To achieve this, you need to meet these triggers criterias:
+To achieve this, you need to meet these trigger criteria:
 - Only on blob creation
 - If the file is uploaded in the `audios` container otherwise ignore it
 - If the file extension is `.wav`
@@ -418,7 +423,7 @@ A basic audio file to test the trigger can be download here:
 
 In the [Azure Portal][az-portal] inside the Logic App just created click on the `Edit` button. Then select `Blanc Logic App`. In the triggers list search for `Event Hub` and select the `When events are available in Event Hub` trigger.
 
-You will need to go to the `Shared Access Policies` inside your event hub to create an access key with `Listen` *only* property:
+You will need to go to the `Shared Access Policies` inside your event hub to create an access key with `Listen` access *only*:
 
 ![Event Hub Shared Access Policies](assets/event-hub-shared-access-policies.png)
 
@@ -496,7 +501,7 @@ To do this, you will have to:
 
 <div class="important" data-title="Security">
 
-> Remember to store secrets values if necessary in a Key Vault before using them.
+> Remember to store secret values (if necessary) in a Key Vault before using them.
 
 </div>
 
@@ -538,7 +543,7 @@ Then search for your logic app.
 
 ![Key Vault Access Logic App](assets/key-vault-access-logic-app.png)
 
-Now inside your Key Vault, in the `Secret` section add a new one called: `SpeechToTextApiKey` and set a key from the cognitive service.
+Now inside your Key Vault, in the `Secret` section add a new one called `SpeechToTextApiKey` and set a key from the cognitive service.
 
 ![Key Vault Cognitive Secret](assets/key-vault-cognitive-secret.png)
 
@@ -554,25 +559,25 @@ With that ready, add a new action in the for loop by searching for `Http`, then 
 
 ![Logic App HTTP Action](assets/logic-app-http-action.png)
 
-Notice the region of your cognntive service account and the language to use is specified in the url.
+Notice the region of your cognitive service account and the language to use is specified in the url.
 
 Finally as you need previously, upload the audio file and you should see the content as a text.
 
 </details>
 
-### Store data to Cosmos Db
+### Store data to Cosmos DB
 
 The Azure Cosmos DB is a fully managed NoSQL and relational database. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL.
 
-With the audio transformed to text, you will have to store it in a NoSQL database inside Cosmos Db:
+With the audio transcribed to text, you will have to store it in a NoSQL database inside Cosmos DB:
 - Database info: `HolDb`
 - Collection to store the texts: `audios_resumes`
 
-The naming conventions for Cosmos Db account is `cosmos-<environment>-<region>-<application-name>-<owner>-<instance>`
+The naming conventions for Cosmos DB account is `cosmos-<environment>-<region>-<application-name>-<owner>-<instance>`
 
 <div class="info" data-title="Resources">
 
-> [Cosmos Db][cosmos-db]
+> [Cosmos DB][cosmos-db]
 
 </div>
 
@@ -582,7 +587,7 @@ The naming conventions for Cosmos Db account is `cosmos-<environment>-<region>-<
 <summary>Toggle solution</summary>
 
 ```bash
-# Create the Cosmos Db account using serverless
+# Create the Cosmos DB account using serverless
 az cosmosdb create --name <cosmos-db-account-name> \
                    --resource-group <resource-group> \
                    --default-consistency-level Eventual \
@@ -614,15 +619,15 @@ In the last run of your Logic App just look at the output body of your HTTP acti
 }
 ```
 
-Copy it, and like previously add a `Parse Json` action into the Logic App and use this as a "Sample payload to generate schema" and chose the `Body` response as input:
+Copy it, and like previously add a `Parse Json` action into the Logic App and use this as a "Sample payload to generate schema" and choose the `Body` response as input:
 
 ![Parse HTTP response](assets/logic-app-parse-http-response.png)
 
-Then add a new action, search for `Cosmos Db` and select `Create or update document (V3)`:
+Then add a new action, search for `Cosmos DB` and select `Create or update document (V3)`:
 
 Create the connection with your Cosmos Db Instance:
 
-![Cosmos Db Connection](assets/cosmos-db-connection.png)
+![Cosmos DB Connection](assets/cosmos-db-connection.png)
 
 Finally, it's time to compose the document object to insert using JSON:
 
@@ -635,22 +640,22 @@ Finally, it's time to compose the document object to insert using JSON:
 }
 ```
 
-![Cosmos Db Insert Document](assets/cosmos-db-insert-document.png)
+![Cosmos DB Insert Document](assets/cosmos-db-insert-document.png)
 
-Give a try and fortunately, you will see a new item in your Cosmos Db!
+Give it a try and ensure you can see a new item in your Cosmos DB!
 
 </details>
 
 ## Add an API
 
-Azure Functions is a serverless solution that allows you to write less code, maintain less infrastructure, and save on costs. You don't need to worry about deploying and maintaining servers, Azure provides all the up-to-date resources needed to keep your applications running. You just need to focus on your code.
+Azure Functions is a serverless solution that allows you to write less code, maintain less infrastructure, scale seamlessly, and save on costs. You don't need to worry about deploying and maintaining servers, Azure provides all the up-to-date resources needed to keep your applications running. You just need to focus on your code.
 
 At this point you have the first scenario quite complete. The last thing you need to add is an API to upload the audio file to your storage account. For this step you will use `Azure Functions`.
 
 Make sure to create one Azure Function with:
 - The `Linux` Operating System
 - A plan type set to `Consumption (Serverless)`
-- The language the most confortable for you
+- The language you are most confortable with
 
 For the answer, the Azure Function will be done in Python.
 
