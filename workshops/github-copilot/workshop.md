@@ -153,7 +153,7 @@ These tasks can be performed with the [GitHub Copilot Labs](https://marketplace.
 
 Open the GitHub Copilot Labs extension to see all the available functionality.
 
-[GitHub Copilot Labs extension](assets/github-copilot-labs.png)
+![GitHub Copilot Labs extension](assets/github-copilot-labs.png)
 
 - **Explain**
 
