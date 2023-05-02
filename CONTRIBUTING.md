@@ -82,9 +82,9 @@ npm install
 npm start
 ```
 
-This will start a local development server at `http://localhost:4200`.
+This will start a local development server at `http://localhost:4200/moaw/`.
 
-You can open your local workshop by navigating to `http://localhost:4200/workshops/?src=<workshop_folder_name>`.
+You can open your local workshop by navigating to `http://localhost:4200/moaw/workshop/?src=<workshop_folder_name>`.
 
 ### Admonitions
 
