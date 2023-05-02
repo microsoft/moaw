@@ -10,7 +10,7 @@ authors:
 contacts:
   - '@lgmorand'
 duration_minutes: 90
-tags: javascript, .net, GitHub, IA,
+tags: javascript, .net, GitHub, IA, copilot, AI, csu
 banner_url: assets/banner.jpg 
 sections_title:
   - Introduction
