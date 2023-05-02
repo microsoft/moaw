@@ -77,7 +77,6 @@ This may be useful for proctor instructions, or any other information you want t
 You can test your workshop locally by running the following command:
 
 ```bash
-cd website
 npm install
 npm start
 ```
