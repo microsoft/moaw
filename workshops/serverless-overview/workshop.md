@@ -17,10 +17,10 @@ sections_title:
 ---
 
 # The Serverless Workshop
+<!-- TODO : Rappeler qu'il existera différents labs à terme. -->
+Welcome to this Azure Serverless Workshop. You'll be experimenting with Azure Serverless services in connected labs to achieve a real world scenario. Don't worry, even if the challenges will increase in difficulty, this is a step by step lab, you will be guided through the whole process.
 
-Welcome to this Azure Serverless Workshop. In this lab, you will use different types of serverless services on Azure to achieve a real world scenario. Don't worry, this is a step by step lab, you will be guided through it.
-
-During this workshop you will have the instructions to complete each steps, try to find the answer before looking at the solution.
+During this workshop you will have the instructions to complete each steps, try to search for the answers in provided resources and links before looking at the solutions placed under the 'toggle solution' panel.
 
 ---
 
@@ -74,21 +74,19 @@ The goal of the lab is to upload an audio file to Azure and get back the transcr
 Here is a diagram to illustrate the flow:
 
 ![Hand's On Lab Architecture](assets/hands-on-lab-architecture.png)
-
-<!-- TODO : Add a link to the audio file  -->
-
+<!-- TODO : Change the need for Event Hub to EventGrid -->
 1. The user uploads the [audio file][audio-demo] from the Web application
 2. The web application sends an HTTP request to APIM (API Management) which is a facade for multiple APIs
 3. An Azure Function will process the request and upload the file to a Storage Account
 4. When the file is uploaded the Event Grid service will detect it and send a "Blob created event" to an Event Hub
-<!-- TODO : Change the need for Event Hub to EventGrid -->
+   <!-- TODO : Update the Event Hub part -->
 5. The Event Hub will trigger a Logic App
 6. The Logic App retrieves the uploaded audio file
 7. The audio file is sent to to Azure Cognitive Services
 8. The speech to text service will process the file and return the result to the Logic App
-9. The Logic App will then store the transcription of the audio file in a Cosmos DB database
-10. A second Azure Function will be triggered by the update in CosmosDB. It will fetch the transcription from CosmosDB and send it to Web Pub/Sub
-11. Finally Web Pub/Sub will notify the Web Application about the new transcription using websockets
+9.  The Logic App will then store the transcription of the audio file in a Cosmos DB database
+10.  A second Azure Function will be triggered by the update in CosmosDB. It will fetch the transcription from CosmosDB and send it to Web Pub/Sub
+11.  Finally Web Pub/Sub will notify the Web Application about the new transcription using websockets
 
 <div class="info" data-title="Note">
 
@@ -100,7 +98,7 @@ You will get more details about each of these services during the Hands On Lab.
 
 ## Naming convention
 
-Before starting to deploy any Azure services, it's important to follow a naming convention. Based on the official [documentation][az-naming-convention] we need to define a few things:
+Before starting to deploy any resource in Azure, it's important to follow a naming convention. Based on the official [documentation][az-naming-convention] we need to define a few things:
 
 - The application name
 - The environment
@@ -109,14 +107,12 @@ Before starting to deploy any Azure services, it's important to follow a naming 
 
 We will also add an owner property, so for the purpose of this lab the values will be:
 
-<!--  TODO : Mettre la liste dans l'ordre
-      TODO : Ajouter le prefix Service/Resource-->
-
-- The application name: `hol` (for Hands On Lab)
+- The service prefix: `func` (for Function App)
 - The environment: `dev`
 - The region: `we` (for West Europe)
+- The application name: `hol` (for Hands On Lab)
+- The owner: `ms` (optional)
 - The instance: `01`
-- The owner: `ms`
 
 So we will use this convention:
 
@@ -131,17 +127,20 @@ So we will use this convention:
 
 > Be sure to use your own values to have unique names or use your own convention.
 > [Official resource abbreviations][az-abrevation]
+> 
+> Some services like Azure Storage Account or Azure KeyVault have a maximum size of 24 characters, so please consider using the smaller abbreviations possible.
 
 </div>
 
 ## Programming language
 
-We will have to create few functions in this workshop to address various problems. You can choose the programming language you are most confortable with among the ones [supported by Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions#languages) but please keep in mind that solutions will only be provided in Python.
+We will have to create few functions in this workshop to address our overall scenario. You can choose the programming language you are the most confortable with among the ones [supported by Azure Functions][az-func-languages] but please keep in mind that solutions will only be provided in Python.
 
 With everything ready let's start the lab 🚀
 
 [az-cli-install]: https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
 [az-func-core-tools]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools
+[az-func-languages]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-versions#languages
 [az-naming-convention]: https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming
 [az-abrevation]: https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations
 [az-portal]: https://portal.azure.com
@@ -152,7 +151,7 @@ With everything ready let's start the lab 🚀
 
 # Lab 1
 
-On this first lab, you will be focus on this part of the scenario:
+For this first lab, you will focus on the following scope of the scenario:
 
 ![Hand's On Lab Architecture Lab 1](assets/hands-on-lab-architecture-lab-1.png)
 
@@ -162,11 +161,11 @@ Let's start by creating the resource group for this Hand's On Lab. The resource 
 
 <div class="info" data-title="Information">
 
-> For the purpose of this lab we will create all the resources in the same region, for instance West US (westus) or West Europe (westeurope).
+> For the purpose of this lab we will create all the resources in the same region, for instance France Central (francecentral) or West Europe (westeurope).
 
 </div>
 
-Remember, the naming convension for resource groups will be: `rg-<environment>-<region>-<application-name>-<owner>-<instance>`
+Remember, the naming convention for a resource groups will be: `rg-<environment>-<region>-<application-name>-<owner>-<instance>`
 
 <div class="task" data-title="Resources">
 
@@ -195,20 +194,23 @@ az group create --name <resource-group> --location <region>
 
 The Azure storage account is used to store data objects, including blobs, file shares, queues, tables, and disks. You will use it to store the audios files inside an `audios` container.
 
-With the resource group ready, let's create a storage account with a container named `audios` that will store all audios. The naming convention for Storage Accounts is: `st<environment><region><application-name><owner><instance>`.
+With the resource group ready, let's create a storage account with a container named `audios` that will store all audios. The naming convention for a Storage Account is: `st<environment><region><application-name><owner><instance>`.
 
-<!-- TODO : Check max SA name size-->
 <div class="info" data-title="Note">
 
 > Azure Storage Account names do not accept hyphens and cannot exceed a maximum of 24 characters.
 
+
 </div>
 
-Choose a Locally redundant storage: Standard LRS
+Choose a Locally redundant storage (Standard LRS) and leave the default parameters set in the Azure Portal while creating the storage account in the context of this lab.
+
+Once the storage account is ready, create a blob container named `audios`.
 
 <div class="task" data-title="Resources">
 
-> [Storage Account][storage-account]<br> > [Storage Account Container][storage-account-container]
+> [Storage Account][storage-account]<br> 
+> [Storage Account Container][storage-account-container]
 
 </div>
 
@@ -227,7 +229,7 @@ az storage account create -n <storage-account-name> \
                           --sku Standard_LRS
 ```
 
-Based on the command line below, to create the container for the audios files you need to get one of the access key:
+Based on the command line below, to create the container for the audio files you need to get an access key:
 
 ![Storage account access keys](assets/storage-account-access-keys.png)
 
@@ -239,7 +241,7 @@ az storage container create -n audios \
                             --account-key <storage-account-key>
 ```
 
-If everything is fine, open the [Azure Portal][az-portal] and you should retrieve your container:
+To check everything went fine, open the [Azure Portal][az-portal] and you should retrieve your container:
 
 ![Storage account access keys](assets/storage-account-show-container.png)
 
@@ -249,23 +251,25 @@ If everything is fine, open the [Azure Portal][az-portal] and you should retriev
 
 ## Detect the audio uploaded
 
-### Create an Event Grid
+### Create an Event Grid Topic
+<!-- TODO : Integrate this part with the explanation of what Azure Logic Apps creates (Event Grid System Topic) as a trigger -->
+The Event Grid is an event broker that you can use to integrate applications while subscribing to event sources. These events are delivered through Event Grid to subscribers such as applications, Azure services, or any endpoint to which Event Grid has network access. Azure services, First and Third-party SaaS services as well as custom applications can be the source of these events. 
 
-The Event Grid is an event broker that you can use to integrate applications using events. The different events are delivered by Event Grid to subscribers such as applications, Azure services, or any endpoint to which Event Grid has network access. The source of those events can be Azure services related, First and Third-party SaaS services as well as custom applications.
+Next step is to setup a way to listen to the audio files uploaded by the user in the storage account container and react to this event. To start, we will upload them directly using the [Azure Portal][az-portal] and the lab 2 will offer a way of uploading them with a user intergace and a dedicated API.
 
-Next step is to setup a way to listen to the audio files uploaded by the user in the storage account container. To start, we will upload them directly using the [Azure Portal][az-portal] and further in the labs we will use a user interface and a dedicated API.
+To detect the upload event you will use the `System topic` functionality of the Event Grid service. [System topics][event-grid-system-topic] offer a way to react to changes or actions published by Azure Services such as Azure Storage Accounts or to Azure management resources Plane (subscription, resource group) events. 
 
-To detect the upload event you will use the `System topic` functionality of the Event Grid service.
-
-The naming convention for Event Grid topics is: `egst-<environment>-<region>-<application-name>-<owner>-<instance>`.
+The naming convention for an Event Grid system topic is: `egst-<environment>-<region>-<application-name>-<owner>-<instance>`.
 
 <!-- TODO : Add something about the EVG System Topic on Added only (updated could be another lab 2 / 3) -->
 <div class="task" data-title="Resources">
 
-> [Event Grid][event-grid]
+> [Event Grid System Topic][event-grid-system-topic]
+> [Create an Event Grid System Topic][event-grid]
 
 </div>
 
+[event-grid-system-topic]: https://learn.microsoft.com/en-us/azure/event-grid/system-topics
 [event-grid]: https://learn.microsoft.com/en-us/cli/azure/eventgrid/system-topic?view=azure-cli-latest
 
 <details>
@@ -299,7 +303,8 @@ The naming convention for Event Hub Namespace is: `evhns-<environment>-<region>-
 
 <div class="task" data-title="Resources">
 
-> [Event Hubs Namespace][event-hubs-namespace]<br> > [Event Hubs Event][event-hubs-event]
+> [Event Hubs Namespace][event-hubs-namespace]<br>
+> [Event Hubs Event][event-hubs-event]
 
 </div>
 
@@ -384,13 +389,26 @@ If you did everything correctly you should see the event subscription like this:
 
 <!-- TODO : Create the Full Logic App parameterized Template -->
 
-Azure Logic Apps is a cloud platform where you can create and run automated workflows with little to no code. A visual designer can be used to select prebuilt operations which can quickly build a workflow that integrates and manages your apps, data, services, and systems.
+Azure Logic Apps is a cloud platform where you can create and run automated workflows with little to no code. The design of Logic Apps is mainly designer oriented and a visual designer can be used to compose a workflow with prebuilt operations which can quickly build a workflow that integrates and manages your apps, data, services, and systems. While creating and testing a flow is way easier with the help of the designer, it still gives capabilities to export the resulting flow as a json `template` file to enable versioning, DevOps or multi-environment requirements. 
 
-The action of uploading an audio file is now sent to the subscribers, and now needs to be consumed.
+We'll create a Logic App that will react and be triggered at the upload of a blob uploaded to the storage account created earlier.  
 
-Let's create a Logic App in consumption mode which is triggered by the event Grid once 10 seconds.
+To do so, 
+ action of uploading an audio file is now sent to the subscribers, and now needs to be consumed.
 
-The default template to use is:
+<!-- TODO : Check/complete description/content : what about integration accounts ? -->
+Logic Apps offer two main hosting plans which currently differ in functionnalities: consumption (multi-tenant) and standard (single-tenant):
+
+- `Standard` mode is a dedicated hosting environment (single-tenant) for which resource allocation (CPU/RAM) will be selected at the creation of the resource. This option will let you build different various workflows in the same resource (dedicated capacity) as long as it has enough resources allocated to execute them. This model is billed at a fixed hourly/monthly rate regardless of its actual usage. 
+- `Consumption` is the serverless option for Logic Apps and will be the fastest way to start with Logic Apps workflow. This model will let you design one workflow per resource and will make sure necessary resources are available for any parallel executions. As a rule of thumb, a Logic Apps workflow in consumption will be billed based on the actual number of executions as well as the overall number of actions (aka building blocks) that compose it.
+
+In our serverless scenario, we will create a Logic Apps Workflow in `consumption` mode. 
+
+The naming convention for Logic Apps is: `logic-<environment>-<region>-<application-name>-<owner>-<instance>`
+
+Once the Logic App resource is created, create a workflow selecting a blank `template`. Below is the `definition template` to save locally in a json file named `my-blank-template.json` if you decide to create the logic app with the Az command line.
+
+<!-- TODO : Add a public artifact in Github to provide the url as a default logic app template. -->
 
 ```json
 {
@@ -406,11 +424,10 @@ The default template to use is:
 }
 ```
 
-The naming convention for Logic Apps is: `logic-<environment>-<region>-<application-name>-<owner>-<instance>`
-
 <div class="task" data-title="Resources">
 
-> [Azure Cli Extension][azure-cli-extension]<br> > [Azure Logic App][azure-logic-app]
+> [Azure Cli Extension][azure-cli-extension]<br> 
+> [Azure Logic App][azure-logic-app]
 
 </div>
 
@@ -421,7 +438,7 @@ The naming convention for Logic Apps is: `logic-<environment>-<region>-<applicat
 <summary>Toggle solution</summary>
 
 ```bash
-# Install the logic extension
+# Install the Logic App extension for Azure CLI
 az extension add --name logic
 
 # Create a logic app in consumption mode
@@ -436,6 +453,22 @@ az logic workflow create --resource-group <resource-group>
 ### Trigger the logic app
 
 Next step is to trigger the Logic App based on the event raised by Event Grid when a file is uploaded to the audios container.
+
+Logic Apps in offers different "building blocks" which can be used to define a flow as a chain of actions and controls. Here are the main ones : 
+- Action : 
+- Control : Switch, Loop, Condition, Scope, etc.
+- Others : Variables
+<!-- TODO : Add a definition to all the blocks -->
+
+
+<!-- TODO : Add logic apps screenshots -->
+<!-- A adapter ...-->
+This workflow will subscribe to the `Blob created event` raised and passed on by an Event Grid subscription to a `System Topic`. 
+
+Event Grid system topics can be created directly 
+ is triggered by the event Grid every time a file is uploaded in the watched scope on 
+<!-- ... Avec des infos EVG en plus (celles plus haut) -->
+The default template to use is:
 
 A basic audio file to test the trigger can be download here:
 [Audio demo][audio-demo]
@@ -452,7 +485,9 @@ A basic audio file to test the trigger can be download here:
 
 <details>
 <summary>Toggle solution</summary>
-
+<!-- TODO : Add Screenshots of the LA Workflow creation + Explain connections + resources created in the RG -->
+<!-- TODO : Explain EVG created a system topic in the back to manage the LA Trigger -->
+<!-- TODO : Remove Event Hub from below -->
 In the [Azure Portal][az-portal] inside the Logic App just created click on the `Edit` button. Then select `Blanc Logic App`. In the triggers list search for `Event Hub` and select the `When events are available in Event Hub` trigger.
 
 You will need to go to the `Shared Access Policies` inside your event hub to create an access key with `Listen` access _only_:
@@ -473,15 +508,14 @@ Finally, if you upload a file in the audios container, after a few seconds, if y
 
 [az-portal]: https://portal.azure.com
 
-### Download the blob
-
-<!-- TODO : Add more details on the cognitive services -->
+### Upload the blob
 
 With the trigger ready, you need to extract the blob path and prepare it to be consumed by the cognitive service.
 
 <div class="task" data-title="Resources">
 
-> [Logic Apps Consumption mode][logic-app]<br> > [Logic App Storage Account Action][logic-app-storage-action]<br>
+> [Logic Apps Consumption mode][logic-app]<br> 
+> [Logic App Storage Account Action][logic-app-storage-action]<br>
 
 </div>
 
@@ -490,12 +524,12 @@ With the trigger ready, you need to extract the blob path and prepare it to be c
 
 <details>
 <summary>Toggle solution</summary>
-
+<!-- TODO : Change and explain common schema -->
 First thing to do is to parse the json content. To do so, search for `parse json` in the workflow editor and choose the content input with `Content` which is the event hub content data.
-For the schema part, just click on `Use sample payload to generate schema` and copy paste one of the json object inside the output `Content` received from a previous successfull run.
+For the schema part, click on `Use sample payload to generate schema` and copy paste one of the json object inside the output `Content` received from a previous successfull run.
 
 ![Parse json with logic app](assets/logic-app-parse-json.png)
-
+<!-- TODO : Check if Array is still relevant or not -->
 Because the Content is an array, you need to loop over it for the next action. To do so, search `For each` action and then select `Body` as input.
 
 ![Logic app for each](assets/logic-app-loop.png)
@@ -520,6 +554,10 @@ The split query will get the container name and the audio file name from the url
 
 The Azure Cognitive Services are cloud-based artificial intelligence services that give the ability to developers to build cognitive intelligence into their applications without having skills in AI or data science. They are available through client library SDKs in popular development languages and REST APIs.
 
+<!-- TODO : Explain a little more why Cognitive Services is considered Serverless (and explain it has dedicated model as well) -->
+
+<!-- TODO : Add more details on the cognitive services definitions -->
+
 Cognitive Services can be categorized into five main areas:
 
 - Decision
@@ -531,8 +569,12 @@ Cognitive Services can be categorized into five main areas:
 Next step is to transform the audio file into text using the cognitive service with the speech to text service.
 To do this, you will have to:
 
+<!-- TODO : Check api key name --> 
 - Instanciate the cognitive service
+- Retrieve your auto-generated `Api Key` 
 - Call the speech to text API
+
+<!-- TODO : Check if KeyVault mechanisms Secret creations + Managed Identity is explained somewhere -->
 
 <div class="important" data-title="Security">
 
@@ -547,7 +589,9 @@ The naming conventions are:
 
 <div class="task" data-title="Resources">
 
-> [Cognitive service][cognitive-service] <br> > [Key Vault][key-vault] <br> > [Cognitive Service Api][cognitive-service-api]
+> [Cognitive service][cognitive-service] <br> 
+> [Key Vault][key-vault] <br> 
+> [Cognitive Service Api][cognitive-service-api]
 
 </div>
 
@@ -677,11 +721,12 @@ Finally, it's time to compose the document object to insert using JSON:
 
 ![Cosmos DB Insert Document](assets/cosmos-db-insert-document.png)
 
-Give it a try and ensure you can see a new item in your Cosmos DB!
+Give it a try and ensure you can see a new item in your Cosmos DB container !
 
 </details>
 
 ## Add an API
+<!-- TODO : Extrapolate on Azure Functions : Serverless and dedicated + Triggers and Bindings + Full Event-Driven Development + Different types of bindings (HTTP, Cron, Sources, etc.) -->
 
 Azure Functions is a serverless solution that allows you to write less code, maintain less infrastructure, scale seamlessly, and save on costs. You don't need to worry about deploying and maintaining servers, Azure provides all the up-to-date resources needed to keep your applications running. You just need to focus on your code.
 
@@ -693,7 +738,7 @@ Make sure to create one Azure Function with:
 - A plan type set to `Consumption (Serverless)`
 - The language you are most confortable with
 
-For the answer, the Azure Function will be done in Python.
+An Azure Function example solution will be provided below in Python.
 
 The naming formats to use are:
 For the Azure function: `func-<environment>-<region>-<application-name>-<owner>-<instance>`
@@ -701,7 +746,11 @@ For the storage account associated to it: `stfunc<environment><region><applicati
 
 <div class="info" data-title="Resources">
 
-> [Azure Functions][azure-function]<br> > [Azure Function Core Tools][azure-function-core-tools]<br> > [Basics of Azure Functions][azure-function-basics]<br>
+> [Azure Functions][azure-function]<br>
+> [Azure Function Core Tools][azure-function-core-tools]<br>
+> [Basics of Azure Functions][azure-function-basics]<br>
+> [HTTP Triggered Azure Function][azure-function-http]<br>
+> [Blob Output Binding][azure-function-blob-output]
 
 </div>
 
@@ -838,7 +887,8 @@ Let's give a try using Postman:
 [azure-function]: https://learn.microsoft.com/en-us/cli/azure/functionapp?view=azure-cli-latest
 [azure-function-core-tools]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash
 [azure-function-basics]: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
-
+[azure-function-http]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger?pivots=programming-language-python&tabs=python-v2%2Cin-process%2Cfunctionsv2
+[azure-function-blob-output]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-output?pivots=programming-language-python&tabs=python-v2%2Cin-process
 ---
 
 # Lab 2
