@@ -7,8 +7,10 @@ description: This workshop will cover multiple serverless services that you will
 level: beginner # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors: # Required. You can add as many authors as needed
   - Damien Aicheh
+  - Julien Strebler
 contacts: # Required. Must match the number of authors
   - "@damienaicheh"
+  - "@justrebl"
 duration_minutes: 180
 tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email
 navigation_levels: 3
@@ -43,6 +45,7 @@ Before starting this workshop, be sure you have:
 - The [Azure Functions Core Tools][az-func-core-tools] installed, this will be useful for creating the scaffold of your Azure Functions using command line.
 - If you are using VS Code, you can also install the [Azure Function extension][azure-function-vs-code-extension]
 - Register the Azure providers: `Microsoft.Logic`, `Microsoft.EventGrid`, `Microsoft.EventHub`
+  
 <div class="task" data-title="Task">
 
 > Before starting, log into your Azure subscription locally using Azure CLI and on the [Azure Portal][az-portal] using your own credentials.
@@ -134,7 +137,7 @@ So we will use this convention:
 
 ## Programming language
 
-We will have to create few functions in this workshop to address our overall scenario. You can choose the programming language you are the most confortable with among the ones [supported by Azure Functions][az-func-languages] but please keep in mind that solutions will only be provided in Python.
+We will have to create few functions in this workshop to address our overall scenario. You can choose the programming language you are the most confortable with among the ones [supported by Azure Functions][az-func-languages]. We will provide examples in Python for the moment, but other languages might come in the future.
 
 With everything ready let's start the lab 🚀
 
@@ -151,7 +154,7 @@ With everything ready let's start the lab 🚀
 
 # Lab 1
 
-For this first lab, you will focus on the following scope of the scenario:
+For this first lab, you will focus on the following scope :
 
 ![Hand's On Lab Architecture Lab 1](assets/hands-on-lab-architecture-lab-1.png)
 
@@ -190,7 +193,7 @@ az group create --name <resource-group> --location <region>
 
 </details>
 
-## Configure the storage account
+## Create the storage account
 
 The Azure storage account is used to store data objects, including blobs, file shares, queues, tables, and disks. You will use it to store the audios files inside an `audios` container.
 
@@ -200,12 +203,11 @@ With the resource group ready, let's create a storage account with a container n
 
 > Azure Storage Account names do not accept hyphens and cannot exceed a maximum of 24 characters.
 
-
 </div>
 
 Choose a Locally redundant storage (Standard LRS) and leave the default parameters set in the Azure Portal while creating the storage account in the context of this lab.
 
-Once the storage account is ready, create a blob container named `audios`.
+Once the storage account is ready, create a blob container named `audios` with `private access`.
 
 <div class="task" data-title="Resources">
 
@@ -249,98 +251,15 @@ To check everything went fine, open the [Azure Portal][az-portal] and you should
 
 [az-portal]: https://portal.azure.com
 
-## Detect the audio uploaded
-
-### Create an Event Grid Topic
-<!-- TODO : Integrate this part with the explanation of what Azure Logic Apps creates (Event Grid System Topic) as a trigger -->
-The Event Grid is an event broker that you can use to integrate applications while subscribing to event sources. These events are delivered through Event Grid to subscribers such as applications, Azure services, or any endpoint to which Event Grid has network access. Azure services, First and Third-party SaaS services as well as custom applications can be the source of these events. 
-
-Next step is to setup a way to listen to the audio files uploaded by the user in the storage account container and react to this event. To start, we will upload them directly using the [Azure Portal][az-portal] and the lab 2 will offer a way of uploading them with a user intergace and a dedicated API.
-
-To detect the upload event you will use the `System topic` functionality of the Event Grid service. [System topics][event-grid-system-topic] offer a way to react to changes or actions published by Azure Services such as Azure Storage Accounts or to Azure management resources Plane (subscription, resource group) events. 
-
-The naming convention for an Event Grid system topic is: `egst-<environment>-<region>-<application-name>-<owner>-<instance>`.
-
-<!-- TODO : Add something about the EVG System Topic on Added only (updated could be another lab 2 / 3) -->
-<div class="task" data-title="Resources">
-
-> [Event Grid System Topic][event-grid-system-topic]
-> [Create an Event Grid System Topic][event-grid]
-
-</div>
-
-[event-grid-system-topic]: https://learn.microsoft.com/en-us/azure/event-grid/system-topics
-[event-grid]: https://learn.microsoft.com/en-us/cli/azure/eventgrid/system-topic?view=azure-cli-latest
-
-<details>
-<summary>Toggle solution</summary>
-
-<!-- TODO : Add an Event Filter to Event Grid System Topic to send only blob created events to Event Hub -->
-
-```bash
-# Create the Event Grid system topic
-az eventgrid system-topic create -g <resource-group> \
-                                 --name <event-grid-system-topic-name> \
-                                 --location <region> --topic-type microsoft.storage.storageaccounts \
-                                 --source /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Storage/storageAccounts/<storage-account-name>
-```
-
-</details>
-
-### Create an Event Hub
-
-<!--  TODO : Check description
-      TODO : Add Event Hub capabilities + Explain why we use it in this scenario for further Lab capabilities
-      TODO : Explain Event Hub Namespaces vs Event Hubs
-      TODO : Explain it's not truly Serverless as Throughput Units need to be defined -->
-
-The Event Grid previously created will listen to the Storage Account, but before adding this mechanism we need to create another service: The Event Hub. This one is responsible for broadcasting the event caught by the Event Grid service. With that in place the event can be consumed by multiple services. In our case, a Logic App will be triggered based on the Event Hub broadcasting.
-
-The naming convention for Event Hub Namespace is: `evhns-<environment>-<region>-<application-name>-<owner>-<instance>` and for the event hub: `evh-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`.
-
-- Use the `Basic` SKU for the Event Hub Namespace.
-- Define the message retention to 1 and partition count to 2 for the Event Hub.
-
-<div class="task" data-title="Resources">
-
-> [Event Hubs Namespace][event-hubs-namespace]<br>
-> [Event Hubs Event][event-hubs-event]
-
-</div>
-
-[event-hubs-namespace]: https://learn.microsoft.com/en-us/cli/azure/eventhubs/namespace?view=azure-cli-latest
-[event-hubs-event]: https://learn.microsoft.com/en-us/cli/azure/eventhubs/eventhub?view=azure-cli-latest
-
-<details>
-<summary>Toggle solution</summary>
-
-```bash
-# Create the Event Hub Namespace
-az eventhubs namespace create --resource-group <resource-group> \
-                              --name <event-hub-namespace> \
-                              --location <region> \
-                              --sku Basic
-
-# Create the Event Hub "Instance"
-az eventhubs eventhub create --resource-group <resource-group> \
-                             --namespace-name <event-hub-namespace> \
-                             --name <event-hub-name> \
-                             --message-retention 1 \
-                             --partition-count 2
-```
-
-![Event Hub Namespace](assets/event-hub-namespace.png)
-
-</details>
-
-### Add an Event Subscription
-
+## Detect a file upload event
+### Option 1 : Manual configuration
+<!-- TODO : Update with the manual configuration operation - manual EVG creation + Subscription definition in EVG -->
 Now, you will need to subscribe to the Storage Account with your Event Grid and use the Event Hub as a broadcaster.
 To achieve this, you need to meet these trigger criteria:
 
 <!-- TODO : Explain that the  it's a second round of check to avoid  -->
 
-- Only on blob creation
+- Only on `blob created` events
 - If the file is uploaded in the `audios` container otherwise ignore it
 - If the file extension is `.wav`
 - The Event Grid trigger the Event Hub
@@ -349,8 +268,10 @@ The naming convention for Event Subscription is: `evgs-audios-uploaded-<environm
 
 <div class="tip" data-title="tip">
 
+<!-- TODO : Add a link to the module -->
 > To get access to the identifier of a resource, go to the `Overview` tab and click en `Json View` on the top right and you will see it.
-
+> Logic Apps also offers a way of implicitly create the Event Grid System Topic as well as connect the event subscription to a workflow trigger. 
+> While creating a Logic App Workflow triggered by an Event Grid subscription as explained in the [Trigger the Logic App](workshop/serverless-overview/?step=2#trigger-the-logic-app) module... 
 </div>
 
 <div class="task" data-title="Resources">
@@ -384,7 +305,6 @@ If you did everything correctly you should see the event subscription like this:
 </details>
 
 ## Process the event
-
 ### Create the Logic App
 
 <!-- TODO : Create the Full Logic App parameterized Template -->
@@ -407,8 +327,6 @@ In our serverless scenario, we will create a Logic Apps Workflow in `consumption
 The naming convention for Logic Apps is: `logic-<environment>-<region>-<application-name>-<owner>-<instance>`
 
 Once the Logic App resource is created, create a workflow selecting a blank `template`. Below is the `definition template` to save locally in a json file named `my-blank-template.json` if you decide to create the logic app with the Az command line.
-
-<!-- TODO : Add a public artifact in Github to provide the url as a default logic app template. -->
 
 ```json
 {
@@ -601,7 +519,7 @@ The naming conventions are:
 
 <details>
 <summary>Toggle solution</summary>
-
+<!-- TODO : Add CLI to give access from LA to Get/List KeyVault Secrets + Add API Key Secret in KeyVault -->
 ```bash
 # Let's create the cognitive service account with speech to text service
 az cognitiveservices account create -n <cognitive-service-name> -g <resource-group> --kind SpeechServices --sku F0 -l <region> --yes
@@ -636,6 +554,8 @@ Select the Key Vault and the name of the secret.
 With that ready, add a new action in the for loop by searching for `Http`, then fill the different parameters like this:
 
 ![Logic App HTTP Action](assets/logic-app-http-action.png)
+
+<!-- TODO : Show Azure Logic App Secret hidden in the execution flow result -->
 
 Notice the region of your cognitive service account and the language to use is specified in the url.
 
@@ -810,7 +730,7 @@ pip install -r requirements.txt
 
 - Create a `func.py` at the same level of `__init__.py`.
 - Copy all the content of `__init__.py` into `func.py`.
-- Leave the `__init__.py` empty, this is mandatory for Python to find the files in that foler
+- Leave the `__init__.py` empty, this is mandatory for Python to find the files in that folder
 
 Update the `function.json` with two environment variables:
 
@@ -894,3 +814,87 @@ Let's give a try using Postman:
 # Lab 2
 
 Coming soon...
+
+# Archives - TBD 
+
+### Create an Event Grid Topic
+<!-- TODO : Integrate this part with the explanation of what Azure Logic Apps creates (Event Grid System Topic) as a trigger -->
+The Event Grid is an event broker that you can use to integrate applications while subscribing to event sources. These events are delivered through Event Grid to subscribers such as applications, Azure services, or any endpoint to which Event Grid has network access. Azure services, First and Third-party SaaS services as well as custom applications can be the source of these events. 
+
+Next step is to setup a way to listen to the audio files uploaded by the user in the storage account container and react to this event. To start, we will upload them directly using the [Azure Portal][az-portal] and the lab 2 will offer a way of uploading them with a user intergace and a dedicated API.
+
+To detect the upload event you will use the `System topic` functionality of the Event Grid service. [System topics][event-grid-system-topic] offer a way to react to changes or actions published by Azure Services such as Azure Storage Accounts or to Azure management resources Plane (subscription, resource group) events. 
+
+The naming convention for an Event Grid system topic is: `egst-<environment>-<region>-<application-name>-<owner>-<instance>`.
+
+<!-- TODO : Add something about the EVG System Topic on Added only (updated could be another lab 2 / 3) -->
+<div class="task" data-title="Resources">
+
+> [Event Grid System Topic][event-grid-system-topic]
+> [Create an Event Grid System Topic][event-grid]
+
+</div>
+
+[event-grid-system-topic]: https://learn.microsoft.com/en-us/azure/event-grid/system-topics
+[event-grid]: https://learn.microsoft.com/en-us/cli/azure/eventgrid/system-topic?view=azure-cli-latest
+
+<details>
+<summary>Toggle solution</summary>
+
+<!-- TODO : Add an Event Filter to Event Grid System Topic to send only blob created events to Event Hub -->
+
+```bash
+# Create the Event Grid system topic
+az eventgrid system-topic create -g <resource-group> \
+                                 --name <event-grid-system-topic-name> \
+                                 --location <region> --topic-type microsoft.storage.storageaccounts \
+                                 --source /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Storage/storageAccounts/<storage-account-name>
+```
+
+</details>
+
+### Create an Event Hub
+
+<!--  TODO : Check description
+      TODO : Add Event Hub capabilities + Explain why we use it in this scenario for further Lab capabilities
+      TODO : Explain Event Hub Namespaces vs Event Hubs
+      TODO : Explain it's not truly Serverless as Throughput Units need to be defined -->
+
+The Event Grid previously created will listen to the Storage Account, but before adding this mechanism we need to create another service: The Event Hub. This one is responsible for broadcasting the event caught by the Event Grid service. With that in place the event can be consumed by multiple services. In our case, a Logic App will be triggered based on the Event Hub broadcasting.
+
+The naming convention for Event Hub Namespace is: `evhns-<environment>-<region>-<application-name>-<owner>-<instance>` and for the event hub: `evh-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`.
+
+- Use the `Basic` SKU for the Event Hub Namespace.
+- Define the message retention to 1 and partition count to 2 for the Event Hub.
+
+<div class="task" data-title="Resources">
+
+> [Event Hubs Namespace][event-hubs-namespace]<br>
+> [Event Hubs Event][event-hubs-event]
+
+</div>
+
+[event-hubs-namespace]: https://learn.microsoft.com/en-us/cli/azure/eventhubs/namespace?view=azure-cli-latest
+[event-hubs-event]: https://learn.microsoft.com/en-us/cli/azure/eventhubs/eventhub?view=azure-cli-latest
+
+<details>
+<summary>Toggle solution</summary>
+
+```bash
+# Create the Event Hub Namespace
+az eventhubs namespace create --resource-group <resource-group> \
+                              --name <event-hub-namespace> \
+                              --location <region> \
+                              --sku Basic
+
+# Create the Event Hub "Instance"
+az eventhubs eventhub create --resource-group <resource-group> \
+                             --namespace-name <event-hub-namespace> \
+                             --name <event-hub-name> \
+                             --message-retention 1 \
+                             --partition-count 2
+```
+
+![Event Hub Namespace](assets/event-hub-namespace.png)
+
+</details>
