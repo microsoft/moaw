@@ -264,9 +264,9 @@ To check everything was created as expected, open the [Azure Portal][az-portal] 
 [az-portal]: https://portal.azure.com
 
 ## Detect a file upload event
-### Create an Event Grid System Topic manually
+### Create the Event Grid System Topic
 
-Serverless architecture is all about orienting the design of the overall application around event-driven design. Azure offers several options when it comes to message and event brokering, with the principal following services : 
+Serverless is all about designing the application around event-driven architectures. Azure offers several options when it comes to message and event brokering, with the principal following services : 
 - Event Grid is a `serverless` eventing backplane that enables event-driven, reactive programming, using the publish-subscribe model.
 - Service Bus is a fully managed enterprise message broker with message queues and publish-subscribe topics.
 - Event Hub is a big data streaming platform and event ingestion service. It can receive and process millions of events per second.
@@ -285,7 +285,6 @@ Manually creating an Event Grid System Topic will offer the most flexibility to 
 For this step, creating the Event Grid System Topic will be enough, as the actual `event subscription` and `event filters` will be defined and automatically created by the Logic App trigger setup [later on](workshop/serverless-overview/?step=2#trigger-the-logic-app).
 
 The naming convention for an Event Grid System Topic is: `egst-audio-storage-<environment>-<region>-<application-name>-<owner>-<instance>`
-<!-- TODO : Update with the manual configuration operation - manual EVG creation + Subscription definition in EVG -->
 
 <div class="tip" data-title="tip">
 
@@ -335,9 +334,7 @@ You should now have a new Event Grid System Topic resource in your resource grou
 ## Process the event
 ### Create the Logic App
 
-<!-- TODO : Create the Full Logic App parameterized Template -->
-
-Azure Logic Apps is a cloud platform where you can create and run automated workflows with little to no code. The design of Logic Apps is mainly designer oriented and a visual designer can be used to compose a workflow with prebuilt operations which can quickly build a workflow that integrates and manages your apps, data, services, and systems. While creating and testing a flow is way easier with the help of the designer, it still gives capabilities to export the resulting flow as a json `template` file to enable versioning, DevOps or multi-environment requirements. 
+Azure Logic Apps is a cloud platform where you can create and run automated workflows with little to no code. The design of Logic Apps is mainly designer oriented and a visual designer can be used to compose a workflow with prebuilt operations which can quickly build a workflow that integrates and manages your apps, data, services, and systems. While creating and testing a flow is way easier with the help of the designer, it still gives capabilities to export the resulting flow as a json `template` file to enable versioning, DevOps or separate environment requirements. 
 
 In the following step, we'll create a Logic App that will be triggered by the event of a blob uploaded to the storage account created earlier.  
 
