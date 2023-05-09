@@ -8,9 +8,11 @@ level: beginner # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors: # Required. You can add as many authors as needed
   - Damien Aicheh
   - Julien Strebler
+  - Iheb Khemissi
 contacts: # Required. Must match the number of authors
   - "@damienaicheh"
   - "@justrebl"
+  - "@ikhemissi"
 duration_minutes: 180
 tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email
 navigation_levels: 3
@@ -32,15 +34,14 @@ During this workshop you will have the instructions to complete each steps, try 
 
 Before starting this workshop, be sure you have:
 
-<!--  TODO : Add the required permissions specificaly / contributor role
-      TODO : Remind what Serverless is : Event based (explain what we have : EVG , EH, SB), Main Compute Services, Storage Account, Cognitive Services, Data Services not taken into account for the workshop.
+<!--  TODO : Remind what Serverless is : Event based (explain what we have : EVG , EH, SB), Main Compute Services, Storage Account, Cognitive Services, Data Services not taken into account for the workshop.
       TODO : "Did you know that basic storage accounts are one of the first serverless"
       Resources :
       - https://learn.microsoft.com/en-us/dotnet/architecture/serverless/azure-serverless-platform
       - https://azure.microsoft.com/en-us/solutions/serverless/
       Pourquoi on présenter Serverless  -->
 
-- An Azure Subscription with the **required permissions** to create and manage services
+- An Azure Subscription with the `Contributor` role to create and manage the labs resources
 - The [Azure CLI][az-cli-install] installed on your machine
 - The [Azure Functions Core Tools][az-func-core-tools] installed, this will be useful for creating the scaffold of your Azure Functions using command line.
 - If you are using VS Code, you can also install the [Azure Function extension][azure-function-vs-code-extension]
@@ -62,17 +63,28 @@ az login
 az account show
 # Select a specific subscription if you have more than one or another one selected
 az account set --subscription <subscription-id>
-# Register the Azure providers
+
+# Register the following Azure providers if they are not already 
+
+# Azure Functions 
 az provider register --namespace 'Microsoft.Web'
+# Azure Logic Apps 
 az provider register --namespace 'Microsoft.Logic'
+# Azure Event Grid
 az provider register --namespace 'Microsoft.EventGrid'
+# Azure Key Vault
+az provider register --namespace 'Microsoft.KeyVault'
+# Azure Cognitive Services 
+az provider register --namespace 'Microsoft.CognitiveServices'
+# Azure CosmosDb 
+az provider register --namespace 'Microsoft.DocumentDB'
 ```
 
 </details>
 
 ## Scenario
 
-The goal of the lab is to upload an audio file to Azure and get back the transcription using a Web Application.
+The goal of the full lab is to upload an audio file to Azure and retrieve the transcription back using a Web Application.
 
 Here is a diagram to illustrate the flow:
 
@@ -131,7 +143,7 @@ So we will use this convention:
 > Be sure to use your own values to have unique names or use your own convention.
 > [Official resource abbreviations][az-abrevation]
 > 
-> Some services like Azure Storage Account or Azure KeyVault have a maximum size of 24 characters, so please consider using the smaller abbreviations possible.
+> Some services like Azure Storage Account or Azure KeyVault have a maximum size of 24 characters, so please consider using as small and relevant abbreviations as possible.
 
 </div>
 
@@ -243,7 +255,7 @@ az storage container create -n audios \
                             --account-key <storage-account-key>
 ```
 
-To check everything went fine, open the [Azure Portal][az-portal] and you should retrieve your container:
+To check everything was created as expected, open the [Azure Portal][az-portal] and you should retrieve your container:
 
 ![Storage account access keys](assets/storage-account-show-container.png)
 
@@ -252,55 +264,71 @@ To check everything went fine, open the [Azure Portal][az-portal] and you should
 [az-portal]: https://portal.azure.com
 
 ## Detect a file upload event
-### Option 1 : Manual configuration
+### Create an Event Grid System Topic manually
+
+Serverless architecture is all about orienting the design of the overall application around event-driven design. Azure offers several options when it comes to message and event brokering, with the principal following services : 
+- Event Grid is a `serverless` eventing backplane that enables event-driven, reactive programming, using the publish-subscribe model.
+- Service Bus is a fully managed enterprise message broker with message queues and publish-subscribe topics.
+- Event Hub is a big data streaming platform and event ingestion service. It can receive and process millions of events per second.
+
+<div class="tip" data-title="Azure Message Services">
+
+> Each of these services offer their own set of capabilities and will be preferred depending on the expected architecture design and requirements. 
+> You can find a detailed article which compares the pros and cons of each of these solutions [following this link][azure-messaging-services]
+
+</div>
+
+The main Event Grid concept we'll use for the rest of this lab is called `System Topic`. A system topic in Event Grid represents one or more events published by Azure services such as Azure Storage and Azure Event Hubs. It basically plays the role of a pub-sub topic centralizing all the events of the associated Azure resource, and send them to all the subscribers based on their defined `event filters`.
+
+Manually creating an Event Grid System Topic will offer the most flexibility to comply to enterprise required configurations (such as naming conventions or resource group definition).
+
+For this step, creating the Event Grid System Topic will be enough, as the actual `event subscription` and `event filters` will be defined and automatically created by the Logic App trigger setup [later on](workshop/serverless-overview/?step=2#trigger-the-logic-app).
+
+The naming convention for an Event Grid System Topic is: `egst-audio-storage-<environment>-<region>-<application-name>-<owner>-<instance>`
 <!-- TODO : Update with the manual configuration operation - manual EVG creation + Subscription definition in EVG -->
-Now, you will need to subscribe to the Storage Account with your Event Grid and use the Event Hub as a broadcaster.
-To achieve this, you need to meet these trigger criteria:
-
-<!-- TODO : Explain that the  it's a second round of check to avoid  -->
-
-- Only on `blob created` events
-- If the file is uploaded in the `audios` container otherwise ignore it
-- If the file extension is `.wav`
-- The Event Grid trigger the Event Hub
-
-The naming convention for Event Subscription is: `evgs-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`
 
 <div class="tip" data-title="tip">
 
-<!-- TODO : Add a link to the module -->
 > To get access to the identifier of a resource, go to the `Overview` tab and click en `Json View` on the top right and you will see it.
-> Logic Apps also offers a way of implicitly create the Event Grid System Topic as well as connect the event subscription to a workflow trigger. 
-> While creating a Logic App Workflow triggered by an Event Grid subscription as explained in the [Trigger the Logic App](workshop/serverless-overview/?step=2#trigger-the-logic-app) module... 
+
 </div>
 
 <div class="task" data-title="Resources">
 
-> [Event Grid Topic Subscription][event-grid-topic-subscription]
+> [Choose between Azure Messaging Services][azure-messaging-services]<br> 
+> [Event Grid System Topic][event-grid-system-topic]<br> 
+> [Event Grid Topic Subscription][event-grid-topic-subscription]<br> 
 
 </div>
 
+[event-grid-system-topic]: https://learn.microsoft.com/en-us/azure/event-grid/system-topics
 [event-grid-topic-subscription]: https://learn.microsoft.com/en-us/cli/azure/eventgrid/system-topic/event-subscription?view=azure-cli-latest
+[azure-messaging-services]: https://learn.microsoft.com/en-us/azure/service-bus-messaging/compare-messaging-services
 
 <details>
+
 <summary>Toggle solution</summary>
 
+To create an Event Grid System Topic, several parameters are mandatory : 
+- `--topic-type` must be set to the `type` of resource raising the events (`microsoft.storage.storageaccounts` in our lab)
+- `--source` will define the actual Azure `resource` from which we want to centralize the events (`stdevhol...` in our lab) 
+- `--location` must be the same as the source resource.
+
 ```bash
-# Create the event grid system topic subscription
-az eventgrid system-topic event-subscription create --name <event-grid-system-topic-subscription-name> \
-                                             -g <resource-group> \
-                                             --system-topic-name <event-grid-system-topic-name> \
-                                             --event-delivery-schema eventgridschema \
-                                             --included-event-types Microsoft.Storage.BlobCreated \
-                                             --subject-begins-with /blobServices/default/containers/audios/blobs \
-                                             --subject-ends-with .wav \
-                                             --endpoint-type eventhub \
-                                             --endpoint /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.EventHub/namespaces/<event-hub-namespace-name>/eventhubs/<event-hub-name>
+
+#Create the event grid system topic
+az eventgrid system-topic create \
+  -g <resource-group> \
+  --name <event-grid-system-topic-name> \
+  --topic-type microsoft.storage.storageaccounts \
+  --source /subscriptions/<subscription-id>/resourcegroups/<resource-group>/providers/Microsoft.Storage/storageAccounts/<storage-account-name> \
+  --location <region>
+
 ```
 
-If you did everything correctly you should see the event subscription like this:
+You should now have a new Event Grid System Topic resource in your resource group that should look like this : 
 
-![Event Grid System Topic Subscription](assets/event-grid-system-topic-subscription.png)
+![event-grid-system-topic-image](assets/event-grid-system-topic-creation.png)
 
 </details>
 
@@ -311,10 +339,7 @@ If you did everything correctly you should see the event subscription like this:
 
 Azure Logic Apps is a cloud platform where you can create and run automated workflows with little to no code. The design of Logic Apps is mainly designer oriented and a visual designer can be used to compose a workflow with prebuilt operations which can quickly build a workflow that integrates and manages your apps, data, services, and systems. While creating and testing a flow is way easier with the help of the designer, it still gives capabilities to export the resulting flow as a json `template` file to enable versioning, DevOps or multi-environment requirements. 
 
-We'll create a Logic App that will react and be triggered at the upload of a blob uploaded to the storage account created earlier.  
-
-To do so, 
- action of uploading an audio file is now sent to the subscribers, and now needs to be consumed.
+In the following step, we'll create a Logic App that will be triggered by the event of a blob uploaded to the storage account created earlier.  
 
 <!-- TODO : Check/complete description/content : what about integration accounts ? -->
 Logic Apps offer two main hosting plans which currently differ in functionnalities: consumption (multi-tenant) and standard (single-tenant):
@@ -519,7 +544,6 @@ The naming conventions are:
 
 <details>
 <summary>Toggle solution</summary>
-<!-- TODO : Add CLI to give access from LA to Get/List KeyVault Secrets + Add API Key Secret in KeyVault -->
 ```bash
 # Let's create the cognitive service account with speech to text service
 az cognitiveservices account create -n <cognitive-service-name> -g <resource-group> --kind SpeechServices --sku F0 -l <region> --yes
@@ -699,6 +723,7 @@ You must create a storage account dedicated to your Azure Function in order to n
 For the coding part, let's create a function using the [Azure Function Core Tools][azure-function-core-tools], **create a folder** and then run:
 
 ```bash
+func init
 func new
 ```
 
@@ -898,3 +923,34 @@ az eventhubs eventhub create --resource-group <resource-group> \
 ![Event Hub Namespace](assets/event-hub-namespace.png)
 
 </details>
+
+## Event Grid
+
+### Event Grid System Topic Subscription manual creation 
+<!-- TODO : Give the extra option to create the subscription through Az CLI-->
+To achieve this, you need to meet these trigger criteria:
+
+- Only on `blob created` events
+- If the file is uploaded in the `audios` container otherwise ignore it
+- If the file extension is `.wav`
+- The Event Grid trigger the Event Hub
+
+The naming convention for Event Subscription is: `evgs-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`
+
+If you did everything correctly you should see the event subscription like this:
+
+![Event Grid System Topic Subscription](assets/event-grid-system-topic-subscription.png)
+
+```bash
+
+# Create the event grid system topic subscription
+az eventgrid system-topic event-subscription create --name <event-grid-system-topic-subscription-name> \
+                                             -g <resource-group> \
+                                             --system-topic-name <event-grid-system-topic-name> \
+                                             --event-delivery-schema eventgridschema \
+                                             --included-event-types Microsoft.Storage.BlobCreated \
+                                             --subject-begins-with /blobServices/default/containers/audios/blobs \
+                                             --subject-ends-with .wav \
+                                             --endpoint-type eventhub \
+                                             --endpoint /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.EventHub/namespaces/<event-hub-namespace-name>/eventhubs/<event-hub-name>
+```
