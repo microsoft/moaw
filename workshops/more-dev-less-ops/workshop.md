@@ -80,7 +80,7 @@ Click on a Dev Box definition in the list, you will be redirected to the Dev Cen
 
 ## Use the Dev Box
 
-You have now the basics to understand how Microsoft Dev Box works. Let's use it to create a new application. Go to [Microsoft Dev Box](https://devbox.microsoft.com/), sign in with your Azure credentials. 
+You have now the basics to understand how Microsoft Dev Box works. Let's use it to create a new application. Go to [Dev Portal](https://devportal.microsoft.com/), sign in with your Azure credentials. 
 
 Once you are logged in, you will see dev boxes, select the one corresponding to your user name. You will be invited to connect to it using a Remote Desktop Client. Follow the instructions to connect to your Dev Box. If needed the official documentation is available [here](https://learn.microsoft.com/en-us/azure/dev-box/tutorial-connect-to-dev-box-with-remote-desktop-app?tabs=windows)
 
