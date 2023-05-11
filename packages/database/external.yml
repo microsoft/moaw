@@ -207,4 +207,4 @@
   duration_minutes: 120
   audience: students, pro devs, ops, admin
   level: beginner 
-  tags: azure, csu, web apps, api apps, app service plan, container, docker, app service
+  tags: azure, web apps, api apps, app service plan, container, docker, app service, csu

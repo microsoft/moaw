@@ -226,11 +226,11 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
       }
 
       case 'emphasis': {
-        return `*${result.replace(/[*]/g, '\\*')}*`;
+        return `*${result.replace(/\*/g, '\\*')}*`;
       }
 
       case 'strong': {
-        return `**${result.replace(/[*][*]/g, '\\*\\*')}**`;
+        return `**${result.replace(/\*\*/g, '\\*\\*')}**`;
       }
 
       case 'mark': {
@@ -242,7 +242,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
       }
 
       case 'subscript': {
-        return `~${result.replace(/[~]/g, '\\~')}~`;
+        return `~${result.replace(/~/g, '\\~')}~`;
       }
 
       case 'double': {
@@ -309,10 +309,14 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     const target = node.getTarget() ?? '';
 
     switch (type) {
-      case 'ref':
+      case 'ref': {
         return `<a id="${node.getId()}"></a>`;
-      case 'bibref':
+      }
+
+      case 'bibref': {
         return `<a id="${node.getId()}"></a>[${node.getReftext() || node.getId()}]`;
+      }
+
       case 'xref':
       case 'link': {
         return `[${text}](${target})`;
