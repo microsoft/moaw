@@ -41,11 +41,11 @@ Before starting this workshop, be sure you have:
       - https://azure.microsoft.com/en-us/solutions/serverless/
       Pourquoi on présenter Serverless  -->
 
-- An Azure Subscription with the `Contributor` role to create and manage the labs resources
+- An Azure Subscription with the `Contributor` role to create and manage the labs' resources
 - The [Azure CLI][az-cli-install] installed on your machine
 - The [Azure Functions Core Tools][az-func-core-tools] installed, this will be useful for creating the scaffold of your Azure Functions using command line.
 - If you are using VS Code, you can also install the [Azure Function extension][azure-function-vs-code-extension]
-- Register the Azure providers: `Microsoft.Logic`, `Microsoft.EventGrid`, `Microsoft.EventHub`
+- Register the Azure providers if not done yet: `Microsoft.Web`, `Microsoft.Logic`, `Microsoft.EventGrid`, `Microsoft.KeyVault`, `Microsoft.CognitiveServices`, `Microsoft.DocumentDB`
   
 <div class="task" data-title="Task">
 
@@ -57,6 +57,7 @@ Before starting this workshop, be sure you have:
 <summary>Toggle solution</summary>
 
 ```bash
+
 # Login to Azure
 az login
 # Display your account details
@@ -78,6 +79,7 @@ az provider register --namespace 'Microsoft.KeyVault'
 az provider register --namespace 'Microsoft.CognitiveServices'
 # Azure CosmosDb 
 az provider register --namespace 'Microsoft.DocumentDB'
+
 ```
 
 </details>
@@ -89,8 +91,9 @@ The goal of the full lab is to upload an audio file to Azure and retrieve the tr
 Here is a diagram to illustrate the flow:
 
 ![Hand's On Lab Architecture](assets/hands-on-lab-architecture.png)
+
 <!-- TODO : Change the need for Event Hub to EventGrid -->
-1. The user uploads the [audio file][audio-demo] from the Web application
+1. The user uploads the [audio file](assets/whatstheweatherlike.wav) from the Web application
 2. The web application sends an HTTP request to APIM (API Management) which is a facade for multiple APIs
 3. An Azure Function will process the request and upload the file to a Storage Account
 4. When the file is uploaded the Event Grid service will detect it and send a "Blob created event" to an Event Hub
@@ -105,13 +108,13 @@ Here is a diagram to illustrate the flow:
 
 <div class="info" data-title="Note">
 
-> Azure Key Vault will be used to store the secrets needed for this scenario.
+> Azure Key Vault will be used to secure the secrets used through the entire scenario.
 
 </div>
 
 You will get more details about each of these services during the Hands On Lab.
 
-## Naming convention
+## Naming conventions
 
 Before starting to deploy any resource in Azure, it's important to follow a naming convention. Based on the official [documentation][az-naming-convention] we need to define a few things:
 
@@ -149,7 +152,7 @@ So we will use this convention:
 
 ## Programming language
 
-We will have to create few functions in this workshop to address our overall scenario. You can choose the programming language you are the most confortable with among the ones [supported by Azure Functions][az-func-languages]. We will provide examples in Python for the moment, but other languages might come in the future.
+We will have to create few functions in this workshop to address our overall scenario. You can choose the programming language you are the most comfortable with among the ones [supported by Azure Functions][az-func-languages]. We will provide examples in Python for the moment, but other languages might come in the future.
 
 With everything ready let's start the lab 🚀
 
@@ -174,7 +177,7 @@ For this first lab, you will focus on the following scope :
 
 Let's start by creating the resource group for this Hand's On Lab. The resource group is a logical structure to store Azure components used to group your Azure resources.
 
-<div class="info" data-title="Information">
+<div class="info" data-title="Note">
 
 > For the purpose of this lab we will create all the resources in the same region, for instance France Central (francecentral) or West Europe (westeurope).
 
@@ -271,7 +274,7 @@ Serverless is all about designing the application around event-driven architectu
 - Service Bus is a fully managed enterprise message broker with message queues and publish-subscribe topics.
 - Event Hub is a big data streaming platform and event ingestion service. It can receive and process millions of events per second.
 
-<div class="tip" data-title="Azure Message Services">
+<div class="info" data-title="Note">
 
 > Each of these services offer their own set of capabilities and will be preferred depending on the expected architecture design and requirements. 
 > You can find a detailed article which compares the pros and cons of each of these solutions [following this link][azure-messaging-services]
@@ -332,14 +335,17 @@ You should now have a new Event Grid System Topic resource in your resource grou
 </details>
 
 ## Process the event
+
+We'll now build a Logic App workflow that will trigger when a blob will be uploaded to the storage account created earlier.
+This section of the Lab will describe all the steps that the Logic App will take to address this scenario : 
+
+![logic-apps-hol-overview](assets/logic-app-hol-overview.png)
+
 ### Create the Logic App
 
-Azure Logic Apps is a cloud platform where you can create and run automated workflows with little to no code. The design of Logic Apps is mainly designer oriented and a visual designer can be used to compose a workflow with prebuilt operations which can quickly build a workflow that integrates and manages your apps, data, services, and systems. While creating and testing a flow is way easier with the help of the designer, it still gives capabilities to export the resulting flow as a json `template` file to enable versioning, DevOps or separate environment requirements. 
+Azure Logic Apps is an integration platform as a service where you can create and run automated workflows with little to no code. The design of Logic Apps is mainly designer oriented, and a visual designer can be used to compose a workflow with prebuilt operations which can quickly build a workflow that integrates and manages your apps, data, services, and systems. While creating and testing a flow is way easier with the help of the designer, it still gives capabilities to export the resulting flow as a JSON `template` file to enable versioning, DevOps or separate environment requirements. 
 
-In the following step, we'll create a Logic App that will be triggered by the event of a blob uploaded to the storage account created earlier.  
-
-<!-- TODO : Check/complete description/content : what about integration accounts ? -->
-Logic Apps offer two main hosting plans which currently differ in functionnalities: consumption (multi-tenant) and standard (single-tenant):
+Logic Apps offer two main hosting plans which currently differ in functionalities: consumption (multi-tenant) and standard (single-tenant):
 
 - `Standard` mode is a dedicated hosting environment (single-tenant) for which resource allocation (CPU/RAM) will be selected at the creation of the resource. This option will let you build different various workflows in the same resource (dedicated capacity) as long as it has enough resources allocated to execute them. This model is billed at a fixed hourly/monthly rate regardless of its actual usage. 
 - `Consumption` is the serverless option for Logic Apps and will be the fastest way to start with Logic Apps workflow. This model will let you design one workflow per resource and will make sure necessary resources are available for any parallel executions. As a rule of thumb, a Logic Apps workflow in consumption will be billed based on the actual number of executions as well as the overall number of actions (aka building blocks) that compose it.
@@ -348,7 +354,9 @@ In our serverless scenario, we will create a Logic Apps Workflow in `consumption
 
 The naming convention for Logic Apps is: `logic-<environment>-<region>-<application-name>-<owner>-<instance>`
 
-Once the Logic App resource is created, create a workflow selecting a blank `template`. Below is the `definition template` to save locally in a json file named `my-blank-template.json` if you decide to create the logic app with the Az command line.
+Once the Logic App resource is created, create a blank `template` workflow. 
+
+Below is the `definition template` to save locally in a JSON file named `my-blank-template.json` if you decide to create the logic app via the Az CLI.
 
 ```json
 {
@@ -366,7 +374,7 @@ Once the Logic App resource is created, create a workflow selecting a blank `tem
 
 <div class="task" data-title="Resources">
 
-> [Azure Cli Extension][azure-cli-extension]<br> 
+> [Azure CLI Extension][azure-cli-extension]<br> 
 > [Azure Logic App][azure-logic-app]
 
 </div>
@@ -390,103 +398,171 @@ az logic workflow create --resource-group <resource-group>
 
 </details>
 
+<!-- TODO : Integrate text inside above/below content to explain EVG System Topic -->
+<!-- 
+The Event Grid is an event broker that you can use to integrate applications while subscribing to event sources. These events are delivered through Event Grid to subscribers such as applications, Azure services, or any endpoint to which Event Grid has network access. Azure services, First and Third-party SaaS services as well as custom applications can be the source of these events. 
+
+Next step is to setup a way to listen to the audio files uploaded by the user in the storage account container and react to this event. To start, we will upload them directly using the [Azure Portal][az-portal] and the lab 2 will offer a way of uploading them with a user intergace and a dedicated API.
+
+To detect the upload event you will use the `System topic` functionality of the Event Grid service. [System topics][event-grid-system-topic] offer a way to react to changes or actions published by Azure Services such as Azure Storage Accounts or to Azure management resources Plane (subscription, resource group) events. 
+
+The naming convention for an Event Grid system topic is: `egst-<environment>-<region>-<application-name>-<owner>-<instance>`.
+
+-->
 ### Trigger the logic app
 
-Next step is to trigger the Logic App based on the event raised by Event Grid when a file is uploaded to the audios container.
+Next step is to actually trigger the Logic App based on the event raised by Event Grid when a file is uploaded to the audios' container.
 
-Logic Apps in offers different "building blocks" which can be used to define a flow as a chain of actions and controls. Here are the main ones : 
-- Action : 
-- Control : Switch, Loop, Condition, Scope, etc.
-- Others : Variables
-<!-- TODO : Add a definition to all the blocks -->
+Logic Apps offers different components which can be used to define the `steps` of a flow as a chain of `actions` and `controls`. Here are the main ones : 
+- Operations : `Triggers` and `Actions` are the main building blocks of a Logic App. A `trigger` is the event that starts the workflow and an `action` is a step in this workflow. 
+- Controls : Switch, Loop, Condition, Scope are used to control the flow of the steps composing the actual logic of the workflow.
+- Connectors : Standard and Enterprise connectors are used to connect to different first of third party services and applications. These are extremely powerful as they offer a way to interact with these services without having to write *any* code.
 
+Here's an example of what a simple flow could look like in Logic Apps : 
+![logic-apps-twitter-example](assets/logic-app-twitter-example.png)
+![logic-apps-twitter-implementation-example](assets/logic-app-twitter-implementation-example.png)
 
-<!-- TODO : Add logic apps screenshots -->
-<!-- A adapter ...-->
-This workflow will subscribe to the `Blob created event` raised and passed on by an Event Grid subscription to a `System Topic`. 
+Let's start with our first step :
+We will use the `Event Grid` connector to `trigger` the Logic App when a file is uploaded to the storage account `audios` container.
 
-Event Grid system topics can be created directly 
- is triggered by the event Grid every time a file is uploaded in the watched scope on 
-<!-- ... Avec des infos EVG en plus (celles plus haut) -->
-The default template to use is:
+![logic-apps-hol-trigger](assets/logic-app-hol-trigger.png)
 
-A basic audio file to test the trigger can be download here:
-[Audio demo][audio-demo]
+This workflow will subscribe to the `Blob created event` raised and passed on by an Event Grid `subscription` to the `System Topic` created earlier. 
 
-[audio-demo]: assets/whatstheweatherlike.wav
+While you create this trigger, you will be asked to provide the actual resource or System Topics' details that will be used to trigger the Logic App.
+In our case, select and connect to the `Storage account` created earlier.
+
+Then define the actual conditions you want to meet to trigger the Logic App.
+In our case, we only want to trigger the flow if the following criteria are met :
+
+- Only trigger on `blob created` events
+- The file is uploaded in the `audios` container otherwise ignore it
+- The file extension is `.wav`
+
+The naming convention for Event Subscription is: `evgs-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`
+
+<div class="info" data-title="Note">
+
+> While saving the Logic Apps trigger settings, the Event Grid connector will actually create a new Event Grid subscription to the System Topic created earlier. You can check this by navigating to the Event Grid System Topic in the Azure Portal and checking the `Event Subscriptions` tab : 
+> ![event-grid-system-topic-subscription](assets/event-grid-system-topic-subscription.png) 
+
+</div>
+
+Here you can download a basic audio file to validate and test the logic app triggers as expected: [Audio demo](assets/whatstheweatherlike.wav).
+
+If you have set everything as expected, you should see the following entry in the Logic App's run history after uploading the example file in your storage account audios container : 
+![logic-app-successful-execution](assets/logic-app-successful-execution.png)
 
 <div class="task" data-title="Resources">
 
-> [Logic Apps Triggers][logic-apps-triggers]
+> [Logic Apps Triggers][logic-apps-triggers]<br>
+> [Logic Apps Event Grid Trigger][logic-apps-event-grid-trigger]
+> [Event Grid Subject Filter][event-grid-subject-filtering]
 
 </div>
 
 [logic-apps-triggers]: https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-azure-event-hubs
+[logic-apps-event-grid-trigger]: https://learn.microsoft.com/en-us/connectors/azureeventgrid/#when-a-resource-event-occurs
 
 <details>
 <summary>Toggle solution</summary>
-<!-- TODO : Add Screenshots of the LA Workflow creation + Explain connections + resources created in the RG -->
-<!-- TODO : Explain EVG created a system topic in the back to manage the LA Trigger -->
-<!-- TODO : Remove Event Hub from below -->
-In the [Azure Portal][az-portal] inside the Logic App just created click on the `Edit` button. Then select `Blanc Logic App`. In the triggers list search for `Event Hub` and select the `When events are available in Event Hub` trigger.
 
-You will need to go to the `Shared Access Policies` inside your event hub to create an access key with `Listen` access _only_:
 
-![Event Hub Shared Access Policies](assets/event-hub-shared-access-policies.png)
+In the [Azure Portal][az-portal] inside the Logic App just created click on the `Edit` button. Then select `Blank Logic App`. In the triggers list search for `Event Grid` and select the `When a resource event occurs` trigger.
 
-With that done, you will be able to connect to the Event Hub using the primary or secondary connection string:
+You will then select your `Azure Subscription`, `Microsoft.Storage.StorageAccounts` as a Resource Type and the actual storage account created earlier.
 
-![Event Hub Connection Settings](assets/event-hub-connection-settings.png)
+Next step would be to configure the event type we want to listen to. In our case, we will select `Blob created` as the event type Item.
 
-Next step, you can configure the event hub trigger:
+Parameters below will help in filtering the events we want to listen to. In our case, we will filter on the `audios` container, and the `.wav` file extension.
+The convention to filter on a specific blob container is as follows : `/blobServices/default/containers/<container-name>`.
 
-![Event Hub Trigger Settings](assets/event-hub-trigger-settings.png)
+Finally, set the Event Grid `Subscription Name` to `evgs-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`.
 
-Finally, if you upload a file in the audios container, after a few seconds, if you look at your logic app `Runs history` you will see a succeeded status.
+Once everything is set, click on the `Save` button and the trigger operation should look like this : 
+
+![Event Grid Trigger Settings](assets/event-grid-trigger-settings.png) 
+
+It it also possible to rename the different operations of your Logic App to make it easier to read and understand. To do so, click on the `...` button on the top right corner of the block and select `Rename`.
+
+![Logic App Rename Block](assets/logic-app-rename-operation.png)
 
 </details>
 
 [az-portal]: https://portal.azure.com
+[event-grid-subject-filtering]: https://learn.microsoft.com/en-us/azure/event-grid/event-filtering#subject-filtering
 
 ### Upload the blob
 
-With the trigger ready, you need to extract the blob path and prepare it to be consumed by the cognitive service.
+Now we have a blob upload event triggering the Logic App, we will be able to work with extended `metadata` shared in the event message.
+
+<div class="info" title="Note">
+
+> It's important to note an event grid event message is limited to 1MB per event, thus it will not provide the actual content of the file uploaded to the storage account. Instead, it will contain the path to the file in the storage account. This is why we need to use the `Get blob content` action to retrieve the actual content of the file.
+
+</div>
+
+One of the message fields is the `subject` of the event which is the path to the uploaded file in the storage account.
+To make flow design easier, it is possible to provide with a sample json payload string and Logic Apps will automatically generate a more convenient object to manipulate in the rest of the flow design.
+
+Event Grid will communicate events based on a common schema by default, that can be found [here][event-grid-common-schema]. 
+As the Event Grid Trigger is an operation built-in in Logic Apps, the designer is already taking care of this JSON parsing operation for us and provides with a well defined object to work with as `Dynamic Content` for the rest of the flow.
+
+This will help us to retrieve the actual content of the file and pass it on to the cognitive service in the next step.
+![Logic App Blob Content Operation](assets/logic-app-hol-blob-content.png)
+
+Based on below resources and the previous definition step, you should be able to complete this task.
+
+<div class="tip" data-title="tip">
+
+> To help you troubleshoot the flow, you can use the `Run History` tab and check the `Inputs` and `Outputs` of each operation : 
+> ![Logic App History Troubleshooting](assets/logic-app-history-troubleshooting.png)
+
+</div>
 
 <div class="task" data-title="Resources">
 
-> [Logic Apps Consumption mode][logic-app]<br> 
+> [Logic Apps Parse Json][logic-app-parse-json]<br> 
 > [Logic App Storage Account Action][logic-app-storage-action]<br>
 
 </div>
 
-[logic-app]: https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-perform-data-operations?tabs=consumption#parse-json-action
+[logic-app-parse-json]: https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-perform-data-operations?tabs=consumption#parse-json-action
 [logic-app-storage-action]: https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-azureblobstorage?tabs=consumption
+[event-grid-common-schema]: https://learn.microsoft.com/en-us/azure/event-grid/event-schema#event-schema
+
 
 <details>
 <summary>Toggle solution</summary>
-<!-- TODO : Change and explain common schema -->
-First thing to do is to parse the json content. To do so, search for `parse json` in the workflow editor and choose the content input with `Content` which is the event hub content data.
-For the schema part, click on `Use sample payload to generate schema` and copy paste one of the json object inside the output `Content` received from a previous successfull run.
 
-![Parse json with logic app](assets/logic-app-parse-json.png)
-<!-- TODO : Check if Array is still relevant or not -->
-Because the Content is an array, you need to loop over it for the next action. To do so, search `For each` action and then select `Body` as input.
+First of all, add a new step after the Event Grid trigger and search for `Azure Blob Storage` as an action. Select `Get blob content (V2)` as the action to use.
 
-![Logic app for each](assets/logic-app-loop.png)
+This operation needs to be parameterized with the authentication information to access the storage account.
 
-Then, search for `Azure Blob Storage` and select the `Get blob content using path (V2)` action. As we did previously, create a connection service with the `Access Keys` of the Storage account:
+In the `Connection Name` field, fill in with `StorageAccountConnection`. 
+
+Select the `Access Key` authentication method and set the name of the storage account created earlier.
+
+Finally, retrieve the `Primary Key` from your Storage Account `Access keys` panel and fill in the `Access Key` field and click `Create`.
 
 ![Storage account connection service](assets/logic-app-storage-account-connection-string.png)
 
-Finally, update the information to get the path of the audio file just uploaded using a `split` query:
+You now need to provide the path to the file we want to retrieve the content from after selecting the connection settings you configured above.
+
+As the Event Grid Trigger operation already takes care of the JSON parsing, we can directly use the `subject` field as input for the `Blob` field.
+While clicking on the `Blob` field you should be presented with a list of `Dynamic content` available. These will be updated based on the previous steps known by the action being edited.
+
+Update the `Blob` field with the path of the audio file extracted from the event grid data.url property thanks to the `uriPath` function:
 
 ```js
-split(items("For_each")["data"]["url"], ".blob.core.windows.net")[1];
+uriPath(triggerBody()?['data']?['url'])
 ```
 
-The split query will get the container name and the audio file name from the url which always finish by: `.blob.core.windows.net`.
+`uriPath()` will extract the path from a uri provided as an input, in our example `https://<storage-account>.blob.core.windows.net/audios/whatstheweatherlike.wav` will become `audios/whatstheweatherlike.wav`.
 
-![Logic app](assets/logic-app-download-blob.png)
+Your Logic App should look like this:
+
+![Get Storage Blob Content](assets/logic-app-get-storage-blob-content.png)
 
 </details>
 
@@ -510,7 +586,7 @@ Next step is to transform the audio file into text using the cognitive service w
 To do this, you will have to:
 
 <!-- TODO : Check api key name --> 
-- Instanciate the cognitive service
+- Instantiate the cognitive service
 - Retrieve your auto-generated `Api Key` 
 - Call the speech to text API
 
@@ -628,7 +704,7 @@ az cosmosdb sql container create --account-name <cosmos-db-account-name> \
                                  --partition-key-path "/id"
 ```
 
-In the last run of your Logic App just look at the output body of your HTTP action and you should see something like this:
+In the last run of your Logic App just look at the output body of your HTTP action, and you should see something like this:
 
 ```json
 {
@@ -677,7 +753,7 @@ Make sure to create one Azure Function with:
 
 - The `Linux` Operating System
 - A plan type set to `Consumption (Serverless)`
-- The language you are most confortable with
+- The language you are most comfortable with
 
 An Azure Function example solution will be provided below in Python.
 
@@ -720,11 +796,22 @@ You must create a storage account dedicated to your Azure Function in order to n
 For the coding part, let's create a function using the [Azure Function Core Tools][azure-function-core-tools], **create a folder** and then run:
 
 ```bash
-func init
-func new
-```
 
-Then select `python` and `Http Trigger`, name your function `AudioUpload`. Open the project inside VS Code and then:
+# Locally create a folder for your function app and navigate to it
+mkdir <function-app-name>
+cd <function-app-name>
+
+# Create the new function app as a python project V1 (a Preview V2 also exists and we'll update the lab once generally available)
+# No need to specify a name, the folder name will be used by default
+func init --worker-runtime python --model V1
+
+# Create a new function endpoint with an HTTP trigger to which you'll be able to send the audio file
+func new --language python --name AudioUpload --template 'HTTP Trigger'
+
+# Open the new projet inside VS Code
+code . 
+
+```
 
 Create a dev environment for the project:
 
@@ -780,7 +867,7 @@ And don't forget to change the `scriptFile` to use `func.py`:
     {
       "name": "outputblob",
       "type": "blob",
-      "path": "%STORAGE_ACCOUNT_CONTAINER%/audio.wav",
+      "path": "%STORAGE_ACCOUNT_CONTAINER%/{rand-guid}.wav",
       "connection": "STORAGE_ACCOUNT_CONNECTION_STRING",
       "direction": "out"
     }
@@ -813,6 +900,9 @@ def main(req: func.HttpRequest, outputblob: func.Out[bytes]) -> func.HttpRespons
 
 Deploy your function using the VS Code extension or by command line:
 
+Deploy your function using the VS Code 
+
+Deployment via Azure Function Core Tools : 
 ```bash
 func azure functionapp publish func-<environment>-<region>-<application-name>-<owner>-<instance>
 ```
@@ -831,25 +921,18 @@ Let's give a try using Postman:
 [azure-function-basics]: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
 [azure-function-http]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger?pivots=programming-language-python&tabs=python-v2%2Cin-process%2Cfunctionsv2
 [azure-function-blob-output]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-output?pivots=programming-language-python&tabs=python-v2%2Cin-process
+
 ---
 
 # Lab 2
 
 Coming soon...
 
+<!--
 # Archives - TBD 
 
 ### Create an Event Grid Topic
-<!-- TODO : Integrate this part with the explanation of what Azure Logic Apps creates (Event Grid System Topic) as a trigger -->
-The Event Grid is an event broker that you can use to integrate applications while subscribing to event sources. These events are delivered through Event Grid to subscribers such as applications, Azure services, or any endpoint to which Event Grid has network access. Azure services, First and Third-party SaaS services as well as custom applications can be the source of these events. 
-
-Next step is to setup a way to listen to the audio files uploaded by the user in the storage account container and react to this event. To start, we will upload them directly using the [Azure Portal][az-portal] and the lab 2 will offer a way of uploading them with a user intergace and a dedicated API.
-
-To detect the upload event you will use the `System topic` functionality of the Event Grid service. [System topics][event-grid-system-topic] offer a way to react to changes or actions published by Azure Services such as Azure Storage Accounts or to Azure management resources Plane (subscription, resource group) events. 
-
-The naming convention for an Event Grid system topic is: `egst-<environment>-<region>-<application-name>-<owner>-<instance>`.
-
-<!-- TODO : Add something about the EVG System Topic on Added only (updated could be another lab 2 / 3) -->
+<!-- TODO : Add something about the EVG System Topic on Added only (updated could be another lab 2 / 3) 
 <div class="task" data-title="Resources">
 
 > [Event Grid System Topic][event-grid-system-topic]
@@ -863,7 +946,7 @@ The naming convention for an Event Grid system topic is: `egst-<environment>-<re
 <details>
 <summary>Toggle solution</summary>
 
-<!-- TODO : Add an Event Filter to Event Grid System Topic to send only blob created events to Event Hub -->
+<!-- TODO : Add an Event Filter to Event Grid System Topic to send only blob created events to Event Hub
 
 ```bash
 # Create the Event Grid system topic
@@ -877,10 +960,10 @@ az eventgrid system-topic create -g <resource-group> \
 
 ### Create an Event Hub
 
-<!--  TODO : Check description
+      TODO : Check description
       TODO : Add Event Hub capabilities + Explain why we use it in this scenario for further Lab capabilities
       TODO : Explain Event Hub Namespaces vs Event Hubs
-      TODO : Explain it's not truly Serverless as Throughput Units need to be defined -->
+      TODO : Explain it's not truly Serverless as Throughput Units need to be defined
 
 The Event Grid previously created will listen to the Storage Account, but before adding this mechanism we need to create another service: The Event Hub. This one is responsible for broadcasting the event caught by the Event Grid service. With that in place the event can be consumed by multiple services. In our case, a Logic App will be triggered based on the Event Hub broadcasting.
 
@@ -924,8 +1007,8 @@ az eventhubs eventhub create --resource-group <resource-group> \
 ## Event Grid
 
 ### Event Grid System Topic Subscription manual creation 
-<!-- TODO : Give the extra option to create the subscription through Az CLI-->
-To achieve this, you need to meet these trigger criteria:
+ TODO : Give the extra option to create the subscription through Az CLI
+ To achieve this, you need to meet these trigger criteria:
 
 - Only on `blob created` events
 - If the file is uploaded in the `audios` container otherwise ignore it
@@ -942,12 +1025,12 @@ If you did everything correctly you should see the event subscription like this:
 
 # Create the event grid system topic subscription
 az eventgrid system-topic event-subscription create --name <event-grid-system-topic-subscription-name> \
-                                             -g <resource-group> \
-                                             --system-topic-name <event-grid-system-topic-name> \
-                                             --event-delivery-schema eventgridschema \
-                                             --included-event-types Microsoft.Storage.BlobCreated \
-                                             --subject-begins-with /blobServices/default/containers/audios/blobs \
-                                             --subject-ends-with .wav \
-                                             --endpoint-type eventhub \
-                                             --endpoint /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.EventHub/namespaces/<event-hub-namespace-name>/eventhubs/<event-hub-name>
-```
+                                              -g <resource-group> \
+                                              --system-topic-name <event-grid-system-topic-name> \
+                                              --event-delivery-schema eventgridschema \
+                                              --included-event-types Microsoft.Storage.BlobCreated \
+                                              --subject-begins-with /blobServices/default/containers/audios/blobs \
+                                              --subject-ends-with .wav \
+                                              --endpoint-type eventhub \
+                                              --endpoint /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.EventHub/namespaces/<event-hub-namespace-name>/eventhubs/<event-hub-name>
+``` -->
