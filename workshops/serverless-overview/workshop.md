@@ -86,25 +86,23 @@ az provider register --namespace 'Microsoft.DocumentDB'
 
 ## Scenario
 
-The goal of the full lab is to upload an audio file to Azure and retrieve the transcription back using a Web Application.
+The goal of the full lab is to upload an audio file to Azure and retrieve the transcripts back using a Web Application.
 
 Here is a diagram to illustrate the flow:
 
 ![Hand's On Lab Architecture](assets/hands-on-lab-architecture.png)
 
-<!-- TODO : Change the need for Event Hub to EventGrid -->
 1. The user uploads the [audio file](assets/whatstheweatherlike.wav) from the Web application
-2. The web application sends an HTTP request to APIM (API Management) which is a facade for multiple APIs
+2. A web application sends an HTTP request to APIM (API Management) which is a facade for multiple APIs
 3. An Azure Function will process the request and upload the file to a Storage Account
-4. When the file is uploaded the Event Grid service will detect it and send a "Blob created event" to an Event Hub
-   <!-- TODO : Update the Event Hub part -->
-5. The Event Hub will trigger a Logic App
+4. When the file is uploaded the Event Grid service will detect it and publish the "Blob created event"
+5. The Event Hub System Topic will trigger a Logic App
 6. The Logic App retrieves the uploaded audio file
 7. The audio file is sent to to Azure Cognitive Services
 8. The speech to text service will process the file and return the result to the Logic App
-9.  The Logic App will then store the transcription of the audio file in a Cosmos DB database
-10.  A second Azure Function will be triggered by the update in CosmosDB. It will fetch the transcription from CosmosDB and send it to Web Pub/Sub
-11.  Finally Web Pub/Sub will notify the Web Application about the new transcription using websockets
+9.  The Logic App will then store the transcript of the audio file in a Cosmos DB database
+10.  A second Azure Function will be triggered by the update in CosmosDB. It will fetch the transcript from CosmosDB and send it to Web Pub/Sub
+11.  Finally Web Pub/Sub will notify the Web Application about the new transcript using websockets
 
 <div class="info" data-title="Note">
 
@@ -455,15 +453,13 @@ If you have set everything as expected, you should see the following entry in th
 
 <div class="task" data-title="Resources">
 
-> [Logic Apps Triggers][logic-apps-triggers]<br>
-> [Logic Apps Event Grid Trigger][logic-apps-event-grid-trigger]
+> [Logic Apps Event Grid Trigger][logic-apps-event-grid-trigger]<br>
 > [Event Grid Subject Filter][event-grid-subject-filtering]
 
 </div>
 
-[logic-apps-triggers]: https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-azure-event-hubs
 [logic-apps-event-grid-trigger]: https://learn.microsoft.com/en-us/connectors/azureeventgrid/#when-a-resource-event-occurs
-
+[event-grid-subject-filtering]: https://learn.microsoft.com/en-us/azure/event-grid/event-filtering#subject-filtering
 <details>
 <summary>Toggle solution</summary>
 
@@ -490,7 +486,7 @@ It it also possible to rename the different operations of your Logic App to make
 </details>
 
 [az-portal]: https://portal.azure.com
-[event-grid-subject-filtering]: https://learn.microsoft.com/en-us/azure/event-grid/event-filtering#subject-filtering
+
 
 ### Upload the blob
 
@@ -502,7 +498,7 @@ Now we have a blob upload event triggering the Logic App, we will be able to wor
 
 </div>
 
-One of the message fields is the `subject` of the event which is the path to the uploaded file in the storage account.
+One of the event fields is the `subject` which is the path to the event source : The uploaded file in the storage account.
 To make flow design easier, it is possible to provide with a sample json payload string and Logic Apps will automatically generate a more convenient object to manipulate in the rest of the flow design.
 
 Event Grid will communicate events based on a common schema by default, that can be found [here][event-grid-common-schema]. 
@@ -568,9 +564,7 @@ Your Logic App should look like this:
 
 ### Use the cognitive services
 
-The Azure Cognitive Services are cloud-based artificial intelligence services that give the ability to developers to build cognitive intelligence into their applications without having skills in AI or data science. They are available through client library SDKs in popular development languages and REST APIs.
-
-<!-- TODO : Explain a little more why Cognitive Services is considered Serverless (and explain it has dedicated model as well) -->
+The Azure Cognitive Services are cloud-based artificial intelligence services that give the ability to developers to quickly build intelligent apps thanks to these pre-trained AI models. They are available through client library SDKs in popular development languages and REST APIs.
 
 <!-- TODO : Add more details on the cognitive services definitions -->
 
@@ -585,16 +579,13 @@ Cognitive Services can be categorized into five main areas:
 Next step is to transform the audio file into text using the cognitive service with the speech to text service.
 To do this, you will have to:
 
-<!-- TODO : Check api key name --> 
 - Instantiate the cognitive service
 - Retrieve your auto-generated `Api Key` 
 - Call the speech to text API
 
-<!-- TODO : Check if KeyVault mechanisms Secret creations + Managed Identity is explained somewhere -->
-
 <div class="important" data-title="Security">
 
-> Remember to store secret values (if necessary) in a Key Vault before using them.
+> Remember to store secret values in an Azure Key Vault to manage and secure their usage.
 
 </div>
 
@@ -605,18 +596,21 @@ The naming conventions are:
 
 <div class="task" data-title="Resources">
 
-> [Cognitive service][cognitive-service] <br> 
-> [Key Vault][key-vault] <br> 
-> [Cognitive Service Api][cognitive-service-api]
+> [What are Cognitive Services][cognitive-services] <br>
+> [Cognitive service Apis][cognitive-services-apis] <br> 
+> [Cognitive Service Getting Started][cognitive-service-api] <br>
+> [Create a Key Vault][key-vault]
 
 </div>
 
-[cognitive-service]: https://learn.microsoft.com/en-us/cli/azure/cognitiveservices/account?view=azure-cli-latest
+[cognitive-services]: https://learn.microsoft.com/en-us/azure/cognitive-services/what-are-cognitive-services
+[cognitive-services-apis]: https://learn.microsoft.com/en-us/cli/azure/cognitiveservices/account?view=azure-cli-latest
 [key-vault]: https://learn.microsoft.com/fr-fr/cli/azure/keyvault?view=azure-cli-latest
 [cognitive-service-api]: https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started-speech-to-text?tabs=macos%2Cterminal&pivots=programming-language-rest
 
 <details>
 <summary>Toggle solution</summary>
+
 ```bash
 # Let's create the cognitive service account with speech to text service
 az cognitiveservices account create -n <cognitive-service-name> -g <resource-group> --kind SpeechServices --sku F0 -l <region> --yes
@@ -648,32 +642,33 @@ Select the Key Vault and the name of the secret.
 
 ![Logic App Get Secret](assets/logic-app-get-secret.png)
 
-With that ready, add a new action in the for loop by searching for `Http`, then fill the different parameters like this:
+With that ready, add a new action in the loop by searching for `Http`, then fill in the different parameters like this:
 
 ![Logic App HTTP Action](assets/logic-app-http-action.png)
 
 <!-- TODO : Show Azure Logic App Secret hidden in the execution flow result -->
 
-Notice the region of your cognitive service account and the language to use is specified in the url.
+Notice the region of your cognitive service account and the language to use are specified in the api url.
 
-Finally as you need previously, upload the audio file and you should see the content as a text.
+To validate the flow, go to your storage account and delete the audio file from the `audios` container and upload it once again (to trigger the updated logic app).
+In your Logic App `Run History`, You should see the transcript of the audio file as a text output from the HTTP call to Speech to Text API.
 
 </details>
 
 ### Store data to Cosmos DB
 
-The Azure Cosmos DB is a fully managed NoSQL and relational database. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL.
+Azure Cosmos DB is a fully managed NoSQL and relational database. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL and offers a serverless option which is perfect for our use case.
 
-With the audio transcribed to text, you will have to store it in a NoSQL database inside Cosmos DB:
+Now you have a transcript of your audio file, you will have to store it in a NoSQL database inside Cosmos DB:
 
 - Database info: `HolDb`
-- Collection to store the texts: `audios_resumes`
+- Collection to store the texts: `audios_transcripts`
 
 The naming conventions for Cosmos DB account is `cosmos-<environment>-<region>-<application-name>-<owner>-<instance>`
 
 <div class="info" data-title="Resources">
 
-> [Cosmos DB][cosmos-db]
+> [Serverless Cosmos DB][cosmos-db]
 
 </div>
 
@@ -696,11 +691,11 @@ az cosmosdb sql database create --account-name <cosmos-db-account-name> \
                                 --resource-group <resource-group> \
                                 --name HolDb
 
-# Create the item collection
+# Create the item collection also called container
 az cosmosdb sql container create --account-name <cosmos-db-account-name> \
                                  --resource-group <resource-group> \
                                  --database-name HolDb \
-                                 --name audios_resumes \
+                                 --name audios_transcripts \
                                  --partition-key-path "/id"
 ```
 
@@ -738,7 +733,8 @@ Finally, it's time to compose the document object to insert using JSON:
 
 ![Cosmos DB Insert Document](assets/cosmos-db-insert-document.png)
 
-Give it a try and ensure you can see a new item in your Cosmos DB container !
+You can now validate your workflow as done for the past step : delete and upload once again the audio file.
+You should see you can see a new item in your Cosmos DB container !
 
 </details>
 
@@ -775,7 +771,8 @@ For the storage account associated to it: `stfunc<environment><region><applicati
 <summary>Toggle solution</summary>
 
 ```bash
-# Create an Azure storage account dedicated to the Azure Function (This will be used to store files cache...)
+
+# Create an Azure storage account dedicated to the Azure Function (This will be used to store the application, files, cache, etc.)
 az storage account create --name <function-storage-account-name> \
                           --location <region>  \
                           --resource-group <resource-group> \
