@@ -21,10 +21,17 @@ sections_title:
 ---
 
 # The Serverless Workshop
-<!-- TODO : Rappeler qu'il existera différents labs à terme. -->
-Welcome to this Azure Serverless Workshop. You'll be experimenting with Azure Serverless services in connected labs to achieve a real world scenario. Don't worry, even if the challenges will increase in difficulty, this is a step by step lab, you will be guided through the whole process.
 
-During this workshop you will have the instructions to complete each steps, try to search for the answers in provided resources and links before looking at the solutions placed under the 'toggle solution' panel.
+Welcome to this Azure Serverless Workshop. You'll be experimenting with Azure Serverless services in multiple labs to achieve a real world scenario. Don't worry, even if the challenges will increase in difficulty, this is a step by step lab, you will be guided through the whole process.
+
+During this workshop you will have the instructions to complete each steps. It is recommended to search for the answers in provided resources and links before looking at the solutions placed under the `Toggle solution` panel.
+
+<!--  TODO : Remind what Serverless is : Event based (explain what we have : EVG , EH, SB), Main Compute Services, Storage Account, Cognitive Services, Data Services not taken into account for the workshop.
+      TODO : "Did you know that basic storage accounts are one of the first serverless"
+      Resources :
+      - https://learn.microsoft.com/en-us/dotnet/architecture/serverless/azure-serverless-platform
+      - https://azure.microsoft.com/en-us/solutions/serverless/
+      Pourquoi on présenter Serverless  -->
 
 ---
 
@@ -34,18 +41,11 @@ During this workshop you will have the instructions to complete each steps, try 
 
 Before starting this workshop, be sure you have:
 
-<!--  TODO : Remind what Serverless is : Event based (explain what we have : EVG , EH, SB), Main Compute Services, Storage Account, Cognitive Services, Data Services not taken into account for the workshop.
-      TODO : "Did you know that basic storage accounts are one of the first serverless"
-      Resources :
-      - https://learn.microsoft.com/en-us/dotnet/architecture/serverless/azure-serverless-platform
-      - https://azure.microsoft.com/en-us/solutions/serverless/
-      Pourquoi on présenter Serverless  -->
-
 - An Azure Subscription with the `Contributor` role to create and manage the labs' resources
 - The [Azure CLI][az-cli-install] installed on your machine
 - The [Azure Functions Core Tools][az-func-core-tools] installed, this will be useful for creating the scaffold of your Azure Functions using command line.
 - If you are using VS Code, you can also install the [Azure Function extension][azure-function-vs-code-extension]
-- Register the Azure providers if not done yet: `Microsoft.Web`, `Microsoft.Logic`, `Microsoft.EventGrid`, `Microsoft.KeyVault`, `Microsoft.CognitiveServices`, `Microsoft.DocumentDB`
+- Register the Azure providers on your Azure Subscription if not done yet: `Microsoft.Web`, `Microsoft.Logic`, `Microsoft.EventGrid`, `Microsoft.KeyVault`, `Microsoft.CognitiveServices`, `Microsoft.DocumentDB`
   
 <div class="task" data-title="Task">
 
@@ -92,9 +92,9 @@ Here is a diagram to illustrate the flow:
 
 ![Hand's On Lab Architecture](assets/hands-on-lab-architecture.png)
 
-1. The user uploads the [audio file](assets/whatstheweatherlike.wav) from the Web application
-2. A web application sends an HTTP request to APIM (API Management) which is a facade for multiple APIs
-3. An Azure Function will process the request and upload the file to a Storage Account
+1. A user uploads an [audio file](assets/whatstheweatherlike.wav) from the Web application
+2. The web application sends an HTTP request to APIM (API Management) which is a facade for multiple APIs
+3. An Azure Function API will process the request and upload the file to a Storage Account
 4. When the file is uploaded the Event Grid service will detect it and publish the "Blob created event"
 5. The Event Hub System Topic will trigger a Logic App
 6. The Logic App retrieves the uploaded audio file
@@ -114,7 +114,7 @@ You will get more details about each of these services during the Hands On Lab.
 
 ## Naming conventions
 
-Before starting to deploy any resource in Azure, it's important to follow a naming convention. Based on the official [documentation][az-naming-convention] we need to define a few things:
+Before starting to deploy any resource in Azure, it's important to follow a naming convention to ensure resource name uniqueness and ease their identification. Based on the official [documentation][az-naming-convention] we need to define a few things:
 
 - The application name
 - The environment
@@ -130,7 +130,7 @@ We will also add an owner property, so for the purpose of this lab the values wi
 - The owner: `ms` (optional)
 - The instance: `01`
 
-So we will use this convention:
+We will use this convention for the rest of the scenario:
 
 ```xml
 <!--If the resource prefix has a dash: -->
@@ -144,7 +144,7 @@ So we will use this convention:
 > Be sure to use your own values to have unique names or use your own convention.
 > [Official resource abbreviations][az-abrevation]
 > 
-> Some services like Azure Storage Account or Azure KeyVault have a maximum size of 24 characters, so please consider using as small and relevant abbreviations as possible.
+> Some services like Azure Storage Account or Azure KeyVault have a maximum size of 24 characters, so please consider using relevant abbreviations as small as possible.
 
 </div>
 
@@ -165,7 +165,7 @@ With everything ready let's start the lab 🚀
 
 ---
 
-# Lab 1
+# Lab 1 : Transcribe an audio file
 
 For this first lab, you will focus on the following scope :
 
@@ -278,6 +278,8 @@ Serverless is all about designing the application around event-driven architectu
 > You can find a detailed article which compares the pros and cons of each of these solutions [following this link][azure-messaging-services]
 
 </div>
+
+The Event Grid is an event broker that you can use to integrate applications while subscribing to event sources. These events are delivered through Event Grid to subscribers such as applications, Azure services, or any endpoint to which Event Grid has network access. Azure services, First and Third-party SaaS services as well as custom applications can be the source of these events. 
 
 The main Event Grid concept we'll use for the rest of this lab is called `System Topic`. A system topic in Event Grid represents one or more events published by Azure services such as Azure Storage and Azure Event Hubs. It basically plays the role of a pub-sub topic centralizing all the events of the associated Azure resource, and send them to all the subscribers based on their defined `event filters`.
 
@@ -396,18 +398,7 @@ az logic workflow create --resource-group <resource-group>
 
 </details>
 
-<!-- TODO : Integrate text inside above/below content to explain EVG System Topic -->
-<!-- 
-The Event Grid is an event broker that you can use to integrate applications while subscribing to event sources. These events are delivered through Event Grid to subscribers such as applications, Azure services, or any endpoint to which Event Grid has network access. Azure services, First and Third-party SaaS services as well as custom applications can be the source of these events. 
-
-Next step is to setup a way to listen to the audio files uploaded by the user in the storage account container and react to this event. To start, we will upload them directly using the [Azure Portal][az-portal] and the lab 2 will offer a way of uploading them with a user intergace and a dedicated API.
-
-To detect the upload event you will use the `System topic` functionality of the Event Grid service. [System topics][event-grid-system-topic] offer a way to react to changes or actions published by Azure Services such as Azure Storage Accounts or to Azure management resources Plane (subscription, resource group) events. 
-
-The naming convention for an Event Grid system topic is: `egst-<environment>-<region>-<application-name>-<owner>-<instance>`.
-
--->
-### Trigger the logic app
+### Trigger the Logic app
 
 Next step is to actually trigger the Logic App based on the event raised by Event Grid when a file is uploaded to the audios' container.
 
@@ -488,7 +479,7 @@ It it also possible to rename the different operations of your Logic App to make
 [az-portal]: https://portal.azure.com
 
 
-### Upload the blob
+### Retrieve file content 
 
 Now we have a blob upload event triggering the Logic App, we will be able to work with extended `metadata` shared in the event message.
 
@@ -562,21 +553,24 @@ Your Logic App should look like this:
 
 </details>
 
-### Use the cognitive services
+### Consume Speech to Text APIs
 
-The Azure Cognitive Services are cloud-based artificial intelligence services that give the ability to developers to quickly build intelligent apps thanks to these pre-trained AI models. They are available through client library SDKs in popular development languages and REST APIs.
-
-<!-- TODO : Add more details on the cognitive services definitions -->
+The Azure Cognitive Services are cloud-based AI services that give the ability to developers to quickly build intelligent apps thanks to these pre-trained models. They are available through client library SDKs in popular development languages and REST APIs.
 
 Cognitive Services can be categorized into five main areas:
 
-- Decision
-- Language
-- Speech
-- Vision
-- Azure OpenAI Service
+- Decision : Content Moderator provides monitoring for possible offensive, undesirable, and risky content. Anomaly Detector allows you to monitor and detect abnormalities in your time series data. 
+- Language : Azure Language service provides several Natural Language Processing (NLP) features to understand and analyze text.
+- Speech : Speech service includes various capabilities like speech to text, text to speech, speech translation, and many more.
+- Vision : The Computer Vision service provides you with access to advanced cognitive algorithms for processing images and returning information.
+- Azure OpenAI Service : Powerful language models including the GPT-3, Codex and Embeddings model series for content generation, summarization, semantic search, and natural language to code translation.
 
-Next step is to transform the audio file into text using the cognitive service with the speech to text service.
+To access these APIs, create a resource in one of your subscriptions. This will create a resource with an associated `API Key` necessary to authenticate the API call owner and apply rate and quota limits as per selected pricing tier.
+
+We now want to retrieve the transcript out of the audio file uploaded thanks to the speech to text cognitive service.
+
+![logic app cognitive service](assets/logic-app-hol-cognitive-service.png)
+
 To do this, you will have to:
 
 - Instantiate the cognitive service
@@ -585,7 +579,7 @@ To do this, you will have to:
 
 <div class="important" data-title="Security">
 
-> Remember to store secret values in an Azure Key Vault to manage and secure their usage.
+> Remember to store secrets as connection strings and `Api keys` in an Azure Key Vault to manage and secure their access.
 
 </div>
 
@@ -596,9 +590,9 @@ The naming conventions are:
 
 <div class="task" data-title="Resources">
 
-> [What are Cognitive Services][cognitive-services] <br>
-> [Cognitive service Apis][cognitive-services-apis] <br> 
-> [Cognitive Service Getting Started][cognitive-service-api] <br>
+> [What are Cognitive Services][cognitive-services]<br>
+> [Cognitive service Apis][cognitive-services-apis]<br> 
+> [Cognitive Service Getting Started][cognitive-service-api]<br>
 > [Create a Key Vault][key-vault]
 
 </div>
@@ -612,7 +606,7 @@ The naming conventions are:
 <summary>Toggle solution</summary>
 
 ```bash
-# Let's create the cognitive service account with speech to text service
+# Let's create the speech to text service account as free tier
 az cognitiveservices account create -n <cognitive-service-name> -g <resource-group> --kind SpeechServices --sku F0 -l <region> --yes
 # Create the Key Vault to secure the speech to text API key
 az keyvault create --location <region> --name <key-vault-name> --resource-group <resource-group>
@@ -646,33 +640,41 @@ With that ready, add a new action in the loop by searching for `Http`, then fill
 
 ![Logic App HTTP Action](assets/logic-app-http-action.png)
 
-<!-- TODO : Show Azure Logic App Secret hidden in the execution flow result -->
-
-Notice the region of your cognitive service account and the language to use are specified in the api url.
+Notice the region of your cognitive service account and the language to use are specified in the API Url.
 
 To validate the flow, go to your storage account and delete the audio file from the `audios` container and upload it once again (to trigger the updated logic app).
-In your Logic App `Run History`, You should see the transcript of the audio file as a text output from the HTTP call to Speech to Text API.
+In the Logic App `Run History`, you should see the transcript of the audio file as a text output from the HTTP call to Speech to Text API.
 
 </details>
 
 ### Store data to Cosmos DB
 
-Azure Cosmos DB is a fully managed NoSQL and relational database. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL and offers a serverless option which is perfect for our use case.
+Azure Cosmos DB is a fully managed NoSQL database which offers Geo-redundancy and multi-region write capabilities. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL APIs and offers a serverless option which is perfect for our use case.
 
-Now you have a transcript of your audio file, you will have to store it in a NoSQL database inside Cosmos DB:
+Now the cognitive service provided with a transcript of your audio file, you will have to store it in a NoSQL database inside Cosmos DB:
 
-- Database info: `HolDb`
-- Collection to store the texts: `audios_transcripts`
+- Create a Cosmos DB account and select the `NoSQL` API
+- Set the Capacity Mode to `Serverless`
+- Create a database named : `HolDb`
+- Add a new collection to store the transcripts : `audios_transcripts`
 
-The naming conventions for Cosmos DB account is `cosmos-<environment>-<region>-<application-name>-<owner>-<instance>`
+The naming convention for Cosmos DB account is `cosmos-<environment>-<region>-<application-name>-<owner>-<instance>`
 
-<div class="info" data-title="Resources">
+Now we can add the last step of the Logic App flow that will store the transcript in the Cosmos DB database using the `Create or update document V3` operation. Once again, the action will help you set the connection to the cosmos DB collection and ease the insert/update operations by providing a JSON schema.
+
+![Logic App Cosmos DB Action](assets/logic-app-hol-cosmosDB.png)
+
+
+
+<div class="task" data-title="Resources">
 
 > [Serverless Cosmos DB][cosmos-db]
+> [Logic App Cosmos DB action][logic-app-cosmos-db-action]
 
 </div>
 
 [cosmos-db]: https://learn.microsoft.com/en-us/azure/cosmos-db/scripts/cli/nosql/serverless
+[logic-app-cosmos-db-action]: https://learn.microsoft.com/en-us/azure/connectors/connectors-create-api-cosmos-db?tabs=consumption
 
 <details>
 <summary>Toggle solution</summary>
@@ -699,7 +701,7 @@ az cosmosdb sql container create --account-name <cosmos-db-account-name> \
                                  --partition-key-path "/id"
 ```
 
-In the last run of your Logic App just look at the output body of your HTTP action, and you should see something like this:
+In the last run of your Logic App look at the output body of your HTTP action, and you should see something like this:
 
 ```json
 {
@@ -710,17 +712,15 @@ In the last run of your Logic App just look at the output body of your HTTP acti
 }
 ```
 
-Copy it, and like previously add a `Parse Json` action into the Logic App and use this as a "Sample payload to generate schema" and choose the `Body` response as input:
+To help you manipulate the JSON output from speech to text add a `Parse Json` action into the Logic App and use the above as a "Sample payload to generate schema" and choose the `Body` response as input:
 
 ![Parse HTTP response](assets/logic-app-parse-http-response.png)
 
-Then add a new action, search for `Cosmos DB` and select `Create or update document (V3)`:
-
-Create the connection with your Cosmos Db Instance:
+Then add a new step and search for `Cosmos DB`, select `Create or update document (V3)` and set the connection with your Cosmos Db Instance. Select the `Access Key` authentication type and set the `primary key` you can find in the `Keys` section of your Cosmos DB account :
 
 ![Cosmos DB Connection](assets/cosmos-db-connection.png)
 
-Finally, it's time to compose the document object to insert using JSON:
+Finally, it's time to compose the document object to insert using JSON and the `dynamic content` from the previous steps. The document should look like this:
 
 ```json
 {
@@ -733,23 +733,28 @@ Finally, it's time to compose the document object to insert using JSON:
 
 ![Cosmos DB Insert Document](assets/cosmos-db-insert-document.png)
 
-You can now validate your workflow as done for the past step : delete and upload once again the audio file.
-You should see you can see a new item in your Cosmos DB container !
+You can now validate the workflow : delete and upload once again the audio file. You should see the new item created above in your Cosmos DB container !
 
 </details>
 
 ## Add an API
-<!-- TODO : Extrapolate on Azure Functions : Serverless and dedicated + Triggers and Bindings + Full Event-Driven Development + Different types of bindings (HTTP, Cron, Sources, etc.) -->
 
-Azure Functions is a serverless solution that allows you to write less code, maintain less infrastructure, scale seamlessly, and save on costs. You don't need to worry about deploying and maintaining servers, Azure provides all the up-to-date resources needed to keep your applications running. You just need to focus on your code.
+Azure Functions is a `compute-on-demand` solution, offering a common function programming model for various languages. To use this serverless solution, no need to worry about deploying and maintaining infrastructures, Azure provides with the necessary up-to-date compute resources needed to keep your applications running. Focus on your code and let Azure Functions handle the rest.
 
-At this point you have the first scenario quite complete. The last thing you need to add is an API to upload the audio file to your storage account. For this step you will use `Azure Functions`.
+Azure Functions are reactive and event-driven : They must be triggered by an event coming from a variety of sources. This model is based on a set of `triggers` and `bindings` which let you avoid hardcoding access to other services. Your function receives data (for example, the content of a queue message) in function parameters. You send data (for example, to create a queue message) by using the return value of the function : 
+- `Triggers` cause a function to run. A trigger defines how a function is invoked, and a function must have exactly one trigger. Triggers have associated data, which is often provided as a parameter payload to the function.
+- `Binding` to a function is a way of declaratively connecting another resource to the function; bindings may be connected as input bindings, output bindings, or both. Azure services such as Azure Storage blobs and queues, Service Bus queues, Event Hubs, and Cosmos DB provide data to the function as parameters. 
 
-Make sure to create one Azure Function with:
+Azure functions run and benefit from the App Service platform, offering features like: deployment slots, continuous deployment, HTTPS support, hybrid connections and others. The code of a Serverless Azure Functions will need to be stored in an associated Azure Storage Account managed by the platform. 
+
+At this stage in our scenario, the serverless transcription engine is ready and the first lab is almost complete. The last thing you need to add is an API to upload the audio file with a unique `GUID` name to your storage account. 
+For this step you will use `Azure Functions` with an `HTTP Trigger` and a `Blob Output Binding` to upload the file to the storage account.
+
+Make sure to create an Azure Function App resource in Azure with:
 
 - The `Linux` Operating System
 - A plan type set to `Consumption (Serverless)`
-- The language you are most comfortable with
+- The language you are most comfortable with (Python in our example)
 
 An Azure Function example solution will be provided below in Python.
 
@@ -757,7 +762,7 @@ The naming formats to use are:
 For the Azure function: `func-<environment>-<region>-<application-name>-<owner>-<instance>`
 For the storage account associated to it: `stfunc<environment><region><application-name><owner><instance>`
 
-<div class="info" data-title="Resources">
+<div class="task" data-title="Resources">
 
 > [Azure Functions][azure-function]<br>
 > [Azure Function Core Tools][azure-function-core-tools]<br>
@@ -960,7 +965,7 @@ az eventgrid system-topic create -g <resource-group> \
       TODO : Check description
       TODO : Add Event Hub capabilities + Explain why we use it in this scenario for further Lab capabilities
       TODO : Explain Event Hub Namespaces vs Event Hubs
-      TODO : Explain it's not truly Serverless as Throughput Units need to be defined
+s      TODO : Explain it's not truly Serverless as Throughput Units need to be defined
 
 The Event Grid previously created will listen to the Storage Account, but before adding this mechanism we need to create another service: The Event Hub. This one is responsible for broadcasting the event caught by the Event Grid service. With that in place the event can be consumed by multiple services. In our case, a Logic App will be triggered based on the Event Hub broadcasting.
 
