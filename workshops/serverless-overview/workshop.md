@@ -853,12 +853,12 @@ pip install -r requirements.txt
 
 - Create a `func.py` at the same level of `__init__.py`.
 - Copy all the content of `__init__.py` into `func.py`.
-- Leave the `__init__.py` empty, this is mandatory for Python to find the files in that folder
+- Leave the `__init__.py` empty, this is a best practice for Python and the file is mandatory for Python itself to find the other files in the folder.
 
 Update the `function.json` with two environment variables:
 
-- the storage account container
-- the Storage Account connection string.
+- the storage account container : `STORAGE_ACCOUNT_CONTAINER`
+- the Storage Account connection string : `STORAGE_ACCOUNT_CONNECTION_STRING`
 
 And don't forget to change the `scriptFile` to use `func.py`:
 
@@ -889,7 +889,7 @@ And don't forget to change the `scriptFile` to use `func.py`:
 }
 ```
 
-Go to [Azure Portal][az-portal] and go to the `Configuration` and update the app settings with the `STORAGE_ACCOUNT_CONTAINER` to `audios` and get a connection string from the storage account with your audios container and set the `STORAGE_ACCOUNT_CONNECTION_STRING`.
+Open the Azure Function App resource in the [Azure Portal][az-portal] and go to the `Configuration` panel. Then update the app settings with the `STORAGE_ACCOUNT_CONTAINER` to `audios` and get a connection string from the storage account with your audios container and set the `STORAGE_ACCOUNT_CONNECTION_STRING`.
 
 Update the `func.py` to:
 
@@ -914,7 +914,13 @@ def main(req: func.HttpRequest, outputblob: func.Out[bytes]) -> func.HttpRespons
 
 Deploy your function using the VS Code extension or by command line:
 
-Deploy your function using the VS Code 
+Deploy your function using the VS Code :
+- Open the Azure extension in VS Code left panel
+- Make sure you're signed in to your Azure account
+- Open the Function App panel
+- Right click on your function app and select `Deploy to Function App...`
+
+![Deploy to Function App](assets/function-app-deploy.png)
 
 Deployment via Azure Function Core Tools : 
 ```bash
