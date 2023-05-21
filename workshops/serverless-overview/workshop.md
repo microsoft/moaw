@@ -741,26 +741,37 @@ You can now validate the workflow : delete and upload once again the audio file.
 
 Azure Functions is a `compute-on-demand` solution, offering a common function programming model for various languages. To use this serverless solution, no need to worry about deploying and maintaining infrastructures, Azure provides with the necessary up-to-date compute resources needed to keep your applications running. Focus on your code and let Azure Functions handle the rest.
 
-Azure Functions are reactive and event-driven : They must be triggered by an event coming from a variety of sources. This model is based on a set of `triggers` and `bindings` which let you avoid hardcoding access to other services. Your function receives data (for example, the content of a queue message) in function parameters. You send data (for example, to create a queue message) by using the return value of the function : 
-- `Triggers` cause a function to run. A trigger defines how a function is invoked, and a function must have exactly one trigger. Triggers have associated data, which is often provided as a parameter payload to the function.
+Azure Functions are event-driven : They must be triggered by an event coming from a variety of sources. This model is based on a set of `triggers` and `bindings` which let you avoid hardcoding access to other services. Your function receives data (for example, the content of a queue message) in function parameters. You send data (for example, to create a queue message) by using the return value of the function : 
 - `Binding` to a function is a way of declaratively connecting another resource to the function; bindings may be connected as input bindings, output bindings, or both. Azure services such as Azure Storage blobs and queues, Service Bus queues, Event Hubs, and Cosmos DB provide data to the function as parameters. 
+- `Triggers` are a specific kind of binding that causes a function to run. A trigger defines how a function is invoked, and a function must have exactly one trigger. Triggers have associated data, which is often provided as a parameter payload to the function.
 
-Azure functions run and benefit from the App Service platform, offering features like: deployment slots, continuous deployment, HTTPS support, hybrid connections and others. The code of a Serverless Azure Functions will need to be stored in an associated Azure Storage Account managed by the platform. 
+In the same `Function App` you will be able to add multiple `functions`, each with its own set of triggers and bindings. These triggers and bindings can benefit from existing `expressions`, which are parameter conventions easing the overall development experience. For example, you can use an expression to use the execution timestamp, or generate a unique `GUID` name for a file uploaded to a storage account. 
+
+Azure functions run and benefit from the App Service platform, offering features like: deployment slots, continuous deployment, HTTPS support, hybrid connections and others. Apart from the `Consumption` (Serverless) model we're most interested in this Lab, Azure Functions can also be deployed a dedicated `App Service Plan`or in an hybrid model called `Premium Plan`.
 
 At this stage in our scenario, the serverless transcription engine is ready and the first lab is almost complete. The last thing you need to add is an API to upload the audio file with a unique `GUID` name to your storage account. 
-For this step you will use `Azure Functions` with an `HTTP Trigger` and a `Blob Output Binding` to upload the file to the storage account.
 
-Make sure to create an Azure Function App resource in Azure with:
+For this step you will create an `Azure Function` with a POST `HTTP Trigger` and a `Blob Output Binding` to upload the file to the storage account. The Blob Output Binding will use a `binding expression` to generate a unique `GUID` name for the file.
+
+Make sure to create an Azure Function App resource in the Azure portal (or Az CLI) with:
 
 - The `Linux` Operating System
 - A plan type set to `Consumption (Serverless)`
 - The language you are most comfortable with (Python in our example)
 
+Once the resource is ready in Azure, you can create the Function App locally to ease the development experience on your desktop. The Azure Function Core Tools installed as part of the prerequisites will help you with that.  
+
 An Azure Function example solution will be provided below in Python.
 
-The naming formats to use are:
+The naming conventions to use are:
 For the Azure function: `func-<environment>-<region>-<application-name>-<owner>-<instance>`
 For the storage account associated to it: `stfunc<environment><region><application-name><owner><instance>`
+
+<div class="info" data-title="Notes">
+
+> Azure Functions in a `consumption` (Serverless) mode will need an associated Storage Account in which store the compiled version of the Function App. This storage account will be created automatically if you don't specify one during the creation of the Function App. If you want to use an existing storage account, make sure to use the same region for both the Function App and the Storage Account. 
+
+</div>
 
 <div class="task" data-title="Resources">
 
@@ -769,6 +780,7 @@ For the storage account associated to it: `stfunc<environment><region><applicati
 > [Basics of Azure Functions][azure-function-basics]<br>
 > [HTTP Triggered Azure Function][azure-function-http]<br>
 > [Blob Output Binding][azure-function-blob-output]
+> [Azure Functions Binding Expressions][azure-function-bindings-expression]
 
 </div>
 
@@ -923,7 +935,7 @@ Let's give a try using Postman:
 [azure-function-basics]: https://learn.microsoft.com/en-us/azure/azure-functions/supported-languages
 [azure-function-http]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger?pivots=programming-language-python&tabs=python-v2%2Cin-process%2Cfunctionsv2
 [azure-function-blob-output]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-output?pivots=programming-language-python&tabs=python-v2%2Cin-process
-
+[azure-function-bindings-expression]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-expressions-patterns
 ---
 
 # Lab 2
