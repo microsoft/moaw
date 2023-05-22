@@ -21,6 +21,7 @@ jobs:
       
       - name: Remove other workshops
         run: |
+          cd workshops
           rm -rf create-workshop
           rm -rf ios-hub-mxchip
           rm -rf ml-custom-vision
