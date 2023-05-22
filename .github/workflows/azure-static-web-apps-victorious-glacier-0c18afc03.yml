@@ -65,6 +65,6 @@ jobs:
           app_location: "/packages/website/" # App source code path
           app_build_command: "git config --global --add safe.directory /github/workspace && npm ci && npm run build"
           api_location: "" # Api source code path - optional
-          output_location: "/packages/website/dist/website/" # Built app content directory - optional
+          output_location: "/dist/website/" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
 
