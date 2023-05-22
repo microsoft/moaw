@@ -18,6 +18,16 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      
+      - name: Remove other workshops
+        run: |
+          rm -rf create-workshop
+          rm -rf ios-hub-mxchip
+          rm -rf ml-custom-vision
+          rm -rf swa-cosmosdb
+          rm -rf swa-gatsby-portfolio
+          rm -rf swa-pwa-angular
+        
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
