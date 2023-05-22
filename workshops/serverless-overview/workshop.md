@@ -24,10 +24,10 @@ sections_title:
 
 Welcome to this Azure Serverless Workshop. You'll be experimenting with Azure Serverless services in multiple labs to achieve a real world scenario. Don't worry, even if the challenges will increase in difficulty, this is a step by step lab, you will be guided through the whole process.
 
-During this workshop you will have the instructions to complete each steps. It is recommended to search for the answers in provided resources and links before looking at the solutions placed under the `Toggle solution` panel.
+During this workshop you will have the instructions to complete each steps. It is recommended to search for the answers in provided resources and links before looking at the solutions placed under the 'Toggle solution' panel.
 
 <!--  TODO : Remind what Serverless is : Event based (explain what we have : EVG , EH, SB), Main Compute Services, Storage Account, Cognitive Services, Data Services not taken into account for the workshop.
-      TODO : "Did you know that basic storage accounts are one of the first serverless"
+ "Did you know that basic storage accounts are one of the first serverless"
       Resources :
       - https://learn.microsoft.com/en-us/dotnet/architecture/serverless/azure-serverless-platform
       - https://azure.microsoft.com/en-us/solutions/serverless/
@@ -769,7 +769,7 @@ For the storage account associated to it: `stfunc<environment><region><applicati
 
 <div class="info" data-title="Notes">
 
-> Azure Functions in a `consumption` (Serverless) mode will need an associated Storage Account in which store the compiled version of the Function App. This storage account will be created automatically if you don't specify one during the creation of the Function App. If you want to use an existing storage account, make sure to use the same region for both the Function App and the Storage Account. 
+> Azure Functions in `consumption` (Serverless) mode will need an associated Storage Account in which store the compiled version of the Function App. This storage account will be created automatically if you don't specify one during the creation of the Function App. If you want to use an existing storage account, make sure to use the same region for both the Function App and the Storage Account. 
 
 </div>
 
@@ -942,9 +942,10 @@ Let's give a try using Postman:
 [azure-function-http]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger?pivots=programming-language-python&tabs=python-v2%2Cin-process%2Cfunctionsv2
 [azure-function-blob-output]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-output?pivots=programming-language-python&tabs=python-v2%2Cin-process
 [azure-function-bindings-expression]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-expressions-patterns
+
 ---
 
-# Lab 2
+# Lab 2 : Serverless Website
 
 Coming soon...
 
