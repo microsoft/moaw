@@ -45,6 +45,9 @@ jobs:
       - name: Build website
         run: npm run build:website
         
+      - name: Display results
+        run: ls packages/website/dist/website
+          
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
