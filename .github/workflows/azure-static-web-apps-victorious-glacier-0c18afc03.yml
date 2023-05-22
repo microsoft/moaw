@@ -23,7 +23,7 @@ jobs:
         run: |
           cd workshops
           rm -rf create-workshop
-          rm -rf ios-hub-mxchip
+          rm -rf iot-hub-mxchip
           rm -rf ml-custom-vision
           rm -rf swa-cosmosdb
           rm -rf swa-gatsby-portfolio
