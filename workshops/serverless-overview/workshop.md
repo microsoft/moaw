@@ -969,6 +969,7 @@ To do so, click on `delete resource group` in the Azure Portal to delete all the
 
 ```bash
 
+# Delete the resource group with all the resources
 az group delete --name <resource-group-name> 
 
 ```
