@@ -37,7 +37,7 @@ During this workshop you will have the instructions to complete each steps. It i
 
 # The Workshop
 
-## Prerequisites
+## Prerequisites (15 minutes)
 
 Before starting this workshop, be sure you have:
 
@@ -67,8 +67,6 @@ az login
 az account show
 # Select your Azure subscription
 az account set --subscription <subscription-id>
-# If you want to use a dedicated resource group for this lab
-az group create --name <resource-group-name> --location <location> 
 
 # Register the following Azure providers if they are not already 
 
@@ -85,12 +83,11 @@ az provider register --namespace 'Microsoft.Logic'
 # Azure Functions 
 az provider register --namespace 'Microsoft.Web'
 
-
 ```
 
 </details>
 
-## Scenario
+## Scenario (10 minutes)
 
 The goal of the full lab is to upload an audio file to Azure and retrieve the transcripts back using a Web Application.
 
@@ -108,7 +105,7 @@ Here is a diagram to illustrate the flow:
 8. The speech to text service will process the file and return the result to the Logic App
 9.  The Logic App will then store the transcript of the audio file in a Cosmos DB database
 10.  A second Azure Function will be triggered by the update in CosmosDB. It will fetch the transcript from CosmosDB and send it to Web Pub/Sub
-11.  Finally Web Pub/Sub will notify the Web Application about the new transcript using websockets
+11.  Finally Web Pub/Sub will notify the Web Application about the new transcript using Websockets
 
 <div class="info" data-title="Note">
 
@@ -171,13 +168,13 @@ With everything ready let's start the lab 🚀
 
 ---
 
-# Lab 1 : Transcribe an audio file
+# Lab 1 : Transcribe an audio file (3 to 4 hours)
 
 For this first lab, you will focus on the following scope :
 
 ![Hand's On Lab Architecture Lab 1](assets/hands-on-lab-architecture-lab-1.png)
 
-## Create a resource group
+## Create a resource group (5 minutes)
 
 Let's start by creating the resource group for this Hand's On Lab. The resource group is a logical structure to store Azure components used to group your Azure resources.
 
@@ -212,7 +209,7 @@ az group create --name <resource-group> --location <region>
 
 </details>
 
-## Create the storage account
+## Create the storage account (5 minutes)
 
 The Azure storage account is used to store data objects, including blobs, file shares, queues, tables, and disks. You will use it to store the audios files inside an `audios` container.
 
@@ -270,7 +267,7 @@ To check everything was created as expected, open the [Azure Portal][az-portal] 
 
 [az-portal]: https://portal.azure.com
 
-## Detect a file upload event
+## Detect a file upload event (10 minutes)
 ### Create the Event Grid System Topic
 
 Serverless is all about designing the application around event-driven architectures. Azure offers several options when it comes to message and event brokering, with the principal following services : 
@@ -347,14 +344,14 @@ Now you should see the Event Grid System Topic in your Resource Group :
 
 </details>
 
-## Process the event
+## Process the event (2 hours)
 
 You'll now build a Logic App workflow that will trigger when a blob will be uploaded to the storage account created earlier.
 This section of the Lab will describe all the steps that the Logic App will take to address this scenario : 
 
 ![logic-apps-hol-overview](assets/logic-app-hol-overview.png)
 
-### Create the Logic App
+### Create the Logic App (10 minutes)
 
 Azure Logic Apps is an integration platform as a service where you can create and run automated workflows with little to no code. The design of Logic Apps is mainly designer oriented, and a visual designer can be used to compose a workflow with prebuilt operations which can quickly build a workflow that integrates and manages your apps, data, services, and systems. While creating and testing a flow is way easier with the help of the designer, it still gives capabilities to export the resulting flow as a JSON `template` file to enable versioning, DevOps or separate environment requirements. 
 
@@ -413,7 +410,7 @@ az logic workflow create --resource-group <resource-group>
 
 </details>
 
-### Trigger the Logic app
+### Trigger the Logic app (20 minutes)
 
 Next step is to actually trigger the Logic App based on the event raised by Event Grid when a file is uploaded to the audios' container.
 
@@ -495,7 +492,7 @@ It is also possible to rename the different operations of your Logic App to make
 [az-portal]: https://portal.azure.com
 
 
-### Retrieve file content 
+### Retrieve file content (30 minutes)
 
 Now we have a blob upload event triggering the Logic App, we will be able to work with extended `metadata` shared in the event message.
 
@@ -572,7 +569,7 @@ Your Logic App should look like this:
 
 </details>
 
-### Consume Speech to Text APIs
+### Consume Speech to Text APIs (30 minutes)
 
 The Azure Cognitive Services are cloud-based AI services that give the ability to developers to quickly build intelligent apps thanks to these pre-trained models. They are available through client library SDKs in popular development languages and REST APIs.
 
@@ -666,7 +663,7 @@ In the Logic App `Run History`, you should see the transcript of the audio file 
 
 </details>
 
-### Store data to Cosmos DB
+### Store data to Cosmos DB (30 minutes)
 
 Azure Cosmos DB is a fully managed NoSQL database which offers Geo-redundancy and multi-region write capabilities. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL APIs and offers a serverless option which is perfect for our use case.
 
@@ -756,7 +753,7 @@ You can now validate the workflow : delete and upload once again the audio file.
 
 </details>
 
-## Add an API
+## Add an API (1 hour)
 
 ### Azure Functions : A bit of theory
 
@@ -770,7 +767,7 @@ In the same `Function App` you will be able to add multiple `functions`, each wi
 
 Azure functions run and benefit from the App Service platform, offering features like: deployment slots, continuous deployment, HTTPS support, hybrid connections and others. Apart from the `Consumption` (Serverless) model we're most interested in this Lab, Azure Functions can also be deployed a dedicated `App Service Plan`or in a hybrid model called `Premium Plan`.
 
-### Azure Functions : Let's practice
+### Azure Functions : Let's practice (1 hour)
 
 At this stage in our scenario, the serverless transcription engine is ready and the first lab is almost complete. The last thing you need to add is an API to upload the audio file with a unique `GUID` name to your storage account. 
 
