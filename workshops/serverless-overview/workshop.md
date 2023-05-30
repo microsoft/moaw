@@ -168,7 +168,7 @@ With everything ready let's start the lab 🚀
 
 ---
 
-# Lab 1 : Transcribe an audio file (3 to 4 hours)
+# Lab 1 : Transcribe an audio file
 
 For this first lab, you will focus on the following scope :
 
