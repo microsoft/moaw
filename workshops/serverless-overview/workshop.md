@@ -87,7 +87,7 @@ az provider register --namespace 'Microsoft.Web'
 
 </details>
 
-## Scenario (10 minutes)
+## Scenario
 
 The goal of the full lab is to upload an audio file to Azure and retrieve the transcripts back using a Web Application.
 
