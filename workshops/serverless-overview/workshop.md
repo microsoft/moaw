@@ -14,7 +14,7 @@ contacts: # Required. Must match the number of authors
   - "@justrebl"
   - "@ikhemissi"
 duration_minutes: 180
-tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email
+tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email, app service, web pubsub, static web app
 navigation_levels: 3
 sections_title:
   - The Serverless Workshop
@@ -93,7 +93,7 @@ The goal of the full lab is to upload an audio file to Azure and retrieve the tr
 
 Here is a diagram to illustrate the flow:
 
-![Hand's On Lab Architecture](assets/hands-on-lab-architecture.png)
+![Hand's On Lab Architecture](assets/architecture-overview.svg)
 
 1. A user uploads an [audio file](assets/whatstheweatherlike.wav) from the Web application
 2. The web application sends an HTTP request to APIM (API Management) which is a facade for multiple APIs
@@ -172,7 +172,7 @@ With everything ready let's start the lab 🚀
 
 For this first lab, you will focus on the following scope :
 
-![Hand's On Lab Architecture Lab 1](assets/hands-on-lab-architecture-lab-1.png)
+![Achitecture scope of Lab 1](assets/architecture-lab1.svg)
 
 ## Create a resource group (5 minutes)
 
@@ -960,11 +960,11 @@ By now you should have a solution that :
 - Will invoke the execution of a Logic App Workflow responsible for retrieving the audio transcription thanks to a Speech to Text (Cognitive Service) call.
 - Once the transcription is retrieved, the Logic App will store this value in a CosmosDB database.
 
-The Azure Function API created in the last step of this Lab also paves the way to the next lab (Coming soon) where a Web App frontend will be added to the scenario. It also offers a first security to the solution as the Azure Function API requires a key to be called, as well as makes sure all the files are stores with a uniquely generated name (GUID).
+The Azure Function API created in the last step of this Lab also paves the way to the next lab where a Web App frontend will be added to the scenario. It also offers a first security to the solution as the Azure Function API requires a key to be called, as well as makes sure all the files are stores with a uniquely generated name (GUID).
 
 The entire architecture is `serverless` : Azure compute resources will only be consumed when a new audio file is uploaded via the Azure Function API. You can leave the resources for a few days to see that *no compute resources are billed* when no audio file is uploaded.
 
-Once you're done with this lab you can delete the resource group you created at the beginning. 
+<!-- Once you're done with this lab you can delete the resource group you created at the beginning. 
 To do so, click on `delete resource group` in the Azure Portal to delete all the resources and audio content at once. The following Az-Cli command can also be used to delete the resource group :
 
 ```bash
@@ -974,7 +974,7 @@ az group delete --name <resource-group-name>
 
 ```
 
-To resume with Lab 2, Infrastructure as Code will be provided to help you deploy the solution in an automated way.
+To resume with Lab 2, Infrastructure as Code will be provided to help you deploy the solution in an automated way. -->
 
 [az-portal]: https://portal.azure.com
 [azure-function]: https://learn.microsoft.com/en-us/cli/azure/functionapp?view=azure-cli-latest
@@ -986,6 +986,347 @@ To resume with Lab 2, Infrastructure as Code will be provided to help you deploy
 
 ---
 
-# Lab 2 : Serverless Website
+# Lab 2 : Retrieve transcriptions
 
-Coming soon...
+On this second lab, we will focus on getting back the transcriptions of audio files and displaying them on the demo webapp.
+
+Previously processed transcriptions will be retrieved using HTTP GET requests whereas new transcriptions will be retrieved in real-time using websockets.
+
+![Achitecture scope of Lab 2](assets/architecture-lab2.svg)
+
+## Deploying the demo webapp
+
+We have created a Static Web App to help assess progress on this lab and make it easier to upload and get back transcriptions using a simple web interface.
+
+![Demo Web App screenshot](./assets/demo-webapp.png)
+
+Deploying the Web App is optional but it is highly recommended as it will simply the testing process so that you can focus on the fun stuff.
+
+You can deploy the [demo webapp](https://github.com/ikhemissi/serverless-workshop-demo) using either Github Actions (recommended) or [Azure Static Web Apps CLI](https://aka.ms/swa/cli-local-development):
+
+### Using Github Actions
+
+You can rely on Github Actions to build and deploy the code of the Web app into a Static Web App in Azure.
+
+To do this, you need to [fork the project](https://github.com/ikhemissi/serverless-workshop-demo/fork) on Github and then run the following command:
+
+```sh
+# Replace the following settings with your own:
+# - <your-github-username> : your username or organisation in Github where you forked the project
+# - <resource-group> : name of your resource group
+# - westeurope : you can use a different location if you want to deploy the web app somewhere else
+
+az staticwebapp create \
+    --name serverless-workshop-demo \
+    --resource-group <resource-group> \
+    --source https://github.com/<your-github-username>/serverless-workshop-demo \
+    --location "westeurope" \
+    --branch main \
+    --app-location "./"  \
+    --api-location "./api"  \
+    --output-location "build" \
+    --login-with-github
+```
+
+This command will create the Static Web App in Azure and will then prompt you for permissions in Github so that it can add a Github Action to your forked project. This action will then build and deploy the code of the static web app on your behalf.
+
+### Using Azure Static Web Apps CLI
+
+You can also opt for building and deploying the web app from your machine without having to fork the project and give permissions to [AzureAppServiceCLI](https://learn.microsoft.com/en-us/azure/static-web-apps/get-started-cli?tabs=react) to access the code.
+
+First let's [download](https://github.com/ikhemissi/serverless-workshop-demo/archive/refs/heads/main.zip) or clone the [project](https://github.com/ikhemissi/serverless-workshop-demo) locally
+
+Now, you can follow these steps to create the static web app:
+
+```sh
+# 1. Create the Static Web App in Azure
+# Replace the following settings with your own:
+# - <resource-group> : name of your resource group
+# - westeurope : you can use a different location if you want to deploy the web app somewhere else
+
+az staticwebapp create \
+    --name serverless-workshop-demo \
+    --resource-group <resource-group> \
+    --location "westeurope"
+
+# 2. Go to the root of the downloaded app
+cd serverless-workshop-demo
+
+# 3. Install project dependencies
+# You need to have NodeJS 18 installed
+npm install
+
+# 4. Build the Web App
+npm run swa:build
+
+# 5. Rebuild the API if the instruction above fails to do it
+cd api
+npm run build
+
+# 6. Deploy the web app code into the Static Web App
+# Replace <resource-group> with the name of your resource group
+npm run swa:deploy -- \
+  --resource-group <resource-group> \
+  --app-name serverless-workshop-demo
+```
+
+Et voila, now you should have a running demo Web App 🚀
+It is pretty much a blank canvas at this stage, but you will soon be able to add new features to it as we progress with the lab.
+
+<div class="tip" data-title="Hint">
+
+> Check the README of the project to explore the environment variables supported by the Web App and set the value of `FILE_UPLOADING_URL` to the url of the upload function which you have created in the previous lab.
+
+</div>
+
+## Getting transcriptions on-demand
+
+First, let's create a function which returns the latest 50 transcriptions from Cosmos DB.
+
+Transcriptions should have at least the following properties:
+
+```typescript
+interface Transcription {
+    id: string;
+    path: string;
+    result: string;
+    status: string;
+    _ts: number;
+}
+```
+
+This function will be used to show all existing transcriptions on the demo webapp when we first load it.
+
+
+<div class="task" data-title="Task">
+
+> Create an HTTP-triggered function which returns transcriptions from Cosmos DB:
+> - Trigger: HTTP request
+> - Action: Return the latest 50 transcriptions, in JSON format
+> - Transcriptions should include the following props: `id`, `path`, `result`, `status`, and `_ts`
+
+</div>
+
+<div class="info" data-title="Information">
+
+> You can use the existing Function App from Lab1 and add a new function to it
+
+</div>
+
+<details>
+<summary>Toggle solution</summary>
+
+Following the same procedure from Lab1, add a new HTTP-triggered function `GetTranscriptions` to your Function App and use the following settings:
+
+`function.json`:
+```json
+{
+  "scriptFile": "func.py",
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "$return"
+    },
+    {
+      "name": "transcriptions",
+      "type": "cosmosDB",
+      "direction": "in",
+      "databaseName": "%COSMOS_DB_DATABASE_ID%",
+      "collectionName": "%COSMOS_DB_CONTAINER_ID%",
+      "sqlQuery": "SELECT * FROM c ORDER BY c._ts DESC OFFSET 0 LIMIT 50",
+      "connectionStringSetting": "cosmosDBConnectionString"
+    }
+  ]
+}
+```
+
+`func.py`:
+```python
+import json
+import azure.functions as func
+
+def main(req: func.HttpRequest, transcriptions: func.DocumentList) -> func.HttpResponse:
+    return func.HttpResponse(
+        json.dumps(transcriptions.data, default=dict),
+        status_code=200,
+        mimetype='application/json'
+    )
+```
+
+</details>
+
+Once you make sure you are getting the expected response by calling the HTTP endpoint of the function, you can go ahead and update the configuration of the demo webapp with the function's endpoint.
+
+You can do that by setting the value of the environment variable `TRANSCRIPTION_FETCHING_URL` to the url of the `GetTranscriptions` function.
+
+<div class="tip" data-title="Resources">
+
+> [Cosmos DB input binding][cosmosdb-input-binding]<br> 
+> [OFFSET LIMIT clause in Cosmos DB][offset-limit-clause-in-cosmosdb]<br> 
+> [Cosmos DB connection string][cosmosdb-connection-string]
+
+</div>
+
+## Getting transcriptions in real-time
+
+The next step is to listen to new transcriptions and show them on the demo webapp as they get generated.
+
+To achieve this, we will be relying on [Azure Web PubSub](https://learn.microsoft.com/en-us/azure/azure-web-pubsub/overview) for sending and receiving notifications as transcriptions get added to Cosmos DB.
+
+The flow will be the following:
+- A new function `CosmosToWebPubSub` will be triggered whenever we add a new transcription to Cosmos DB.
+- The function will create a new notification in an [Azure Web PubSub hub](https://learn.microsoft.com/en-us/azure/azure-web-pubsub/key-concepts). The contents of the notification will be the new transcription.
+- The demo webapp will be listening to new messages on the same Web PubSub hub and will show new transcriptions on real-time.
+
+
+### Using Azure Web PubSub for real-time communication
+
+<div class="task" data-title="Task">
+
+> Create an instance of Azure Web PubSub
+
+</div>
+
+<details>
+<summary>Toggle solution</summary>
+
+```sh
+# Create a Web PubSub instance
+# Replace the following settings with your own:
+# - <resource-group> : name of your resource group
+# - westeurope : you can use a different location if you want to deploy the web app somewhere else
+
+az webpubsub create \
+    --name <unique-web-pubsub-instance-name> \
+    --resource-group <resource-group> \
+    --location "westeurope" \
+    --sku Free_F1
+```
+
+</details>
+
+<div class="tip" data-title="Resources">
+
+> [Azure Web PubSub Overview][azure-web-pubsub]<br> 
+> [How to create a Web PubSub instance][create-web-pubsub-instance]
+
+</div>
+
+### Publishing new transcriptions using Web PubSub
+
+The next step is to use the newly created Web PubSub instance to publish new transcriptions as they get added to Cosmos DB.
+
+<div class="task" data-title="Task">
+
+> Create an Cosmos DB-triggered function which publishes new records to your Web PubSub instance:
+> - Name: CosmosToWebPubSub
+> - Trigger: Cosmos DB
+> - Action: Detect new transcriptions and publish them to Azure Web PubSub in JSON format
+> - Audience: All clients listening to updates on the Web PubSub hub
+
+</div>
+
+<details>
+<summary>Toggle solution</summary>
+
+Add a new Cosmos DB-triggered function `CosmosToWebPubSub` to your Function App and use the following settings:
+
+`function.json`:
+```json
+{
+  "scriptFile": "func.py",
+  "bindings": [
+    {
+      "type": "cosmosDBTrigger",
+      "name": "transcriptions",
+      "direction": "in",
+      "leaseCollectionName": "leases",
+      "connectionStringSetting": "cosmosDBConnectionString",
+      "databaseName": "%COSMOS_DB_DATABASE_ID%",
+      "collectionName": "%COSMOS_DB_CONTAINER_ID%",
+      "createLeaseCollectionIfNotExists": true
+    },
+    {
+      "type": "webPubSub",
+      "name": "actions",
+      "hub": "%WEB_PUBSUB_HUB_ID%",
+      "connection": "webPubSubConnectionString",
+      "direction": "out"
+    }
+  ]
+}
+```
+
+`func.py`:
+```python
+import logging
+import json
+import azure.functions as func
+
+def main(transcriptions: func.DocumentList, actions: func.Out[str]) -> None:
+    if transcriptions:
+        logging.info('Document Id: %s', transcriptions[0]['id'])
+
+        actions.set(json.dumps({
+            'actionName': 'sendToAll',
+            'data': json.dumps(dict(transcriptions[0])),
+            'dataType': 'json'
+        }))
+```
+
+</details>
+
+### Consuming new transcriptions from Web PubSub
+
+The last step is to consume the newly published transcriptions in the deom webapp from the Web PubSub hub.
+
+<div class="task" data-title="Task">
+
+> - Get a connection string from Web PubSub and set it in the `WPS_CONNECTION_STRING` environment variable in the demo webapp.
+> - Ensure that new transcriptions are displayed in the webapp as you upload new audio files.
+
+</div>
+
+<details>
+<summary>Toggle solution</summary>
+
+```sh
+az webpubsub key show \
+    --name <unique-web-pubsub-instance-name> \
+    --resource-group <resource-group> \
+    --query primaryConnectionString \
+    --output tsv
+```
+
+</details>
+
+<div class="tip" data-title="Resources">
+
+> [Publish and consume messages from Web PubSub][publish-and-consume-from-web-pubsub]
+
+</div>
+
+
+
+
+[cosmosdb-input-binding]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-input?tabs=python-v1%2Cin-process%2Cfunctionsv2&pivots=programming-language-python
+
+[offset-limit-clause-in-cosmosdb]: https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/query/offset-limit
+
+[cosmosdb-connection-string]: https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/how-to-dotnet-get-started?tabs=azure-cli%2Cwindows#retrieve-your-account-connection-string
+
+[azure-web-pubsub]: https://learn.microsoft.com/en-us/azure/azure-web-pubsub/overview
+
+[create-web-pubsub-instance]: https://learn.microsoft.com/en-us/azure/azure-web-pubsub/howto-develop-create-instance?tabs=CLI&pivots=method-azure-portal
+
+[publish-and-consume-from-web-pubsub]: https://learn.microsoft.com/en-us/azure/azure-web-pubsub/tutorial-pub-sub-messages
