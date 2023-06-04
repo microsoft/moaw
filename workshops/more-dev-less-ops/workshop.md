@@ -16,9 +16,9 @@ navigation_levels: 3
 
 # More Dev Less Ops Workshop
 
-Welcome to this Workshop. In this lab, you will discover Microsoft and Azure services oriented for the developers such as Microsoft Dev Box, Azure Developer Cli, don't worry, this is a step by step lab, you will be guided through it.
+Welcome to this Workshop. In this lab, you will discover how Microsoft move towards to help developers to be more productive and focus on their code. You will discover two services: Microsoft Dev Box and Azure Deployment Environment.
 
-During this workshop you will have the instructions to complete each steps, try to find the answer before looking at the solution.
+During this workshop you will have the instructions to complete each steps, try to find the answer before looking at the solution. Don't worry, this is a step by step lab, you will be guided through it.
 
 ---
 
@@ -26,37 +26,92 @@ During this workshop you will have the instructions to complete each steps, try 
 
 ## Prerequisites
 
-- An Azure which will be provided to you
-- A GitHub account
+To access the resources of this workshop, you will have access to an Azure subscription.
 
+## A bit of context
+
+When you arrive a new company, you need to be onboarded. This is the same for developers. They need to be onboarded to the company and to the project they will work on. This is a long process that can take days or weeks. Moreover, the developer needs to have a computer with all the tools needed to develop the application. 
+
+This scenario is not the best for the developer and the company. An other reccurent problem for developers is for deploying their application without waiting for the IT team to create the infrastructure. This is a long process that can take days or weeks. 
+
+Based on this report, Microsoft has created two services to help developers to be more productive, autonomous and focus on their code. Those services are Microsoft Dev Box and Azure Deployment Environment.
 
 # Microsoft Dev Box
 
 ## What is Microsoft Dev Box?
 
-Microsoft Dev Box is a managed service that enables developers to create on-demand, high-performance, secure, ready-to-code, project-specific workstations in the cloud. It is a fully managed service that provides pre-configured development environments accessible from anywhere.
+To solve this problem, Microsoft has created a new service called Microsoft Dev Box. This service allows developers to create on-demand, high-performance, secure, ready-to-code, project-specific workstations in the cloud. It is a fully managed service that provides pre-configured development environments accessible from anywhere.
 
-With Microsoft Dev Box, developers can focus on building applications without worrying about the underlying infrastructure. Microsoft Dev Box provides a consistent, secure development environment for each project, and it can be used for a variety of development scenarios, such as onboarding new developers, collaborating on a project, or working on a short-term project.
+The principle is simple, you have a project with specific technologies, so you need to have a computer with all the tools needed to develop the application. This is what Microsoft Dev Box provides. 
 
-This support any development language, framework, IDE that can be run on Windows. Those Dev Boxes can be accessed from Windows, Mac, Android, iOS or web browser.
+Based on this, the IT team can provide through a Dev Center multiple Dev Box definitions with all the tools needed to develop different projects type. Then, when needed the developer can just create a new Dev Box based on the Dev Box definition. This Dev Box will be created in a few minutes and the developer can start to work on it.
+
+The Dev Box can be a Windows 10 or 11 with a specific configuration. It can be accessed from Windows, Mac, Android, iOS or a web browser.
+
+The different tools provided in the Dev Box definition can be declared inside a `devbox.yaml` file (Actually in private preview). This file allows you to install software with the `WinGet` or `Chocolatey` package managers, as well as setting common OS settings like enabling Windows Features and configuring applications like installing Visual Studio extensions.
 
 In this workshop, you will use a pre-configured Dev Box environment to create a new application.
 
-## Navigate to Microsoft Dev Box
+## Overview of the Microsoft Dev Box service
 
-Let's start by navigating to Microsoft Dev Box. Open a new tab in your browser and navigate to [Azure Portal](https://portal.azure.com/). Sign in with the credentials provided to you.
+To start this workshop, let's have a look at the Microsoft Dev Box service from an IT team perspective. Take the credentials provided to you and open a new tab in your browser and navigate to [Azure Portal](https://portal.azure.com/).
 
-In the search bar, type `Dev Box` and select the `Microsoft Dev Box` service. You will find all the dev centers and projects of your subscription here.
+In the search bar on top, type `Dev Box` and select the `Microsoft Dev Box` service. On the left, You will find all the dev centers and projects of your subscription. 
 
-You should see this king of screen (the name of the resource group will be different on your subscriptions):
+You should see this king of screen (the name of the resource group will be different on your subscription):
 
 ![Microsoft Dev Box](./assets/microsoft-dev-box-dev-center.png)
 
-Let's begin to look at the `Dev Centers` tab. Select the Dev Center in the list, you will be redirected to the Dev Center detail page.
-
 ## What is a Dev Center?
 
-The Dev Center is the main page of the Microsoft Dev Box service. It is the place where you can find all the Dev Boxes, Catalogs, Environments and Projects associated to the Dev Center.
+The Dev Center is the contol tower of the IT team to have an overview of all the Dev Boxes, Catalogs, Environments and Projects. It is the place where all the resources needed by the developers are defined.
+
+Click on the `Dev Centers` tab on the left and select the first one of the list. You will be redirected to the resource detail page.
+
+A Dev Center is composed of multiple resources:
+- Dev Box definitions
+- Catalogs
+- Environments types
+- Projects
+- Azure computes galleries
+
+Each of those resources has a specific role in the Dev Center.
+
+### Dev Box definitions
+
+A Dev Box definition is a preconfigured Virtual Machine with a specific configuration ready to use by developers. It can be a Windows 10 or 11 with a specific configuration. It can be accessed from Windows, Mac, Android, iOS or a web browser.
+
+You can give a specific amount of RAM, CPU, disk size and disk type to the Dev Box. You can also specify a custom image stored in your Azure compute gallery.
+
+All those definitions will be available for the developers to create a new Dev Box based on it, in a few minutes. A developer portal is provided to the developers to create a new Dev Box based on the Dev Box definition. 
+
+You will see the dedicated developer experience later in this workshop.
+
+### Environment types
+
+An environment type is a way to split the Dev Boxes of your projects in different environments that you can defined such as Dev, Test, Prod, etc. 
+
+### Catalogs
+
+A catalog is a list of preconfigured Azure infrastructure environment defined using Infrastructure as Code (IaC). Those infrastructures are defined by providing a GitHub repository URL, like this one: [Azure Deployment Environment](https://github.com/Azure/deployment-environments). 
+
+The Azure infrastructure environment are defined using Bicep and Terraform was announced as soon to be supported. Those catalogs are used to deploy the infrastructure needed by the application on depend. You will learn more on the Azure Deployment Environment section later in this workshop.
+
+By defining a catalog, you can provide a list of environments that will be available for the developers to deploy their application on it but also, the IT team have full control on the infrastructure deployed. That leaves the developers to pick the environment they need and deploy their application on it, without waiting for multiple days or weeks to have an environment ready to used and compliant with the security and rules of the company.
+
+### Projects
+
+A project is where the developers are assigned and where they can create Dev Boxes. You can limit the type of Dev Box to fit the project needs. For example, you can create a project for a Node.js application and assign only the Dev Box definitions with Node.js tools installed. 
+
+If you click on the `Projects` tab on the left, you will see the list of projects. Select the first one of the list. You will be redirected to the project detail page. This project contains only the Dev Box pool that can be used by the developers for this project. 
+
+As you can see, the project also has environment types. This is where you can link an environment type defined in the Dev Center to a specific Azure subscription. This will allow the developers to deploy their environment on the correct subscription when needed.
+
+
+
+
+
+
 
 As you discover the function of the tabs on the left navigate on its to understand what they are:
 
