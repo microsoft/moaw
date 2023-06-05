@@ -10,7 +10,7 @@ authors:                                # Required. You can add as many authors 
 contacts:                               # Required. Must match the number of authors
   - '@damienaicheh'
 duration_minutes: 90
-tags: azure, azure Dev Center, Microsoft Dev Box, Az Dev Cli
+tags: azure, Azure Dev Center, Microsoft Dev Box, Azure Deployment Environment, Az Dev Cli
 navigation_levels: 3
 ---
 
@@ -85,6 +85,8 @@ You can give a specific amount of RAM, CPU, disk size and disk type to the Dev B
 
 All those definitions will be available for the developers to create a new Dev Box based on it, in a few minutes. A developer portal is provided to the developers to create a new Dev Box based on the Dev Box definition. 
 
+The Dev Box is entirely integrated in your souscription. You can use your Azure AD credentials to connect to the Dev Box. You can also define rules to stop the Dev Box automatically after the working hours.
+
 You will see the dedicated developer experience later in this workshop.
 
 ### Environment types
@@ -107,35 +109,13 @@ If you click on the `Projects` tab on the left, you will see the list of project
 
 As you can see, the project also has environment types. This is where you can link an environment type defined in the Dev Center to a specific Azure subscription. This will allow the developers to deploy their environment on the correct subscription when needed.
 
+In the `Environment` section of the project, you can see the list of all environments requested on demands by the developers for this project. You can see the provisioning state of each environment. Those environments are created using the Azure Deployment Environment that you will see later in this workshop. 
 
+## Use your Dev Box
 
+### Connect to the Dev Box
 
-
-
-
-As you discover the function of the tabs on the left navigate on its to understand what they are:
-
-- `Dev box definitions` which are preconfigured Virtual Machines with a specific configuration ready to use by developers.
-- `Catalogs` which are a list of preconfigured Azure infrastructure environment defined using Infrastructure as Code (IaC). Those infrastructures are defined by providing a GitHub repository URL, like this one: [Azure Deployment Environment](https://github.com/Azure/deployment-environments).
-- `Environments types` are defined to split the Dev Boxes of your projects in different environments that you can defined such as Dev, Test, Prod, etc.
-- `Projects` where you can assign users and deploy Dev Boxes specific to it.
-
-
-## Deep dive into the project
-
-Select the `Projects` tab on the left and select the project in the list. You will be redirected to the project detail page. This project contains only the Dev Box pool that can be used by the developers for this project. 
-
-With this approach, you can imagine a project dedicated to a Node.js application, with a Dev Box pool containing only Dev Boxes with all the tools needed to develop a Node.js application pre-installed.
-
-If you click on the `Dev Box pools` tab on the left, you will see the list of Dev Boxes available for this project. Each dev box can have local administator or standard user privileges. Moreover, you can specify hours where the Dev Box can be automatically stopped. This is useful to save money when the Dev Box is not used.
-
-Click on a Dev Box definition in the list, you will be redirected to the Dev Center detail page. You will see details about the Dev Box definition such as Windows version and tools installed.
-
-![Dev Box Definitions](./assets/devcenter-dev-box-definitions.png)
-
-## Use the Dev Box
-
-You have now the basics to understand how Microsoft Dev Box works. Let's use it to create a new application. Go to [Dev Portal](https://devportal.microsoft.com/), sign in with your Azure credentials. 
+You have now the basics to understand how Microsoft Dev Box works. Let's use it to create a new application. Go to [Dev Portal](https://devportal.microsoft.com/), sign in with the Azure credentials provided to you. 
 
 Once you are logged in, you will see dev boxes, select the one corresponding to your user name. You will be invited to connect to it using a Remote Desktop Client. Follow the instructions to connect to your Dev Box. If needed the official documentation is available [here](https://learn.microsoft.com/en-us/azure/dev-box/tutorial-connect-to-dev-box-with-remote-desktop-app?tabs=windows)
 
@@ -143,9 +123,81 @@ If everything is ok, you should see this kind of screen:
 
 ![Dev Box](./assets/dev-box-rdp.png)
 
-This is a Windows 11 machine with tools like Visual Studio Code, Visual Studio, Azure CLI are already installed. You can use this machine to develop your application.
+This is a Windows 11 machine with tools like Visual Studio Code, Visual Studio, Azure CLI are already installed. You can use this machine to develop your application. 
 
-# Azure Developer Cli
+### Update an application
+
+You will now update an existing application. Clone this repository: https://github.com and open it using Visual Studio.
+
+You will see a simple ASP.NET Core application. This application is a simple todo list API. You can run it locally using Visual Studio.
+
+![Todo List API](./assets/todo-list-api.png)
+
+The goal of this workshop is to add a new endpoint to this API to get the detail of todo items. For demonstration purpose, the list of todo items are provided statically.
+
+<details>
+<summary>Toggle solution</summary>
+
+Open the `TodoController.cs` file and add the following code:
+
+```csharp
+```
+
+</details>
+
+## Overview of Azure Deployment Environment
+
+Azure Deployment Environment is a new service that allows you to deploy a full environment on demand based on the templates inside the catalog defined in the project of the Dev Center. 
+
+As a developer, this provide a way to deploy an environment on demand and test your feature directly on it. The environments is provided by the IT Teams so they are compliant with the security and rules of the company.
+
+This will avoid developers to handle the infrastructure part of the application and focus on the application itself. Also, they will not have to deal with compliance and security rules.
+
+As an IT Team, you can provide a list of environments that can be used by the developers. You can also provide a list of templates that can be used to deploy the infrastructure needed by the application. This will allow you to have full control on the infrastructure deployed and avoid developers to deploy resources that are not compliant with the security and rules of the company.
+
+The developer just need to connect to https://devportal.microsoft.com/ and select the template they need:
+
+![Dev Portal](./assets/dev-portal.png)
+
+The infrasture will be deployed in a few minutes in the correct subscription and the developer will be able to test his application on it.
+
+## Create a new environment
+
+Back to your application, you will now deploy it on a new environment. To do so, you need to spin up a new environment using Azure Deployment Environment.
+
+Go to the [Dev Portal](https://devportal.microsoft.com/) and click on `+ New` button then on `New environment`:
+
+![New environment](./assets/new-environment.png)
+
+First, give a name to your environment select an environment type, for instance `dev` and then select the template you want to use to deploy the infrastructure. In your case, you will use the `Todo List API` template.
+
+Give it a few minutes to deploy the infrastructure. Once it's done, you will see the environment in the list of environments:
+
+![Environment list](./assets/environment-list.png)
+
+If you go back to Azure Portal, in the `Project` resource you will see in the `Environments` section the new environment created:
+
+![Environment list](./assets/project-environment-list.png)
+
+## Deploy your application
+
+Now that you have an environment ready, you can deploy your application on it. To do so, you have multiple possibilities. You can use the Azure Cli or the Visual Studio menus.
+
+To keep things more visual, you will use the Visual Studio menus. Right click on the project and select `Publish...`:
+
+![Publish](./assets/publish.png)
+
+Select the App Service that you just created and click on `Publish`:
+
+![Publish](./assets/app-service-publish.png)
+
+Once the deployment is done, you can go to the URL of your application and see the result. You should be able to call the API and get the list of todo items and the details for each one of them.
+
+Congratulations, you just deployed your application on Azure using Azure Deployment Environment.
+
+As you saw, you didn't have to deal with the infrastructure part of the application. You just had to select the template you want to use and the environment type. The infrastructure was deployed in a few minutes and you were able to deploy your application on it. This is a huge time saver for developers.
+
+## Going further with Azure Developer Cli
 
 ## What is Azure Developer Cli?
 
@@ -155,23 +207,4 @@ A lot of templates are available publicly on GitHub, you can find them [here](ht
 
 The `azd` tool can be use in combination with Azure Cli to support your Azure workflow.
 
-For this workshop, you will use a custom template to create a new application. This template is available [here](TODO).
-
-## Develop a new application
-
-The goal of this section is to create a new application using `azd` and in the next one you will discover how to deploy it to Azure using `azd` or `Azure Deployment Environment`. The template used for this workshop is a basic API that manage a TODO list. This application is a dotnet API.
-
-Your Dev Box is connected to an Azure Environment like defined ...
-// TODO Explain how this is connected to a database for the API
-
-## Use Azure Developer Cli
-
-Let's start by using `azd` to create a new application. Open a new terminal in your Dev Box and type the following command:
-
-```bash
-azd init TODO with the template URL
-```
-
-Open the generated project with VS Code. You will see a project with the infrastructure as code, pipeline and application code. In the repository, you will find an `azure.yaml` file, this one is used by `azd` as a configuration file.
-
-The application code is voluntarily simple, it is a basic API that manage a TODO list. The goal is to add 2 calls to retreive elements to the associated database.
+By the end of this workshop, you will have to create your own template and use it to deploy your application on Azure.
