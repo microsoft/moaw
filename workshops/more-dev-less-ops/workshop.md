@@ -3,14 +3,14 @@ published: true
 type: workshop
 title: More Dev Less Ops Workshop
 short_title: More Dev Less Ops
-description: This workshop will cover Microsoft Dev Box, Az Dev Cli.
+description: This workshop will cover Microsoft Dev Box, Az Dev CLI.
 level: beginner                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors:                                # Required. You can add as many authors as needed      
   - Damien Aicheh
 contacts:                               # Required. Must match the number of authors
   - '@damienaicheh'
 duration_minutes: 90
-tags: azure, Azure Dev Center, Microsoft Dev Box, Azure Deployment Environment, Az Dev Cli
+tags: azure, Azure Dev Center, Microsoft Dev Box, Azure Deployment Environment, Az Dev CLI
 navigation_levels: 3
 ---
 
@@ -19,10 +19,6 @@ navigation_levels: 3
 Welcome to this Workshop. In this lab, you will discover how Microsoft move towards to help developers to be more productive and focus on their code. You will discover two services: Microsoft Dev Box and Azure Deployment Environment.
 
 During this workshop you will have the instructions to complete each steps, try to find the answer before looking at the solution. Don't worry, this is a step by step lab, you will be guided through it.
-
----
-
-# The Workshop
 
 ## Prerequisites
 
@@ -66,7 +62,7 @@ You should see this king of screen (the name of the resource group will be diffe
 
 The Dev Center is the contol tower of the IT team to have an overview of all the Dev Boxes, Catalogs, Environments and Projects. It is the place where all the resources needed by the developers are defined.
 
-Click on the `Dev Centers` tab on the left and select the first one of the list. You will be redirected to the resource detail page.
+CLIck on the `Dev Centers` tab on the left and select the first one of the list. You will be redirected to the resource detail page.
 
 A Dev Center is composed of multiple resources:
 - Dev Box definitions
@@ -117,7 +113,7 @@ In the `Environment` section of the project, you can see the list of all environ
 
 You have now the basics to understand how Microsoft Dev Box works. Let's use it to create a new application. Go to [Dev Portal](https://devportal.microsoft.com/), sign in with the Azure credentials provided to you. 
 
-Once you are logged in, you will see dev boxes, select the one corresponding to your user name. You will be invited to connect to it using a Remote Desktop Client. Follow the instructions to connect to your Dev Box. If needed the official documentation is available [here](https://learn.microsoft.com/en-us/azure/dev-box/tutorial-connect-to-dev-box-with-remote-desktop-app?tabs=windows)
+Once you are logged in, you will see dev boxes, select the one corresponding to your user name. You will be invited to connect to it using a Remote Desktop CLIent. Follow the instructions to connect to your Dev Box. If needed the official documentation is available [here](https://learn.microsoft.com/en-us/azure/dev-box/tutorial-connect-to-dev-box-with-remote-desktop-app?tabs=windows)
 
 If everything is ok, you should see this kind of screen:
 
@@ -147,6 +143,8 @@ Open the `TodoController.cs` file and add the following code:
 
 ## Overview of Azure Deployment Environment
 
+### What is Azure Deployment Environment?
+
 Azure Deployment Environment is a new service that allows you to deploy a full environment on demand based on the templates inside the catalog defined in the project of the Dev Center. 
 
 As a developer, this provide a way to deploy an environment on demand and test your feature directly on it. The environments is provided by the IT Teams so they are compliant with the security and rules of the company.
@@ -161,7 +159,7 @@ The developer just need to connect to https://devportal.microsoft.com/ and selec
 
 The infrasture will be deployed in a few minutes in the correct subscription and the developer will be able to test his application on it.
 
-## Create a new environment
+### Create a new environment
 
 Back to your application, you will now deploy it on a new environment. To do so, you need to spin up a new environment using Azure Deployment Environment.
 
@@ -179,9 +177,9 @@ If you go back to Azure Portal, in the `Project` resource you will see in the `E
 
 ![Environment list](./assets/project-environment-list.png)
 
-## Deploy your application
+### Deploy your application
 
-Now that you have an environment ready, you can deploy your application on it. To do so, you have multiple possibilities. You can use the Azure Cli or the Visual Studio menus.
+Now that you have an environment ready, you can deploy your application on it. To do so, you have multiple possibilities. You can use the Azure CLI or the Visual Studio menus.
 
 To keep things more visual, you will use the Visual Studio menus. Right click on the project and select `Publish...`:
 
@@ -197,14 +195,14 @@ Congratulations, you just deployed your application on Azure using Azure Deploym
 
 As you saw, you didn't have to deal with the infrastructure part of the application. You just had to select the template you want to use and the environment type. The infrastructure was deployed in a few minutes and you were able to deploy your application on it. This is a huge time saver for developers.
 
-## Going further with Azure Developer Cli
+## Going further with Azure Developer CLI
 
-## What is Azure Developer Cli?
+### What is Azure Developer CLI?
 
-[Azure Developer Cli]() also now as `azd` is an open-source tool that accelerates the process of building cloud apps on Azure. This can be used to create a new application from a template, deploy it to Azure, and manage it.
+[Azure Developer CLI]() also now as `azd` is an open-source tool that accelerates the process of building cloud apps on Azure. This can be used to create a new application from a template, deploy it to Azure, and manage it.
 
 A lot of templates are available publicly on GitHub, you can find them [here](https://github.com/topics/azd-templates). You can also create your own templates and use them with `azd`. These templates include application code, and reusable infrastructure as code assets.
 
-The `azd` tool can be use in combination with Azure Cli to support your Azure workflow.
+The `azd` tool can be use in combination with Azure CLI to support your Azure workflow.
 
 By the end of this workshop, you will have to create your own template and use it to deploy your application on Azure.
