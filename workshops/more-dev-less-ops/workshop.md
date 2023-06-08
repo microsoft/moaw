@@ -32,9 +32,9 @@ This scenario is not the best for the developer and the company. An other reccur
 
 Based on this report, Microsoft has created two services to help developers to be more productive, autonomous and focus on their code. Those services are Microsoft Dev Box and Azure Deployment Environment.
 
-# Microsoft Dev Box
+## Microsoft Dev Box
 
-## What is Microsoft Dev Box?
+### What is Microsoft Dev Box?
 
 To solve this problem, Microsoft has created a new service called Microsoft Dev Box. This service allows developers to create on-demand, high-performance, secure, ready-to-code, project-specific workstations in the cloud. It is a fully managed service that provides pre-configured development environments accessible from anywhere.
 
@@ -48,32 +48,35 @@ The different tools provided in the Dev Box definition can be declared inside a 
 
 In this workshop, you will use a pre-configured Dev Box environment to create a new application.
 
-## Overview of the Microsoft Dev Box service
+### Overview of the Microsoft Dev Box service
 
 To start this workshop, let's have a look at the Microsoft Dev Box service from an IT team perspective. Take the credentials provided to you and open a new tab in your browser and navigate to [Azure Portal](https://portal.azure.com/).
 
-In the search bar on top, type `Dev Box` and select the `Microsoft Dev Box` service. On the left, You will find all the dev centers and projects of your subscription. 
+In the search bar on top, type `Dev Box` and select the `Microsoft Dev Box` service. On the left, you will find all the dev centers and projects of your subscription. 
 
 You should see this king of screen (the name of the resource group will be different on your subscription):
 
-![Microsoft Dev Box](./assets/microsoft-dev-box-dev-center.png)
+![Microsoft Dev Box Dev Centers](./assets/microsoft-dev-box-dev-center.png)
 
-## What is a Dev Center?
+![Microsoft Dev Box Projects](./assets/microsoft-dev-box-projects.png)
+
+### What is a Dev Center?
 
 The Dev Center is the contol tower of the IT team to have an overview of all the Dev Boxes, Catalogs, Environments and Projects. It is the place where all the resources needed by the developers are defined.
 
-CLIck on the `Dev Centers` tab on the left and select the first one of the list. You will be redirected to the resource detail page.
+Click on the `Dev Centers` tab on the left and select the first one of the list. You will be redirected to the resource detail page.
 
 A Dev Center is composed of multiple resources:
 - Dev Box definitions
 - Catalogs
 - Environments types
 - Projects
-- Azure computes galleries
 
 Each of those resources has a specific role in the Dev Center.
 
-### Dev Box definitions
+![Dev Center Overview](./assets/dev-center-overview.png)
+
+#### Dev Box definitions
 
 A Dev Box definition is a preconfigured Virtual Machine with a specific configuration ready to use by developers. It can be a Windows 10 or 11 with a specific configuration. It can be accessed from Windows, Mac, Android, iOS or a web browser.
 
@@ -85,11 +88,15 @@ The Dev Box is entirely integrated in your souscription. You can use your Azure 
 
 You will see the dedicated developer experience later in this workshop.
 
-### Environment types
+![Dev Box definitions](./assets/dev-box-definitions.png)
 
-An environment type is a way to split the Dev Boxes of your projects in different environments that you can defined such as Dev, Test, Prod, etc. 
+#### Environment types
 
-### Catalogs
+An environment type is a way to split the Dev Boxes of your projects in different environments that you can defined such as Dev, Staging, Prod, etc. 
+
+![Environment types](./assets/dev-center-environment-types.png)
+
+#### Catalogs
 
 A catalog is a list of preconfigured Azure infrastructure environment defined using Infrastructure as Code (IaC). Those infrastructures are defined by providing a GitHub repository URL, like this one: [Azure Deployment Environment](https://github.com/Azure/deployment-environments). 
 
@@ -97,7 +104,9 @@ The Azure infrastructure environment are defined using Bicep and Terraform was a
 
 By defining a catalog, you can provide a list of environments that will be available for the developers to deploy their application on it but also, the IT team have full control on the infrastructure deployed. That leaves the developers to pick the environment they need and deploy their application on it, without waiting for multiple days or weeks to have an environment ready to used and compliant with the security and rules of the company.
 
-### Projects
+![Catalogs](./assets/dev-center-catalogs.png)
+
+#### Projects
 
 A project is where the developers are assigned and where they can create Dev Boxes. You can limit the type of Dev Box to fit the project needs. For example, you can create a project for a Node.js application and assign only the Dev Box definitions with Node.js tools installed. 
 
@@ -107,17 +116,21 @@ As you can see, the project also has environment types. This is where you can li
 
 In the `Environment` section of the project, you can see the list of all environments requested on demands by the developers for this project. You can see the provisioning state of each environment. Those environments are created using the Azure Deployment Environment that you will see later in this workshop. 
 
+![Projects](./assets/dev-center-projects.png)
+
 ## Use your Dev Box
 
 ### Connect to the Dev Box
 
 You have now the basics to understand how Microsoft Dev Box works. Let's use it to create a new application. Go to [Dev Portal](https://devportal.microsoft.com/), sign in with the Azure credentials provided to you. 
 
-Once you are logged in, you will see dev boxes, select the one corresponding to your user name. You will be invited to connect to it using a Remote Desktop CLIent. Follow the instructions to connect to your Dev Box. If needed the official documentation is available [here](https://learn.microsoft.com/en-us/azure/dev-box/tutorial-connect-to-dev-box-with-remote-desktop-app?tabs=windows)
+Once you are logged in, you will see this kind of screen:
 
-If everything is ok, you should see this kind of screen:
+![Dev Portal](./assets/dev-portal.png)
 
-![Dev Box](./assets/dev-box-rdp.png)
+Select the devbox corresponding to your username. You will be invited to connect to it using a Remote Desktop CLIent. Follow the instructions to connect to your Dev Box. If needed the official documentation is available [here](https://learn.microsoft.com/en-us/azure/dev-box/tutorial-connect-to-dev-box-with-remote-desktop-app?tabs=windows)
+
+If you successfully connect, you should see the windows desktop. 
 
 This is a Windows 11 machine with tools like Visual Studio Code, Visual Studio, Azure CLI are already installed. You can use this machine to develop your application. 
 
@@ -141,7 +154,7 @@ Open the `TodoController.cs` file and add the following code:
 
 </details>
 
-## Overview of Azure Deployment Environment
+## Azure Deployment Environment
 
 ### What is Azure Deployment Environment?
 
@@ -153,11 +166,9 @@ This will avoid developers to handle the infrastructure part of the application 
 
 As an IT Team, you can provide a list of environments that can be used by the developers. You can also provide a list of templates that can be used to deploy the infrastructure needed by the application. This will allow you to have full control on the infrastructure deployed and avoid developers to deploy resources that are not compliant with the security and rules of the company.
 
-The developer just need to connect to https://devportal.microsoft.com/ and select the template they need:
+The developer just need to connect to [Microsoft developer portal](https://devportal.microsoft.com/) and select the template they need.
 
-![Dev Portal](./assets/dev-portal.png)
-
-The infrasture will be deployed in a few minutes in the correct subscription and the developer will be able to test his application on it.
+The infrastructure will be deployed in a few minutes in the correct subscription and the developer will be able to test his application on it.
 
 ### Create a new environment
 
@@ -165,13 +176,13 @@ Back to your application, you will now deploy it on a new environment. To do so,
 
 Go to the [Dev Portal](https://devportal.microsoft.com/) and click on `+ New` button then on `New environment`:
 
-![New environment](./assets/new-environment.png)
+![New Environment](./assets/dev-portal-new-environment.png)
 
-First, give a name to your environment select an environment type, for instance `dev` and then select the template you want to use to deploy the infrastructure. In your case, you will use the `Todo List API` template.
+On the right panel, give a name to your environment select an environment type, for instance `dev` and then select the template you want to use to deploy the infrastructure. In your case, you will use the `Todo List API` template.
 
 Give it a few minutes to deploy the infrastructure. Once it's done, you will see the environment in the list of environments:
 
-![Environment list](./assets/environment-list.png)
+![Environment list](./assets/new-environment-created.png)
 
 If you go back to Azure Portal, in the `Project` resource you will see in the `Environments` section the new environment created:
 
@@ -199,7 +210,7 @@ As you saw, you didn't have to deal with the infrastructure part of the applicat
 
 ### What is Azure Developer CLI?
 
-[Azure Developer CLI]() also now as `azd` is an open-source tool that accelerates the process of building cloud apps on Azure. This can be used to create a new application from a template, deploy it to Azure, and manage it.
+[Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/) also now as `azd` is an open-source tool that accelerates the process of building cloud apps on Azure. This can be used to create a new application from a template, deploy it to Azure, and manage it.
 
 A lot of templates are available publicly on GitHub, you can find them [here](https://github.com/topics/azd-templates). You can also create your own templates and use them with `azd`. These templates include application code, and reusable infrastructure as code assets.
 
