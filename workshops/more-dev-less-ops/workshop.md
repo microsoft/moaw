@@ -7,8 +7,10 @@ description: This workshop will cover Microsoft Dev Box, Az Dev CLI.
 level: beginner                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors:                                # Required. You can add as many authors as needed      
   - Damien Aicheh
+  - Lucas Peirone
 contacts:                               # Required. Must match the number of authors
   - '@damienaicheh'
+  - '@lucas.peirone'
 duration_minutes: 90
 tags: azure, Azure Dev Center, Microsoft Dev Box, Azure Deployment Environment, Az Dev CLI
 navigation_levels: 3
@@ -166,25 +168,91 @@ If you successfully connect, you should see the windows desktop.
 
 This is a Windows 11 machine with tools like Visual Studio Code, Visual Studio, Azure CLI are already installed. You can use this machine to develop your application. 
 
-### Update an application
+### Update an API
 
-You will now update an existing application. Clone this repository: https://github.com and open it using Visual Studio.
+You will now update an existing application with your Dev Box.
 
-You will see a simple ASP.NET Core application. This application is a simple todo list API. You can run it locally using Visual Studio.
+Open Visual Studio Code, click the `Source Control` icon, select `Clone Repository` and copy pass the following Git repository URL: https://github.com/damienaicheh/MoreDevLessOpsApi
 
-![Todo List API](./assets/todo-list-api.png)
+![Clone Git repository](./assets/clone-git.png)
 
-The goal of this workshop is to add a new endpoint to this API to get the detail of todo items. For demonstration purpose, the list of todo items are provided statically.
+Save it in your `Desktop` folder and open it with Visual Studio Code.
+
+Once the repository is opened, you will see the following screen:
+
+![More Dev Less Ops API](./assets/more-dev-less-ops-api-vs-code.png)
+
+You will see a simple dotnet minimal API application. This application is a simple todo list API.
+
+Run it locally by opening a new terminal and run the following commands:
+
+```bash
+# Restore the nuget packages
+dotnet restore
+
+# Run the application
+dotnet run
+```
+
+If you open a new browser tab and go to http://localhost:5142/swagger, you will see the following screen:
+
+![Swagger Overview](./assets/swagger-overview.png)
+
+This minimal API use an in-memory database to store the todo items. This means that if you restart the application, the todo items will be lost.
+
+The goal now, is to add two new endpoints to this API:
+- one to get all the todo items by calling `/todos`
+- one to get all the completed todo items by calling `/todos/complete`
+
+Open the `Program.cs` file and try to do it.
 
 <details>
 <summary>Toggle solution</summary>
 
-Open the `TodoController.cs` file and add the following code:
+To get all the todo items, you can use the following code:
 
 ```csharp
+app.MapGet("/todos", async (TodoDb db) =>
+    await db.Todos.ToListAsync());
 ```
 
+To get all the completed todo items, you can use the following code:
+
+```csharp
+app.MapGet("/todos/complete", async (TodoDb db) =>
+    await db.Todos.Where(t => t.IsComplete).ToListAsync());
+
+```
+
+Run the application again with `dotnet run` and go to http://localhost:5142/swagger. You will see the new endpoints:
+
+![Swagger New Endpoints](./assets/swagger-new-endpoints-added.png)
+
+Let's quickly test the new endpoints.
+
+Select the `/Post` endpoint and click on `Try it out` :
+
+![Swagger Post call](./assets/swagger-post-call.png)
+
+Try to add a new todo item and set `isComplete` to `true`.
+
+![Swagger Post call](./assets/swagger-post-new-todo.png)
+
+Now call the `/todos/complete` endpoint and you will see it in the list.
+
+![Swagger Todos Completed](./assets/swagger-todos-completed.png)
+
+With the same process, create a new one but set `isComplete` to `false`. Call the `/todos` endpoint and you will see the two items in the list.
+
+![Swagger All Todos](./assets/swagger-all-todos.png)
+
+If you call the `/todos/complete` endpoint again, you will see only the completed todo item.
+
+Remember if you restart the application, the todo items will be lost.
+
 </details>
+
+You now have a new version of your API. The next step is to deploy it on Azure on your own.
 
 ## Azure Deployment Environment
 
@@ -204,13 +272,19 @@ The infrastructure will be deployed in a few minutes in the correct subscription
 
 ### Create a new environment
 
-Back to your application, you will now deploy it on a new environment. To do so, you need to spin up a new environment using Azure Deployment Environment.
+Back to your application, you will now deploy it on a new WebApp environment. To do so, you need to spin up a new environment using Azure Deployment Environment.
 
 Go to the [Dev Portal](https://devportal.microsoft.com/) and click on `+ New` button then on `New environment`:
 
 ![New Environment](./assets/dev-portal-new-environment.png)
 
-On the right panel, give a name to your environment select an environment type, for instance `dev` and then select the template you want to use to deploy the infrastructure. In your case, you will use the `Todo List API` template.
+On the right panel, give a name to your environment with this naming convention: `app<your-user-number>`, select `dev` for the environment type and `WebApp` as a definition.
+
+![Create Environment](./assets/create-env.png)
+
+Then click on the `Next` button and give the same name to the WebApp (`app<your-user-number>`)
+
+![Create Environment Web App](./assets/create-env-webapp.png)
 
 Give it a few minutes to deploy the infrastructure. Once it's done, you will see the environment in the list of environments:
 
@@ -218,23 +292,64 @@ Give it a few minutes to deploy the infrastructure. Once it's done, you will see
 
 If you go back to Azure Portal, in the `Project` resource you will see in the `Environments` section the new environment created:
 
+<div class="info" data-title="Note">
+
+> It can take some time for the environment to be visible in the Azure Portal. So if you don't see it, wait a few minutes and refresh the page.
+> Continue the lab and come back later to check if it's visible.
+
+</div>
+
 ![Environment list](./assets/project-environment-list.png)
 
-### Deploy your application
+### Deploy your API
 
-Now that you have an environment ready, you can deploy your application on it. To do so, you have multiple possibilities. You can use the Azure CLI or the Visual Studio menus.
+Now that you have an environment ready, you can deploy your application on it. To do so, let's first add the Azure extension for Visual Studio Code.
 
-To keep things more visual, you will use the Visual Studio menus. Right click on the project and select `Publish...`:
+Select the `Extensions` icon on the left panel and search for `Azure`:
 
-![Publish](./assets/publish.png)
+![Azure Tools](./assets/azure-tools.png)
 
-Select the App Service that you just created and click on `Publish`:
+Click on `Install` and wait for the installation to be done.
 
-![Publish](./assets/app-service-publish.png)
+Once it's done, you will see the Azure icon on the left panel, select it and click on `Sign in to Azure...`.
 
-Once the deployment is done, you can go to the URL of your application and see the result. You should be able to call the API and get the list of todo items and the details for each one of them.
+A web page will open and you will be asked to sign in to your Azure account. Once it's done, you will see your subscription in the list.
+
+Search for the App Service that start with `app<your-user-number>`:
+
+![App Service](./assets/app-service.png)
+
+Select it and if necessary install the App Service extension: 
+
+![App Service Extension](./assets/app-service-extension.png)
+
+Then right click on the App Service resource and select `Deploy to Web App...`:
+
+![Deploy to Web App](./assets/deploy-to-web-app.png)
+
+Select the folder of your application:
+
+![Select folder](./assets/select-folder.png)
+
+Then click on `Add config`:
+
+![Add config](./assets/add-config.png)
+
+Finally click on `Deploy`:
+
+![Deploy](./assets/deploy.png)
+
+Once the deployment is done, you will see a notification in the Terminal:
+
+![Deployed](./assets/terminal-informations.png)
 
 Congratulations, you just deployed your application on Azure using Azure Deployment Environment.
+
+In the App Service resource, right click and select `Browse Website`:
+
+![Browse Website](./assets/browse-website.png)
+
+Go to the `/swagger` endpoint and you will see the same Swagger UI you previously used. You can now test your API on Azure.
 
 As you saw, you didn't have to deal with the infrastructure part of the application. You just had to select the template you want to use and the environment type. The infrastructure was deployed in a few minutes and you were able to deploy your application on it. This is a huge time saver for developers.
 
