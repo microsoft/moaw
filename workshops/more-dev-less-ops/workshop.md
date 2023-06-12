@@ -16,35 +16,69 @@ navigation_levels: 3
 
 # More Dev Less Ops Workshop
 
-Welcome to this Workshop. In this lab, you will discover how Microsoft move towards to help developers to be more productive and focus on their code. You will discover two services: Microsoft Dev Box and Azure Deployment Environment.
+Not so long ago, developing an entire application was a matter of using a single software stack to code, and then running a single executable on a single machine.
+This technique evolved over the years with density-related technologies (containers, paravirtualization...) and architectural tricks (gateways, stranglers...), while enforcing some degree of "separation of concerns" through DevOps and GitOps.
+
+Today, we use the term "cloud native application" to describe an adaptive solution to an ever-changing set of requirements. These requirements can be as simple as a fluctuation in traffic that requires appropriate scaling, or a functional change that requires new code.
+In most cases, the flexibility required by a cloud native application will lead to the use of microservices and a variety of public Cloud backing services. This is the foundation of the modern "*Lego*" approach to building applications.
+
+But a major drawback of this approach is the sheer complexity of development. Multiple teams using multiple stacks, a single feature spanning multiple services, and developers needing to know exactly which cloud services will be used in production in order to emulate them. This last point is rather ironic, since the developer has little to no control over the cloud environment by the very design of current DevOps techniques.
+
+Therefore, a new evolution of these techniques is needed, and we'll see a glimpse of it in this workshop.  
 
 During this workshop you will have the instructions to complete each steps, try to find the answer before looking at the solution. Don't worry, this is a step by step lab, you will be guided through it.
 
 ## Prerequisites
 
-To access the resources of this workshop, you will have access to an Azure subscription.
+Just a little curiosity! 
+A temporary Azure subscription will be provided for you to follow along. 
+
+## A dev-centric approach
+
+Giving the developer more power over the cloud environment is all well and good, but how do you do it in a way that is enterprise-grade ?
+Moreover, the skill set required to code is quite different from the skill set required to build and manage an infrastructure, so can we really just throw the OPS team out of the picture ?
+
+**No, and that's not the point.**
+
+The main purpose of this new method is to be as efficient as possible, and everyone needs to do their part.
+
+Imagine you're building a Web application. This is a fairly common scenario, and on Azure there are several ways to do it.
+Azure App Services, Static Web App, Azure Function, Azure Container Apps, a single public blob inside a storage account ? 
+Each solution has its pros and cons. Maybe some are compatible with your company's trust and control policies, while others aren't. At the very least, it should be consistent across applications.
+
+But again, these are all architectural concerns, and it *should* not matter to the developer.
+But it kind of does.
+In fact, architecture choices have a huge impact on the development process, both in terms of deployment, of course, but also during the dev&test phase. 
+As applications become more distributed, integration or end-to-end testing becomes more complicated. Runtimes, backing services (object storage, messaging...), all of these have to be emulated or run locally for the application to run at all.
+As a result, testing a new feature can be a tedious process.  
+
+The goal of this workshop is to introduce you to a part of what Microsoft calls the *Dev Continuum*. Two main concerns will be addressed :
+- Speed of nboarding with Azure DevBox
+- Consistency with Azure Development Environment
 
 ## A bit of context
 
 When you arrive a new company, you need to be onboarded. This is the same for developers. They need to be onboarded to the company and to the project they will work on. This is a long process that can take days or weeks. Moreover, the developer needs to have a computer with all the tools needed to develop the application. 
 
-This scenario is not the best for the developer and the company. An other reccurent problem for developers is for deploying their application without waiting for the IT team to create the infrastructure. This is a long process that can take days or weeks. 
+This scenario is not the best for either the developer or the company. Another recurring problem for developers is deploying their application without waiting for the IT team to build the infrastructure. This is a lengthy process that can take days or weeks.
 
-Based on this report, Microsoft has created two services to help developers to be more productive, autonomous and focus on their code. Those services are Microsoft Dev Box and Azure Deployment Environment.
+To address this, Microsoft created two services to help developers be more productive, more autonomous, and more focused on their code. These services are [Microsoft Dev Box](https://azure.microsoft.com/en-us/products/dev-box) and [Azure Deployment Environment](https://learn.microsoft.com/en-us/azure/deployment-environments/overview-what-is-azure-deployment-environments).
 
 ## Microsoft Dev Box
 
 ### What is Microsoft Dev Box?
 
-To solve this problem, Microsoft has created a new service called Microsoft Dev Box. This service allows developers to create on-demand, high-performance, secure, ready-to-code, project-specific workstations in the cloud. It is a fully managed service that provides pre-configured development environments accessible from anywhere.
+This service allows developers to create on-demand, high-performance, secure, code-ready, project-specific workstations in the Cloud. It is a fully managed service that provides pre-configured development environments that can be accessed from anywhere.
 
 The principle is simple, you have a project with specific technologies, so you need to have a computer with all the tools needed to develop the application. This is what Microsoft Dev Box provides. 
 
-Based on this, the IT team can provide through a Dev Center multiple Dev Box definitions with all the tools needed to develop different projects type. Then, when needed the developer can just create a new Dev Box based on the Dev Box definition. This Dev Box will be created in a few minutes and the developer can start to work on it.
+Now, cloud-based workstations have been around for a while.
 
-The Dev Box can be a Windows 10 or 11 with a specific configuration. It can be accessed from Windows, Mac, Android, iOS or a web browser.
+What is new is the task-based workstation approach. A workstation template - a dev box definition - is attached to a project.  When assigned to that project, a developer can then request a workstation on their own through a dedicated website, greatly reducing the time it takes to set up their environment.
 
-The different tools provided in the Dev Box definition can be declared inside a `devbox.yaml` file (Actually in private preview). This file allows you to install software with the `WinGet` or `Chocolatey` package managers, as well as setting common OS settings like enabling Windows Features and configuring applications like installing Visual Studio extensions.
+The Dev Box can be either a Windows 10 or 11 with a specific configuration. It can be accessed from through any RDP client.
+
+The different tools provided in the Dev Box definition can be declared inside a `devbox.yaml` file (Currently in private preview (06/2023)). This file allows you to install software with the [`WinGet`](https://github.com/microsoft/winget-cli) or [`Chocolatey`](https://chocolatey.org/) package managers, as well as setting common OS settings like enabling Windows Features and configuring applications like installing Visual Studio extensions.
 
 In this workshop, you will use a pre-configured Dev Box environment to create a new application.
 
@@ -54,7 +88,7 @@ To start this workshop, let's have a look at the Microsoft Dev Box service from 
 
 In the search bar on top, type `Dev Box` and select the `Microsoft Dev Box` service. On the left, you will find all the dev centers and projects of your subscription. 
 
-You should see this king of screen (the name of the resource group will be different on your subscription):
+You should see this kind of screen (the name of the resource group will be different on your subscription):
 
 ![Microsoft Dev Box Dev Centers](./assets/microsoft-dev-box-dev-center.png)
 
@@ -62,7 +96,7 @@ You should see this king of screen (the name of the resource group will be diffe
 
 ### What is a Dev Center?
 
-The Dev Center is the contol tower of the IT team to have an overview of all the Dev Boxes, Catalogs, Environments and Projects. It is the place where all the resources needed by the developers are defined.
+The Dev Center is the IT team's control tower, providing an overview of all Dev Boxes, catalogs, environments and projects. It is the place where all the resources needed by the developers are defined.
 
 Click on the `Dev Centers` tab on the left and select the first one of the list. You will be redirected to the resource detail page.
 
@@ -78,13 +112,11 @@ Each of those resources has a specific role in the Dev Center.
 
 #### Dev Box definitions
 
-A Dev Box definition is a preconfigured Virtual Machine with a specific configuration ready to use by developers. It can be a Windows 10 or 11 with a specific configuration. It can be accessed from Windows, Mac, Android, iOS or a web browser.
-
-You can give a specific amount of RAM, CPU, disk size and disk type to the Dev Box. You can also specify a custom image stored in your Azure compute gallery.
+A Dev Box definition is a preconfigured Virtual Machine with a specific configuration ready to use by developers. You can assign a specific amount of RAM, CPU, disk size and disk type to each Dev Box definition. In addition to the standard Windows image, you can use any ["sysprepped"](https://learn.microsoft.com/en-us/azure/virtual-machines/windows/prepare-for-upload-vhd-image) image of your choice.
 
 All those definitions will be available for the developers to create a new Dev Box based on it, in a few minutes. A developer portal is provided to the developers to create a new Dev Box based on the Dev Box definition. 
 
-The Dev Box is entirely integrated in your souscription. You can use your Azure AD credentials to connect to the Dev Box. You can also define rules to stop the Dev Box automatically after the working hours.
+The Dev Box is entirely integrated in your subscription. You can use your Azure AD credentials to connect to the Dev Box. You can also define rules to stop the Dev Box automatically after the working hours.
 
 You will see the dedicated developer experience later in this workshop.
 
