@@ -1,7 +1,7 @@
 ---
 published: true
 type: workshop
-title: Serverless Workshop
+title: Product Hands-on Lab - Serverless Workshop
 short_title: Serverless Overview
 description: This workshop will cover multiple serverless services that you will use to build a complete real world scenario.
 level: beginner # Required. Can be 'beginner', 'intermediate' or 'advanced'
@@ -14,7 +14,7 @@ contacts: # Required. Must match the number of authors
   - "@justrebl"
   - "@ikhemissi"
 duration_minutes: 180
-tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email
+tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, csu
 navigation_levels: 3
 sections_title:
   - The Serverless Workshop
@@ -25,17 +25,6 @@ sections_title:
 Welcome to this Azure Serverless Workshop. You'll be experimenting with Azure Serverless services in multiple labs to achieve a real world scenario. Don't worry, even if the challenges will increase in difficulty, this is a step by step lab, you will be guided through the whole process.
 
 During this workshop you will have the instructions to complete each steps. It is recommended to search for the answers in provided resources and links before looking at the solutions placed under the 'Toggle solution' panel.
-
-<!--  TODO : Remind what Serverless is : Event based (explain what we have : EVG , EH, SB), Main Compute Services, Storage Account, Cognitive Services, Data Services not taken into account for the workshop.
- "Did you know that basic storage accounts are one of the first serverless"
-      Resources :
-      - https://learn.microsoft.com/en-us/dotnet/architecture/serverless/azure-serverless-platform
-      - https://azure.microsoft.com/en-us/solutions/serverless/
-      Pourquoi on présenter Serverless  -->
-
----
-
-# The Workshop
 
 ## Prerequisites (15 minutes)
 
@@ -93,19 +82,22 @@ The goal of the full lab is to upload an audio file to Azure and retrieve the tr
 
 Here is a diagram to illustrate the flow:
 
-![Hand's On Lab Architecture](assets/hands-on-lab-architecture.png)
+![Hand's On Lab Architecture](assets/architecture-overview.svg)
 
-1. A user uploads an [audio file](assets/whatstheweatherlike.wav) from the Web application
-2. The web application sends an HTTP request to APIM (API Management) which is a facade for multiple APIs
-3. An Azure Function which acts as an API will process the request and upload the file to a Storage Account
-4. When the file is uploaded the Event Grid service will detect it and publish the "Blob created event"
-5. The Event Hub System Topic will trigger a Logic App
-6. The Logic App retrieves the uploaded audio file
-7. The audio file is sent to Azure Cognitive Services
-8. The speech to text service will process the file and return the result to the Logic App
-9.  The Logic App will then store the transcript of the audio file in a Cosmos DB database
-10.  A second Azure Function will be triggered by the update in CosmosDB. It will fetch the transcript from CosmosDB and send it to Web Pub/Sub
-11.  Finally Web Pub/Sub will notify the Web Application about the new transcript using Websockets
+1. The user loads the demo Web Application which sends an HTTP GET request to APIM (API Management) to fetch existing transcriptions. APIM will be used as a facade for multiple APIs.
+2. The request is forwarded from APIM to an Azure Function handling transcription fetching
+3. The Azure Function retrieves the latest transcriptions stored in Cosmos DB, and returns them to the Web Application
+4. The user uploads an [audio file](assets/whatstheweatherlike.wav) from the Web application
+5. The web application sends a second HTTP request to APIM
+6. An Azure Function handling uploads will process the request and upload the file to a Storage Account
+7. When the file is uploaded the Event Grid service will detect it and publish the "Blob created event"
+8. The Event Grid System Topic will trigger a Logic App
+9. The Logic App retrieves the uploaded audio file
+10. The audio file is sent to Azure Cognitive Services. The speech to text service will process the file and return the result to the Logic App
+11. The Logic App will then store the transcript of the audio file in a Cosmos DB database
+12. A second Azure Function will be triggered by the update in CosmosDB.
+13. The same Azure Function will fetch the transcript from CosmosDB and send it to Web Pub/Sub
+14. Finally Web Pub/Sub will notify the Web Application about the new transcript using Websockets
 
 <div class="info" data-title="Note">
 
@@ -172,7 +164,7 @@ With everything ready let's start the lab 🚀
 
 For this first lab, you will focus on the following scope :
 
-![Hand's On Lab Architecture Lab 1](assets/hands-on-lab-architecture-lab-1.png)
+![Hand's On Lab Architecture Lab 1](assets/architecture-lab1.svg)
 
 ## Create a resource group (5 minutes)
 
