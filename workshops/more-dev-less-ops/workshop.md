@@ -374,4 +374,4 @@ A lot of templates are available publicly on GitHub, you can find them [here](ht
 
 The `azd` tool can be use in combination with Azure CLI to support your Azure workflow.
 
-By the end of this workshop, you can try to have your own template and use it to deploy your application on Azure.
+By the end of this workshop, you can try to integrate `azd` to use it to deploy your application on Azure. You will find the procedure [here](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/make-azd-compatible?pivots=azd-create).
