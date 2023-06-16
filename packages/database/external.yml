@@ -44,7 +44,7 @@
   level: beginner
   tags: nestjs, api, azure, cosmosdb, storage, functions
 
-- title: Product Hands-on Lab APIM
+- title: Product Hands-on Lab - APIM
   url: https://azure.github.io/apim-lab/
   github_url: https://github.com/Azure/apim-lab
   language: en
@@ -193,7 +193,7 @@
   level: intermediate 
   tags: container, docker, kubernetes, azure, aro, ocp, openshift, redhat, csu
 
-- title: Product Hands-on Lab App Service
+- title: Product Hands-on Lab - App Service
   url: https://appservicebuild.z28.web.core.windows.net/
   github_url: https://github.com/franckfotso1/app-service-workshop    
   language: fr
@@ -207,4 +207,4 @@
   duration_minutes: 120
   audience: students, pro devs, ops, admin
   level: beginner 
-  tags: azure, csu, web apps, api apps, app service plan, container, docker, app service
+  tags: azure, web apps, api apps, app service plan, container, docker, app service, csu

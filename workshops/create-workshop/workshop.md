@@ -117,8 +117,8 @@ tags: javascript, api, node.js          # Required. Tags for filtering and searc
 #wt_id: <cxa_tracking_id>                # Optional. Set advocacy tracking code for supported links
 #oc_id: <marketing_tracking_id>          # Optional. Set marketing tracking code for supported links
 #sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
-  - Section 1 title
-  - Section 2 title
+#  - Section 1 title
+#  - Section 2 title
 ---
 ```
 
