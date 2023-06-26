@@ -32,7 +32,7 @@ const parse: ExternalSourceParser = async function parse() {
         type: 'workshop',
         title,
         description: description?.trim(),
-        url: path.join(baseUrl, path.dirname(url)).replace('https:/', 'https://'),
+        url: path.join(baseUrl, getWorkshopPath(url)).replace('https:/', 'https://'),
         github_url: path.join(githubBaseUrl, url).replace('https:/', 'https://'),
         video_url: parseLinkOrUndefined(video)?.url,
         duration_minutes: parseDuration(duration),
@@ -92,6 +92,13 @@ function parseLink(str: string) {
     return { title: match[1]?.trim(), url: match[2]?.trim() };
   }
   throw new Error(`Failed to parse link from "${str}"`);
+}
+
+function getWorkshopPath(url: string) {
+  if (url.toLowerCase().endsWith('.md')) {
+    return path.dirname(url);
+  }
+  return url;
 }
 
 function parseLinkOrUndefined(str: string) {
