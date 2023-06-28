@@ -2,7 +2,7 @@
 published: true
 type: workshop
 title: Product Hands-on Lab - Serverless Workshop
-short_title: Serverless Overview
+short_title: Serverless Workshop
 description: This workshop will cover multiple serverless services that you will use to build a complete real world scenario.
 level: beginner # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors: # Required. You can add as many authors as needed
@@ -17,7 +17,7 @@ duration_minutes: 180
 tags: azure, csu, azure functions, logic apps, event grid, key vault, cosmos db, email, app service, web pubsub, static web app
 navigation_levels: 3
 sections_title:
-  - The Serverless Workshop
+  - Azure Serverless Workshop
 ---
 
 # Azure Serverless Workshop
@@ -39,13 +39,16 @@ Before starting this workshop, be sure you have:
 
 <div class="task" data-title="Task">
 
-> Instructions and solutions will be given for the Azure CLI, but you can also use the Azure Portal if you prefer. The inputs and parameters to select will be defined, all the rest can remain as default as it has no impact on the scenario.
+> You will find the instructions and expected configurations for each Lab step in these yellow "Task" boxes.
+> Inputs and parameters to select will be defined, all the rest can remain as default as it has no impact on the scenario.
 >
 > Log into your Azure subscription locally using Azure CLI and on the [Azure Portal][az-portal] using your own credentials.
+> Instructions and solutions will be given for the Azure CLI, but you can also use the Azure Portal if you prefer.
 
 </div>
 
 <details>
+
 <summary>Toggle solution</summary>
 
 ```bash
@@ -94,7 +97,7 @@ Here is a diagram to illustrate the flow:
 1. The Event Grid System Topic will trigger a Logic App
 1. The Logic App retrieves the uploaded audio file
 1. The audio file is sent to Azure Cognitive Services. The speech to text service will process the file and return the result to the Logic App
-1. The Logic App will then store the transcript of the audio file in a Cosmos DB database
+1. The Logic App will then store the transcript of the audio file in a Cosmos DB Database
 1. A second Azure Function will be triggered by the update in CosmosDB.
 1. The same Azure Function will fetch the transcript from CosmosDB and send it to Web Pub/Sub
 1. Finally Web Pub/Sub will notify the Web Application about the new transcript using Websockets
@@ -253,16 +256,18 @@ For this first lab, you will focus on the following scope :
 
 Let's start by creating the resource group for this Hand's On Lab. The resource group is a logical structure to store Azure components used to group your Azure resources.
 
-<div class="info" data-title="Note">
+Remember, the naming convention for a resource groups will be: `rg-<environment>-<region>-<application-name>-<owner>-<instance>`
 
-> For the purpose of this lab we will create all the resources in the same region, for instance France Central (francecentral) or West Europe (westeurope).
+<div class="task" data-title="Tasks">
+
+> - Create a `resource group` in the region of your choice.
 
 </div>
 
-Remember, the naming convention for a resource groups will be: `rg-<environment>-<region>-<application-name>-<owner>-<instance>`
+<div class="tip" data-title="Tips">
 
-<div class="tip" data-title="Resources">
-
+> For the purpose of this lab we will create all the resources in the same region, for instance France Central (francecentral) or West Europe (westeurope).
+>
 > [Resource Groups][resource-group]
 
 </div>
@@ -290,20 +295,19 @@ The Azure storage account is used to store data objects, including blobs, file s
 
 With the resource group ready, let's create a storage account with a container named `audios` that will store all audios. The naming convention for a Storage Account is: `st<environment><region><application-name><owner><instance>`.
 
-<div class="info" data-title="Note">
+<div class="task" data-title="Tasks">
 
-> Azure Storage Account names do not accept hyphens and cannot exceed a maximum of 24 characters.
+> - Choose a Locally redundant storage (`Standard LRS`).
+>
+> - Once the storage account is ready, create a blob container named `audios` with `private access`.
 
 </div>
 
-Choose a Locally redundant storage (Standard LRS).
+<div class="tip" data-title="Tips">
 
-Once the storage account is ready, create a blob container named `audios` with `private access`.
+> Azure Storage Account names do not accept hyphens and cannot exceed a maximum of 24 characters.
 
-<div class="tip" data-title="Resources">
-
-> [Storage Account][storage-account]<br>
-> [Storage Account Container][storage-account-container]
+> [Storage Account][storage-account]<br> > [Storage Account Container][storage-account-container]
 
 </div>
 
@@ -368,27 +372,25 @@ You can create Event Grid System Topics :
 - Directly from the resource you want to monitor (for instance a storage account) using the `Events` menu. A system topic will be created automatically with a unique name and will be linked to the resource.
 - Manually, using the `System Topics` resource type in the azure portal, or thanks to the Azure CLI. This will allow you to define the name of the system topic and the resource it will be linked to.
 
-For this step, creating the Event Grid System Topic will be enough, as the actual `event subscription` and `event filters` will be defined and automatically created by the Logic App trigger setup [later on](workshop/serverless-overview/?step=2#trigger-the-logic-app).
+For this step, creating the Event Grid System Topic will be enough, as the actual `event subscription` and `event filters` will be defined and automatically created by the Logic App trigger setup [later on](workshop/serverless-overview/?step=1#trigger-the-logic-app-20-minutes).
 
-Here are the parameters to use to create the Event Grid System Topic:
+<div class="task" data-title="Tasks">
 
-- Topic type : `Microsoft.Storage.StorageAccounts`
-- Source : Select the storage account created in the previous steps (`stdevhol...` in our lab)
-- Location : Must be the same location as the storage account
-
-The naming convention for an Event Grid System Topic is: `egst-audio-storage-<environment>-<region>-<application-name>-<owner>-<instance>`
-
-<div class="tip" data-title="tip">
-
-> To get access to the identifier of a resource, go to the `Overview` tab and click en `Json View` on the top right and you will see it.
+> Create an Event Grid System Topic with the following parameters :
+>
+> - Topic type : `Microsoft.Storage.StorageAccounts`
+> - Source : Select the storage account created in the previous steps (`stdevhol...` in our lab)
+> - Location : Must be the same location as the storage account
 
 </div>
 
-<div class="tip" data-title="Resources">
+The naming convention for an Event Grid System Topic is: `egst-audio-storage-<environment>-<region>-<application-name>-<owner>-<instance>`
 
-> [Choose between Azure Messaging Services][azure-messaging-services]<br>
-> [Event Grid System Topic][event-grid-system-topic]<br>
-> [Event Grid Topic Subscription][event-grid-topic-subscription]
+<div class="tip" data-title="Tips">
+
+> To get access to the identifier of a resource, go to the `Overview` tab and click en `Json View` on the top right and you will see it.
+
+> [Choose between Azure Messaging Services][azure-messaging-services]<br> > [Event Grid System Topic][event-grid-system-topic]<br> > [Event Grid Topic Subscription][event-grid-topic-subscription]
 
 </div>
 
@@ -462,10 +464,9 @@ Below is the `definition template` to save locally in a JSON file named `my-blan
 }
 ```
 
-<div class="tip" data-title="Resources">
+<div class="tip" data-title="Tips">
 
-> [Azure CLI Extension][azure-cli-extension]<br>
-> [Azure Logic App][azure-logic-app]
+> [Azure CLI Extension][azure-cli-extension]<br> > [Azure Logic App][azure-logic-app]
 
 </div>
 
@@ -535,10 +536,9 @@ Here you can download a basic audio file to validate and test the logic app trig
 If you have set everything as expected, you should see the following entry in the Logic App's run history after uploading the example file in your storage account audios container :
 ![logic-app-successful-execution](assets/logic-app-successful-execution.png)
 
-<div class="tip" data-title="Resources">
+<div class="tip" data-title="Tips">
 
-> [Logic Apps Event Grid Trigger][logic-apps-event-grid-trigger]<br>
-> [Event Grid Subject Filter][event-grid-subject-filtering]
+> [Logic Apps Event Grid Trigger][logic-apps-event-grid-trigger]<br> > [Event Grid Subject Filter][event-grid-subject-filtering]
 
 </div>
 
@@ -592,7 +592,7 @@ This will help us to retrieve the actual content of the file and pass it on to t
 
 Based on below resources and the previous definition step, you should be able to complete this task.
 
-<div class="tip" data-title="tip">
+<div class="tip" data-title="Tips">
 
 > To help you troubleshoot the flow, you can use the `Run History` tab and check the `Inputs` and `Outputs` of each operation :
 > ![Logic App History Troubleshooting](assets/logic-app-history-troubleshooting.png)
@@ -601,8 +601,7 @@ Based on below resources and the previous definition step, you should be able to
 
 <div class="tip" data-title="Resources">
 
-> [Logic Apps Parse Json][logic-app-parse-json]<br>
-> [Logic App Storage Account Action][logic-app-storage-action]
+> [Logic Apps Parse Json][logic-app-parse-json]<br> > [Logic App Storage Account Action][logic-app-storage-action]
 
 </div>
 
@@ -682,12 +681,9 @@ The naming conventions are:
 - Cognitive services: `cog-<environment>-<region>-<application-name>-<owner>-<instance>`
 - Key Vault: `kv-<environment>-<region>-<application-name>-<owner>-<instance>`
 
-<div class="tip" data-title="Resources">
+<div class="tip" data-title="Tips">
 
-> [What are Cognitive Services][cognitive-services]<br>
-> [Cognitive service Apis][cognitive-services-apis]<br>
-> [Cognitive Service Getting Started][cognitive-service-api]<br>
-> [Create a Key Vault][key-vault]
+> [What are Cognitive Services][cognitive-services]<br> > [Cognitive service Apis][cognitive-services-apis]<br> > [Cognitive Service Getting Started][cognitive-service-api]<br> > [Create a Key Vault][key-vault]
 
 </div>
 
@@ -758,10 +754,9 @@ Now we can add the last step of the Logic App flow that will store the transcrip
 
 ![Logic App Cosmos DB Action](assets/logic-app-hol-cosmosDB.png)
 
-<div class="tip" data-title="Resources">
+<div class="tip" data-title="Tips">
 
-> [Serverless Cosmos DB][cosmos-db]<br>
-> [Logic App Cosmos DB action][logic-app-cosmos-db-action]
+> [Serverless Cosmos DB][cosmos-db]<br> > [Logic App Cosmos DB action][logic-app-cosmos-db-action]
 
 </div>
 
@@ -870,14 +865,9 @@ For the storage account associated to it: `stfunc<environment><region><applicati
 
 </div>
 
-<div class="tip" data-title="Resources">
+<div class="tip" data-title="Tips">
 
-> [Azure Functions][azure-function]<br>
-> [Azure Function Core Tools][azure-function-core-tools]<br>
-> [Basics of Azure Functions][azure-function-basics]<br>
-> [HTTP Triggered Azure Function][azure-function-http]<br>
-> [Blob Output Binding][azure-function-blob-output]<br>
-> [Azure Functions Binding Expressions][azure-function-bindings-expression]
+> [Azure Functions][azure-function]<br> > [Azure Function Core Tools][azure-function-core-tools]<br> > [Basics of Azure Functions][azure-function-basics]<br> > [HTTP Triggered Azure Function][azure-function-http]<br> > [Blob Output Binding][azure-function-blob-output]<br> > [Azure Functions Binding Expressions][azure-function-bindings-expression]
 
 </div>
 
@@ -1065,7 +1055,6 @@ The Azure Function API created in the last step of this Lab also paves the way t
 
 The entire architecture is `serverless` : Azure compute resources will only be consumed when a new audio file is uploaded via the Azure Function API. You can leave the resources for a few days to see that _no compute resources are billed_ when no audio file is uploaded.
 
-
 [az-portal]: https://portal.azure.com
 [azure-function]: https://learn.microsoft.com/en-us/cli/azure/functionapp?view=azure-cli-latest
 [azure-function-core-tools]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash
@@ -1083,7 +1072,6 @@ On this second lab, we will focus on getting back the transcriptions of audio fi
 Previously processed transcriptions will be retrieved using HTTP GET requests whereas new transcriptions will be retrieved in real-time using websockets.
 
 ![Achitecture scope of Lab 2](assets/architecture-lab2.svg)
-
 
 ## Getting transcriptions on-demand (30 minutes)
 
@@ -1115,9 +1103,7 @@ This function will be used to show all existing transcriptions on the demo Web A
 
 <div class="tip" data-title="Resources">
 
-> [Cosmos DB input binding][cosmosdb-input-binding]<br> 
-> [OFFSET LIMIT clause in Cosmos DB][offset-limit-clause-in-cosmosdb]<br> 
-> [Cosmos DB connection string][cosmosdb-connection-string]
+> [Cosmos DB input binding][cosmosdb-input-binding]<br> > [OFFSET LIMIT clause in Cosmos DB][offset-limit-clause-in-cosmosdb]<br> > [Cosmos DB connection string][cosmosdb-connection-string]
 
 </div>
 
@@ -1200,6 +1186,7 @@ The flow will be the following:
 <div class="task" data-title="Task">
 
 > Create an instance of Azure Web PubSub:
+>
 > - SKU: Free
 > - Naming convention: `wps-<environment>-<region>-<application-name>-<owner>-<instance>`
 
@@ -1207,8 +1194,7 @@ The flow will be the following:
 
 <div class="tip" data-title="Resources">
 
-> [Azure Web PubSub Overview][azure-web-pubsub]<br> 
-> [How to create a Web PubSub instance][create-web-pubsub-instance]
+> [Azure Web PubSub Overview][azure-web-pubsub]<br> > [How to create a Web PubSub instance][create-web-pubsub-instance]
 
 </div>
 
@@ -1247,8 +1233,7 @@ The next step is to use the newly created Web PubSub instance to publish new tra
 
 <div class="tip" data-title="Resources">
 
-> [Cosmos DB input binding][cosmosdb-input-binding]<br> 
-> [Web PubSub output binding][web-pubsub-output-binding]
+> [Cosmos DB input binding][cosmosdb-input-binding]<br> > [Web PubSub output binding][web-pubsub-output-binding]
 
 </div>
 
@@ -1334,7 +1319,6 @@ az webpubsub key show \
 
 </details>
 
-
 [cosmosdb-input-binding]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-input?tabs=python-v1%2Cin-process%2Cfunctionsv2&pivots=programming-language-python
 [offset-limit-clause-in-cosmosdb]: https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/query/offset-limit
 [cosmosdb-connection-string]: https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/how-to-dotnet-get-started?tabs=azure-cli%2Cwindows#retrieve-your-account-connection-string
@@ -1343,19 +1327,19 @@ az webpubsub key show \
 [web-pubsub-output-binding]: https://learn.microsoft.com/en-us/azure/azure-web-pubsub/reference-functions-bindings?tabs=csharp#output-binding
 [publish-and-consume-from-web-pubsub]: https://learn.microsoft.com/en-us/azure/azure-web-pubsub/tutorial-pub-sub-messages
 
+## Lab 2 : Summary
 
-## Lab 2 : Summary 
+By now you should have a solution that :
 
-By now you should have a solution that : 
 - Uploads audio files to a Storage Account
 - Transcribes the uploaded audio file and displays it in a web interface in real-time
 - Retrieves the latest 50 transcriptions using a RESTful API
 
-Once you're done with this lab you can delete the resource group you created at the beginning. 
+Once you're done with this lab you can delete the resource group you created at the beginning.
 To do so, click on `delete resource group` in the Azure Portal to delete all the resources and audio content at once. The following Az-Cli command can also be used to delete the resource group :
 
 ```bash
 # Delete the resource group with all the resources
-az group delete --name <resource-group> 
+az group delete --name <resource-group>
 
 ```
