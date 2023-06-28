@@ -1,7 +1,7 @@
 ---
 published: true
 type: workshop
-title: Serverless Workshop
+title: Product Hands-on Lab - Serverless Workshop
 short_title: Serverless Overview
 description: This workshop will cover multiple serverless services that you will use to build a complete real world scenario.
 level: beginner # Required. Can be 'beginner', 'intermediate' or 'advanced'
@@ -25,13 +25,6 @@ sections_title:
 Welcome to this Azure Serverless Workshop. You'll be experimenting with Azure Serverless services in multiple labs to achieve a real world scenario. Don't worry, even if the challenges will increase in difficulty, this is a step by step lab, you will be guided through the whole process.
 
 During this workshop you will have the instructions to complete each steps. It is recommended to search for the answers in provided resources and links before looking at the solutions placed under the 'Toggle solution' panel.
-
-<!--  TODO : Remind what Serverless is : Event based (explain what we have : EVG , EH, SB), Main Compute Services, Storage Account, Cognitive Services, Data Services not taken into account for the workshop.
- "Did you know that basic storage accounts are one of the first serverless"
-      Resources :
-      - https://learn.microsoft.com/en-us/dotnet/architecture/serverless/azure-serverless-platform
-      - https://azure.microsoft.com/en-us/solutions/serverless/
-      Pourquoi on présenter Serverless  -->
 
 ## Prerequisites (15 minutes)
 
@@ -100,10 +93,10 @@ Here is a diagram to illustrate the flow:
 1. When the file is uploaded the Event Grid service will detect it and publish the "Blob created event"
 1. The Event Grid System Topic will trigger a Logic App
 1. The Logic App retrieves the uploaded audio file
-1. The audio file is sent to Azure Cognitive Services
-1. The speech to text service will process the file and return the result to the Logic App
+1. The audio file is sent to Azure Cognitive Services. The speech to text service will process the file and return the result to the Logic App
 1. The Logic App will then store the transcript of the audio file in a Cosmos DB database
-1. A second Azure Function will be triggered by the update in CosmosDB. It will fetch the transcript from CosmosDB and send it to Web Pub/Sub
+1. A second Azure Function will be triggered by the update in CosmosDB.
+1. The same Azure Function will fetch the transcript from CosmosDB and send it to Web Pub/Sub
 1. Finally Web Pub/Sub will notify the Web Application about the new transcript using Websockets
 
 <div class="info" data-title="Note">
@@ -254,7 +247,7 @@ It is pretty much a blank canvas at this stage, but you will soon be able to add
 
 For this first lab, you will focus on the following scope :
 
-![Achitecture scope of Lab 1](assets/architecture-lab1.svg)
+![Hand's On Lab Architecture Lab 1](assets/architecture-lab1.svg)
 
 ## Create a resource group (5 minutes)
 
