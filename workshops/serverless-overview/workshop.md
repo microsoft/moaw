@@ -297,8 +297,7 @@ With the resource group ready, let's create a storage account with a container n
 
 <div class="task" data-title="Tasks">
 
-> - Choose a Locally redundant storage (`Standard LRS`).
->
+> - Create a locally redundant storage account (`Standard LRS`).
 > - Once the storage account is ready, create a blob container named `audios` with `private access`.
 
 </div>
@@ -306,8 +305,9 @@ With the resource group ready, let's create a storage account with a container n
 <div class="tip" data-title="Tips">
 
 > Azure Storage Account names do not accept hyphens and cannot exceed a maximum of 24 characters.
-
-> [Storage Account][storage-account]<br> > [Storage Account Container][storage-account-container]
+>
+> [Storage Account][storage-account]<br> 
+> [Storage Account Container][storage-account-container]
 
 </div>
 
@@ -389,8 +389,10 @@ The naming convention for an Event Grid System Topic is: `egst-audio-storage-<en
 <div class="tip" data-title="Tips">
 
 > To get access to the identifier of a resource, go to the `Overview` tab and click en `Json View` on the top right and you will see it.
-
-> [Choose between Azure Messaging Services][azure-messaging-services]<br> > [Event Grid System Topic][event-grid-system-topic]<br> > [Event Grid Topic Subscription][event-grid-topic-subscription]
+>
+> [Choose between Azure Messaging Services][azure-messaging-services]<br> 
+> [Event Grid System Topic][event-grid-system-topic]<br> 
+> [Event Grid Topic Subscription][event-grid-topic-subscription]
 
 </div>
 
@@ -442,15 +444,21 @@ Logic Apps offer two main hosting plans which currently differ in functionalitie
 - `Standard` mode is a dedicated hosting environment (single-tenant) for which resource allocation (CPU/RAM) will be selected at the creation of the resource. This option will let you build different various workflows in the same resource (dedicated capacity) as long as it has enough resources allocated to execute them. This model is billed at a fixed hourly/monthly rate regardless of its actual usage.
 - `Consumption` is the serverless option for Logic Apps and will be the fastest way to start with Logic Apps workflow. This model will let you design one workflow per resource and will make sure necessary resources are available for any parallel executions. As a rule of thumb, a Logic Apps workflow in consumption will be billed based on the actual number of executions as well as the overall number of actions (aka building blocks) that compose it.
 
-In our serverless scenario, we will create a Logic Apps Workflow in `consumption` mode.
+<div class="task" data-title="Tasks">
+
+> - Create a Logic Apps resource in `consumption` mode
+> - In this logic apps resource, create a `blank` template workflow
+
+</div>
 
 The naming convention for Logic Apps is: `logic-<environment>-<region>-<application-name>-<owner>-<instance>`
 
-Once the Logic App resource is created, create a blank `template` workflow.
 
-Below is the `definition template` to save locally in a JSON file named `my-blank-template.json` if you decide to create the logic app via the Az CLI.
+<div class="tip" data-title="Tips">
 
-```json
+> If you decide to create the logic app via the Az CLI, here is the `definition template` to save locally in a JSON file named `my-blank-template.json` .
+>
+> ```json
 {
   "definition": {
     "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
@@ -462,11 +470,9 @@ Below is the `definition template` to save locally in a JSON file named `my-blan
   },
   "parameters": {}
 }
-```
-
-<div class="tip" data-title="Tips">
-
-> [Azure CLI Extension][azure-cli-extension]<br> > [Azure Logic App][azure-logic-app]
+> ```
+> [Azure CLI Extension][azure-cli-extension]<br> 
+> [Azure Logic App][azure-logic-app]
 
 </div>
 
@@ -516,11 +522,17 @@ While you create this trigger, you will be asked to provide the actual resource 
 In our case, select and connect to the `Storage account` created earlier.
 
 Then define the actual conditions you want to meet to trigger the Logic App.
-In our case, we only want to trigger the flow if the following criteria are met :
 
-- Only trigger on `blob created` events
-- The file is uploaded in the `audios` container otherwise ignore it
-- The file extension is `.wav`
+<div class="task" data-title="Tasks">
+
+> - Add an Event Grid `trigger` to your Logic Apps Workflow 
+> - Configure the trigger to react to events on the Storage account you created
+> - Filter the trigger to run only on : 
+>   - `blob created` events
+>   - Files uploaded in the `audios` container 
+>   - Files with the `.wav` extension
+
+</div>
 
 The naming convention for Event Subscription is: `evgs-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`
 
@@ -538,7 +550,8 @@ If you have set everything as expected, you should see the following entry in th
 
 <div class="tip" data-title="Tips">
 
-> [Logic Apps Event Grid Trigger][logic-apps-event-grid-trigger]<br> > [Event Grid Subject Filter][event-grid-subject-filtering]
+> [Logic Apps Event Grid Trigger][logic-apps-event-grid-trigger]<br> 
+> [Event Grid Subject Filter][event-grid-subject-filtering]
 
 </div>
 
@@ -592,16 +605,20 @@ This will help us to retrieve the actual content of the file and pass it on to t
 
 Based on below resources and the previous definition step, you should be able to complete this task.
 
+<div class="task" data-title="Tasks">
+
+> Add a `Get Blob Content v2` step in the workflow after the trigger 
+
+</div>
+
+
 <div class="tip" data-title="Tips">
 
 > To help you troubleshoot the flow, you can use the `Run History` tab and check the `Inputs` and `Outputs` of each operation :
 > ![Logic App History Troubleshooting](assets/logic-app-history-troubleshooting.png)
-
-</div>
-
-<div class="tip" data-title="Resources">
-
-> [Logic Apps Parse Json][logic-app-parse-json]<br> > [Logic App Storage Account Action][logic-app-storage-action]
+>
+> [Logic Apps Parse Json][logic-app-parse-json]<br> 
+> [Logic App Storage Account Action][logic-app-storage-action]
 
 </div>
 
@@ -664,11 +681,15 @@ We now want to retrieve the transcript out of the audio file uploaded thanks to 
 
 ![logic app cognitive service](assets/logic-app-hol-cognitive-service.png)
 
-To do this, you will have to:
+<div class="task" data-title="Tasks">
 
-- Instantiate the cognitive service as a `Free` tier
-- Retrieve your auto-generated `Api Key`
-- Call the speech to text API
+> To do this, you will have to:
+>
+> - Instantiate the cognitive service as a `Free` tier
+> - Retrieve your auto-generated `Api Key`
+> - Call the speech to text API
+
+</div>
 
 <div class="important" data-title="Security">
 
@@ -683,7 +704,10 @@ The naming conventions are:
 
 <div class="tip" data-title="Tips">
 
-> [What are Cognitive Services][cognitive-services]<br> > [Cognitive service Apis][cognitive-services-apis]<br> > [Cognitive Service Getting Started][cognitive-service-api]<br> > [Create a Key Vault][key-vault]
+> [What are Cognitive Services][cognitive-services]<br> 
+> [Cognitive service Apis][cognitive-services-apis]<br> 
+> [Cognitive Service Getting Started][cognitive-service-api]<br> 
+> [Create a Key Vault][key-vault]
 
 </div>
 
@@ -741,12 +765,15 @@ In the Logic App `Run History`, you should see the transcript of the audio file 
 
 Azure Cosmos DB is a fully managed NoSQL database which offers Geo-redundancy and multi-region write capabilities. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL APIs and offers a serverless option which is perfect for our use case.
 
-Now the cognitive service provided with a transcript of your audio file, you will have to store it in a NoSQL database inside Cosmos DB:
+Now the cognitive service provided with a transcript of your audio file, you will have to store it in a NoSQL database inside Cosmos DB.
 
-- Create a Cosmos DB account and select the `NoSQL` API
-- Set the Capacity Mode to `Serverless`
-- Create a database named : `HolDb`
-- Add a new collection to store the transcripts : `audios_transcripts`
+<div class="task" data-title="Tasks">
+
+> - Create a Cosmos DB account and select the `NoSQL` API
+> - Set the Capacity Mode to `Serverless`
+> - Create a database named : `HolDb`
+> - Add a new collection to store the transcripts : `audios_transcripts`
+</div>
 
 The naming convention for Cosmos DB account is `cosmos-<environment>-<region>-<application-name>-<owner>-<instance>`
 
@@ -756,7 +783,8 @@ Now we can add the last step of the Logic App flow that will store the transcrip
 
 <div class="tip" data-title="Tips">
 
-> [Serverless Cosmos DB][cosmos-db]<br> > [Logic App Cosmos DB action][logic-app-cosmos-db-action]
+> [Serverless Cosmos DB][cosmos-db]<br>
+> [Logic App Cosmos DB action][logic-app-cosmos-db-action]
 
 </div>
 
@@ -845,29 +873,34 @@ At this stage in our scenario, the serverless transcription engine is ready and 
 
 For this step you will create an `Azure Function` with a POST `HTTP Trigger` and a `Blob Output Binding` to upload the file to the storage account. The Blob Output Binding will use a `binding expression` to generate a unique `GUID` name for the file.
 
-Make sure to create an Azure Function App resource in the Azure portal (or Az CLI) with:
+<div class="task" data-title="Tasks">
 
-- The `Linux` Operating System
-- A plan type set to `Consumption (Serverless)`
-- The language you are most comfortable with (Python in our example)
+> Make sure to create an Azure Function App resource in the Azure portal (or Az CLI) with:
+> 
+> - The `Linux` Operating System
+> - A plan type set to `Consumption (Serverless)`
+> - The language you are most comfortable with (Python in our example)
 
-Once the resource is ready in Azure, you can create the Function App locally to ease the development experience on your desktop. The Azure Function Core Tools installed as part of the prerequisites will help you with that.
-
-An Azure Function example solution will be provided below in Python.
+</div>
 
 The naming conventions to use are:
 For the Azure function: `func-<environment>-<region>-<application-name>-<owner>-<instance>`
 For the storage account associated to it: `stfunc<environment><region><application-name><owner><instance>`
 
-<div class="info" data-title="Notes">
-
-> Azure Functions in `consumption` (Serverless) mode will need an associated Storage Account in which store the Function App package. A default one will be created if not specified, but if you want to use an existing storage account to, make sure to use the same region for both the Function App and the Storage Account.
-
-</div>
-
 <div class="tip" data-title="Tips">
 
-> [Azure Functions][azure-function]<br> > [Azure Function Core Tools][azure-function-core-tools]<br> > [Basics of Azure Functions][azure-function-basics]<br> > [HTTP Triggered Azure Function][azure-function-http]<br> > [Blob Output Binding][azure-function-blob-output]<br> > [Azure Functions Binding Expressions][azure-function-bindings-expression]
+> Once the resource is ready in Azure, you can create the Function App locally to ease the development experience on your desktop. The Azure Function Core Tools installed as part of the prerequisites will help you with that.
+> Azure Functions in `consumption` (Serverless) mode will need an associated Storage Account in which store the Function App package.
+> A default one will be created if not specified, but if you want to use an existing storage account to, make sure to use the same region for both the Function App and the Storage Account.
+>
+> An Azure Function example solution will be provided below in Python.
+>
+> [Azure Functions][azure-function]<br> 
+> [Azure Function Core Tools][azure-function-core-tools]<br> 
+> [Basics of Azure Functions][azure-function-basics]<br> 
+> [HTTP Triggered Azure Function][azure-function-http]<br>
+> [Blob Output Binding][azure-function-blob-output]<br> 
+> [Azure Functions Binding Expressions][azure-function-bindings-expression]
 
 </div>
 
@@ -1103,7 +1136,9 @@ This function will be used to show all existing transcriptions on the demo Web A
 
 <div class="tip" data-title="Resources">
 
-> [Cosmos DB input binding][cosmosdb-input-binding]<br> > [OFFSET LIMIT clause in Cosmos DB][offset-limit-clause-in-cosmosdb]<br> > [Cosmos DB connection string][cosmosdb-connection-string]
+> [Cosmos DB input binding][cosmosdb-input-binding]<br> 
+> [OFFSET LIMIT clause in Cosmos DB][offset-limit-clause-in-cosmosdb]<br> 
+> [Cosmos DB connection string][cosmosdb-connection-string]
 
 </div>
 
@@ -1194,7 +1229,8 @@ The flow will be the following:
 
 <div class="tip" data-title="Resources">
 
-> [Azure Web PubSub Overview][azure-web-pubsub]<br> > [How to create a Web PubSub instance][create-web-pubsub-instance]
+> [Azure Web PubSub Overview][azure-web-pubsub]<br> 
+> [How to create a Web PubSub instance][create-web-pubsub-instance]
 
 </div>
 
@@ -1233,7 +1269,8 @@ The next step is to use the newly created Web PubSub instance to publish new tra
 
 <div class="tip" data-title="Resources">
 
-> [Cosmos DB input binding][cosmosdb-input-binding]<br> > [Web PubSub output binding][web-pubsub-output-binding]
+> [Cosmos DB input binding][cosmosdb-input-binding]<br> 
+> [Web PubSub output binding][web-pubsub-output-binding]
 
 </div>
 
