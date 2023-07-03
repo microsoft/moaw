@@ -3,8 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>MOAW</title>
-  <base href="/moaw/">
+  <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    if (window.location.hostname.includes('.github.io')) {
+      window.document.head.getElementsByTagName('base')[0].href = '/moaw/';
+    }
+  </script>
   <link rel="icon" type="image/png" href="favicon.png">
   <script>
     const uuid = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
