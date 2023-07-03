@@ -1,9 +1,11 @@
 import { EventDispatcher, EventListener } from './shared/event';
+import { environment } from 'src/environments/environment';
 
 export interface Route {
   path: string;
   id: string;
   redirect?: boolean;
+  disabled?: boolean;
 }
 
 export type RouteChangeListener = EventListener<Route>;
@@ -13,6 +15,7 @@ export const Routes: Route[] = [
   { path: 'deck/', id: 'deck' },
   { path: 'page/', id: 'page' },
   { path: 'catalog/', id: 'catalog' },
+  { path: 'search/', id: 'search', disabled: environment.searchUrl === '' },
   { path: '', id: 'home', redirect: true }
 ];
 
@@ -22,7 +25,7 @@ let currentRoute: Route | undefined;
 
 function updateRoute() {
   const path = window.location.pathname;
-  currentRoute = Routes.find((r) => path.startsWith(basePath + r.path));
+  currentRoute = Routes.filter((r) => !r.disabled).find((r) => path.startsWith(basePath + r.path));
 
   if (!currentRoute || (currentRoute.redirect && path !== basePath + currentRoute.path)) {
     return navigate(currentRoute?.path ?? '', true);

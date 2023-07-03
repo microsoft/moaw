@@ -5,11 +5,13 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --serve-path moaw",
-    "build": "ng build && npm run tag:version -s",
-    "build:cli": "ng build --base-href '/' && npm run tag:version -s",
+    "build": "ng build && npm run update:env -s",
+    "build:root": "ng build --base-href '/' && npm run update:env -s",
     "watch": "ng build --watch --configuration development",
     "format": "prettier --write '(src|scripts)/**/*.{ts,json,scss}'",
-    "tag:version": "version=\"sha.$(git rev-parse --short HEAD)\" && perl -i -pe \"s/__VERSION__/$version/g\" dist/website/main.*.js"
+    "update:env": "./scripts/update-env.sh",
+    "docker:build": "docker build --tag website --file ./Dockerfile ../..",
+    "docker:run": "docker run --rm --publish 8080:80 website"
   },
   "private": true,
   "dependencies": {

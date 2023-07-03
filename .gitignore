@@ -3,5 +3,6 @@ dist/
 .DS_Store
 Thumbs.db
 TODO
+*.env
 
 .vscode/ltex*
