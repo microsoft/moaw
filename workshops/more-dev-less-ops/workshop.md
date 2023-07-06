@@ -1,8 +1,8 @@
 ---
 published: true
 type: workshop
-title: Product Hands-on Lab - More Dev Less Ops Workshop
-short_title: More Dev Less Ops
+title: Product Hands-on Lab - Code to Cloud
+short_title: Code to Cloud
 description: This workshop will cover Microsoft Dev Box, Az Dev CLI.
 level: beginner                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors:                                # Required. You can add as many authors as needed      
@@ -16,7 +16,7 @@ tags: azure, Azure Dev Center, Microsoft Dev Box, Azure Deployment Environment, 
 navigation_levels: 3
 ---
 
-# More Dev Less Ops Workshop
+# Code to Cloud Workshop
 
 Not so long ago, developing an entire application was a matter of using a single software stack to code, and then running a single executable on a single machine.
 This technique evolved over the years with density-related technologies (containers, paravirtualization...) and architectural tricks (gateways, stranglers...), while enforcing some degree of "separation of concerns" through DevOps and GitOps.
@@ -176,7 +176,7 @@ This is a Windows 11 machine with tools like Visual Studio Code, Visual Studio, 
 
 You will now update an existing application with your Dev Box.
 
-Open Visual Studio Code, click the `Source Control` icon, select `Clone Repository` and copy pass the following Git repository URL: https://github.com/damienaicheh/MoreDevLessOpsApi
+**Inside your Dev Box**, open Visual Studio Code, click the `Source Control` icon, select `Clone Repository` and copy pass the following Git repository URL: https://github.com/damienaicheh/MoreDevLessOpsApi
 
 ![Clone Git repository](./assets/clone-git.png)
 
@@ -188,7 +188,7 @@ Once the repository is opened, you will see the following screen:
 
 This is a simple dotnet minimal API application. This application is a simple todo list API.
 
-Run it locally by opening the Visual Studio Code Terminal and run the following commands:
+Run it locally by opening the Visual Studio Code Terminal (`Ctrl + J`) and run the following commands:
 
 ```bash
 # Restore the nuget packages
@@ -198,7 +198,7 @@ dotnet restore
 dotnet run
 ```
 
-If you open a new browser tab and go to http://localhost:5142/swagger, you will see the following screen:
+If you open a new browser tab **inside your Dev Box** and go to http://localhost:5142/swagger, you will see the following screen:
 
 ![Swagger Overview](./assets/swagger-overview.png)
 
@@ -228,7 +228,7 @@ app.MapGet("/todos/complete", async (TodoDb db) =>
 
 ```
 
-Run the application again with `dotnet run` and go to http://localhost:5142/swagger. You will see the new endpoints:
+Make sure to add this code **before** the `app.Run();` line to be sure it's taking to account by the API. Save the file `Ctrl + S`. Then stop the process in your terminal using `Ctrl + C`, run the application again with `dotnet run` and go to http://localhost:5142/swagger. You will see the new endpoints:
 
 ![Swagger New Endpoints](./assets/swagger-new-endpoints-added.png)
 
