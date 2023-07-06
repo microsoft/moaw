@@ -4,7 +4,8 @@
   <!-- Workaround for GitHub Pages not supporting SPA routing -->
   <script>
     sessionStorage.redirect = location.href;
+    const url = window.location.hostname.includes('.github.io') ? '/moaw/' : '/';
+    window.location.replace(url);
   </script>
-  <meta http-equiv="refresh" content="0;URL='/moaw/'">
 </head>
 </html>
