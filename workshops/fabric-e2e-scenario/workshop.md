@@ -245,6 +245,8 @@ for epoch in range(num_epochs):
         
     print('Finished Training')
 ```
+Model training output:
+![](assets/model_training.png)
 ### Milestone 3: Saving our model:
 We can also use the `mlflow` library to log the trained PyTorch model to the MLflow tracking server and register it as a model version with the name "serengeti-pytorch". Once the model is saved, it can be loaded and used later for inference or further training.
 
@@ -294,13 +296,11 @@ for batch_idx, (x, target) in enumerate(test_loader):
         )
 
 ```
-
+Model evaluation results:
+![](assets/model_evaluation.png)
 Next, we test our model with a single image. We use the `PIL` library to load an image from a file, resizing it to a fixed size, converting it to a PyTorch tensor, passing it through our trained PyTorch model, and getting the output as follows:
 
 ```
-import torchvision.transforms as transforms
-
-
 # Resize the image to a fixed size
 resize_transform = transforms.Resize((224, 224))
 image = resize_transform(image)
