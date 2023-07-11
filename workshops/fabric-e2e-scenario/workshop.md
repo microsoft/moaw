@@ -56,7 +56,7 @@ To convert our data from parquet to delta files we:
 * Select **load to Tables** and **create a new table.**
 
 Once our data is in delta files, we load our data and convert it to a Pandas dataframe:
-```
+```python
 # load our data 
 train_df = spark.sql("SELECT * FROM Serengeti_LH.sampled_train LIMIT 1000")
 
@@ -65,7 +65,7 @@ train_df = train_df.toPandas()
 ```
 
 Lastly, we convert our file name to read the image URL as follows:
-```
+```python
 # Define a function to apply to the filename column
 def get_ImageUrl(filename):
     return f"/lakehouse/default/Files/images/train/{filename}"
@@ -82,7 +82,7 @@ Our output will be as follows:
 First, we transform categorical data to numerical data using LabelEncoder. It assigns a unique integer to each category in the data, allowing machine learning algorithms to work with categorical data.
 
 You can do this by:
-```
+```python
 from sklearn.preprocessing import LabelEncoder
 
 # Create a LabelEncoder object
@@ -100,7 +100,7 @@ train_df['labels'] = le.transform(train_df['label'])
 
 #### **Transforming our dataset**
 To train our model, we customize our dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
-```
+```python
 from torch.utils.data import Dataset
 import os
 from PIL import Image
@@ -135,7 +135,7 @@ train_set = CustomDataset("/lakehouse/default/Files/images/train/", transform=tr
 test_set = CustomDataset("/lakehouse/default/Files/images/test/", transform=transform)
 ```
 Lastly, we load the training and testing datasets in batches using Dataloader as follows:
-```
+```python
 # Load the training and test data
 train_loader = DataLoader(train_set, batch_size=100, shuffle=True, num_workers=2)
 test_loader = DataLoader(test_set, batch_size=100, shuffle=False, num_workers=2)
@@ -148,7 +148,7 @@ The purpose of using data loaders is to efficiently load and preprocess large da
 #### **Setting up mlflow to track our experiments**
 `mlflow` is an open source platform for managing the end-to-end machine learning lifecycle. It provides tools for tracking experiments, packaging code into reproducible runs, and sharing and deploying models. 
 
-```
+```python
 # Using mlflow library to activate our ml experiment
 
 import mlflow
@@ -173,7 +173,7 @@ Additionally we check if a GPU is available and moves the model to the GPU if it
 
 After this code is executed, the `model` object will be a pre-trained DenseNet 201 model with a modified classifier layer that can be used to classify images of wildlife in the Serengeti dataset into 50 different species. The code is as follows:
 
-```
+```python
 import torchvision
 
 # load the pre-trained DenseNet 201 model
@@ -185,7 +185,7 @@ model = model.to(device)
 ```
 ### Loss Function
 We use the cross-entropy loss function and the Adam optimizer to train the model. The code is as follows:
-```
+```python
 # define the loss function
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
@@ -201,7 +201,7 @@ The learning rate for the optimizer is set to 0.01 using the `lr` parameter. Thi
 
 #### Training our model
 Using the DenseNet Model we just loaded, we go ahead and train our model as follows:
-```
+```python
 # train the model
 num_epochs = 5
 for epoch in range(num_epochs):
@@ -253,7 +253,7 @@ Model training output:
 We can also use the `mlflow` library to log the trained PyTorch model to the MLflow tracking server and register it as a model version with the name "serengeti-pytorch". Once the model is saved, it can be loaded and used later for inference or further training.
 
 The code for this is:
-```
+```python
 # use an MLflow run and track the results within our machine learning experiment.
 
 with mlflow.start_run() as run:
@@ -276,7 +276,7 @@ Once we have trained our model, the next step is to evaluate its performance. We
 
 Once the evaluation is complete, the code prints the final test loss and accuracy.
 
-```
+```python
 # load and evaluate the model
 loaded_model = mlflow.pytorch.load_model(model_uri)
 print(type(loaded_model))
@@ -302,7 +302,7 @@ Model evaluation results:
 ![](assets/model_evaluation.png)
 Next, we test our model with a single image. We use the `PIL` library to load an image from a file, resizing it to a fixed size, converting it to a PyTorch tensor, passing it through our trained PyTorch model, and getting the output as follows:
 
-```
+```python
 # Resize the image to a fixed size
 resize_transform = transforms.Resize((224, 224))
 image = resize_transform(image)
