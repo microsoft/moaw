@@ -23,7 +23,6 @@ sessions_title:
   - Transforming Data using Fabric notebooks ===> @Jcardif
   - Data Visualization using Power BI  ====> @DavidAbu
   - Training a Machine Learning Model ====> @BethanyJep
-  - Deployment of the Machine Learning Model ====> @BethanyJep
   - Resources ====> @BethanyJep
 ---
 
@@ -36,109 +35,80 @@ sessions_title:
 ### What we will cover
 This section covers training a deep learning model on the Serengeti dataset. The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this project is to train a model that can accurately classify the different species of animals in the images.
 
+> [Notebook for training our model](assets/Serengeti%20train.ipynb)
+
 ### Prerequisites:
-In this notebook you will need the following libraries:
+In this section you will need the following libraries:
 - Torch and torchvision for deep learning using [pytorch](https://pytorch.org/)
 - Pandas, numpy and matplotlib
 - Pillow to load and read an image file.
-- Scikit-learn
+- Scikit-learn: we use label encoder to convert labels into numerical value
 
 You can install all the necessary libraries using pip, for example: `pip install torch`
 
 ### Milestone 1: Load your dataset
-The images are already loaded in the lakehouse. First we will try and visualize individual images then convert the images into a dataframe.
+The images are already loaded in the lakehouse and a `parquet` file contains image details including season and labels. First we convert the parquet files to Delta tables. In machine learning, Delta tables can be used to store training data for machine learning models, allowing you to easily update the data and retrain the model.
 
-You can try visualizing a single image as follows:
-```
-from PIL import Image
-img = Image.open("<image_link>")
-img.show()
-```
+![Converting parquet files to delta tables](assets/data_to_delta_tables.png)
+To convert our data from parquet to delta files we:
+* Go to Lakehouse
+* Right click on our dataset, you will do this for both `sample_test.parquet` and `sample_train.parquet`
+* Select **load to Tables** and **create a new table.**
 
-Next, we load our data from lakehouse into a data frame using spark, to do this, you can:
-```
-# Read all the annotation from the lakehouse
-df = spark.sql("SELECT * FROM Serengeti_Lakehouse.Annotations WHERE Annotations.category_id > 1")
-```
+Once our data is in delta files, we load our data and convert it to a Pandas dataframe:
+```python
+# load our data 
+train_df = spark.sql("SELECT * FROM Serengeti_LH.sampled_train LIMIT 1000")
 
-Once our data is loaded, we filter out seasons we would want loaded and map the categories to the dataframe:
-```
-# filter out the season, sequence ID, category_id snf image_id
-df_train = df.select("season", "seq_id", "category_id", "location", "image_id", "datetime")
-
-# remove image_id wiTH null and duplicates
-df_train = df_train.filter(df_train.image_id.isNotNull()).dropDuplicates()
-
-# convert df_train to pandas dataframe
-df_train = df_train.toPandas()
-
-# Load the Categories DataFrame into a pandas DataFrame
-category_df = spark.sql("SELECT * FROM Serengeti_Lakehouse.Categories").toPandas()
-
-# Map category IDs to category names using a vectorized approach
-category_map = pd.Series(category_df.name.values, index=category_df.id)
-df_train['label'] = category_map[df_train.category_id].values
-
-# Drop the category_id column
-df_train = df_train.drop('category_id', axis=1)
+# convert train_df to pandas dataframe
+train_df = train_df.toPandas()
 ```
 
 Lastly, we convert our file name to read the image URL as follows:
-```
-# Rename the image_id column to filename
-df_train = df_train.rename(columns={'image_id': 'filename'})
-
-# Append the .JPG extension to the filename column
-df_train['filename'] = df_train.filename + '.JPG'
-
-# reduce to first frame only for all sequences
-df_train = df_train.sort_values('filename').groupby('seq_id').first().reset_index()
-
+```python
 # Define a function to apply to the filename column
 def get_ImageUrl(filename):
     return f"/lakehouse/default/Files/images/train/{filename}"
 
 # Create a new column in the dataframe using the apply method
-df_train['image_url'] = df_train['filename'].apply(get_ImageUrl)
-
-df_train
+train_df['image_url'] = train_df['filename'].apply(get_ImageUrl)
 ```
+
+Our output will be as follows:
+![Our loaded data](assets/load_data.png)
+
 ### Milestone 2: Transform your data
-#### Label encoding
+#### **Label encoding**
 First, we transform categorical data to numerical data using LabelEncoder. It assigns a unique integer to each category in the data, allowing machine learning algorithms to work with categorical data.
 
 You can do this by:
-```
+```python
 from sklearn.preprocessing import LabelEncoder
 
 # Create a LabelEncoder object
 le = LabelEncoder()
 
-# Fit the LabelEncoder to the label column in the df_train DataFrame
-le.fit(df_train['label'])
+# Fit the LabelEncoder to the label column in the train_df DataFrame
+le.fit(train_df['label'])
 
 # Transform the label column to numerical labels using the LabelEncoder
-df_train['labels'] = le.transform(df_train['label'])
-
-# Print the first 10 rows of the transformed DataFrame
-print(df_train.head(10))
+train_df['labels'] = le.transform(train_df['label'])
 ```
+> 📘 Our test dataset:
+>
+> Ensure you repeat the process for test dataset, drop the filename column and merge the two dataframes using `pd.concat()`
 
-#### Transforming our dataset
-To train our model, we only need the filename and lables, therefore we create a new dataset with the two columns:
-`df_train = df_train[['filename', 'labels']]`
-
-Next we customize or dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
-```
+#### **Transforming our dataset**
+To train our model, we customize our dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
+```python
 from torch.utils.data import Dataset
 import os
-
-df_train = df_train[['filename', 'labels']]
+from PIL import Image
 
 class CustomDataset(Dataset):
     def __init__(self, root_dir, transform=None):
         self.root_dir = root_dir
-        self.data = df_train
+        self.data = data
         self.transform = transform
 
     def __len__(self):
@@ -153,8 +123,8 @@ class CustomDataset(Dataset):
             image = Image.open(img_name)
             if self.transform:
                 image = self.transform(image)
-            label = self.data.iloc[idx, 1]
-            return image, label
+            labels = self.data.iloc[idx, 1]
+            return image, labels
 
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
@@ -165,7 +135,7 @@ train_set = CustomDataset("/lakehouse/default/Files/images/train/", transform=tr
 test_set = CustomDataset("/lakehouse/default/Files/images/test/", transform=transform)
 ```
 Lastly, we load the training and testing datasets in batches using Dataloader as follows:
-```
+```python
 # Load the training and test data
 train_loader = DataLoader(train_set, batch_size=100, shuffle=True, num_workers=2)
 test_loader = DataLoader(test_set, batch_size=100, shuffle=False, num_workers=2)
@@ -173,22 +143,26 @@ test_loader = DataLoader(test_set, batch_size=100, shuffle=False, num_workers=2)
 The `batch_size` parameter specifies the number of samples in each batch, the `shuffle` parameter specifies whether to shuffle the data before each epoch, and the `num_workers` parameter specifies the number of subprocesses to use for data loading.
 
 The purpose of using data loaders is to efficiently load and preprocess large datasets in batches, which can improve the training speed and performance of machine learning models.
+
 ### Milestone 3: Train your model
-#### Setting up mlflow to track our experiments
+#### **Setting up mlflow to track our experiments**
 `mlflow` is an open source platform for managing the end-to-end machine learning lifecycle. It provides tools for tracking experiments, packaging code into reproducible runs, and sharing and deploying models. 
 
-```
+```python
 # Using mlflow library to activate our ml experiment
 
 import mlflow
 
-mlflow.set_experiment("serengeti-exp")
+mlflow.set_experiment("serengeti-experimane")
 ```
+
+![Setting up your mlflow experiment](assets/mlflow_exp.png)
 
 In the code above, we use the `set_experiment` function from the `mlflow` library to set the active experiment to "serengeti-exp". This will allow us to track the results of our machine learning experiments and compare them across different runs. 
 
 By using `mlflow`, we can easily log and track the parameters, metrics, and artifacts of our machine learning experiments, and visualize and compare the results using the Microsoft Fabric UI.
-#### Loading DenseNet 201 model
+
+#### **Loading DenseNet 201 model**
 We use a convolutional neural network (CNN) to classify the images in the Serengeti dataset. The CNN consists of several convolutional layers followed by max pooling layers and fully connected layers.
 
 In our case, we are load a pre-trained DenseNet 201 model from the `torchvision` library and modifying its classifier layer to output 50 classes instead of the default 1000 classes. The DenseNet 201 model is a convolutional neural network (CNN) that has been pre-trained on the ImageNet dataset, which contains millions of images across 1000 classes. The model consists of several convolutional layers followed by dense layers and a softmax output layer.
@@ -199,7 +173,7 @@ Additionally we check if a GPU is available and moves the model to the GPU if it
 
 After this code is executed, the `model` object will be a pre-trained DenseNet 201 model with a modified classifier layer that can be used to classify images of wildlife in the Serengeti dataset into 50 different species. The code is as follows:
 
-```
+```python
 import torchvision
 
 # load the pre-trained DenseNet 201 model
@@ -211,7 +185,7 @@ model = model.to(device)
 ```
 ### Loss Function
 We use the cross-entropy loss function and the Adam optimizer to train the model. The code is as follows:
-```
+```python
 # define the loss function
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
@@ -227,9 +201,9 @@ The learning rate for the optimizer is set to 0.01 using the `lr` parameter. Thi
 
 #### Training our model
 Using the DenseNet Model we just loaded, we go ahead and train our model as follows:
-```
+```python
 # train the model
-num_epochs = 1
+num_epochs = 5
 for epoch in range(num_epochs):
     print('Epoch {}/{}'.format(epoch, num_epochs - 1))
     print('-' * 10)
@@ -273,23 +247,13 @@ for epoch in range(num_epochs):
         
     print('Finished Training')
 ```
+Model training output:
+![](assets/model_training.png)
 ### Milestone 3: Saving our model:
-The `torch.save()` function is used to save the state dictionary of the model to the file. The state dictionary contains the learned parameters of the model, such as the weights and biases of the convolutional layers and the classifier layer. To save our model, we use the code as follows:
-
-```
-# define the file path to save the model
-PATH = "<path>serengeti_model.pt"
-
-# Save the model
-torch.save(model.state_dict(), PATH)
-```
-
-Once the model is saved to the file, it can be loaded and used later for inference or further training.
-
-> We can also use the `mlflow` library to log the trained PyTorch model to the MLflow tracking server and register it as a model version with the name "serengeti-pytorch".
+We can also use the `mlflow` library to log the trained PyTorch model to the MLflow tracking server and register it as a model version with the name "serengeti-pytorch". Once the model is saved, it can be loaded and used later for inference or further training.
 
 The code for this is:
-```
+```python
 # use an MLflow run and track the results within our machine learning experiment.
 
 with mlflow.start_run() as run:
@@ -304,12 +268,15 @@ with mlflow.start_run() as run:
     print(f"Model URI: {model_uri}")
 ```
 
-## Deployment of the Machine Learning Model
+The results are as follows:
+![Output of saving the mlflow model](assets/mlflow_model.png)
+
+### Milestone 4: Evaluating our Machine Learning model
 Once we have trained our model, the next step is to evaluate its performance. We load our PyTorch model from the MLflow tracking server using the `mlflow.pytorch.load_model()` function and evaluating it on the test dataset.
 
 Once the evaluation is complete, the code prints the final test loss and accuracy.
 
-```
+```python
 # load and evaluate the model
 loaded_model = mlflow.pytorch.load_model(model_uri)
 print(type(loaded_model))
@@ -331,15 +298,11 @@ for batch_idx, (x, target) in enumerate(test_loader):
         )
 
 ```
-
+Model evaluation results:
+![](assets/model_evaluation.png)
 Next, we test our model with a single image. We use the `PIL` library to load an image from a file, resizing it to a fixed size, converting it to a PyTorch tensor, passing it through our trained PyTorch model, and getting the output as follows:
 
-```
-from PIL import Image
-
-# Load the image
-image = Image.open("<image-link>")
-
+```python
 # Resize the image to a fixed size
 resize_transform = transforms.Resize((224, 224))
 image = resize_transform(image)
@@ -348,17 +311,25 @@ image = resize_transform(image)
 tensor_transform = transforms.ToTensor()
 tensor = tensor_transform(image)
 
-# Convert the image to a PyTorch tensor
-tensor = torch.tensor(image)
-
 # Add a batch dimension to the tensor
 tensor = tensor.unsqueeze(0)
 
-# Pass the tensor through the model to get the output
-output = model(tensor)
+# Load the model from MLflow
+model = mlflow.pytorch.load_model(model_uri)
 
-output
+# Set the model to evaluation mode
+model.eval()
+
+# Pass the tensor through the model to get the output
+with torch.no_grad():
+    output = model(tensor)
+
+# Get the predicted class
+_, predicted = torch.max(output.data, 1)
+
+print(predicted.item())
 ```
+=======
 
 ## Resources
 - [Get Started with Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview?WT.mc_id=academic-77998-bethanycheum)
@@ -366,7 +337,6 @@ output
 - [Ingest Data with Dataflows Gen2 in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/use-dataflow-gen-2-fabric/?WT.mc_id=academic-77998-bethanycheum)
 - [Get Started with data science in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-data-science-fabric/?WT.mc_id=academic-77998-bethanycheum)
 - [Grow and Learn with the Microsoft Fabric Community](https://community.fabric.microsoft.com/?WT.mc_id=academic-77998-bethanycheum)
-=======
-## Deployment of the Machine Learning Model
-## Resources
+
+
 
