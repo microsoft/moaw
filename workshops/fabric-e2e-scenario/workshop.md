@@ -23,7 +23,6 @@ sessions_title:
   - Transforming Data using Fabric notebooks ===> @Jcardif
   - Data Visualization using Power BI  ====> @DavidAbu
   - Training a Machine Learning Model ====> @BethanyJep
-  - Deployment of the Machine Learning Model ====> @BethanyJep
   - Resources ====> @BethanyJep
 ---
 
@@ -98,7 +97,7 @@ train_df['labels'] = le.transform(train_df['label'])
 > Ensure you repeat the process for test dataset, drop the filename column and merge the two dataframes using `pd.concat()`
 
 #### **Transforming our dataset**
-To train our model, we customize or dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
+To train our model, we customize our dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
 ```
 from torch.utils.data import Dataset
 import os
@@ -268,7 +267,7 @@ with mlflow.start_run() as run:
 The results are as follows:
 ![Output of saving the mlflow model](assets/mlflow_model.png)
 
-## Deployment of the Machine Learning Model
+### Milestone 4: Evaluating our Machine Learning model
 Once we have trained our model, the next step is to evaluate its performance. We load our PyTorch model from the MLflow tracking server using the `mlflow.pytorch.load_model()` function and evaluating it on the test dataset.
 
 Once the evaluation is complete, the code prints the final test loss and accuracy.
@@ -328,6 +327,7 @@ _, predicted = torch.max(output.data, 1)
 
 print(predicted.item())
 ```
+=======
 
 ## Resources
 - [Get Started with Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview?WT.mc_id=academic-77998-bethanycheum)
@@ -335,7 +335,6 @@ print(predicted.item())
 - [Ingest Data with Dataflows Gen2 in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/use-dataflow-gen-2-fabric/?WT.mc_id=academic-77998-bethanycheum)
 - [Get Started with data science in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-data-science-fabric/?WT.mc_id=academic-77998-bethanycheum)
 - [Grow and Learn with the Microsoft Fabric Community](https://community.fabric.microsoft.com/?WT.mc_id=academic-77998-bethanycheum)
-=======
-## Deployment of the Machine Learning Model
-## Resources
+
+
 
