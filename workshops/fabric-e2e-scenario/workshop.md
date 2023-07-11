@@ -13,7 +13,7 @@ contacts:
   - '@Jcardif'
   - '@BethanyJep'
   - '@DavidAbu'
-duration_minutes: 120
+duration_minutes: 180
 tags: data, analytics, Microsoft Fabric, Power BI
 baner_url: assets/banner.png
 sessions_title:
@@ -28,8 +28,75 @@ sessions_title:
 ---
 
 ## Introduction
+
+The data we'll be using in this workshop is the [Snapshot Serengeti dataset]((https://lila.science/datasets/snapshot-serengeti)). 
+
+> **Citation:** *The data used in this project was obtained from the Snapshot Serengeti project.*
+
+>Swanson AB, Kosmala M, Lintott CJ, Simpson RJ, Smith A, Packer C (2015) Snapshot Serengeti, high-frequency annotated camera trap images of 40 mammalian species in an African savanna. Scientific Data 2: 150026. DOI: https://doi.org/10.1038/sdata.2015.26
+
+
+
 ## Pre-requisites
 ## Loading Data into Onelake
+In this section we'll load the data into the Lakehouse. The data is available in a public blob storage container. 
+
+To begin, we will create and configure a new Lakehouse. To do this, in your workspace open the Data Engineering workload and create a new Lakehouse.
+
+![Create Lakehouse](assets/create-lakehouse.png)
+
+To load the data to the Lakehouse we will use the Data Factory pipelines, that will allow us to copy the data files into the Lakehouse. To do this: click on Get data and select New Data Pipeline. Provide a name then Create.
+
+From the wizard that opens; choose Azure Blob Storage as your data source then click next.
+
+![Create Data Pipeline](assets/select-data-source.png)
+
+Create a new connection by providing the following URL:
+```url
+https://ssfabric.blob.core.windows.net/parquet-files
+```
+Provide an appropriate connection name, and for the Authentication kind select Anonymous and click next. 
+
+![Create Data Pipeline](assets/create-connection.png)
+
+If you get an error Unable to list files, provide the parent directory as follows ```parquet-files/``` then click on retry and this should fix the error. 
+
+Click on the root folder and on the right panel under file format select ```Parquet``` then click Next.
+
+![Create Data Pipeline](assets/select-source-container.png)
+
+For the destination select ```Lakehouse``` and click next. In the drop down that appears select your Lakehouse then click next.
+
+Select the Root folder to be Files, and under folder path, set this to a subdirectory called data. Leave the other files blank and click next.
+
+![Create Data Pipeline](assets/select-root-destination.png)
+
+For the last configuration step of your data destination, select the File format to be ```Parquet``` and leave the other fields as they are and click next. 
+
+Finally review your configuration to copy data from the Blob Storage to your Lakehouse. Click Save + Run, to save and run your pipeline.
+
+![Create Data Pipeline](assets/review-data-load.png)
+
+This will take around 2 and a half minutes to execute after you navigate back to the Lakehouse to explore and process the data. 
+
+![Create Data Pipeline](assets/complete-copy.png)
+
+From the Lakehouse explorer click on the ellipsis button on the Files Directory and click Refresh. Upon refreshing you’ll find the newly created subdirectory called data.
+
+Clicking this subdirectory will reveal the 5 parquet files we copied from blob storage.
+
+![Create Data Pipeline](assets/lakehouse-explorer.png)
+
+Now that we already have the data files, we will need to load the data from these files into Delta tables. To do this right click on the individual parquet files and click ```Load to Tables`` and then ```Load``.  This will load the respective parquet file into a Delta table.
+
+Note that you can only load the next file after the previous one has been loaded to Delta Tables.
+
+After successful loading you can see the five tables in the Explorer.
+
+![Create Data Pipeline](assets/load-to-tables.png)
+
+Now that we have successfully loaded the data you click on the individual table to view the data. 
+
 ## Transforming Data using Fabric notebooks
 ## Data Visualization using Power BI
 ## Training a Machine Learning Model
@@ -366,7 +433,6 @@ output
 - [Ingest Data with Dataflows Gen2 in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/use-dataflow-gen-2-fabric/?WT.mc_id=academic-77998-bethanycheum)
 - [Get Started with data science in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-data-science-fabric/?WT.mc_id=academic-77998-bethanycheum)
 - [Grow and Learn with the Microsoft Fabric Community](https://community.fabric.microsoft.com/?WT.mc_id=academic-77998-bethanycheum)
-=======
 ## Deployment of the Machine Learning Model
 ## Resources
 
