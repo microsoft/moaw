@@ -41,71 +41,39 @@ In this notebook you will need the following libraries:
 - Torch and torchvision for deep learning using [pytorch](https://pytorch.org/)
 - Pandas, numpy and matplotlib
 - Pillow to load and read an image file.
-- Scikit-learn
+- Scikit-learn: we use label encoder to convert labels into numerical value
 
 You can install all the necessary libraries using pip, for example: `pip install torch`
 
 ### Milestone 1: Load your dataset
-The images are already loaded in the lakehouse. First we will try and visualize individual images then convert the images into a dataframe.
+The images are already loaded in the lakehouse and a `parquet` file contains image details including season and labels. First we convert the parquet files to Delta tables. In machine learning, Delta tables can be used to store training data for machine learning models, allowing you to easily update the data and retrain the model.
 
-You can try visualizing a single image as follows:
-```
-from PIL import Image
-img = Image.open("<image_link>")
-img.show()
-```
-
-Next, we load our data from lakehouse into a data frame using spark, to do this, you can:
-```
-# Read all the annotation from the lakehouse
-df = spark.sql("SELECT * FROM Serengeti_Lakehouse.Annotations WHERE Annotations.category_id > 1")
-```
+![Converting parquet files to delta tables](/template/workshop/assets/data_to_delta_tables.png)
 
 Once our data is loaded, we filter out seasons we would want loaded and map the categories to the dataframe:
 ```
-# filter out the season, sequence ID, category_id snf image_id
-df_train = df.select("season", "seq_id", "category_id", "location", "image_id", "datetime")
+# load our data 
+train_df = spark.sql("SELECT * FROM Serengeti_LH.sampled_train LIMIT 1000")
 
-# remove image_id wiTH null and duplicates
-df_train = df_train.filter(df_train.image_id.isNotNull()).dropDuplicates()
-
-# convert df_train to pandas dataframe
-df_train = df_train.toPandas()
-
-# Load the Categories DataFrame into a pandas DataFrame
-category_df = spark.sql("SELECT * FROM Serengeti_Lakehouse.Categories").toPandas()
-
-# Map category IDs to category names using a vectorized approach
-category_map = pd.Series(category_df.name.values, index=category_df.id)
-df_train['label'] = category_map[df_train.category_id].values
-
-# Drop the category_id column
-df_train = df_train.drop('category_id', axis=1)
+# convert train_df to pandas dataframe
+train_df = train_df.toPandas()
 ```
 
 Lastly, we convert our file name to read the image URL as follows:
 ```
-# Rename the image_id column to filename
-df_train = df_train.rename(columns={'image_id': 'filename'})
-
-# Append the .JPG extension to the filename column
-df_train['filename'] = df_train.filename + '.JPG'
-
-# reduce to first frame only for all sequences
-df_train = df_train.sort_values('filename').groupby('seq_id').first().reset_index()
-
 # Define a function to apply to the filename column
 def get_ImageUrl(filename):
     return f"/lakehouse/default/Files/images/train/{filename}"
 
 # Create a new column in the dataframe using the apply method
-df_train['image_url'] = df_train['filename'].apply(get_ImageUrl)
-
-df_train
+train_df['image_url'] = train_df['filename'].apply(get_ImageUrl)
 ```
+
 ### Milestone 2: Transform your data
 #### Label encoding
 First, we transform categorical data to numerical data using LabelEncoder. It assigns a unique integer to each category in the data, allowing machine learning algorithms to work with categorical data.
+
+
 
 You can do this by:
 ```
@@ -114,14 +82,11 @@ from sklearn.preprocessing import LabelEncoder
 # Create a LabelEncoder object
 le = LabelEncoder()
 
-# Fit the LabelEncoder to the label column in the df_train DataFrame
-le.fit(df_train['label'])
+# Fit the LabelEncoder to the label column in the train_df DataFrame
+le.fit(train_df['label'])
 
 # Transform the label column to numerical labels using the LabelEncoder
-df_train['labels'] = le.transform(df_train['label'])
-
-# Print the first 10 rows of the transformed DataFrame
-print(df_train.head(10))
+train_df['labels'] = le.transform(train_df['label'])
 ```
 
 #### Transforming our dataset
