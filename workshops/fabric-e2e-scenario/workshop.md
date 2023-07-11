@@ -19,9 +19,10 @@ baner_url: assets/banner.png
 sessions_title:
   - Introduction ====> @DavidAbu
   - Pre-requisites ====> @Jcardif
-  - Loading Data into Onelake ===> @Jcardif
-  - Transforming Data using Fabric notebooks ===> @Jcardif
+  - Loading Data into Lakehouse
+  - Exploring the SQL endpoint 
   - Data Visualization using Power BI  ====> @DavidAbu
+  - Transforming Data using Fabric notebooks ===> @Jcardif
   - Training a Machine Learning Model ====> @BethanyJep
   - Deployment of the Machine Learning Model ====> @BethanyJep
   - Resources ====> @BethanyJep
@@ -38,7 +39,7 @@ The data we'll be using in this workshop is the [Snapshot Serengeti dataset]((ht
 
 
 ## Pre-requisites
-## Loading Data into Onelake
+## Loading Data into Lakehouse
 In this section we'll load the data into the Lakehouse. The data is available in a public blob storage container. 
 
 To begin, we will create and configure a new Lakehouse. To do this, in your workspace open the Data Engineering workload and create a new Lakehouse.
@@ -96,6 +97,14 @@ After successful loading you can see the five tables in the Explorer.
 ![Create Data Pipeline](assets/load-to-tables.png)
 
 Now that we have successfully loaded the data you click on the individual table to view the data. 
+
+A description of the data contained in each table is as follows:
+
+1. ```categories``` - This table contains the different categories of animal species in the dataset, with the ```id``` and ```name``` columns.
+
+2. ```annotations``` - This table contains the annotations for each image in the dataset. The ```id``` column is the unique identifier for each annotation, the ```image_id``` column is the unique identifier for each image, the ```category_id``` column is the unique identifier for each category, the ```seq_id``` 
+
+## Exploring the SQL endpoint
 
 ## Transforming Data using Fabric notebooks
 ## Data Visualization using Power BI
