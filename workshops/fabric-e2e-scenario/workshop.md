@@ -17,8 +17,8 @@ duration_minutes: 180
 tags: data, analytics, Microsoft Fabric, Power BI
 baner_url: assets/banner.png
 sessions_title:
-  - Introduction ====> @DavidAbu
-  - Pre-requisites ====> @Jcardif
+  - Introduction ====> @Jcardif
+  - Pre-requisites ====> @DavidAbu
   - Loading Data into Onelake ===> @Jcardif
   - Transforming Data using Fabric notebooks ===> @Jcardif
   - Data Visualization using Power BI  ====> @DavidAbu
