@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 type: workshop
 title: Hands-On Lab : Building an End-to-End data Analytics solution on Microsoft Fabric
 short_title: Microsoft Fabric E2E
@@ -17,14 +17,14 @@ duration_minutes: 180
 tags: data, analytics, Microsoft Fabric, Power BI
 baner_url: assets/banner.png
 sessions_title:
-  - Introduction ====> @DavidAbu
-  - Pre-requisites ====> @Jcardif
+  - Introduction
+  - Pre-requisites
   - Loading Data into Lakehouse
   - Exploring the SQL endpoint 
-  - Data Visualization using Power BI  ====> @DavidAbu
-  - Transforming Data using Fabric notebooks ===> @Jcardif
-  - Training a Machine Learning Model ====> @BethanyJep
-  - Resources ====> @BethanyJep
+  - Data Visualization using Power BI
+  - Transforming Data using Fabric notebooks
+  - Training a Machine Learning Model
+  - Resources
 ---
 
 ## Introduction
@@ -35,11 +35,14 @@ The data we'll be using in this workshop is the [Snapshot Serengeti dataset]((ht
 
 >Swanson AB, Kosmala M, Lintott CJ, Simpson RJ, Smith A, Packer C (2015) Snapshot Serengeti, high-frequency annotated camera trap images of 40 mammalian species in an African savanna. Scientific Data 2: 150026. DOI: https://doi.org/10.1038/sdata.2015.26
 
-
+---
 
 ## Pre-requisites
+
+---
+
 ## Loading Data into Lakehouse
-In this section we'll load the data into the Lakehouse. The data is available in a public blob storage container. 
+In this section we'll load the data into the Lakehouse. The data is available in a public Blob Storage container. 
 
 To begin, we will create and configure a new Lakehouse. To do this, in your workspace open the Data Engineering workload and create a new Lakehouse.
 
@@ -77,7 +80,7 @@ Finally review your configuration to copy data from the Blob Storage to your Lak
 
 ![Create Data Pipeline](assets/review-data-load.png)
 
-This will take around 2 and a half minutes to execute after you navigate back to the Lakehouse to explore and process the data. 
+This will take around 2 and a half minutes to execute after which you navigate back to the Lakehouse to explore and process the data. 
 
 ![Create Data Pipeline](assets/complete-copy.png)
 
@@ -87,7 +90,7 @@ Clicking this subdirectory will reveal the 5 parquet files we copied from blob s
 
 ![Create Data Pipeline](assets/lakehouse-explorer.png)
 
-Now that we already have the data files, we will need to load the data from these files into Delta tables. To do this right click on the individual parquet files and click ```Load to Tables`` and then ```Load``.  This will load the respective parquet file into a Delta table.
+Now that we already have the data files, we will need to load the data from these files into Delta tables. To do this right click on the individual parquet files and click ```Load to Tables``` and then ```Load```.  This will load the respective parquet file into a Delta table.
 
 Note that you can only load the next file after the previous one has been loaded to Delta Tables.
 
@@ -103,11 +106,25 @@ A description of the data contained in each table is as follows:
 
 2. ```annotations``` - This table contains the annotations for each image in the dataset. The ```id``` column is the unique identifier for each annotation, the ```image_id``` column is the unique identifier for each image, the ```category_id``` column is the unique identifier for each category, the ```seq_id``` 
 
+---
+
 ## Exploring the SQL endpoint
 
+---
+
+
 ## Transforming Data using Fabric notebooks
+
+---
+
 ## Data Visualization using Power BI
+
+---
+
 ## Training a Machine Learning Model
+
+---
+
 ### What we will cover
 This section covers training a deep learning model on the Serengeti dataset. The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this project is to train a model that can accurately classify the different species of animals in the images.
 
@@ -405,6 +422,8 @@ _, predicted = torch.max(output.data, 1)
 
 print(predicted.item())
 ```
+
+---
 
 ## Resources
 - [Get Started with Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview?WT.mc_id=academic-77998-bethanycheum)
