@@ -22,7 +22,8 @@ sessions_title:
   - Loading Data into Lakehouse
   - Exploring the SQL endpoint 
   - Data Visualization using Power BI
-  - Transforming Data using Fabric notebooks
+  - Data Analysis & Transformation with Apache Spark in Fabric
+  - Download the image files into the Lakehouse
   - Training a Machine Learning Model
   - Resources
 ---
@@ -39,11 +40,12 @@ The data we'll be using in this workshop is the [Snapshot Serengeti dataset]((ht
 
 ## Pre-requisites
 1. You should be familiar with basic data concepts and terminology. 
-1. Have [M365 account for Power BI Service](https://learn.microsoft.com/power-bi/enterprise/service-admin-signing-up-for-power-bi-with-a-new-office-365-trial?WT.mc_id=data-00000-davidabu)
+1. Have [M365 account for Power BI Service](https://learn.microsoft.com/power-bi/enterprise/service-admin-signing-up-for-power-bi-with-a-new-office-365-trial?WT.mc_id=data-91115-davidabu)
 2. Activate [Microsoft Fabric in Power BI Service](https://learn.microsoft.com/en-us/fabric/admin/fabric-switch) or watch a Video
-3. Create a [Workspace in Fabric](https://learn.microsoft.com/fabric/data-warehouse/tutorial-create-workspace?WT.mc_id=data-00000-davidabu)
+3. Create a [Workspace in Fabric](https://learn.microsoft.com/fabric/data-warehouse/tutorial-create-workspace?WT.mc_id=data-91115-davidabu)
 
-=======
+---
+
 ## Loading Data into Lakehouse
 In this section we'll load the data into the Lakehouse. The data is available in a public Blob Storage container. 
 
@@ -110,13 +112,6 @@ A description of the data contained in each table is as follows:
 2. ```annotations``` - This table contains the annotations for each image in the dataset. The ```id``` column is the unique identifier for each annotation, the ```image_id``` column is the unique identifier for each image, the ```category_id``` column is the unique identifier for each category, the ```seq_id``` 
 
 ---
-
-## Exploring the SQL endpoint
-
----
-
-
-## Transforming Data using Fabric notebooks
 ## Exploring the SQL endpoint
 ### What we will cover
 This session covers the SQL-based experience with Microsoft Fabric. The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania.The goal of this session is to run SQL scripts, model the data and run measures.
@@ -219,7 +214,7 @@ Next is creating report, if there is a table you do not want to use at the reprt
 2. Click the **...**
 3. Click **Hide in report view**
 
-## Data Visualization using Power BI
+---
 ## Data Visualization using Power BI
 ### What we will cover
 This section covers the understanding of data analysis within Fabric . The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this project is to analyze the trained data.
@@ -293,9 +288,206 @@ To bring in Visuals
 
 You can explore the data more.
 
-## Training a Machine Learning Model
+---
+## Data Analysis & Transformation with Apache Spark in Fabric
+Now that we have successfully, loaded the data into the Lakehouse and explored how to leverage the SQL endpoint to create views and build relationships, we will now explore how to use Fabric Notebooks to perform data analysis and transformation.
+
+In this section we will learn how to use Apache Spark for data processing and analytics in a Lakehouse. To learn more about Apache Spark in Fabric see [this learn module](https://learn.microsoft.com/en-gb/training/modules/use-apache-spark-work-files-lakehouse/?WT.mc_id=data-91115-jndemenge).
+
+To edit and run Spark code in Microsoft Fabric we will use the Notebooks which very similar to Jupyter Notebooks. To create a new Notebook, click on the ```Open Notebook``` from the Lakehouse and from the drop down menu select ```New Notebook```. This will open a new Notebook. On the top right corner of the workspace click on the Notebook name and rename it to ```analyze-and-transform-data```. Click on any empty area to close and rename the Notebook.
+
+![Rename Notebook](assets/analyze-and-transform-data.png)
+
+To begin we will load the annotations data from the Lakehouse `train_annotations` table. From this we get information about each season's sequences and labels. 
+
+We'll then filter out the relevant columns that are we need , *i.e season, seq_id, category_id, image_id and date_time* and also need to filter out all records whose category_id is greater than 1 to exclue all empty and human images which are not relevant for this training. 
+
+Finally remove any null values in the `image_id`` column and drop any duplicate rows, finally convert the spark dataframe to a pandas dataframe for easier manipulation.
+
+Paste the code below into the first cell of the Notebook and run it. Update the select query with the name of the your Lakehouse name.
+
+```python
+# Read all the annotations in the train table from the lakehouse
+df = spark.sql("SELECT * FROM workshop_lh.train_annotations WHERE train_annotations.category_id > 1")
+
+# filter out the season, sequence ID, category_id snf image_id
+df_train = df.select("season", "seq_id", "category_id", "location", "image_id", "datetime")
+
+# remove image_id wiTH null and duplicates
+df_train = df_train.filter(df_train.image_id.isNotNull()).dropDuplicates()
+
+# convert df_train to pandas dataframe
+df_train = df_train.toPandas()
+```
+Next we will define a function to plot the number of image sequences in each season. We'll achieve this by using the matplotlib and seaborn libraries.
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def plot_season_counts(df, title="Number of Sequences per Season"):
+    # Extract the season from the seq_id column using a lambda function
+    df['season'] = df.seq_id.map(lambda x: x.split('#')[0])
+
+    # Count the number of sequences in each season, and sort the counts by season
+    season_counts = df.season.value_counts().sort_index()
+
+    # Replace 'SER_' prefix in season labels with an empty string for easy visibility
+    season_labels = [s.replace('SER_', '') for s in season_counts.index]
+
+    # Create a bar plot where the x-axis represents the season and the y-axis represents the number of sequences in that season
+    sns.barplot(x=season_labels, y=season_counts.values)
+    plt.xlabel('Season')
+    plt.ylabel('Number of sequences')
+    plt.title(title)
+    plt.show()
+```
+This function takes a single argument `df`, which is the pandas DataFrame containing the `seq_id` column. The function first extracts the season from the `seq_id` column using a lambda function, and then counts the number of sequences in each season using the `value_counts` method of the pandas Series object. The counts are sorted by season using the `sort_index` method.
+
+We then can call the function and pass the `df_train` dataframe as an argument.
+
+```python
+plot_season_counts(df_train, "Original Number of Sequences per Season")
+```
+This will plot the number of sequences in each season.
+
+![Original Number of Sequences per Season](assets/Original_Number_of_Sequences_per_Season.png)
+
+Since we are working with camear trap data, it is common to have mutlple images in a sequence. 
+
+> A sequence is a group of images captured by a single camera trap in a single location over a short period of time. The images in a sequence are captured in rapid succession, and are often very similar to each other.
+
+We can visualize the number of images we have for each sequence and after executing the code snippet below you will notice that by far most sequences have between 1 and 3 images in them.
+```python
+import seaborn as sns
+
+# Create the count plot
+ax = sns.countplot(x=df_train.groupby('seq_id').size(), log=True)
+
+# Set the title and axis labels
+ax.set_title('Number of images in each sequence')
+ax.set_xlabel('Number of images')
+ax.set_ylabel('Count of sequences')
+
+# Show the plot
+plt.tight_layout()
+plt.show()
+```
+
+Next we will load the category names from the Categories table in the lakehouse. We'll then convert the spark dataframe to a pandas dataframe. 
+
+Next the add a new column called *label* in the df_train dataframe which is the category name for each category_id and finally remove the category_id column from df_train and rename the image_id column to filename and append the .JPG extension to the the values
+
+```python
+import pandas as pd
+import numpy as np
+
+# Load the Categories DataFrame into a pandas DataFrame
+category_df = spark.sql("SELECT * FROM workshop_lh.categories").toPandas()
+
+# Map category IDs to category names using a vectorized approach
+category_map = pd.Series(category_df.name.values, index=category_df.id)
+df_train['label'] = category_map[df_train.category_id].values
+
+# Drop the category_id column
+df_train = df_train.drop('category_id', axis=1)
+
+# Rename the image_id column to filename
+df_train = df_train.rename(columns={'image_id': 'filename'})
+
+# Append the .JPG extension to the filename column
+df_train['filename'] = df_train.filename + '.JPG'
+```
+
+Since we are working with a sequence of images we will pick the first image from each sequence, with the assumption that the time period after a camera trap is triggered is the most likely time for an animal to be in the frame. 
+
+```python
+# reduce to first frame only for all sequences
+df_train = df_train.sort_values('filename').groupby('seq_id').first().reset_index()
+
+df_train.count()
+```
+
+The `df_train.count()` method returns the number of rows in the dataframe. Which now reduces to approximately 589758 rows.
+
+Now that we have handled the image sequences, we will now anayze the lables and as well plot the distribution of labels in the dataset. To do this we define a function to make the plot. 
+
+```python
+def plot_label_distribution(df):
+    # Create a horizontal bar plot where the y-axis represents the label and the x-axis represents the number of images with that label
+    plt.figure(figsize=(8, 12))
+    sns.countplot(y='label', data=df, order=df['label'].value_counts().index)
+    plt.xlabel('Number of images')
+    plt.ylabel('Label')
+
+    # Set the x-axis scale to logarithmic
+    plt.xscale('log')
+
+    plt.show()
+```
+
+The scale of the x-axis is set to logarithmic to make it easier to read the labels and normalize the distribution. Each bar respresents the number of images with that label. 
+
+Call this function with the `df_train` dataframe as an argument.
+```python
+plot_label_distribution(df_train)
+```
+
+Now that we have successfully analyzed the  labels and sequences we'll perform some transformations on the dataframe to prepare it for downloading the images. 
+
+To do this we will define a fuction that takes a filename as the input and returns the image url. 
+
+```python
+def get_ImageUrl(filename):
+    return f"https://lilablobssc.blob.core.windows.net/snapshotserengeti-unzipped/{filename}"
+```
+
+This function is then applied to the `filename` column of the `df_train` dataframe to create a new column called `image_url` which contains the url of the image. 
+
+```python
+df_train['image_url'] = df_train['filename'].apply(get_ImageUrl)
+```
+
+We can test this by selecting a random image and displaying it. To do this define the following two functions:
+
+```python
+import urllib.request
+
+def display_random_image(label, random_state, width=500):
+    # Filter the DataFrame to only include rows with the specified label
+    df_filtered = df_train[df_train['label'] == label]
+    
+    # Select a random row from the filtered DataFrame
+    row = df_filtered.sample(random_state=random_state).iloc[0]
+    
+    # Load the image from the URL and display it
+    url = row['image_url']
+    download_and_display_image(url, label)
+
+# use matplotlib to display the image
+def download_and_display_image(url, label):
+    image = plt.imread(urllib.request.urlopen(url), format='jpg')
+    plt.imshow(image)
+    plt.title(f"Label: {label}")
+    plt.show()
+```
+
+Now call the `display_random_image` function with the label `leopard` and a random state of 12.
+
+```python
+display_random_image(label='leopard', random_state=12)
+```
+
+![leopard](assets/leopard.png)
 
 ---
+
+## Download the image files into the Lakehouse
+
+---
+
+## Training a Machine Learning Model
 
 ### What we will cover
 This section covers training a deep learning model on the Serengeti dataset. The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this project is to train a model that can accurately classify the different species of animals in the images.
@@ -598,9 +790,9 @@ print(predicted.item())
 ---
 
 ## Resources
-- [Get Started with Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview?WT.mc_id=academic-77998-bethanycheum)
-- [Explore lakehouses in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-lakehouses/?WT.mc_id=academic-77998-bethanycheum)
-- [Ingest Data with Dataflows Gen2 in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/use-dataflow-gen-2-fabric/?WT.mc_id=academic-77998-bethanycheum)
-- [Get Started with data science in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-data-science-fabric/?WT.mc_id=academic-77998-bethanycheum)
-- [Grow and Learn with the Microsoft Fabric Community](https://community.fabric.microsoft.com/?WT.mc_id=academic-77998-bethanycheum)
+- [Get Started with Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview?WT.mc_id=academic-91115-bethanycheum)
+- [Explore lakehouses in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-lakehouses/?WT.mc_id=academic-91115-bethanycheum)
+- [Ingest Data with Dataflows Gen2 in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/use-dataflow-gen-2-fabric/?WT.mc_id=academic-91115-bethanycheum)
+- [Get Started with data science in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-data-science-fabric/?WT.mc_id=academic-91115-bethanycheum)
+- [Grow and Learn with the Microsoft Fabric Community](https://community.fabric.microsoft.com/?WT.mc_id=academic-91115-bethanycheum)
 
