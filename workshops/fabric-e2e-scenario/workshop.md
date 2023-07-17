@@ -115,7 +115,7 @@ A description of the data contained in each table is as follows:
 ---
 ## Exploring the SQL endpoint
 ### What we will cover
-This session covers the SQL-based experience with Microsoft Fabric. The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania.The goal of this session is to run SQL scripts, model the data and run measures.
+This section covers the SQL-based experience with Microsoft Fabric. The goal of this section is to run SQL scripts, model the data and run measures.
 
 
 ### Milestone 1: Load your dataset
@@ -677,7 +677,7 @@ This concludes the data preparation section. The next section covers how to trai
 ## Training a Machine Learning Model
 
 ### What we will cover
-This section covers training a deep learning model on the Serengeti dataset. The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this project is to train a model that can accurately classify the different species of animals in the images.
+This section covers training a deep learning model on the Serengeti dataset.  The goal of this section is to train a model that can accurately classify the different species of animals in the images.
 
 <!-- ### Prerequisites:
 In this section you will need the following libraries:
