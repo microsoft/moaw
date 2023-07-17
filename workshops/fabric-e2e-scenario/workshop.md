@@ -681,14 +681,13 @@ This section covers training a deep learning model on the Serengeti dataset. The
 
 > [Notebook for training our model](assets/Serengeti%20train.ipynb)
 
-### Prerequisites:
+<!-- ### Prerequisites:
 In this section you will need the following libraries:
 - Torch and torchvision for deep learning using [pytorch](https://pytorch.org/)
 - Pandas, numpy and matplotlib
 - Pillow to load and read an image file.
-- Scikit-learn: we use label encoder to convert labels into numerical value
+- Scikit-learn: we use label encoder to convert labels into numerical value -->
 
-You can install all the necessary libraries using pip, for example: `pip install torch`
 
 ### Milestone 1: Load your dataset
 The images are already loaded in the lakehouse and a `parquet` file contains image details including season and labels. First we convert the parquet files to Delta tables. In machine learning, Delta tables can be used to store training data for machine learning models, allowing you to easily update the data and retrain the model.
@@ -699,11 +698,12 @@ To convert our data from parquet to delta files we:
 * Right click on our dataset, you will do this for both `sample_test.parquet` and `sample_train.parquet`
 * Select **load to Tables** and **create a new table.**
 
-Once our data is in delta files, we load our data and convert it to a Pandas dataframe:
+Once our data is in delta files, we load our data and convert it to a Pandas dataframe to easily manipulate and visualize our data with inbuilt Pandas tools:
 ```python
 # load our data 
 train_df = spark.sql("SELECT * FROM Serengeti_LH.sampled_train LIMIT 1000")
 
+import pandas as pd
 # convert train_df to pandas dataframe
 train_df = train_df.toPandas()
 ```
@@ -718,7 +718,7 @@ def get_ImageUrl(filename):
 train_df['image_url'] = train_df['filename'].apply(get_ImageUrl)
 ```
 
-Our output will be as follows:
+Our output will be as follows, whereby we can directly access the different images:
 ![Our loaded data](assets/load_data.png)
 
 ### Milestone 2: Transform your data
@@ -740,10 +740,48 @@ train_df['labels'] = le.transform(train_df['label'])
 ```
 > 📘 Our test dataset:
 >
-> Ensure you repeat the process for test dataset, drop the filename column and merge the two dataframes using `pd.concat()`
+> Ensure you repeat the process for test dataset, drop the filename column and merge the two dataframes using `pd.concat()` as follows:
+
+```python
+# Repeat the process for the test dataset
+test_df = spark.sql("SELECT * FROM Serengeti_LH.sampled_test LIMIT 1000")
+
+# convert test_df to pandas dataframe
+test_df = test_df.toPandas()
+
+# Create a new column in the dataframe using the apply method
+test_df['image_url'] = test_df['filename'].apply(get_ImageUrl)
+
+# Fit the LabelEncoder to the label column in the test_df DataFrame
+le.fit(test_df['label'])
+
+# Transform the label column to numerical labels using the LabelEncoder
+test_df['labels'] = le.transform(test_df['label'])
+
+# combine both the train and test dataset
+data = pd.concat([test, train])
+
+# drop filename column 
+data = data[['image_url', 'labels']]
+```
+
+From this our result will be a combined dataset containing the two features we need: image url and labels.
 
 #### **Transforming our dataset**
-To train our model, we customize our dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
+To train our model, we will be working with Pytorch. To do this, we will need to install `torch` and `torchvision.`
+
+`torch` is the main PyTorch package that provides the core functionality for working with tensors, building neural networks, and training models.
+
+`torchvision` is a package that provides tools and utilities for working with computer vision tasks, such as image classification and object detection. 
+
+To install both libraries we use the command below:
+```pytorch
+%pip install torch
+%pip install torchvision
+```
+
+Next, we customize our dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
+
 ```python
 from torch.utils.data import Dataset
 import os
@@ -778,6 +816,9 @@ transform = transforms.Compose([
 train_set = CustomDataset("/lakehouse/default/Files/images/train/", transform=transform)
 test_set = CustomDataset("/lakehouse/default/Files/images/test/", transform=transform)
 ```
+`PIL` (Python Imaging Library), is a library that allows us to work with images in Python. For example, using `Image`, we can be able to load and open an image.
+
+
 Lastly, we load the training and testing datasets in batches using Dataloader as follows:
 ```python
 # Load the training and test data
@@ -797,7 +838,7 @@ The purpose of using data loaders is to efficiently load and preprocess large da
 
 import mlflow
 
-mlflow.set_experiment("serengeti-experimane")
+mlflow.set_experiment("serengeti-experiment")
 ```
 
 In the code above, we use the `set_experiment` function from the `mlflow` library to set the active experiment to "serengeti-exp". This will allow us to track the results of our machine learning experiments and compare them across different runs. 
@@ -805,6 +846,8 @@ In the code above, we use the `set_experiment` function from the `mlflow` librar
 By using `mlflow`, we can easily log and track the parameters, metrics, and artifacts of our machine learning experiments, and visualize and compare the results using the Microsoft Fabric UI.
 
 ![Setting up your mlflow experiment](assets/mlflow_exp.png)
+
+From the output above, this means, any machine learning runs will be associated with this experiment enabling us to track and compare our runs.
 
 #### **Loading DenseNet 201 model**
 We use a convolutional neural network (CNN) to classify the images in the Serengeti dataset. The CNN consists of several convolutional layers followed by max pooling layers and fully connected layers.
@@ -891,7 +934,7 @@ for epoch in range(num_epochs):
         
     print('Finished Training')
 ```
-Model training output:
+The code above shows training of our DenseNet model over 5 epochs using our data for training and validation. At the end of each phase, the code computes the loss and accuracy of our model and once each set is done, it returns, `Finished Training` as the output as shown below:
 ![](assets/model_training.png)
 ### Milestone 3: Saving our model:
 We can also use the `mlflow` library to log the trained PyTorch model to the MLflow tracking server and register it as a model version with the name "serengeti-pytorch". Once the model is saved, it can be loaded and used later for inference or further training.
@@ -912,7 +955,7 @@ with mlflow.start_run() as run:
     print(f"Model URI: {model_uri}")
 ```
 
-The results are as follows:
+The results outputs our `Model URI` and the model version as shown below:
 ![Output of saving the mlflow model](assets/mlflow_model.png)
 
 ### Milestone 4: Evaluating our Machine Learning model
@@ -942,7 +985,7 @@ for batch_idx, (x, target) in enumerate(test_loader):
         )
 
 ```
-Model evaluation results:
+Model evaluation results gives out the epochs, batch index, test loss and model accuracy. To increase our model accuracy, we may need to include more images to our train and test set:
 ![](assets/model_evaluation.png)
 Next, we test our model with a single image. We use the `PIL` library to load an image from a file, resizing it to a fixed size, converting it to a PyTorch tensor, passing it through our trained PyTorch model, and getting the output as follows:
 
@@ -973,8 +1016,7 @@ _, predicted = torch.max(output.data, 1)
 
 print(predicted.item())
 ```
-
----
+Finally the output will be a number representing the class label of our image.
 
 ## Resources
 - [Get Started with Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview?WT.mc_id=academic-91115-bethanycheum)
