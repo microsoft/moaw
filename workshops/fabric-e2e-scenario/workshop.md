@@ -679,8 +679,6 @@ This concludes the data preparation section. The next section covers how to trai
 ### What we will cover
 This section covers training a deep learning model on the Serengeti dataset. The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this project is to train a model that can accurately classify the different species of animals in the images.
 
-> [Notebook for training our model](assets/Serengeti%20train.ipynb)
-
 <!-- ### Prerequisites:
 In this section you will need the following libraries:
 - Torch and torchvision for deep learning using [pytorch](https://pytorch.org/)
@@ -1019,6 +1017,8 @@ print(predicted.item())
 Finally the output will be a number representing the class label of our image.
 
 ## Resources
+- [Notebook for training our model](assets/Serengeti%20train.ipynb)
+- [Notebook for preparing and transforming our data](assets/prep_and_transform.ipynb)
 - [Get Started with Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview?WT.mc_id=academic-91115-bethanycheum)
 - [Explore lakehouses in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-lakehouses/?WT.mc_id=academic-91115-bethanycheum)
 - [Ingest Data with Dataflows Gen2 in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/use-dataflow-gen-2-fabric/?WT.mc_id=academic-91115-bethanycheum)
