@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 type: workshop
 title: Deploying to Azure Container Apps
 short_title: Deploying to ACA
