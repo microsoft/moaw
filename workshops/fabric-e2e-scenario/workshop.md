@@ -223,11 +223,11 @@ import mlflow
 mlflow.set_experiment("serengeti-experimane")
 ```
 
-![Setting up your mlflow experiment](assets/mlflow_exp.png)
-
 In the code above, we use the `set_experiment` function from the `mlflow` library to set the active experiment to "serengeti-exp". This will allow us to track the results of our machine learning experiments and compare them across different runs. 
 
 By using `mlflow`, we can easily log and track the parameters, metrics, and artifacts of our machine learning experiments, and visualize and compare the results using the Microsoft Fabric UI.
+
+![Setting up your mlflow experiment](assets/mlflow_exp.png)
 
 #### **Loading DenseNet 201 model**
 We use a convolutional neural network (CNN) to classify the images in the Serengeti dataset. The CNN consists of several convolutional layers followed by max pooling layers and fully connected layers.
