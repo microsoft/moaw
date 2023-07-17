@@ -1,9 +1,9 @@
 ---
 published: true
 type: workshop
-title: Hands-On Lab : Building an End-to-End data Analytics solution on Microsoft Fabric
-short_title: Microsoft Fabric E2E
-decsription: This workshop will walk you through the process of building an end-to-end data analytics solution on Microsoft Fabric. You will learn how to ingest data from multiple sources, transform the data, and build a dashboard on Power BI to visualize the data.
+title: Analyzing Snapshot Serengeti data with Microsoft Fabric
+short_title: Analyzing Snapshot Serengeti data with Microsoft Fabric
+decsription: This workshop will walk you through the process of building an end-to-end data analytics solution on Microsoft Fabric using the Snapshot Serengeti dataset. By the end of this workshop, you will have learned how to load data into a Lakehouse, explore the data using SQL, visualize the data using Power BI, and train a machine learning model.
 level: beginner
 authors:
   - Josh Ndemenge
@@ -14,9 +14,9 @@ contacts:
   - '@BethanyJep'
   - '@DavidAbu'
 duration_minutes: 180
-tags: data, analytics, Microsoft Fabric, Power BI
+tags: data, analytics, Microsoft Fabric, Power BI, data science, data engineering, data visualization
 baner_url: assets/banner.png
-sessions_title:
+sections_title:
   - Introduction
   - Pre-requisites
   - Loading Data into Lakehouse
@@ -26,35 +26,42 @@ sessions_title:
   - Download the image files into the Lakehouse
   - Training a Machine Learning Model
   - Resources
+wt_id: data-91115-jndemenge
 
 ---
 
 ## Introduction
 
-The data we'll be using in this workshop is the [Snapshot Serengeti dataset]((https://lila.science/datasets/snapshot-serengeti)). 
+<div class="info" data-title="Citation">
 
-> **Citation:** *The data used in this project was obtained from the Snapshot Serengeti project.*
+> *The data used in this project was obtained from the [Snapshot Serengeti project.](https://lila.science/datasets/snapshot-serengeti)*
 
->Swanson AB, Kosmala M, Lintott CJ, Simpson RJ, Smith A, Packer C (2015) Snapshot Serengeti, high-frequency annotated camera trap images of 40 mammalian species in an African savanna. Scientific Data 2: 150026. DOI: https://doi.org/10.1038/sdata.2015.26
+> Swanson AB, Kosmala M, Lintott CJ, Simpson RJ, Smith A, Packer C (2015) Snapshot Serengeti, high-frequency annotated camera trap images of 40 mammalian species in an African savanna. Scientific Data 2: 150026. DOI: https://doi.org/10.1038/sdata.2015.26
+
+</div>
 
 ---
 
 ## Pre-requisites
+
 1. You should be familiar with basic data concepts and terminology. 
-1. Have [M365 account for Power BI Service](https://learn.microsoft.com/power-bi/enterprise/service-admin-signing-up-for-power-bi-with-a-new-office-365-trial?WT.mc_id=data-91115-davidabu)
-2. Activate [Microsoft Fabric in Power BI Service](https://learn.microsoft.com/en-us/fabric/admin/fabric-switch) or watch a Video
-3. Create a [Workspace in Fabric](https://learn.microsoft.com/fabric/data-warehouse/tutorial-create-workspace?WT.mc_id=data-91115-davidabu)
+2. Have [M365 account for Power BI Service](https://learn.microsoft.com/power-bi/enterprise/service-admin-signing-up-for-power-bi-with-a-new-office-365-trial?WT.mc_id=data-91115-davidabu)
+3. Activate [Microsoft Fabric in Power BI Service](https://learn.microsoft.com/en-us/fabric/admin/fabric-switch) or watch a Video
+4. Create a [Workspace in Fabric](https://learn.microsoft.com/fabric/data-warehouse/tutorial-create-workspace?WT.mc_id=data-91115-davidabu)
 
 ---
 
 ## Loading Data into Lakehouse
-In this section we'll load the data into the Lakehouse. The data is available in a public Blob Storage container. 
 
-To begin, we will create and configure a new Lakehouse. To do this, in your workspace open the Data Engineering workload and create a new Lakehouse.
+In this section we'll load the data into the Lakehouse. The data is available in a public Blob Storage container.
+
+To begin, we will create and configure a new Lakehouse. To do this, in your workspace open the `Data Engineering workload` and create a new Lakehouse.
 
 ![Create Lakehouse](assets/create-lakehouse.png)
 
-To load the data to the Lakehouse we will use the Data Factory pipelines, that will allow us to copy the data files into the Lakehouse. To do this: click on Get data and select New Data Pipeline. Provide a name then Create.
+### Configure Pipeline to copy data
+
+To load the data to the Lakehouse we will use the Data Factory pipelines, that will allow us to copy the data files into the Lakehouse. To do this: click on `Get data` and select `New Data Pipeline`. Provide a name then Create.
 
 From the wizard that opens; choose Azure Blob Storage as your data source then click next.
 
@@ -64,11 +71,15 @@ Create a new connection by providing the following URL:
 ```url
 https://ssfabric.blob.core.windows.net/parquet-files
 ```
-Provide an appropriate connection name, and for the Authentication kind select Anonymous and click next. 
+Provide an appropriate connection name, and for the Authentication kind select `Anonymous` and click next.
 
 ![Create Data Pipeline](assets/create-connection.png)
 
-If you get an error Unable to list files, provide the parent directory as follows ```parquet-files/``` then click on retry and this should fix the error. 
+<div class="tip" data-title="Tip">
+
+> If you get an error **Unable to list files**, provide the parent directory as follows ```parquet-files/``` then click on *Retry* and this should fix the error.
+
+</div>
 
 Click on the root folder and on the right panel under file format select ```Parquet``` then click Next.
 
@@ -76,19 +87,21 @@ Click on the root folder and on the right panel under file format select ```Parq
 
 For the destination select ```Lakehouse``` and click next. In the drop down that appears select your Lakehouse then click next.
 
-Select the Root folder to be Files, and under folder path, set this to a subdirectory called data. Leave the other files blank and click next.
+Select the Root folder to be Files, and under folder path, set this to a subdirectory called `data`. Leave the other fields as they are and click next.
 
 ![Create Data Pipeline](assets/select-root-destination.png)
 
-For the last configuration step of your data destination, select the File format to be ```Parquet``` and leave the other fields as they are and click next. 
+For the last configuration step of your data destination, select the File format to be ```Parquet``` and leave the other fields as they are and click next.
 
-Finally review your configuration to copy data from the Blob Storage to your Lakehouse. Click Save + Run, to save and run your pipeline.
+Finally review your configuration to copy data from the Blob Storage to your Lakehouse. Click `Save + Run`, to save and run your pipeline.
 
 ![Create Data Pipeline](assets/review-data-load.png)
 
-This will take around 2 and a half minutes to execute after which you navigate back to the Lakehouse to explore and process the data. 
+This will take around 2 and a half minutes to execute after which you navigate back to the Lakehouse to explore and process the data.
 
 ![Create Data Pipeline](assets/complete-copy.png)
+
+### Explore the data in the Lakehouse
 
 From the Lakehouse explorer click on the ellipsis button on the Files Directory and click Refresh. Upon refreshing you’ll find the newly created subdirectory called data.
 
@@ -110,196 +123,187 @@ A description of the data contained in each table is as follows:
 
 1. ```categories``` - This table contains the different categories of animal species in the dataset, with the ```id``` and ```name``` columns.
 
-2. ```annotations``` - This table contains the annotations for each image in the dataset. The ```id``` column is the unique identifier for each annotation, the ```image_id``` column is the unique identifier for each image, the ```category_id``` column is the unique identifier for each category, the ```seq_id``` 
+2. ```annotations``` - This table contains the annotations for each image in the dataset. The ```id``` column is the unique identifier for each annotation, the ```image_id``` column is the unique identifier for each image, the ```category_id``` column is the unique identifier for each category, the ```seq_id```
 
 ---
+
 ## Exploring the SQL endpoint
+
 ### What we will cover
+
 This session covers the SQL-based experience with Microsoft Fabric. The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania.The goal of this session is to run SQL scripts, model the data and run measures.
 
+### Load your dataset
 
-### Milestone 1: Load your dataset
 The images are load in your Lakehouse. Automatically, the [SQL Endpoint](https://learn.microsoft.com/en-us/fabric/data-warehouse/get-started-lakehouse-sql-endpoint) is created immediately you load data into your Lakehouse. In a Microsoft Fabric workspace, a SQL Endpoint is labeled "SQL Endpoint" under the Type column. Each Lakehouse has an autogenerated SQL Endpoint that can be leveraged through familiar SQL tools such as [SQL Server Management Studio](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms), [Azure Data Studio](https://learn.microsoft.com/en-us/sql/azure-data-studio/what-is-azure-data-studio), the [Microsoft Fabric SQL Query Editor](https://learn.microsoft.com/en-us/fabric/data-warehouse/sql-query-editor).
-
 
 In your workspace, Click the `Serengeti_LH `which has the **Type** SQL endpoint
 
-
 ![Workspace Interface](assets/Workspace_interface.png)
 
-
 You will see all your data loaded and we will be working with the followig tables
+
 - `train_annotations`
 - `train_images`
 - `categories`
 
-
 ![SQL Endpoint](assets/SQL_endpoint%20.png)
 
-
 There are 3 views within the Warehouse
+
 - **Data** - This is where all data are stored
 - **Query** - This is where you build your SQL solutions
 - **Model** - This is where you connect your tables together
 
-
-### Milestone 2: Create Views with SQL Query
-
+### Create Views with SQL Query
 
 Based on our `train_annotations` data, we want to create a dimension for **season** column and we will use the SQL to get that
 
-
 1. Click **New SQL Query** at the top of your screen
 2. Write this code
-```
+
+```SQL
 SELECT DISTINCT season
 FROM train_annotations
 ```
-3. Highlight the code and click **Run**
-You will see the **Results**
-4. To save as View, Highlight the code again and Click **Save as View**
-5. Give it a name and Click Ok
-It automatically create a View in the Views Folder on your left hand side
 
+1. Highlight the code and click **Run**
+You will see the **Results**
+1. To save as View, Highlight the code again and Click **Save as View**
+1. Give it a name and Click Ok
+It automatically create a View in the Views Folder on your left hand side
 
 ![Views](assets/Views.png)
 
-
-
-
-### Milestone 3: Build Model and Define Relationship
-
+### Build Model and Define Relationship
 
 We want to build relationships with the 4 tables we now have
+
 - `train_annotations`
 - `train_images`
 - `categories`
 - `Season`
 
-
 To create relationship
+
 1. Click **Categories[id]** and drag to connect to **train_annotations[category_id]**
 2. Click **Season[season]** and drag to connect to **train_annotation[category_id]**
 3. Click **train_images[id]** and drag to connect to **train_annotation[images_id]**
 
-
-At the end, you should have a visual like this 
+At the end, you should have a visual like this
 ![Model](assets/model.png)
 
+### New Measures
 
-
-
-### Milestone 3: New Measures 
-This section is about building measures for our analysis. Depending on your report, you will have some core measures you need for your report. 
-
+This section is about building measures for our analysis. Depending on your report, you will have some core measures you need for your report.
 
 To write our first measure
+
 1. Click New measure above
 2. Change measure to Annotation
-3. Type 
-```
+3. Type
+
+```SQL
 Annotations = COUNTROWS(train_annotations)
 ```
-4. Click **Mark sign**
-5. On your right side, check the **properties**, you can change the **Home table** and format the measure
 
+1. Click **Mark sign**
+1. On your right side, check the **properties**, you can change the **Home table** and format the measure
 
 Apply same steps above for a new maesure called **Images**
-```
+
+```SQL
 Images = COUNTROWS(train_images)
 ```
 
-
 Next is creating report, if there is a table you do not want to use at the reprting phase, do the following steps
+
 1. Click the **table**
 2. Click the **...**
 3. Click **Hide in report view**
 
 ---
-## Data Visualization using Power BI
-### What we will cover
-This section covers the understanding of data analysis within Fabric . The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this project is to analyze the trained data.
 
+## Data Visualization using Power BI
+
+### What we will cover
+
+This section covers the understanding of data analysis within Fabric . The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this project is to analyze the trained data.
 
 From our previous lesson in SQL endpoint, we have been able to create measures and build relationship, creating a report will be easier.
 
-
 Clik on New Report and you will see the Power BI interface.
-
 
 ![report](assets/report.png)
 
-
-This report below is what we will build for this worskhop 
-
+This report below is what we will build for this worskhop
 
 ![dashboard](assets/dashboard.png)
 
+### Building the Report
 
-To build this report
+In the filter pane,
 
-
-In the filter pane, 
-- drag **Categoris[id]** to the **Filters on all pages**
+- drag **Categories[id]** to the **Filters on all pages**
 - in Filter type, change **Advanced filtering** to **Basic filtering**
 - Click **Select all**
 - unselect **0** (based on our report, we dont need it)
 
-
 To bring in Visuals
-1. For the first card visual
-- Click a **card** visual, click the measure called **annonation** in the **train_annontation** table
-- you can Format your visual in the **format icon** in the Visualization pane
 
+1. For the first card visual
+    - Click a **card** visual, click the measure called **annonation** in the **train_annontation** table
+    - you can Format your visual in the **format icon** in the Visualization pane
 
 2. For the second card visual
-- Click a **card** visual, click the measure called **images** in the **train_images** table
-- you can Format your visual in the **format icon** in the Visualization pane
-
+    - Click a **card** visual, click the measure called **images** in the **train_images** table
+    - you can Format your visual in the **format icon** in the Visualization pane
 
 3. For Slicers
-- Click a **slicer** visual, Click **season[season]**
-- Click another **slicer** visual, Click **Category[name]**
-- you can Format your visual in the **format icon** in the Visualization pane
-
+    - Click a **slicer** visual, Click **season[season]**
+    - Click another **slicer** visual, Click **Category[name]**
+    - you can Format your visual in the **format icon** in the Visualization pane
 
 4. Annotation by Season
-- Click **Clustered bar chart**
-- Click **season[season]** and **train_annontation[annotations]**
-- you can Format your visual in the **format icon** in the Visualization pane
-
+    - Click **Clustered bar chart**
+    - Click **season[season]** and **train_annontation[annotations]**
+    - you can Format your visual in the **format icon** in the Visualization pane
 
 5. Top Number of Annontations by Animals
-- Click **Clustered bar chart**
-- Click **Category[name]** and **train_annontation[annotations]**
-- In the Format Pane, Check the **name**, change **Advanced filtering** to **TopN**
-- Show items , **Top N** and write **5** beside
-- By Value, drag **train_annontation[annotations]** into the blank space
-- you can Format your visual in the **format icon** in the Visualization pane
-
+    - Click **Clustered bar chart**
+    - Click **Category[name]** and **train_annontation[annotations]**
+    - In the Format Pane, Check the **name**, change **Advanced filtering** to **TopN**
+    - Show items , **Top N** and write **5** beside
+    - By Value, drag **train_annontation[annotations]** into the blank space
+    - you can Format your visual in the **format icon** in the Visualization pane
 
 6. Botom Number of Annontations by Animals
-- Click **Clustered bar chart**
-- Click **Category[name]** and **train_annontation[annotations]**
-- In the Format Pane, Check the **name**, change **Advanced filtering** to **TopN**
-- Show items , Change **Top** to **Bottom** and **5** beside
-- By Value, drag **train_annontation[annotations]** into the blank space
-- you can Format your visual in the **format icon** in the Visualization pane
-
+    - Click **Clustered bar chart**
+    - Click **Category[name]** and **train_annontation[annotations]**
+    - In the Format Pane, Check the **name**, change **Advanced filtering** to **TopN**
+    - Show items , Change **Top** to **Bottom** and **5** beside
+    - By Value, drag **train_annontation[annotations]** into the blank space
+    - you can Format your visual in the **format icon** in the Visualization pane
 
 You can explore the data more.
 
 ---
+
 ## Data Analysis & Transformation with Apache Spark in Fabric
+
 Now that we have successfully, loaded the data into the Lakehouse and explored how to leverage the SQL endpoint to create views and build relationships, we will now explore how to use Fabric Notebooks to perform data analysis and transformation.
 
 In this section we will learn how to use Apache Spark for data processing and analytics in a Lakehouse. To learn more about Apache Spark in Fabric see [this learn module](https://learn.microsoft.com/en-gb/training/modules/use-apache-spark-work-files-lakehouse/?WT.mc_id=data-91115-jndemenge).
+
+### Creating a Fabric Notebook
 
 To edit and run Spark code in Microsoft Fabric we will use the Notebooks which very similar to Jupyter Notebooks. To create a new Notebook, click on the ```Open Notebook``` from the Lakehouse and from the drop down menu select ```New Notebook```. This will open a new Notebook. On the top right corner of the workspace click on the Notebook name and rename it to ```analyze-and-transform-data```. Click on any empty area to close and rename the Notebook.
 
 ![Rename Notebook](assets/analyze-and-transform-data.png)
 
-To begin we will load the annotations data from the Lakehouse `train_annotations` table. From this we get information about each season's sequences and labels. 
+To begin we will load the annotations data from the Lakehouse `train_annotations` table. From this we get information about each season's sequences and labels.
+
+### Loading data into a Spark Dataframe
 
 We'll then filter out the relevant columns that are we need , *i.e season, seq_id, category_id, image_id and date_time* and also need to filter out all records whose category_id is greater than 1 to exclue all empty and human images which are not relevant for this training. 
 
@@ -320,6 +324,9 @@ df_train = df_train.filter(df_train.image_id.isNotNull()).dropDuplicates()
 # convert df_train to pandas dataframe
 df_train = df_train.toPandas()
 ```
+
+### Analyzing data across seasons
+
 Next we will define a function to plot the number of image sequences in each season. We'll achieve this by using the matplotlib and seaborn libraries.
 
 ```python
@@ -344,6 +351,7 @@ def plot_season_counts(df, title="Number of Sequences per Season"):
     plt.title(title)
     plt.show()
 ```
+
 This function takes a single argument `df`, which is the pandas DataFrame containing the `seq_id` column. The function first extracts the season from the `seq_id` column using a lambda function, and then counts the number of sequences in each season using the `value_counts` method of the pandas Series object. The counts are sorted by season using the `sort_index` method.
 
 We then can call the function and pass the `df_train` dataframe as an argument.
@@ -351,15 +359,22 @@ We then can call the function and pass the `df_train` dataframe as an argument.
 ```python
 plot_season_counts(df_train, "Original Number of Sequences per Season")
 ```
+
 This will plot the number of sequences in each season.
 
 ![Original Number of Sequences per Season](assets/Original_Number_of_Sequences_per_Season.png)
 
-Since we are working with camear trap data, it is common to have mutlple images in a sequence. 
+### Analyzing & transforming data across image sequences
+
+Since we are working with camear trap data, it is common to have multiple images in a sequence.
+
+<div class="info">
 
 > A sequence is a group of images captured by a single camera trap in a single location over a short period of time. The images in a sequence are captured in rapid succession, and are often very similar to each other.
+</div>
 
 We can visualize the number of images we have for each sequence and after executing the code snippet below you will notice that by far most sequences have between 1 and 3 images in them.
+
 ```python
 import seaborn as sns
 
@@ -412,7 +427,9 @@ df_train.count()
 
 The `df_train.count()` method returns the number of rows in the dataframe. Which now reduces to approximately 589758 rows.
 
-Now that we have handled the image sequences, we will now anayze the lables and as well plot the distribution of labels in the dataset. To do this we define a function to make the plot. 
+### Analyzing the image labels
+
+Now that we have handled the image sequences, we will now anayze the lables and as well plot the distribution of labels in the dataset. To do this we define a function to make the plot.
 
 ```python
 def plot_label_distribution(df):
@@ -428,23 +445,26 @@ def plot_label_distribution(df):
     plt.show()
 ```
 
-The scale of the x-axis is set to logarithmic to make it easier to read the labels and normalize the distribution. Each bar respresents the number of images with that label. 
+The scale of the x-axis is set to logarithmic to make it easier to read the labels and normalize the distribution. Each bar respresents the number of images with that label.
 
 Call this function with the `df_train` dataframe as an argument.
+
 ```python
 plot_label_distribution(df_train)
 ```
 
-Now that we have successfully analyzed the  labels and sequences we'll perform some transformations on the dataframe to prepare it for downloading the images. 
+### Transforming the dataframe
 
-To do this we will define a fuction that takes a filename as the input and returns the image url. 
+Now that we have successfully analyzed the  labels and sequences we'll perform some transformations on the dataframe to prepare it for downloading the images.
+
+To do this we will define a fuction that takes a filename as the input and returns the image url.
 
 ```python
 def get_ImageUrl(filename):
     return f"https://lilablobssc.blob.core.windows.net/snapshotserengeti-unzipped/{filename}"
 ```
 
-This function is then applied to the `filename` column of the `df_train` dataframe to create a new column called `image_url` which contains the url of the image. 
+This function is then applied to the `filename` column of the `df_train` dataframe to create a new column called `image_url` which contains the url of the image.
 
 ```python
 df_train['image_url'] = df_train['filename'].apply(get_ImageUrl)
@@ -485,13 +505,19 @@ display_random_image(label='leopard', random_state=12)
 ---
 
 ## Download the image files into the Lakehouse
+
 Now that we have succssfully analyzed the data and performed some tranformations to prepare the data for downloading the images, we will now download the images into the lakehouse.
 
-> For demo puprpses we will not use the entire training dataset. Instead we will use a small percentage of the dataset.
+<div class="important" data-title="Note">
 
-To do this we will select a subsst of the data from the main dataset in a way that maintains the same proportions of the `label`, `season` and `location`.
+> For demo purposes we will not use the entire training dataset. Instead we will use a small percentage of the dataset.
+</div>
 
-To do this define a function that takes in the dataset as an input and a percentage and it calculates how many data points to be included based on that percentage. 
+### Proportional allocation of the dataset
+
+To do this we will select a subset of the data from the main dataset in a way that maintains the same proportions of the `label`, `season` and `location`.
+
+To do this define a function that takes in the dataset as an input and a percentage and it calculates how many data points to be included based on that percentage.
 
 ```python
 def proportional_allocation_percentage(data, percentage):
@@ -504,7 +530,8 @@ def proportional_allocation_percentage(data, percentage):
     # Perform proportional allocation on the calculated sample count
     return proportional_allocation(data, sample_count)
 ```
-Notice that this function uses another function to perform the actual proportional allocation. 
+
+Notice that this function uses another function to perform the actual proportional allocation.
 
 ```python
 def proportional_allocation(data, sample_size):
@@ -554,16 +581,19 @@ This second function, groups the data based on the `label`, `season` and `locati
 
 It also  adjusts the sample sizes if necessary to make sure the total sample size matches the desired count. Finally, it randomly selects the appropriate number of data points from each group and returns the resulting sample, which is a smaller dataset that represents the original dataset's proportions accurately.
 
-For pursoses of this demo we we will use 0.05% of the original dataset. 
+For pursoses of this demo we we will use `0.05%` of the original dataset. 
 
 ```python
 percent = 0.05
 sampled_train = proportional_allocation_percentage(df_train, percent)
 plot_season_counts(sampled_train, f"{percent}% Sample from Original Number of Sequences per Season")
 ```
+
 A sid by side comparison is for the original dataset and the sampled dataset is shown below:
 
 ![sampled](assets/sample.png)
+
+### Define functions to download images
 
 Now that we have a sampled dataset, we will download the images into the lakehouse.
 
@@ -572,6 +602,7 @@ To do, we will be using the opencv library to download the images. We will need 
 ```python
 %pip install opencv-python imutils
 ```
+
 Next define a funtion that takes in the url of the image and the path to download the image to. 
 
 ```python
@@ -607,7 +638,8 @@ def download_and_resize_image(url, path, kind):
 
 The kind parameter is uded to define whether the image is a training image or a validation/testing image.
 
-We are going to use this `download_and_resize_image` function in another function that will excute the download in parallel using the `concurrent.futures` library. 
+We are going to use this `download_and_resize_image` function in another function that will excute the download in parallel using the `concurrent.futures` library.
+
 
 ```python
 import concurrent.futures
@@ -622,6 +654,9 @@ def execute_parallel_download(df, kind):
         # Wait for all tasks to complete
         concurrent.futures.wait(futures)
 ```
+
+### Prepare the test dataset
+
 Next we will prepare the test data in the same way we have the train data then download both the train and test images.
 
 ```python
@@ -648,14 +683,18 @@ df_test['image_url'] = df_test['filename'].apply(get_ImageUrl)
 sampled_test = proportional_allocation_percentage(df_test, 0.27)
 ```
 
-From this code snippet we create a test set using 0.27% from the original test set.
+From this code snippet we create a test set using `0.27%` from the original test set.
 
-Neect we execute the download of the images: this will take approximately 10 minutes to complete.
+### Download the images
+
+Next we execute the download of the images: this will take approximately 10 minutes to complete.
 
 ```python
 execute_parallel_download(sampled_train, 'train')
 execute_parallel_download(sampled_test, 'test')
 ```
+
+### Save the sampled dataframes to parquet files
 
 Once the download is complete we will then save the sampled train and test dataframes to parquet files in the lakehouse, for use in the next section. We drop all the columns except the filename and label columns, since these are the only required columns for training the model.
 
@@ -666,6 +705,7 @@ test_data_file = os.path.join(data_dir, 'sampled_test.parquet')
 sampled_train.loc[:, ['filename', 'label']].to_parquet(train_data_file, engine='pyarrow', compression='snappy')
 sampled_test.loc[:, ['filename', 'label']].to_parquet(test_data_file, engine='pyarrow', compression='snappy')
 ```
+
 You can view the saved parquet files from the Lakehouse explorer.
 
 ![parquet](assets/saved_sampled.png)
@@ -676,7 +716,6 @@ This concludes the data preparation section. The next section covers how to trai
 
 ## Training a Machine Learning Model
 
-### What we will cover
 This section covers training a deep learning model on the Serengeti dataset. The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this project is to train a model that can accurately classify the different species of animals in the images.
 
 > [Notebook for training our model](assets/Serengeti%20train.ipynb)
