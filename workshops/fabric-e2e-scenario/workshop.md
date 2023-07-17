@@ -26,6 +26,7 @@ sessions_title:
   - Download the image files into the Lakehouse
   - Training a Machine Learning Model
   - Resources
+
 ---
 
 ## Introduction
@@ -484,6 +485,192 @@ display_random_image(label='leopard', random_state=12)
 ---
 
 ## Download the image files into the Lakehouse
+Now that we have succssfully analyzed the data and performed some tranformations to prepare the data for downloading the images, we will now download the images into the lakehouse.
+
+> For demo puprpses we will not use the entire training dataset. Instead we will use a small percentage of the dataset.
+
+To do this we will select a subsst of the data from the main dataset in a way that maintains the same proportions of the `label`, `season` and `location`.
+
+To do this define a function that takes in the dataset as an input and a percentage and it calculates how many data points to be included based on that percentage. 
+
+```python
+def proportional_allocation_percentage(data, percentage):
+    # Calculate the count of the original sample
+    original_count = len(data)
+
+    # Calculate the count of the sample based on the percentage
+    sample_count = int((percentage / 100) * original_count)
+
+    # Perform proportional allocation on the calculated sample count
+    return proportional_allocation(data, sample_count)
+```
+Notice that this function uses another function to perform the actual proportional allocation. 
+
+```python
+def proportional_allocation(data, sample_size):
+    # Group the data by "label", "season", and "location" columns
+    grouped_data = data.groupby(["label", "season", "location"])
+
+    # Calculate the proportion of each group in the original sample
+    proportions = grouped_data.size() / len(data)
+
+    # Calculate the count of each group in the sample based on proportions
+    sample_sizes = np.round(proportions * sample_size).astype(int)
+
+    # Calculate the difference between the desired sample size and the sum of rounded sample sizes
+    size_difference = sample_size - sample_sizes.sum()
+
+    # Adjust the sample sizes to account for the difference
+    if size_difference > 0:
+        # If there is a shortage of items, allocate the additional items to the groups with the largest proportions
+        largest_proportions = proportions.nlargest(size_difference)
+        for group in largest_proportions.index:
+            sample_sizes[group] += 1
+    elif size_difference < 0:
+        # If there is an excess of items, reduce the sample sizes from the groups with the smallest proportions
+        smallest_proportions = proportions.nsmallest(-size_difference)
+        for group in smallest_proportions.index:
+            sample_sizes[group] -= 1
+
+    # Initialize an empty list to store the sample
+    sample_data = []
+
+    # Iterate over each group and randomly sample the required count
+    for group, count in zip(grouped_data.groups, sample_sizes):
+        indices = grouped_data.groups[group]
+        sample_indices = np.random.choice(indices, size=count, replace=False)
+        sample_data.append(data.loc[sample_indices])
+
+    # Concatenate the sampled dataframes into a single dataframe
+    sample_data = pd.concat(sample_data)
+
+    # Reset the index of the sample DataFrame
+    sample_data.reset_index(drop=True, inplace=True)
+
+    return sample_data
+```
+
+This second function, groups the data based on the `label`, `season` and `location` columns and calculates the proportion of each group in the original sample. It then calculates the count of each group in the sample based on proportions.
+
+It also  adjusts the sample sizes if necessary to make sure the total sample size matches the desired count. Finally, it randomly selects the appropriate number of data points from each group and returns the resulting sample, which is a smaller dataset that represents the original dataset's proportions accurately.
+
+For pursoses of this demo we we will use 0.05% of the original dataset. 
+
+```python
+percent = 0.05
+sampled_train = proportional_allocation_percentage(df_train, percent)
+plot_season_counts(sampled_train, f"{percent}% Sample from Original Number of Sequences per Season")
+```
+A sid by side comparison is for the original dataset and the sampled dataset is shown below:
+
+![sampled](assets/sample.png)
+
+Now that we have a sampled dataset, we will download the images into the lakehouse.
+
+To do, we will be using the opencv library to download the images. We will need to install the opencv library using pip. Execute the following code block in a new cell to install the opencv library and imutils library which is a set of convenience tools to make working with OpenCV easier.
+
+```python
+%pip install opencv-python imutils
+```
+Next define a funtion that takes in the url of the image and the path to download the image to. 
+
+```python
+import urllib.request
+import cv2
+import imutils
+
+def download_and_resize_image(url, path, kind):
+    filename = os.path.basename(path)
+    directory = os.path.dirname(path)
+
+    directory_path = f'/lakehouse/default/Files/images/{kind}/{directory}/'
+
+    # Create the directory if it does not exist
+    os.makedirs(directory_path, exist_ok=True)
+
+    # check if file already exists
+    if os.path.isfile(os.path.join(directory_path, filename)):
+        return
+
+    # Download the image
+    urllib.request.urlretrieve(url, filename)
+
+    # Read the image using OpenCV
+    img = cv2.imread(filename)
+
+    # Resize the image to a reasonable ML training size using imutils
+    resized_img = imutils.resize(img, width=224, height=224, inter=cv2.INTER_AREA)
+
+    # Save the resized image to a defined filepath
+    cv2.imwrite(os.path.join(directory_path, filename), resized_img)
+```
+
+The kind parameter is uded to define whether the image is a training image or a validation/testing image.
+
+We are going to use this `download_and_resize_image` function in another function that will excute the download in parallel using the `concurrent.futures` library. 
+
+```python
+import concurrent.futures
+
+def execute_parallel_download(df, kind):
+    # Use a process pool instead of a thread pool to avoid thread safety issues
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        # Batch process images instead of processing them one at a time
+        urls = df['image_url'].tolist()
+        paths = df['filename'].tolist()
+        futures = [executor.submit(download_and_resize_image, url, path, kind) for url, path in zip(urls, paths)]
+        # Wait for all tasks to complete
+        concurrent.futures.wait(futures)
+```
+Next we will prepare the test data in the same way we have the train data then download both the train and test images.
+
+```python
+df = spark.sql("SELECT * FROM workshop_lh.test_annotations WHERE test_annotations.category_id > 1")
+
+df_test = df.select("season", "seq_id", "category_id", "location", "image_id", "datetime")
+
+df_test= df_test.filter(df_test.image_id.isNotNull()).dropDuplicates()
+
+df_test = df_test.toPandas()
+
+df_test['label'] = category_map[df_test.category_id].values
+
+df_test = df_test.drop('category_id', axis=1)
+
+df_test = df_test.rename(columns={'image_id':'filename'})
+
+df_test['filename'] = df_test.filename+ '.JPG'
+
+df_test = df_test.sort_values('filename').groupby('seq_id').first().reset_index()
+
+df_test['image_url'] = df_test['filename'].apply(get_ImageUrl)
+
+sampled_test = proportional_allocation_percentage(df_test, 0.27)
+```
+
+From this code snippet we create a test set using 0.27% from the original test set.
+
+Neect we execute the download of the images: this will take approximately 10 minutes to complete.
+
+```python
+execute_parallel_download(sampled_train, 'train')
+execute_parallel_download(sampled_test, 'test')
+```
+
+Once the download is complete we will then save the sampled train and test dataframes to parquet files in the lakehouse, for use in the next section. We drop all the columns except the filename and label columns, since these are the only required columns for training the model.
+
+```python
+train_data_file = os.path.join(data_dir, 'sampled_train.parquet')
+test_data_file = os.path.join(data_dir, 'sampled_test.parquet')
+
+sampled_train.loc[:, ['filename', 'label']].to_parquet(train_data_file, engine='pyarrow', compression='snappy')
+sampled_test.loc[:, ['filename', 'label']].to_parquet(test_data_file, engine='pyarrow', compression='snappy')
+```
+You can view the saved parquet files from the Lakehouse explorer.
+
+![parquet](assets/saved_sampled.png)
+
+This concludes the data preparation section. The next section covers how to train your ML model using the sampled data.
 
 ---
 
