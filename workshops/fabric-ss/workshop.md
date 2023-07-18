@@ -607,7 +607,7 @@ sampled_train = proportional_allocation_percentage(df_train, percent)
 plot_season_counts(sampled_train, f"{percent}% Sample from Original Number of Sequences per Season")
 ```
 
-A sidE by side comparison is for the original dataset and the sampled dataset is shown below:
+A side by side comparison is for the original dataset and the sampled dataset is shown below:
 
 ![sampled](assets/sample.png)
 
@@ -712,6 +712,8 @@ From this code snippet we create a test set using `0.27%` from the original test
 Next we execute the download of the images: this will take approximately 10 minutes to complete.
 
 ```python
+import os
+
 execute_parallel_download(sampled_train, 'train')
 execute_parallel_download(sampled_test, 'test')
 ```
@@ -738,7 +740,7 @@ This concludes the data preparation section. The next section covers how to trai
 
 ## Train the model
 
-This section covers training a deep learning model on the Serengeti dataset. The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this project is to train a model that can accurately classify the different species of animals in the images.
+This section covers training a deep learning model on the Serengeti dataset. To begin create a new notebook and rename it to `train-model` as described in the previous section.
 
 ### Load the sample dataset
 
@@ -795,9 +797,11 @@ le.fit(train_df['label'])
 train_df['labels'] = le.transform(train_df['label'])
 ```
 
-> 📘 Our test dataset:
->
+<div class="important" data-title="Test Dataset">
+
 > Ensure you repeat the process for test dataset, drop the filename column and merge the two dataframes using `pd.concat()` as follows:
+</div>
+
 
 ```python
 # Repeat the process for the test dataset
@@ -838,6 +842,11 @@ To install both libraries we use the command below:
 %pip install torch
 %pip install torchvision
 ```
+
+<div class="important" data-title="Note">
+
+> The installation of the torch library restarts the kernel,and therefore the execution of the cells below it will fail. To fix this comment out the cell that does the installation of the libraries and then click `Run all` and this should fix the error.
+</div>
 
 Next, we customize our dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
 
