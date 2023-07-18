@@ -723,6 +723,8 @@ execute_parallel_download(sampled_test, 'test')
 Once the download is complete we will then save the sampled train and test dataframes to parquet files in the lakehouse, for use in the next section. We drop all the columns except the filename and label columns, since these are the only required columns for training the model.
 
 ```python
+data_dir = '/lakehouse/default/Files/data/'
+
 train_data_file = os.path.join(data_dir, 'sampled_train.parquet')
 test_data_file = os.path.join(data_dir, 'sampled_test.parquet')
 
