@@ -24,5 +24,8 @@
   "homepage": "https://github.com/microsoft/moaw#readme",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@moaw/cli": "^1.2.1"
+  }
 }
