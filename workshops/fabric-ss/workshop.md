@@ -24,8 +24,8 @@ sections_title:
   - Data Visualization using Power BI
   - Data Analysis & Transformation with Apache Spark in Fabric
   - Download the image files into the Lakehouse
-  - Training and Evaluation
-  - Evaluating the Machine Learning model
+  - Preparing your data for Training
+  - Training and Evaluating the Machine Learning model
   - Resources
 
 wt_id: data-91115-jndemenge
@@ -740,7 +740,7 @@ This concludes the data preparation section. The next section covers how to trai
 
 ---
 
-## Train the model
+## Preparing your data for Training
 
 This section covers training a deep learning model on the Serengeti dataset. To begin create a new notebook and rename it to `train-model` as described in the previous section.
 
@@ -759,7 +759,7 @@ Once our data is in delta files, we load our data and convert it to a Pandas dat
 
 ```python
 # load our data 
-train_df = spark.sql("SELECT * FROM Serengeti_LH.sampled_train LIMIT 1000")
+train_df = spark.sql("SELECT * FROM DemoLakehouse.sampled_train LIMIT 1000")
 
 import pandas as pd
 # convert train_df to pandas dataframe
@@ -807,7 +807,7 @@ train_df['labels'] = le.transform(train_df['label'])
 
 ```python
 # Repeat the process for the test dataset
-test_df = spark.sql("SELECT * FROM Serengeti_LH.sampled_test LIMIT 1000")
+test_df = spark.sql("SELECT * FROM DemoLakehouse.sampled_test LIMIT 1000")
 
 # convert test_df to pandas dataframe
 test_df = test_df.toPandas()
@@ -822,7 +822,7 @@ le.fit(test_df['label'])
 test_df['labels'] = le.transform(test_df['label'])
 
 # combine both the train and test dataset
-data = pd.concat([test, train])
+data = pd.concat([test_df, train_df])
 
 # drop filename column 
 data = data[['image_url', 'labels']]
@@ -838,11 +838,14 @@ To train our model, we will be working with Pytorch. To do this, we will need to
 
 `torchvision` is a package that provides tools and utilities for working with computer vision tasks, such as image classification and object detection.
 
-To install both libraries we use the command below:
-
+We will have to install the libraries separately. To install torch we run the command below:
 ```pytorch
-%pip install torch
-%pip install torchvision
+pip install torch
+```
+
+To install torchvision we run the command below:
+```pytorch
+pip install torchvision
 ```
 
 <div class="important" data-title="Note">
@@ -854,6 +857,8 @@ Next, we customize our dataset, transforming our files to tensors with the size 
 
 ```python
 from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
+
 import os
 from PIL import Image
 
@@ -923,7 +928,7 @@ From the output above, this means, any machine learning runs will be associated 
 
 ---
 
-## Training and Evaluation
+## Training and Evaluating the Machine Learning model
 
 We use a convolutional neural network (CNN) to classify the images in the Serengeti dataset. The CNN consists of several convolutional layers followed by max pooling layers and fully connected layers.
 
@@ -1031,7 +1036,7 @@ The code for this is:
 with mlflow.start_run() as run:
     print("log pytorch model:")
     mlflow.pytorch.log_model(
-        model, "pytorch-model"
+        model, "pytorch-model",
         registered_model_name="serengeti-pytorch"
     )
     
