@@ -780,7 +780,9 @@ As our datasets are now as delta files, we load our data and convert it to a Pan
 # load our data 
 train_df = spark.sql("SELECT * FROM DemoLakehouse.sampled_train LIMIT 1000")
 
+# import pandas library that will convert our dataset into dataframes
 import pandas as pd
+
 # convert train_df to pandas dataframe
 train_df = train_df.toPandas()
 ```
@@ -788,20 +790,18 @@ train_df = train_df.toPandas()
 Lastly, we convert our file name to read the image URL as follows:
 
 ```python
-# Define a function to apply to the filename column
-def get_ImageUrl(filename):
-    return f"/lakehouse/default/Files/images/train/{filename}"
+# Create a new column in the dataframe to apply to the filename column tor read the image URL
+train_df['image_url'] = train_df['filename'].apply(lambda filename: f"/lakehouse/default/Files/images/train/{filename}")
 
-# Create a new column in the dataframe using the apply method
-train_df['image_url'] = train_df['filename'].apply(get_ImageUrl)
+train_df.head()
 ```
 
-Our output will be as follows, whereby we can directly access the different images:
+Our output will be as follows, showing the different image urls and their consecutive category labels:
 ![Our loaded data](assets/load_data.png)
 
 #### Label encoding
 
-First, we transform categorical data to numerical data using LabelEncoder. It assigns a unique integer to each category in the data, allowing machine learning algorithms to work with categorical data.
+First, we transform categorical data to numerical data using LabelEncoder which we import from the Scikit-Learn library. It assigns a unique integer to each category in the data, allowing machine learning algorithms to work with categorical data.
 
 You can do this by:
 
@@ -820,9 +820,8 @@ train_df['labels'] = le.transform(train_df['label'])
 
 <div class="important" data-title="Test Dataset">
 
-> Ensure you repeat the process for test dataset, drop the filename column and merge the two dataframes using `pd.concat()` as follows:
+> Ensure you repeat the process for test dataset, by droping the filename column and merge the two dataframes using `pd.concat()` as follows:
 </div>
-
 
 ```python
 # Repeat the process for the test dataset
@@ -832,7 +831,7 @@ test_df = spark.sql("SELECT * FROM DemoLakehouse.sampled_test LIMIT 1000")
 test_df = test_df.toPandas()
 
 # Create a new column in the dataframe using the apply method
-test_df['image_url'] = test_df['filename'].apply(get_ImageUrl)
+test_df['image_url'] = test_df['filename'].apply(lambda filename: f"/lakehouse/default/Files/images/train/{filename}")
 
 # Fit the LabelEncoder to the label column in the test_df DataFrame
 le.fit(test_df['label'])
@@ -851,9 +850,7 @@ From this our result will be a combined dataset containing the two features we n
 
 ### Transforming our dataset
 
-To train our model, we will be working with Pytorch. To do this, we will need to import our`torch` and `torchvision` libraries.
-
-Next, we customize our dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
+To train our model, we will be working with Pytorch. To do this, we will need to import our`torch` and `torchvision` libraries. Next, we customize our dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
 
 ```python
 from torch.utils.data import Dataset
@@ -1020,7 +1017,9 @@ for epoch in range(num_epochs):
     print('Finished Training')
 ```
 
-The code above shows training of our DenseNet model over 5 epochs using our data for training and validation. At the end of each phase, the code computes the loss and accuracy of our model and once each set is done, it returns, `Finished Training` as the output as shown below:
+The code above shows training of our DenseNet model over 5 epochs using our data for training and validation. The training will take upto 30 minutes to complete.
+
+At the end of each phase, the code computes the loss and accuracy of our model and once each set is done, it returns, `Finished Training` as the output as shown below:
 
 ![model_training](assets/model_training.png)
 
