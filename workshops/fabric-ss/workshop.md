@@ -968,7 +968,7 @@ The learning rate for the optimizer is set to 0.01 using the `lr` parameter. Thi
 
 ### Training our model
 
-Using the DenseNet Model we just loaded, we go ahead and train our model as follows:
+Using the DenseNet Model we just loaded, we go ahead and train our model as shown below. The training will take upto 10 minutes to complete. You can play around with the number of epochs to increase the accuracy of your model, however, the more the epochs the longer it will take for the training to be completed.
 
 ```python
 # train the model
@@ -1017,9 +1017,7 @@ for epoch in range(num_epochs):
     print('Finished Training')
 ```
 
-The code above shows training of our DenseNet model over 5 epochs using our data for training and validation. The training will take upto 30 minutes to complete.
-
-At the end of each phase, the code computes the loss and accuracy of our model and once each set is done, it returns, `Finished Training` as the output as shown below:
+The code above shows training of our DenseNet model over 5 epochs using our data for training and validation. At the end of each phase, the code computes the loss and accuracy of our model and once each set is done, it returns, `Finished Training` as the output as shown below:
 
 ![model_training](assets/model_training.png)
 
@@ -1079,7 +1077,15 @@ for batch_idx, (x, target) in enumerate(test_loader):
 Model evaluation results gives out the epochs, batch index, test loss and model accuracy. To increase our model accuracy, we may need to include more images to our train and test set:
 ![model_evaluation](assets/model_evaluation.png)
 
-Next, we test our model with a single image. We use the `PIL` library to load an image from a file, resizing it to a fixed size, converting it to a PyTorch tensor, passing it through our trained PyTorch model, and getting the output as follows:
+Next, we test our model with a single image. We use the `PIL` library to load an image from a file as shown below:
+
+```python
+# Load a new image from the test data using Pillow
+image = Image.open('/lakehouse/default/Files/images/test/SER_S11/B03/B03_R1/SER_S11_B03_R1_IMAG1021.JPG')
+image
+```
+
+After loading the image we then resize it to a fixed size, convert it to a PyTorch tensor, pass it through our trained PyTorch model, and getting the class label it belongs to as follows:
 
 ```python
 # Resize the image to a fixed size
@@ -1109,9 +1115,11 @@ _, predicted = torch.max(output.data, 1)
 print(predicted.item())
 ```
 
-Finally the output will be a number representing the class label of our image.
+Finally the output will be a number representing the class label of our image. By doing this, we have been able to train our model and have our model classify an image. 
 
-This concludes the model training and evaluation section. The next section covers all the resources you will need to continue your Microsoft Fabric journey.
+As we already have our model logged in Microsoft Fabric using mlflow, we can download the `pkl` files and use it in our applications. Additionally, we can go ahead and visualize our model performance using Power BI.
+
+This concludes our workshop for today. The next section covers all the resources you will need to continue your Microsoft Fabric journey.
 
 ---
 
