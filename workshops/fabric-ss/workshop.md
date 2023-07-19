@@ -742,20 +742,39 @@ This concludes the data preparation section. The next section covers how to trai
 
 ## Preparing your data for Training
 
-This section covers training a deep learning model on the Serengeti dataset. To begin create a new notebook and rename it to `train-model` as described in the previous section.
+This section covers preparing out data and training a deep learning model on the Serengeti dataset.
 
 ### Load the sample dataset
 
-The images are already loaded in the lakehouse and a `parquet` file contains image details including season and labels. First we convert the parquet files to Delta tables. In machine learning, Delta tables can be used to store training data for machine learning models, allowing you to easily update the data and retrain the model.
+From the previous section, our images are already loaded in the lakehouse as `parquet` files contains image details including filename and labels. First we convert the parquet files to Delta tables. In machine learning, Delta tables can be used to store training data for machine learning models, allowing us to easily update the data and retrain the model.
 
 ![Converting parquet files to delta tables](assets/data_to_delta_tables.png)
 To convert our data from parquet to delta files we:
 
-- Go to Lakehouse
-- Right click on our dataset, you will do this for both `sample_test.parquet` and `sample_train.parquet`
-- Select **load to Tables** and **create a new table.**
+1. Go to our Lakehouse
+1. In the Lakehouse, click on `data`
+1. Right click on the train and test parquet files. You will do this for both `sample_test.parquet` and `sample_train.parquet`
+1. Select **load to Tables** then **create a new table.**
+1. Finally, you will see our new delta files in the LakeHouse as shown below:
+![Output of our delta files](assets/data_to_delta_tables_output.png)
 
-Once our data is in delta files, we load our data and convert it to a Pandas dataframe to easily manipulate and visualize our data with inbuilt Pandas tools:
+ Next, create a new notebook and rename it to `train-model` as described in the previous section.
+
+Before we continue loading our data, we will first install the two libraries we need to train our data using `pip install`. We will be training our model using [Pytorch](https://pytorch.org) which requires two libraries: torch and torchvision. `torch` is the main PyTorch package that provides the core functionality for working with tensors, building neural networks, and training models. `torchvision` is a package that provides tools and utilities for working with computer vision tasks, such as image classification and object detection.
+
+We will have to install the libraries separately. To install torch we run the command below:
+
+```python
+%pip install torch
+```
+
+To install torchvision we run the command below:
+
+```python
+%pip install torch
+```
+
+As our datasets are now as delta files, we load our data and convert it to a Pandas dataframe to easily manipulate and visualize our data with inbuilt Pandas tools starting with the train files:
 
 ```python
 # load our data 
@@ -832,26 +851,7 @@ From this our result will be a combined dataset containing the two features we n
 
 ### Transforming our dataset
 
-To train our model, we will be working with Pytorch. To do this, we will need to install `torch` and `torchvision.`
-
-`torch` is the main PyTorch package that provides the core functionality for working with tensors, building neural networks, and training models.
-
-`torchvision` is a package that provides tools and utilities for working with computer vision tasks, such as image classification and object detection.
-
-We will have to install the libraries separately. To install torch we run the command below:
-```pytorch
-pip install torch
-```
-
-To install torchvision we run the command below:
-```pytorch
-pip install torchvision
-```
-
-<div class="important" data-title="Note">
-
-> The installation of the torch library restarts the kernel,and therefore the execution of the cells below it will fail. To fix this comment out the cell that does the installation of the libraries and then click `Run all` and this should fix the error.
-</div>
+To train our model, we will be working with Pytorch. To do this, we will need to import our`torch` and `torchvision` libraries.
 
 Next, we customize our dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
 
