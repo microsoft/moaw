@@ -1112,6 +1112,8 @@ print(predicted.item())
 
 Finally the output will be a number representing the class label of our image.
 
+This concludes the model training and evaluation section. The next section covers all the resources you will need to continue your Microsoft Fabric journey.
+
 ---
 
 ## Resources
