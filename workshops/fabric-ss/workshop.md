@@ -1125,7 +1125,7 @@ This concludes our workshop for today. The next section covers all the resources
 
 ## Resources
 
-- [Notebook for training our model](assets/Serengeti%20train.ipynb)
+- [Notebook for training our model](assets/train_model.ipynb)
 - [Notebook for preparing and transforming our data](assets/prep_and_transform.ipynb)
 - [Get Started with Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview?WT.mc_id=academic-91115-bethanycheum)
 - [Explore Lakehouses in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-lakehouses/?WT.mc_id=academic-91115-bethanycheum)
