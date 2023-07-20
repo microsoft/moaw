@@ -15,7 +15,7 @@ contacts:
   - '@DavidAbu'
 duration_minutes: 180
 tags: data, analytics, Microsoft Fabric, Power BI, data science, data engineering, data visualization
-banner_url: assets/banner.png
+banner_url: assets/architecture.png
 sections_title:
   - Introduction
   - Pre-requisites
@@ -24,8 +24,8 @@ sections_title:
   - Data Visualization using Power BI
   - Data Analysis & Transformation with Apache Spark in Fabric
   - Download the image files into the Lakehouse
-  - Training and Evaluation
-  - Evaluating the Machine Learning model
+  - Preparing your data for Training
+  - Training and Evaluating the Machine Learning model
   - Resources
 
 wt_id: data-91115-jndemenge
@@ -34,7 +34,23 @@ wt_id: data-91115-jndemenge
 
 ## Introduction
 
-This workshop will walk you through the process of building an end-to-end data analytics solution on Microsoft Fabric using the Snapshot Serengeti dataset. 
+Suppose you are a wildlife researcher who is studying the diversity of wildlife in the African Savannah. You have millions of images captured by camera traps and all the image data store in json metadata files. How do you make sense of all this data? How do you build a data analytics solution that can handle large-scale and complex data sets?
+
+This workshop will walk you through the process of building an end-to-end data analytics solution thats can help you answer these questions using Microsoft fabric. Microsoft Fabric is a unified data platform that offers a comprehensive suit of services such as data science, data engineering, real-time analytics, and business intelligence.
+
+You will learn how to:
+- Load data into Microsoft Fabric using Data Factory pipelines.
+- Leverage SQL queries to explore and analyze the data.
+- Create reports & Visualize the data using Power BI.
+- Use Apache Spark for data processing and analytics.
+- Train & Evaluate a machine learning model using the data science workload in Microsoft Fabric.
+
+![Snapshot Serengeti](assets/architecture.png)
+
+By the end of this workshop, you will have a better understanding of how to use Microsoft Fabric to create an end-to-end data analytics solution that can handle large-scale and complex data sets. 
+
+This workshop uses the Snapshot Serengeti Dataset. To learn more about the dataset use the links provided in the citation below. 
+
 
 <div class="info" data-title="Citation">
 
@@ -43,9 +59,6 @@ This workshop will walk you through the process of building an end-to-end data a
 > Swanson AB, Kosmala M, Lintott CJ, Simpson RJ, Smith A, Packer C (2015) Snapshot Serengeti, high-frequency annotated camera trap images of 40 mammalian species in an African savanna. Scientific Data 2: 150026. DOI: https://doi.org/10.1038/sdata.2015.26
 </div>
 
-The Snapshot Serengeti dataset is a collection of motion-triggered camera trap images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this workshop is to analyze the metadata files associated with the images and train a machine learning model to classify the images.
-
-To learn more about the dataset use the links provided in the citation above. 
 
 
 ---
@@ -58,6 +71,11 @@ To complete this workshop you will need the following:
 2. A [Microsoft 365 account for Power BI Service](https://learn.microsoft.com/power-bi/enterprise/service-admin-signing-up-for-power-bi-with-a-new-office-365-trial?WT.mc_id=data-91115-davidabu)
 3. A [Microsoft Fabric License](https://learn.microsoft.com/en-us/fabric/enterprise/licenses?WT.mc_id=data-91115-jndemenge) or [Start the Fabric (Preview) trial](https://learn.microsoft.com/en-us/fabric/get-started/fabric-trial?WT.mc_id=data-91115-jndemenge#start-the-fabric-preview-trial)
 4. A [Workspace in Microsoft Fabric](https://learn.microsoft.com/fabric/data-warehouse/tutorial-create-workspace?WT.mc_id=data-91115-davidabu)
+5. Make sure your Workspace has the Data Model settings activated 
+    a. Click **Workspace settings**
+    b. Click **Power BI**
+    c. Open **Power BI** and **Click General**
+    d. **Tick** the small box with "Users can edit data models in Power BI service
 
 ---
 
@@ -65,63 +83,188 @@ To complete this workshop you will need the following:
 
 In this section we'll load the data into the Lakehouse. The data is available in a public Blob Storage container.
 
-To begin, we will create and configure a new Lakehouse. To do this, in your workspace open the `Data Engineering workload` and create a new Lakehouse.
+To begin, we will create and configure a new Lakehouse. To do this, in your workspace open the `Data Engineering workload` and Click on `Lakehouse` provide a the name `DemoLakehouse` and click `Create`.
 
 ![Create Lakehouse](assets/create-lakehouse.png)
 
+This will create a new Lakehouse for you. Both the `Files` and `Tables` directory are empty. In the next steps we'll load data into the Lakehouse. There are several ways to achieve this:
+1. Using [OneLake shortcuts](https://learn.microsoft.com/en-us/fabric/onelake/onelake-shortcuts/?WT.mc_id=data-91115-jndemenge).
+2. Uploading data from your device.
+3. Using [Data Factory pipelines](https://learn.microsoft.com/en-gb/training/modules/use-data-factory-pipelines-fabric/?ns-enrollment-type=learningpath&ns-enrollment-id=learn.wwl.get-started-fabric/?WT.mc_id=data-91115-jndemenge).
+
+For this workshop we will use the Data Factory pipelines to load the data into the Lakehouse. 
+
 ### Configure a Data Factory Pipeline to copy data
+From the bottom left corner of the workspace switch to the `Data Factory Workload`. On the page that opens up click on `Data pipeline`. Provide a name for your pipeline and click `Create`.
 
-To load the data to the Lakehouse we will use the Data Factory pipelines, that will allow us to copy the data files into the Lakehouse. To do this: click on `Get data` and select `New Data Pipeline`. Provide a name then Create.
+![Create Data Pipeline](assets/create-data-pipeline.png)
 
-From the wizard that opens; choose `Azure Blob Storage` as your data source then click next.
+On the Data Factory pipeline page that opens up click on `Add pipeline activity` and on the dialog that appears scroll down to loops and add the `ForEach` activity.
 
-![Create Data Pipeline](assets/select-data-source.png)
+This will open the pipeline canvas and you can configure the settings of the activity in the pane underneath.
 
-Create a new connection by providing the following URL:
+![Create Data Pipeline](assets/add-for-each.png)
 
-```url
-https://ssfabric.blob.core.windows.net/parquet-files
+in the `General` tab provide a name for the activity. Next click on the `Settings` tab and here we'll provide the items to iterate over. Click in the `Items` text box and click on `Add dynamic content` underneath the text box.
+
+A new pane appears on the right side of the screen, and inside the text box type the following expression:
+
+```js
+@createArray('SnapshotSerengetiS01.json.zip',
+'SnapshotSerengetiS02.json.zip',
+'SnapshotSerengetiS03.json.zip',
+'SnapshotSerengetiS04.json.zip',
+'SnapshotSerengetiS05.json.zip',
+'SnapshotSerengetiS06.json.zip',
+'SnapshotSerengetiS07.json.zip',
+'SnapshotSerengetiS08.json.zip',
+'SnapshotSerengetiS09.json.zip',
+'SnapshotSerengetiS10.json.zip',
+'SnapshotSerengetiS11.json.zip')
 ```
 
-Provide an appropriate connection name, and for the Authentication kind select `Anonymous` and click next.
+<div class="tip" data-title="tip">
+
+> Learn more about functions and expressions in Data factory [here](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-expression-language-functions?WT.mc_id=data-91115-jndemenge)
+</div>
+
+We are creating an array of the file names we want to copy from the Blob Storage container. Click ` Ok` to close this pane.
+
+Next, inside the `ForEach` click on the `+` button to add a new activity. From the dialog that appears select `Copy data`. Click the`Copy data` activity and in the pane underneath we'll configure the settings of this activity.
+
+In the `General` tab provide a name for the activity. 
+
+Next, click on the `Source` tab. The `Data store type` select `External`. For the Connection click on the `New` button. On the dialog that appears, select `Azure Blob Storage` and click `Continue`.
+
+For the `Account name` provide the following URL:
+
+```url
+https://lilablobssc.blob.core.windows.net/snapshotserengeti-v-2-0
+```
+
+Provide an appropriate connection name, and for the Authentication kind select `Anonymous` and click `Create`.
 
 ![Create Data Pipeline](assets/create-connection.png)
 
-<div class="tip" data-title="Tip">
+Back on the `Source` tab, in the `File path`, the container name as `snapshotserengeti-v-2-0` leave the directory empty and for the File name, click on the `Add dynamic content` button and from the pane that appears click on `ForEach CurrentItem`. Then click `Ok` to close the pane.
 
-> If you get an error **Unable to list files**, provide the parent directory as follows ```parquet-files/``` then click on *Retry* and this should fix the error.
+![Create Data Pipeline](assets/source-settings.png)
 
+For File format dropdown select `Binary` and click on the `Settings` button next to this dropdown. on the dialog that appears for the `Compression type` select `ZipDeflate` for the `Compression level` select `Fastest` and click `Ok` to close the dialog.
+
+Next, click on the `Destination` tab to configure the destination settings. For the `Data store type` select `Workspace` and for the `Workspace data store type` select `Lakehouse`. In the Lakehouse dropdown, select the Lakehouse you created earlier.
+
+For the Root folder select `Files`. For the File path, the directory, text box type in `raw-data`. Click on the File name text box and click on the `Add dynamic content` button and from the pane that appears put in the following expression:
+
+```js
+@replace(item(), '.zip', '')
+```
+<div class="info">
+
+> This expression will remove the .zip extension from the file name in the current iteration. Remember the file name was in the format `SnapshotSerengetiS01.json.zip` and we want to remove the .zip extension to remain with the file name `SnapshotSerengetiS01.json` after the file has been unzipped and copied to the Lakehouse.
 </div>
 
-Click on the root folder and on the right panel under file format select ```Parquet``` then click Next.
+Click `Ok` to close the pane. Back to the destination configuration, for the File format select `Binary`.
 
-![Create Data Pipeline](assets/select-source-container.png)
-
-For the destination select ```Lakehouse``` and click next. In the drop down that appears select your Lakehouse then click next.
-
-Select the Root folder to be Files, and under folder path, set this to a subdirectory called `data`. Leave the other fields as they are and click next.
-
-![Create Data Pipeline](assets/select-root-destination.png)
-
-For the last configuration step of your data destination, select the File format to be ```Parquet``` and leave the other fields as they are and click next.
-
-Finally review your configuration to copy data from the Blob Storage to your Lakehouse. Click `Save + Run`, to save and run your pipeline.
-
-![Create Data Pipeline](assets/review-data-load.png)
-
-This will take around 2 and a half minutes to execute after which you navigate back to the Lakehouse to explore and process the data.
-
+Now that we have finished configuring both activities click on the `Run` button above the canvas. On the dialog, click `Save and run`. The pipeline takes a few seconds to copy and unzip all the specified files from the Blob Storage container to the Lakehouse.
 ![Create Data Pipeline](assets/complete-copy.png)
+
+Navigate back to the lakehouse to explore the data.
 
 ### Explore the data in the Lakehouse
 
-From the Lakehouse right click on the Files Directory and click Refresh. Upon refreshing you’ll find the newly created subdirectory called data.
+From the Lakehouse right click on the Files Directory and click Refresh. Upon refreshing you’ll find the newly created subdirectory called `raw-data`.
 
-Clicking this subdirectory will reveal the 5 parquet files we copied from blob storage.
+Clicking this subdirectory will reveal the 11 files that we unzipped and copied from the Blob Storage container.
 
 ![Create Data Pipeline](assets/lakehouse-explorer.png)
 
-Now that we already have the data files, we will need to load the data from these files into Delta tables. To do this right click on the individual parquet files and click ```Load to Tables``` and then ```Load```.  This will load the respective parquet file into a Delta table.
+### Convert the json files into Parquet files
+
+We will need to convert the json files into Parquet files. To do this we will leverage the Fabric Notebooks to perform this task. More about Fabric Notebooks will be covered in [section 6](/?step=5).
+
+To create a new Notebook, ath the top of the workspace click `Open Notebook` click `New Notebook`. At the top right corner of the workspace click on the Notebook name and rename it to `convert-json-to-parquet`. Click on any empty area to close and rename the Notebook.
+
+In the first cell of the Notebook paste the following code:
+
+```python
+import json
+import os
+import pandas as pd
+
+# Set the path to the directory containing the raw JSON data
+raw_data_path = '/lakehouse/default/Files/raw-data'
+
+# Get the list of JSON files in the raw data path, and select the first 10 for the training set
+train_set = os.listdir(raw_data_path)[:10]
+
+# Select the 11th file for the test set
+test_set = os.listdir(raw_data_path)[10]
+
+# Initialize empty DataFrames to store images, annotations, and categories data
+images = pd.DataFrame()
+annotations = pd.DataFrame()
+categories = pd.DataFrame()
+
+# Process each JSON file in the training set
+for file in train_set:
+    # Read the JSON file and load its data
+    path = os.path.join(raw_data_path, file)
+    with open(path) as f:
+        data = json.load(f)
+
+    # Extract and concatenate the 'images' and 'annotations' data into their respective DataFrames
+    images = pd.concat([images, pd.DataFrame(data['images'])])
+    annotations = pd.concat([annotations, pd.DataFrame(data['annotations'])])
+
+    # The 'categories' data is the same for all files, so we only need to do it once
+    if len(categories) == 0:
+        categories = pd.DataFrame(data['categories'])
+
+# Set the path to the directory where the processed data will be saved
+data_path = '/lakehouse/default/Files/data'
+
+# Create the directory if it doesn't exist
+if not os.path.exists(data_path):
+    os.makedirs(data_path)
+
+# Define the file paths for saving the training data as Parquet files
+train_images_file = os.path.join(data_path, 'train_images.parquet')
+train_annotations_file = os.path.join(data_path, 'train_annotations.parquet')
+categories_file = os.path.join(data_path, 'categories.parquet')
+
+# Convert the DataFrames to Parquet format using the pyarrow engine with snappy compression
+images.to_parquet(train_images_file, engine='pyarrow', compression='snappy')
+annotations.to_parquet(train_annotations_file, engine='pyarrow', compression='snappy')
+categories.to_parquet(categories_file, engine='pyarrow', compression='snappy')
+
+# Process the test set, similar to the training set
+path = os.path.join(raw_data_path, test_set)
+with open(path) as f:
+    data = json.load(f)
+
+# Define the file paths for saving the test data as Parquet files
+test_images_file = os.path.join(data_path, 'test_images.parquet')
+test_annotations_file = os.path.join(data_path, 'test_annotations.parquet')
+
+# Extract and convert the 'images' and 'annotations' data of the test set into DataFrames,
+# then save them as Parquet files with pyarrow engine and snappy compression
+test_images = pd.DataFrame(data['images'])
+test_annotations = pd.DataFrame(data['annotations'])
+
+test_images.to_parquet(test_images_file, engine='pyarrow', compression='snappy')
+test_annotations.to_parquet(test_annotations_file, engine='pyarrow', compression='snappy')
+
+```
+
+This code will convert the json files into Parquet files and save them in the Lakehouse. To run the code click on the `Run all` button above the Notebook. This will take a few minutes to run.
+
+Right click on the `Files` directory and click `Refresh`. You will notice that the `data` directory has been created and it contains the Parquet files. We used the json files from season 1 to season 10 to create a training set and season 11 to create a testing set.
+
+
+### Load the Parquet files into Delta Tables
+
+Now that we already have the data files, we will need to load the data from these files into Delta tables. To do this, navigate back to the Lakehouse and right click on the individual parquet files and click ```Load to Tables``` and then ```Load```.  This will load the respective parquet file into a Delta table.
 
 <div class="tip" data-title="Tip">
 
@@ -173,6 +316,8 @@ There are 3 views within the Warehouse
 - **Query** - This is where you build your SQL solutions
 - **Model** - This is where you connect your tables together
 
+To learn more on [Model in Power BI](https://learn.microsoft.com/en-us/training/paths/model-data-power-bi/)
+
 ### Create Views with SQL Query
 
 Based on our `train_annotations` data, we want to create a dimension for **season** column and we will use an SQL Query to do that:
@@ -202,11 +347,28 @@ We want to build relationships with the 4 tables we now have
 - `categories`
 - `Season`
 
-To create relationship
+To create relationship : Click the **Model** below the screen where you have Data, Query and Model. You will see all the tables listed above.
 
-1. Click **Categories[id]** and drag to connect to **train_annotations[category_id]**
-2. Click **Season[season]** and drag to connect to **train_annotation[category_id]**
+1. Click **Categories[id]** and drag to connect to **train_annotations[category_id]**.
+A screen will pop up with Create Relationship. 
+    a. Caridinality : One to Many
+    b. Cross filter direction : Single
+    c. Make this relationship active: Ticked
+    d. Click **Confirm**
+    
+2. Click **Season[season]** and drag to connect to **train_annotation[season]**
+A screen will pop up with Create Relationship. 
+    a. Caridinality : One to Many
+    b. Cross filter direction : Single
+    c. Make this relationship active: Ticked
+    d. Click **Confirm**
+
 3. Click **train_images[id]** and drag to connect to **train_annotation[images_id]**
+A screen will pop up with Create Relationship. 
+    a. Caridinality : One to Many
+    b. Cross filter direction : Single
+    c. Make this relationship active: Ticked
+    d. Click **Confirm**
 
 At the end, you should have a visual like this
 ![Model](assets/model.png)
@@ -234,7 +396,17 @@ Apply same steps above for a new measure called **Images**
 Images = COUNTROWS(train_images)
 ```
 
-Next is creating report, if there is a table you do not want to use at the reporting phase, do the following steps
+Apply same steps above for a new measure called **Average_Annotation**
+
+
+Next is creating report, if there is a table you do not want to use at the reporting phase, do the following steps.
+
+For this workshop, we will not be using these tables at the reporting phase
+
+1. test_annotations
+2. test_images
+
+To hide them, do the following below
 
 1. Click the **table**
 2. Click the **...**
@@ -248,9 +420,11 @@ Next is creating report, if there is a table you do not want to use at the repor
 
 This section covers the understanding of data analysis within Fabric . The Serengeti dataset is a collection of wildlife images captured by camera traps in the Serengeti National Park in Tanzania. The goal of this project is to analyze the trained data.
 
+To understand the Power BI interface, Click this [resource](https://learn.microsoft.com/en-us/power-bi/fundamentals/power-bi-service-overview)
+
 From our previous lesson in SQL endpoint, we have been able to create measures and build relationship, creating a report will be easier.
 
-Clik on New Report and you will see the Power BI interface.
+Click on New Report and you will see the Power BI interface.
 
 ![report](assets/report.png)
 
@@ -260,7 +434,9 @@ This report below is what we will build for this workshop
 
 ### Building the Report
 
-In the filter pane,
+In the **filter pane**,
+
+![dashboard](assets/filter.png)
 
 - drag **Categories[id]** to the **Filters on all pages**
 - in Filter type, change **Advanced filtering** to **Basic filtering**
@@ -270,30 +446,62 @@ In the filter pane,
 To bring in Visuals
 
 1. For the first card visual
-    - Click a **card** visual, click the measure called **annotation** in the **train_annotation** table
-    - you can Format your visual in the **format icon** in the Visualization pane
+
+![dashboard](assets/card.png)
+
+   - Click a **card** visual , 
+   - Click the measure called **annotation** in the **train_annotation** table
+   - Click the **format icon** in the Visualization pane
+
+![dashboard](assets/Format_visual.png)
+    
+ - Click **Visual**
+ - Click the Callout Value and increase the font size to 55
+ - Click the Category label to increase the font size to 18
+ - Click **Effects** and Click **General**
+ - Click and Open the Background
+ - On Visual border and increase Rounded corners to 15
+ - On Shadow 
+
 
 2. For the second card visual
-    - Click a **card** visual, click the measure called **images** in the **train_images** table
-    - you can Format your visual in the **format icon** in the Visualization pane
+
+- Click a **card** visual, click the measure called **images** in the **train_images** table
+- You can Format the visual in the **format icon** in the Visualization pane
+
+
 
 3. For Slicers
-    - Click a **slicer** visual, Click **season[season]**
-    - Click another **slicer** visual, Click **Category[name]**
-    - you can Format your visual in the **format icon** in the Visualization pane
+
+![dashboard](assets/slicer.png)
+
+- Click a **slicer** visual, Click **season[season]**
+
+- Click another **slicer** visual, Click **Category[name]**
+- In the Field below Visualization, Right click **name**
+- Click **Rename for thsi visual**
+- Change **name** to **Animals**
+
+
+- You can Format the visuals in the **format icon** in the Visualization pane
 
 4. Annotation by Season
-    - Click **Clustered bar chart**
-    - Click **season[season]** and **train_annotation[annotations]**
-    - you can Format your visual in the **format icon** in the Visualization pane
+
+![dashboard](assets/clustered_barchart.png)
+
+- Click **Clustered bar chart**
+- Click **season[season]** and **train_annotation[annotations]**
+- You can Format the visual in the **format icon** in the Visualization pane
 
 5. Top Number of Annotations by Animals
-    - Click **Clustered bar chart**
-    - Click **Category[name]** and **train_annotation[annotations]**
-    - In the Format Pane, Check the **name**, change **Advanced filtering** to **TopN**
-    - Show items , **Top N** and write **5** beside
-    - By Value, drag **train_annotation[annotations]** into the blank space
-    - you can Format your visual in the **format icon** in the Visualization pane
+
+- Click **Clustered bar chart**
+- Click **Category[name]** and **train_annotation[annotations]**
+- In the Format Pane, Check the **name**, change **Advanced filtering** to **TopN**
+- Show items , **Top N** and write **5** beside
+- By Value, drag **train_annotation[annotations]** into the blank space
+- you can Format your visual in the **format icon** in the Visualization pane
+
 
 6. Bottom Number of Annotations by Animals
     - Click **Clustered bar chart**
@@ -303,7 +511,11 @@ To bring in Visuals
     - By Value, drag **train_annotation[annotations]** into the blank space
     - you can Format your visual in the **format icon** in the Visualization pane
 
-You can explore the data more.
+![dashboard](assets/dashboard.png)
+
+Great work in getting to this point. 
+
+I hope you enjoyed this session, You can explore and build more visualizations with the data based on what you have learnt in this session..
 
 ---
 
@@ -319,15 +531,24 @@ To edit and run Spark code in Microsoft Fabric we will use the Notebooks which v
 
 ![Rename Notebook](assets/analyze-and-transform-data.png)
 
-To begin we will load the annotations data from the Lakehouse `train_annotations` table. From this we get information about each season's sequences and labels.
+Before we begin the loading of the data let's install some of the libraries that we'll need.
+
+We will need to install the opencv library using pip. Execute the following code block in the cell to install the opencv library and imutils library which is a set of convenience tools to make working with OpenCV easier.
+
+```python
+%pip install opencv-python imutils
+```
 
 ### Loading data into a Spark Dataframe
 
-We'll then filter out the relevant columns that are we need , *i.e season, seq_id, category_id, image_id and date_time* and also need to filter out all records whose *category_id is greater than 1* to exclude all empty and human images which are not relevant for this training.
+To begin we will load the annotations data from the Lakehouse `train_annotations` table. From this we get information about each season's sequences and labels.
+
+
+We'll then filter out the relevant columns that are we need, *i.e season, seq_id, category_id, image_id and date_time* and also need to filter out all records whose *category_id is greater than 1* to exclude all empty and human images which are not relevant for this training.
 
 Finally remove any null values in the `image_id` column and drop any duplicate rows, finally convert the spark dataframe to a pandas dataframe for easier manipulation.
 
-Paste the code below into the first cell of the Notebook and run it. Update the select query with the name of the your Lakehouse name.
+Paste the code below into a cell of the Notebook and run it. Update the select query with the name of the your Lakehouse name.
 
 ```python
 # Read all the annotations in the train table from the lakehouse
@@ -394,8 +615,6 @@ Since we are working with camera trap data, it is common to have multiple images
 We can visualize the number of images we have for each sequence and after executing the code snippet below you will notice that by far most sequences have between 1 and 3 images in them.
 
 ```python
-import seaborn as sns
-
 # Create the count plot
 ax = sns.countplot(x=df_train.groupby('seq_id').size(), log=True)
 
@@ -414,7 +633,6 @@ Next we will load the category names from the Categories table in the lakehouse.
 Next the add a new column called *label* in the df_train dataframe which is the category name for each category_id and finally remove the category_id column from df_train and rename the image_id column to filename and append the .JPG extension to the the values
 
 ```python
-import pandas as pd
 import numpy as np
 
 # Load the Categories DataFrame into a pandas DataFrame
@@ -447,29 +665,22 @@ The `df_train.count()` method returns the number of rows in the dataframe. Which
 
 ### Analyzing the image labels
 
-Now that we have handled the image sequences, we will now analyze the labels and as well plot the distribution of labels in the dataset. To do this we define a function to make the plot.
+Now that we have handled the image sequences, we will now analyze the labels and as well plot the distribution of labels in the dataset. To do this execute the code snippet below.
 
 ```python
-def plot_label_distribution(df):
-    # Create a horizontal bar plot where the y-axis represents the label and the x-axis represents the number of images with that label
-    plt.figure(figsize=(8, 12))
-    sns.countplot(y='label', data=df, order=df['label'].value_counts().index)
-    plt.xlabel('Number of images')
-    plt.ylabel('Label')
+# Create a horizontal bar plot where the y-axis represents the label and the x-axis represents the number of images with that label
+plt.figure(figsize=(8, 12))
+sns.countplot(y='label', data=df, order=df_train['label'].value_counts().index)
+plt.xlabel('Number of images')
+plt.ylabel('Label')
 
-    # Set the x-axis scale to logarithmic
-    plt.xscale('log')
+# Set the x-axis scale to logarithmic
+plt.xscale('log')
 
-    plt.show()
+plt.show()
 ```
 
 The scale of the x-axis is set to logarithmic to make it easier to read the labels and normalize the distribution. Each bar represents the number of images with that label.
-
-Call this function with the `df_train` dataframe as an argument.
-
-```python
-plot_label_distribution(df_train)
-```
 
 ### Transforming the dataframe
 
@@ -606,27 +817,16 @@ percent = 0.05
 sampled_train = proportional_allocation_percentage(df_train, percent)
 plot_season_counts(sampled_train, f"{percent}% Sample from Original Number of Sequences per Season")
 ```
-
-A side by side comparison is for the original dataset and the sampled dataset is shown below:
+The image below shows a side by side comparison of the output from the execution of the `plot_season_counts` function on the original dataset and the sampled dataset above.
 
 ![sampled](assets/sample.png)
+
 
 ### Define functions to download images
 
 Now that we have a sampled dataset, we will download the images into the lakehouse.
 
-To do, we will be using the opencv library to download the images. We will need to install the opencv library using pip. Execute the following code block in a new cell to install the opencv library and imutils library which is a set of convenience tools to make working with OpenCV easier.
-
-```python
-%pip install opencv-python imutils
-```
-
-<div class="important" data-title="Note">
-
-> The installation of the opencv library restarts the kernel,and therefore the execution of the cells below it will fail. To fix this comment out the cell that does the installation of the libraries and then click `Run all` and this should fix the error.
-</div>
-
-Next define a function that takes in the url of the image and the path to download the image to.
+To do, we will be using the opencv library to download the images. Define a function that takes in the url of the image and the path to download the image to.
 
 ```python
 import urllib.request
@@ -740,28 +940,49 @@ This concludes the data preparation section. The next section covers how to trai
 
 ---
 
-## Train the model
+## Preparing your data for Training
 
-This section covers training a deep learning model on the Serengeti dataset. To begin create a new notebook and rename it to `train-model` as described in the previous section.
+This section covers preparing out data and training a deep learning model on the Serengeti dataset.
 
 ### Load the sample dataset
 
-The images are already loaded in the lakehouse and a `parquet` file contains image details including season and labels. First we convert the parquet files to Delta tables. In machine learning, Delta tables can be used to store training data for machine learning models, allowing you to easily update the data and retrain the model.
+From the previous section, our images are already loaded in the lakehouse as `parquet` files contains image details including filename and labels. First we convert the parquet files to Delta tables. In machine learning, Delta tables can be used to store training data for machine learning models, allowing us to easily update the data and retrain the model.
 
 ![Converting parquet files to delta tables](assets/data_to_delta_tables.png)
 To convert our data from parquet to delta files we:
 
-- Go to Lakehouse
-- Right click on our dataset, you will do this for both `sample_test.parquet` and `sample_train.parquet`
-- Select **load to Tables** and **create a new table.**
+1. Go to our Lakehouse
+1. In the Lakehouse, click on `data`
+1. Right click on the train and test parquet files. You will do this for both `sample_test.parquet` and `sample_train.parquet`
+1. Select **load to Tables** then **create a new table.**
+1. Finally, you will see our new delta files in the LakeHouse as shown below:
+![Output of our delta files](assets/data_to_delta_tables_output.png)
 
-Once our data is in delta files, we load our data and convert it to a Pandas dataframe to easily manipulate and visualize our data with inbuilt Pandas tools:
+ Next, create a new notebook and rename it to `train-model` as described in the previous section.
+
+Before we continue loading our data, we will first install the two libraries we need to train our data using `pip install`. We will be training our model using [Pytorch](https://pytorch.org) which requires two libraries: torch and torchvision. `torch` is the main PyTorch package that provides the core functionality for working with tensors, building neural networks, and training models. `torchvision` is a package that provides tools and utilities for working with computer vision tasks, such as image classification and object detection.
+
+We will have to install the libraries separately. To install torch we run the command below:
+
+```python
+%pip install torch
+```
+
+To install torchvision we run the command below:
+
+```python
+%pip install torch
+```
+
+As our datasets are now as delta files, we load our data and convert it to a Pandas dataframe to easily manipulate and visualize our data with inbuilt Pandas tools starting with the train files:
 
 ```python
 # load our data 
-train_df = spark.sql("SELECT * FROM Serengeti_LH.sampled_train LIMIT 1000")
+train_df = spark.sql("SELECT * FROM DemoLakehouse.sampled_train LIMIT 1000")
 
+# import pandas library that will convert our dataset into dataframes
 import pandas as pd
+
 # convert train_df to pandas dataframe
 train_df = train_df.toPandas()
 ```
@@ -769,20 +990,18 @@ train_df = train_df.toPandas()
 Lastly, we convert our file name to read the image URL as follows:
 
 ```python
-# Define a function to apply to the filename column
-def get_ImageUrl(filename):
-    return f"/lakehouse/default/Files/images/train/{filename}"
+# Create a new column in the dataframe to apply to the filename column tor read the image URL
+train_df['image_url'] = train_df['filename'].apply(lambda filename: f"/lakehouse/default/Files/images/train/{filename}")
 
-# Create a new column in the dataframe using the apply method
-train_df['image_url'] = train_df['filename'].apply(get_ImageUrl)
+train_df.head()
 ```
 
-Our output will be as follows, whereby we can directly access the different images:
+Our output will be as follows, showing the different image urls and their consecutive category labels:
 ![Our loaded data](assets/load_data.png)
 
 #### Label encoding
 
-First, we transform categorical data to numerical data using LabelEncoder. It assigns a unique integer to each category in the data, allowing machine learning algorithms to work with categorical data.
+First, we transform categorical data to numerical data using LabelEncoder which we import from the Scikit-Learn library. It assigns a unique integer to each category in the data, allowing machine learning algorithms to work with categorical data.
 
 You can do this by:
 
@@ -801,19 +1020,18 @@ train_df['labels'] = le.transform(train_df['label'])
 
 <div class="important" data-title="Test Dataset">
 
-> Ensure you repeat the process for test dataset, drop the filename column and merge the two dataframes using `pd.concat()` as follows:
+> Ensure you repeat the process for test dataset, by droping the filename column and merge the two dataframes using `pd.concat()` as follows:
 </div>
-
 
 ```python
 # Repeat the process for the test dataset
-test_df = spark.sql("SELECT * FROM Serengeti_LH.sampled_test LIMIT 1000")
+test_df = spark.sql("SELECT * FROM DemoLakehouse.sampled_test LIMIT 1000")
 
 # convert test_df to pandas dataframe
 test_df = test_df.toPandas()
 
 # Create a new column in the dataframe using the apply method
-test_df['image_url'] = test_df['filename'].apply(get_ImageUrl)
+test_df['image_url'] = test_df['filename'].apply(lambda filename: f"/lakehouse/default/Files/images/train/{filename}")
 
 # Fit the LabelEncoder to the label column in the test_df DataFrame
 le.fit(test_df['label'])
@@ -822,7 +1040,7 @@ le.fit(test_df['label'])
 test_df['labels'] = le.transform(test_df['label'])
 
 # combine both the train and test dataset
-data = pd.concat([test, train])
+data = pd.concat([test_df, train_df])
 
 # drop filename column 
 data = data[['image_url', 'labels']]
@@ -832,28 +1050,12 @@ From this our result will be a combined dataset containing the two features we n
 
 ### Transforming our dataset
 
-To train our model, we will be working with Pytorch. To do this, we will need to install `torch` and `torchvision.`
-
-`torch` is the main PyTorch package that provides the core functionality for working with tensors, building neural networks, and training models.
-
-`torchvision` is a package that provides tools and utilities for working with computer vision tasks, such as image classification and object detection.
-
-To install both libraries we use the command below:
-
-```pytorch
-%pip install torch
-%pip install torchvision
-```
-
-<div class="important" data-title="Note">
-
-> The installation of the torch library restarts the kernel,and therefore the execution of the cells below it will fail. To fix this comment out the cell that does the installation of the libraries and then click `Run all` and this should fix the error.
-</div>
-
-Next, we customize our dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
+To train our model, we will be working with Pytorch. To do this, we will need to import our`torch` and `torchvision` libraries. Next, we customize our dataset, transforming our files to tensors with the size 224x224 pixels. This is done to both the train and test dataset as follows:
 
 ```python
 from torch.utils.data import Dataset
+from torch.utils.data import DataLoader
+
 import os
 from PIL import Image
 
@@ -923,7 +1125,7 @@ From the output above, this means, any machine learning runs will be associated 
 
 ---
 
-## Training and Evaluation
+## Training and Evaluating the Machine Learning model
 
 We use a convolutional neural network (CNN) to classify the images in the Serengeti dataset. The CNN consists of several convolutional layers followed by max pooling layers and fully connected layers.
 
@@ -966,7 +1168,7 @@ The learning rate for the optimizer is set to 0.01 using the `lr` parameter. Thi
 
 ### Training our model
 
-Using the DenseNet Model we just loaded, we go ahead and train our model as follows:
+Using the DenseNet Model we just loaded, we go ahead and train our model as shown below. The training will take upto 10 minutes to complete. You can play around with the number of epochs to increase the accuracy of your model, however, the more the epochs the longer it will take for the training to be completed.
 
 ```python
 # train the model
@@ -1031,7 +1233,7 @@ The code for this is:
 with mlflow.start_run() as run:
     print("log pytorch model:")
     mlflow.pytorch.log_model(
-        model, "pytorch-model"
+        model, "pytorch-model",
         registered_model_name="serengeti-pytorch"
     )
     
@@ -1075,7 +1277,15 @@ for batch_idx, (x, target) in enumerate(test_loader):
 Model evaluation results gives out the epochs, batch index, test loss and model accuracy. To increase our model accuracy, we may need to include more images to our train and test set:
 ![model_evaluation](assets/model_evaluation.png)
 
-Next, we test our model with a single image. We use the `PIL` library to load an image from a file, resizing it to a fixed size, converting it to a PyTorch tensor, passing it through our trained PyTorch model, and getting the output as follows:
+Next, we test our model with a single image. We use the `PIL` library to load an image from a file as shown below:
+
+```python
+# Load a new image from the test data using Pillow
+image = Image.open('/lakehouse/default/Files/images/test/SER_S11/B03/B03_R1/SER_S11_B03_R1_IMAG1021.JPG')
+image
+```
+
+After loading the image we then resize it to a fixed size, convert it to a PyTorch tensor, pass it through our trained PyTorch model, and getting the class label it belongs to as follows:
 
 ```python
 # Resize the image to a fixed size
@@ -1105,13 +1315,17 @@ _, predicted = torch.max(output.data, 1)
 print(predicted.item())
 ```
 
-Finally the output will be a number representing the class label of our image.
+Finally the output will be a number representing the class label of our image. By doing this, we have been able to train our model and have our model classify an image. 
+
+As we already have our model logged in Microsoft Fabric using mlflow, we can download the `pkl` files and use it in our applications. Additionally, we can go ahead and visualize our model performance using Power BI.
+
+This concludes our workshop for today. The next section covers all the resources you will need to continue your Microsoft Fabric journey.
 
 ---
 
 ## Resources
 
-- [Notebook for training our model](assets/Serengeti%20train.ipynb)
+- [Notebook for training our model](assets/train_model.ipynb)
 - [Notebook for preparing and transforming our data](assets/prep_and_transform.ipynb)
 - [Get Started with Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview?WT.mc_id=academic-91115-bethanycheum)
 - [Explore Lakehouses in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-lakehouses/?WT.mc_id=academic-91115-bethanycheum)
