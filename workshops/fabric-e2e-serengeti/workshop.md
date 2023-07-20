@@ -34,9 +34,9 @@ wt_id: data-91115-jndemenge
 
 ## Introduction
 
-Suppose you are a wildlife researcher who is studying the diversity of wildlife in the African Savannah. You have millions of images captured by camera traps and all the image data store in json metadata files. How do you make sense of all this data? How do you build a data analytics solution that can handle large-scale and complex data sets?
+Suppose you are a wildlife researcher who is studying the diversity of wildlife in the African Savannah and have millions of images captured by camera traps to work with. How do you make sense of all this data? How do you build a data analytics solution that can handle large-scale and complex data sets?
 
-This workshop will walk you through the process of building an end-to-end data analytics solution thats can help you answer these questions using Microsoft fabric. Microsoft Fabric is a unified data platform that offers a comprehensive suit of services such as data science, data engineering, real-time analytics, and business intelligence.
+This workshop will walk you through the process of building an end-to-end data analytics solution that can help you answer these questions using Microsoft fabric. Microsoft Fabric is a unified data platform that offers a comprehensive suit of services such as data science, data engineering, real-time analytics, and business intelligence.
 
 You will learn how to:
 - Load data into Microsoft Fabric using Data Factory pipelines.
@@ -71,11 +71,12 @@ To complete this workshop you will need the following:
 2. A [Microsoft 365 account for Power BI Service](https://learn.microsoft.com/power-bi/enterprise/service-admin-signing-up-for-power-bi-with-a-new-office-365-trial?WT.mc_id=data-91115-davidabu)
 3. A [Microsoft Fabric License](https://learn.microsoft.com/en-us/fabric/enterprise/licenses?WT.mc_id=data-91115-jndemenge) or [Start the Fabric (Preview) trial](https://learn.microsoft.com/en-us/fabric/get-started/fabric-trial?WT.mc_id=data-91115-jndemenge#start-the-fabric-preview-trial)
 4. A [Workspace in Microsoft Fabric](https://learn.microsoft.com/fabric/data-warehouse/tutorial-create-workspace?WT.mc_id=data-91115-davidabu)
-5. Make sure your Workspace has the Data Model settings activated 
-    a. Click **Workspace settings**
-    b. Click **Power BI**
-    c. Open **Power BI** and **Click General**
-    d. **Tick** the small box with "Users can edit data models in Power BI service
+5. Make sure your Workspace has the Data Model settings activated:
+
+    - Click **Workspace settings**
+    - Click **Power BI**
+    - Open **Power BI** and **Click General**
+    - **Tick** the small box with "Users can edit data models in Power BI service
 
 ---
 
