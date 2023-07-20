@@ -1,3 +1,16 @@
+# [@moaw/cli-v1.3.0](https://github.com/microsoft/moaw/compare/cli-1.2.1...cli-1.3.0) (2023-07-20)
+
+
+### Bug Fixes
+
+* **cli:** missing break after asciidoc listing ([d965287](https://github.com/microsoft/moaw/commit/d96528780d315b59ace03ae83a9dcdef9d804751))
+* escaping and refs in asciidoc conversion ([2a1720e](https://github.com/microsoft/moaw/commit/2a1720eee71423713a083128fe4173f7a69aba3b))
+
+
+### Features
+
+* **website:** add container host ([#38](https://github.com/microsoft/moaw/issues/38)) ([972d13c](https://github.com/microsoft/moaw/commit/972d13c1a62819fe879c42091392586a127ea808))
+
 # [@moaw/cli-v1.2.1](https://github.com/microsoft/moaw/compare/cli-1.2.0...cli-1.2.1) (2023-04-07)
 
 
