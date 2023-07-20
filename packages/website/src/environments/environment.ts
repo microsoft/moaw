@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  version: 'local-dev'
+  version: 'local-dev',
+  searchUrl: ''
 };
 
 /*

@@ -16,7 +16,7 @@
     "start": "node ./bin/moaw.js",
     "build": "npm run clean -s && tsc",
     "build:watch": "tsc -w --sourceMap",
-    "postbuild": "npm run build:cli --workspace=website && npm run copy:assets -s",
+    "postbuild": "npm run build:root --workspace=website && npm run copy:assets -s",
     "copy:assets": "mkdir -p dist && cp -R ../../template dist && cp -R ../website/dist/website dist && rm -rf dist/website/workshops*",
     "lint": "xo",
     "lint:fix": "xo --fix",
