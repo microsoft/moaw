@@ -165,7 +165,7 @@ With everything ready let's start the lab 🚀
 
 ---
 
-# Lab 0 : The Web Application
+# Lab 0 : The Web Application (1 hour)
 
 ## Create a resource group
 
@@ -292,7 +292,7 @@ It is pretty much a blank canvas at this stage, but you will soon be able to add
 
 ---
 
-# Lab 1 : Transcribe an audio file
+# Lab 1 : Transcribe an audio file (3 hours)
 
 For this first lab, you will focus on the following scope :
 
@@ -1133,7 +1133,7 @@ The entire architecture is `serverless` : Azure compute resources will only be c
 
 ---
 
-# Lab 2 : Retrieve transcriptions
+# Lab 2 : Retrieve transcriptions (1 hour)
 
 On this second lab, we will focus on getting back the transcriptions of audio files and displaying them on the demo Web App.
 
