@@ -1391,10 +1391,9 @@ The last step is to consume the newly published transcriptions in the demo Web A
 
 <div class="task" data-title="Task">
 
-> - Set environment variables in your Static Web App for:
-> The connection string of the Web PubSub with `WPS_CONNECTION_STRING`
-> The Web PubSub name with `WPS_HUB_NAME`
-
+> Set environment variables in your Static Web App for:
+> - The connection string of the Web PubSub with `WPS_CONNECTION_STRING`
+> - The Web PubSub name with `WPS_HUB_NAME`
 > - Ensure that new transcriptions are displayed in the Web App as you upload new audio files.
 
 </div>
