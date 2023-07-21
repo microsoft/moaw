@@ -14,7 +14,7 @@ contacts: # Required. Must match the number of authors
   - "@justrebl"
   - "@ikhemissi"
 duration_minutes: 180
-tags: azure, csu, azure functions, logic apps, event grid, key vault, cosmos db, email, app service, web pubsub, static web app
+tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email, app service, web pubsub, static web app, csu
 navigation_levels: 3
 sections_title:
   - Azure Serverless Workshop
@@ -26,7 +26,7 @@ Welcome to this Azure Serverless Workshop. You'll be experimenting with Azure Se
 
 During this workshop you will have the instructions to complete each steps. It is recommended to search for the answers in provided resources and links before looking at the solutions placed under the 'Toggle solution' panel.
 
-## Prerequisites (15 minutes)
+## Prerequisites
 
 Before starting this workshop, be sure you have:
 
@@ -35,7 +35,7 @@ Before starting this workshop, be sure you have:
 - The [Azure CLI][az-cli-install] installed on your machine
 - The [Azure Functions Core Tools][az-func-core-tools] installed, this will be useful for creating the scaffold of your Azure Functions using command line.
 - If you are using VS Code, you can also install the [Azure Function extension][azure-function-vs-code-extension]
-- Register the Azure providers on your Azure Subscription if not done yet: `Microsoft.CognitiveServices`, `Microsoft.DocumentDB`, `Microsoft.EventGrid`, `Microsoft.KeyVault`, `Microsoft.Logic`,`Microsoft.Web`
+- Register the Azure providers on your Azure Subscription if not done yet: `Microsoft.CognitiveServices`, `Microsoft.DocumentDB`, `Microsoft.EventGrid`, `Microsoft.KeyVault`, `Microsoft.Logic`, `Microsoft.SignalRService`, `Microsoft.Web`
 
 <div class="task" data-title="Task">
 
@@ -72,6 +72,8 @@ az provider register --namespace 'Microsoft.EventGrid'
 az provider register --namespace 'Microsoft.KeyVault'
 # Azure Logic Apps
 az provider register --namespace 'Microsoft.Logic'
+# Azure Web PubSub
+az provider register --namespace 'Microsoft.SignalRService'
 # Azure Functions
 az provider register --namespace 'Microsoft.Web'
 
@@ -163,96 +165,9 @@ With everything ready let's start the lab 🚀
 
 ---
 
-# Lab 0 : Demo Web App
+# Lab 0 : The Web Application (1 hour)
 
-We have created a Static Web App to help assess progress on this Hands-on-Lab and make it easier to upload and get back transcriptions using a simple web interface.
-
-![Demo Web App screenshot](./assets/demo-webapp.png)
-
-Deploying the Web App is optional but it is highly recommended as it will simply the testing process so that you can focus on the fun stuff.
-
-You can deploy the [demo Web App](https://github.com/ikhemissi/serverless-workshop-demo) using either Github Actions (recommended) or [Azure Static Web Apps CLI](https://aka.ms/swa/cli-local-development):
-
-## Using Github Actions
-
-You can rely on Github Actions to build and deploy the code of the Web app into a Static Web App in Azure.
-
-To do this, you need to [fork the project](https://github.com/ikhemissi/serverless-workshop-demo/fork) on Github and then run the following command:
-
-```sh
-# Replace the following settings with your own:
-# - <unique-web-app-name>: unique Static Web App name
-# - <github-username> : your username or organisation in Github where you forked the project
-# - <resource-group> : name of your resource group
-# - westeurope : you can use a different location if you want to deploy the web app somewhere else
-
-az staticwebapp create \
-    --name <unique-web-app-name> \
-    --resource-group <resource-group> \
-    --source https://github.com/<github-username>/serverless-workshop-demo \
-    --location "westeurope" \
-    --branch main \
-    --app-location "./"  \
-    --api-location "./api"  \
-    --output-location "build" \
-    --login-with-github
-```
-
-This command will create the Static Web App in Azure and will then prompt you for permissions in Github so that it can add a Github Action to your forked project. This action will then build and deploy the code of the static web app on your behalf.
-
-## Using Azure Static Web Apps CLI
-
-You can also opt for building and deploying the web app from your machine without having to fork the project and give permissions to [AzureAppServiceCLI](https://learn.microsoft.com/en-us/azure/static-web-apps/get-started-cli?tabs=react) to access the code.
-
-First let's [download](https://github.com/ikhemissi/serverless-workshop-demo/archive/refs/heads/main.zip) or clone the [project](https://github.com/ikhemissi/serverless-workshop-demo) locally
-
-Now, you can follow these steps to create the static web app:
-
-```sh
-# 1. Create the Static Web App in Azure
-# Replace the following settings with your own:
-# - <unique-web-app-name>: unique Static Web App name
-# - <resource-group> : name of your resource group
-# - westeurope : you can use a different location if you want to deploy the web app somewhere else
-
-az staticwebapp create \
-    --name <unique-web-app-name> \
-    --resource-group <resource-group> \
-    --location "westeurope"
-
-# 2. Go to the root of the downloaded app
-cd serverless-workshop-demo
-
-# 3. Install project dependencies
-# You need to have NodeJS 18 installed
-npm install
-
-# 4. Build the Web App
-npm run swa:build
-
-# 5. Rebuild the API if the instruction above fails to do it
-cd api
-npm run build
-
-# 6. Deploy the web app code into the Static Web App
-# Replace <resource-group> with the name of your resource group
-npm run swa:deploy -- \
-  --resource-group <resource-group> \
-  --app-name <unique-web-app-name>
-```
-
-Et voila, now you should have a running demo Web App 🚀
-It is pretty much a blank canvas at this stage, but you will soon be able to add new features to it as we progress with the lab.
-
----
-
-# Lab 1 : Transcribe an audio file
-
-For this first lab, you will focus on the following scope :
-
-![Hand's On Lab Architecture Lab 1](assets/architecture-lab1.svg)
-
-## Create a resource group (5 minutes)
+## Create a resource group
 
 Let's start by creating the resource group for this Hand's On Lab. The resource group is a logical structure to store Azure components used to group your Azure resources.
 
@@ -289,7 +204,101 @@ az group create --name <resource-group> --location <region>
 
 </details>
 
-## Create the storage account (5 minutes)
+## Web App Portal
+
+We have created a Static Web App to help assess progress on this Hands-on-Lab and make it easier to upload and get back transcriptions using a simple web interface.
+
+![Demo Web App screenshot](./assets/static-web-app-demo.png)
+
+Deploying the Web App is optional but it is highly recommended as it will simplify the testing process so that you can focus on the fun stuff.
+
+You can deploy the [demo Web App](https://github.com/ikhemissi/serverless-workshop-demo) using either Github Actions (recommended) or [Azure Static Web Apps CLI](https://aka.ms/swa/cli-local-development).
+
+Remember to define a naming convention, for a static web app it will be this format: `stapp-<environment>-<region>-<application-name>-<owner>-<instance>`
+
+### Using Github Actions
+
+You can rely on Github Actions to build and deploy the code of the Web app into a Static Web App in Azure.
+
+To do this, you need to [fork the project](https://github.com/ikhemissi/serverless-workshop-demo/fork) on Github and then run the following command:
+
+```sh
+# Replace the following settings with your own:
+# - <unique-web-app-name>: unique Static Web App name
+# - <github-username> : your username or organisation in Github where you forked the project
+# - <resource-group> : name of your resource group
+# - westeurope : you can use a different location if you want to deploy the web app somewhere else
+
+az staticwebapp create \
+    --name <unique-web-app-name> \
+    --resource-group <resource-group> \
+    --source https://github.com/<github-username>/serverless-workshop-demo \
+    --location "westeurope" \
+    --branch main \
+    --app-location "./"  \
+    --api-location "./api"  \
+    --output-location "build" \
+    --login-with-github
+```
+
+This command will create the Static Web App in Azure and will then prompt you for permissions in Github so that it can add a Github Action to your forked project. This action will then build and deploy the code of the static web app on your behalf.
+
+### Using Azure Static Web Apps CLI
+
+You can also opt for building and deploying the web app from your machine without having to fork the project and give permissions to [AzureAppServiceCLI](https://learn.microsoft.com/en-us/azure/static-web-apps/get-started-cli?tabs=react) to access the code.
+
+First let's [download](https://github.com/ikhemissi/serverless-workshop-demo/archive/refs/heads/main.zip) or clone the [project](https://github.com/ikhemissi/serverless-workshop-demo) locally
+
+Now, you can follow these steps to create the static web app:
+
+```sh
+# 1. Create the Static Web App in Azure
+# Replace the following settings with your own:
+# - <unique-web-app-name>: unique Static Web App name
+# - <resource-group> : name of your resource group
+# - westeurope : you can use a different location if you want to deploy the web app somewhere else
+
+az staticwebapp create \
+    --name <unique-web-app-name> \
+    --resource-group <resource-group> \
+    --location "westeurope"
+
+# 2. Go to the root of the downloaded app
+cd serverless-workshop-demo
+
+# 3. Install project dependencies
+# You need to have NodeJS 18 installed
+npm install
+
+# 4. Build the Web App
+npm run swa:build
+
+# 5. Rebuild the API if the instruction above fails to do it
+cd api
+npm install
+npm run build
+
+# 6. Deploy the web app code into the Static Web App
+# Replace <resource-group> with the name of your resource group
+# Back to the root repository
+cd ..
+npm run swa:deploy -- \
+  --resource-group <resource-group> \
+  --app-name <unique-web-app-name>
+```
+
+Et voila, now you should have a running demo Web App 🚀
+It is pretty much a blank canvas at this stage, but you will soon be able to add new features to it as we progress with the lab.
+
+---
+
+# Lab 1 : Transcribe an audio file (3 hours)
+
+For this first lab, you will focus on the following scope :
+
+![Hand's On Lab Architecture Lab 1](assets/architecture-lab1.svg)
+
+## Create the storage
 
 The Azure storage account is used to store data objects, including blobs, file shares, queues, tables, and disks. You will use it to store the audios files inside an `audios` container.
 
@@ -305,8 +314,7 @@ With the resource group ready, let's create a storage account with a container n
 <div class="tip" data-title="Tips">
 
 > Azure Storage Account names do not accept hyphens and cannot exceed a maximum of 24 characters.
->
-> [Storage Account][storage-account]<br> 
+> [Storage Account][storage-account]<br>
 > [Storage Account Container][storage-account-container]
 
 </div>
@@ -346,9 +354,9 @@ To check everything was created as expected, open the [Azure Portal][az-portal] 
 
 [az-portal]: https://portal.azure.com
 
-## Detect a file upload event (10 minutes)
+## Detect a file upload event
 
-### Create the Event Grid System Topic
+### Events services
 
 Serverless is all about designing the application around event-driven architectures. Azure offers several options when it comes to message and event brokering, with the principal following services :
 
@@ -367,19 +375,21 @@ The Event Grid is an event broker that you can use to integrate applications whi
 
 The main Event Grid concept we'll use for the rest of this lab is called `System Topic`. A system topic in Event Grid represents one or more events published by Azure services such as Azure Storage and Azure Event Hubs. It basically plays the role of a pub-sub topic centralizing all the events of the associated Azure resource, and send them to all the subscribers based on their defined `event filters`.
 
+### Create the Event Grid System Topic
+
 You can create Event Grid System Topics :
 
 - Directly from the resource you want to monitor (for instance a storage account) using the `Events` menu. A system topic will be created automatically with a unique name and will be linked to the resource.
-- Manually, using the `System Topics` resource type in the azure portal, or thanks to the Azure CLI. This will allow you to define the name of the system topic and the resource it will be linked to.
+- Manually, using the `System Topics` resource type in the Azure Portal, or thanks to the Azure CLI. This will allow you to define the name of the system topic and the resource it will be linked to.
 
-For this step, creating the Event Grid System Topic will be enough, as the actual `event subscription` and `event filters` will be defined and automatically created by the Logic App trigger setup [later on](workshop/serverless-overview/?step=1#trigger-the-logic-app-20-minutes).
+For this step, creating the Event Grid System Topic will be enough, as the actual `event subscription` and `event filters` will be defined and automatically created by the Logic App trigger setup [later on](workshop/serverless-overview/?step=1#trigger-the-logic-app).
 
 <div class="task" data-title="Tasks">
 
 > Create an Event Grid System Topic with the following parameters :
 >
 > - Topic type : `Microsoft.Storage.StorageAccounts`
-> - Source : Select the storage account created in the previous steps (`stdevhol...` in our lab)
+> - Source : The name of the storage account created in the previous steps
 > - Location : Must be the same location as the storage account
 
 </div>
@@ -407,19 +417,17 @@ The naming convention for an Event Grid System Topic is: `egst-audio-storage-<en
 To create an Event Grid System Topic, several parameters are mandatory :
 
 - `--topic-type` must be set to the `type` of resource raising the events (`microsoft.storage.storageaccounts` in our lab)
-- `--source` will define the actual Azure `resource` from which we want to centralize the events (`stdevhol...` in our lab)
+- `--source` will define the actual Azure `resource` from which we want to centralize the events (The Storage account in our lab)
 - `--location` must be the same as the source resource.
 
 ```bash
-
-#Create the event grid system topic
+# Create the event grid system topic
 az eventgrid system-topic create \
   -g <resource-group> \
   --name <event-grid-system-topic-name> \
   --topic-type microsoft.storage.storageaccounts \
   --source /subscriptions/<subscription-id>/resourcegroups/<resource-group>/providers/Microsoft.Storage/storageAccounts/<storage-account-name> \
   --location <region>
-
 ```
 
 Now you should see the Event Grid System Topic in your Resource Group :
@@ -428,14 +436,14 @@ Now you should see the Event Grid System Topic in your Resource Group :
 
 </details>
 
-## Process the event (2 hours)
+## Process the event
 
-You'll now build a Logic App workflow that will trigger when a blob will be uploaded to the storage account created earlier.
+You'll now build a Logic App workflow that will be trigger when a blob will be uploaded to the storage account created earlier.
 This section of the Lab will describe all the steps that the Logic App will take to address this scenario :
 
 ![logic-apps-hol-overview](assets/logic-app-hol-overview.png)
 
-### Create the Logic App (10 minutes)
+### Create the Logic App
 
 Azure Logic Apps is an integration platform as a service where you can create and run automated workflows with little to no code. The design of Logic Apps is mainly designer oriented, and a visual designer can be used to compose a workflow with prebuilt operations which can quickly build a workflow that integrates and manages your apps, data, services, and systems. While creating and testing a flow is way easier with the help of the designer, it still gives capabilities to export the resulting flow as a JSON `template` file to enable versioning, DevOps or separate environment requirements.
 
@@ -452,7 +460,6 @@ Logic Apps offer two main hosting plans which currently differ in functionalitie
 </div>
 
 The naming convention for Logic Apps is: `logic-<environment>-<region>-<application-name>-<owner>-<instance>`
-
 
 <div class="tip" data-title="Tips">
 
@@ -488,16 +495,16 @@ The naming convention for Logic Apps is: `logic-<environment>-<region>-<applicat
 az extension add --name logic
 
 # Create a logic app in consumption mode
-az logic workflow create --resource-group <resource-group>
-                         --location <region>
-                         --name <logic-app-name>
+az logic workflow create --resource-group <resource-group> \
+                         --location <region> \
+                         --name <logic-app-name> \
                          --definition <path-to-default-workflow.json>
 
 ```
 
 </details>
 
-### Trigger the Logic app (20 minutes)
+### Trigger the Logic app
 
 Next step is to actually trigger the Logic App based on the event raised by Event Grid when a file is uploaded to the audios' container.
 
@@ -507,11 +514,14 @@ Logic Apps offers different components which can be used to define the `steps` o
 - Controls : Switch, Loop, Condition, Scope are used to control the flow of the steps composing the actual logic of the workflow.
 - Connectors : Standard and Enterprise connectors are used to connect to different first of third party services and applications. These connectors abstract the complexities of interacting with these services by defining their required and optional inputs as well as deserializing their outputs to `dynamic objects` usable in the rest of the flow steps.
 
-Here's an example of what a simple flow could look like in Logic Apps :
+Here's an example of a basic usecase:
 ![logic-apps-twitter-example](assets/logic-app-twitter-example.png)
+
+And this how this flow might look like in Logic Apps :
 ![logic-apps-twitter-implementation-example](assets/logic-app-twitter-implementation-example.png)
 
-Let's start with our first step :
+Back to our Logic App, let's start with our first step :
+
 We will use the `Event Grid` connector to `trigger` the Logic App when a file is uploaded to the storage account `audios` container.
 
 ![logic-apps-hol-trigger](assets/logic-app-hol-trigger.png)
@@ -572,7 +582,7 @@ The convention to filter on a specific blob container is as follows : `/blobServ
 
 Finally, set the Event Grid `Subscription Name` to `evgs-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`.
 
-Once everything is set, click on the `Save` button and the trigger operation should look like this :
+Once everything is set, click on the `Save` button on the top left corner and the trigger operation should look like this :
 
 ![Event Grid Trigger Settings](assets/event-grid-trigger-settings.png)
 
@@ -584,18 +594,18 @@ It is also possible to rename the different operations of your Logic App to make
 
 [az-portal]: https://portal.azure.com
 
-### Retrieve file content (30 minutes)
+### Retrieve file content
 
 Now we have a blob upload event triggering the Logic App, we will be able to work with extended `metadata` shared in the event message.
 
 <div class="info" title="Note">
 
-> It's important to note an event grid event message is limited to 1MB per event, thus it will not provide the actual content of the file uploaded to the storage account. Instead, it will contain the path to the file in the storage account. This is why we need to use the `Get blob content` action to retrieve the actual content of the file.
+> It's important to note that an event grid event message is limited to 1MB per event, thus it will not provide the actual content of the file uploaded to the storage account. Instead, it will contain the path to the file in the storage account. This is why we need to use the `Get blob content` action to retrieve the actual content of the file.
 
 </div>
 
 One of the event fields is the `subject` which is the path to the event source : The uploaded file in the storage account.
-To make flow design easier, it is possible to provide with a sample json payload string and Logic Apps will automatically generate a more convenient object to manipulate in the rest of the flow design.
+To make the flow design easier, it is possible to provide a sample json payload string and Logic Apps will automatically generate a more convenient object to manipulate in the rest of the flow design.
 
 Event Grid will communicate events based on a common schema by default, that can be found [here][event-grid-common-schema].
 As the Event Grid Trigger is an operation built-in in Logic Apps, the designer is already taking care of this JSON parsing operation for us and provides with a well defined object to work with as `Dynamic Content` for the rest of the flow.
@@ -635,15 +645,15 @@ This operation needs to be parameterized with the authentication information to 
 
 In the `Connection Name` field, fill in with `StorageAccountConnection`.
 
-Select the `Access Key` authentication method and set the name of the storage account created earlier.
+Select the `Access Key` authentication method and set the name of the `Storage Account name` created earlier.
 
 Finally, retrieve the `Primary Key` from your Storage Account `Access keys` panel and fill in the `Access Key` field and click `Create`.
 
 ![Storage account connection service](assets/logic-app-storage-account-connection-string.png)
 
-You now need to provide the path to the file we want to retrieve the content from after selecting the connection settings you configured above.
+Now select the `Get blob content (V2)` action and select the connection settings you configured above.
 
-As the Event Grid Trigger operation already takes care of the JSON parsing, we can directly use the `subject` field as input for the `Blob` field.
+Then, as the Event Grid Trigger operation already takes care of the JSON parsing, we can directly use the `subject` field as input for the `Blob` field.
 While clicking on the `Blob` field you should be presented with a list of `Dynamic content` available. These will be updated based on the previous steps known by the action being edited.
 
 Update the `Blob` field with the path of the audio file extracted from the event grid `data.url` property thanks to the `uriPath` function:
@@ -663,7 +673,7 @@ Your Logic App should look like this:
 
 </details>
 
-### Consume Speech to Text APIs (30 minutes)
+### Consume Speech to Text APIs
 
 The Azure Cognitive Services are cloud-based AI services that give the ability to developers to quickly build intelligent apps thanks to these pre-trained models. They are available through client library SDKs in popular development languages and REST APIs.
 
@@ -721,9 +731,15 @@ The naming conventions are:
 
 ```bash
 # Let's create the speech to text service account as free tier
-az cognitiveservices account create -n <cognitive-service-name> -g <resource-group> --kind SpeechServices --sku F0 -l <region> --yes
+az cognitiveservices account create -n <cognitive-service-name> \
+                                    -g <resource-group> \
+                                    --kind SpeechServices \
+                                    --sku F0 \
+                                    -l <region> --yes
 # Create the Key Vault to secure the speech to text API key
-az keyvault create --location <region> --name <key-vault-name> --resource-group <resource-group>
+az keyvault create --location <region> \
+                   --name <key-vault-name> \
+                   --resource-group <resource-group>
 ```
 
 To allow the Logic App to access the Key Vault, you need to grant access to it. Go to your Logic App and inside the identity tab, turn on the `System Identity`:
@@ -740,9 +756,11 @@ Then search for your logic app.
 
 Now inside your Key Vault, in the `Secret` section add a new one called `SpeechToTextApiKey` and set a key from the cognitive service.
 
+If you can't add the secrets, this means that you need to give to the account you are using, access to the Key Vault like you did previously with Logic App. So, in your Key Vault, go to `Access policies` and create a new one, set the Secret access to `Get`, `List` and `Set`.
+
 ![Key Vault Cognitive Secret](assets/key-vault-cognitive-secret.png)
 
-With all of these ready, add a new action before the loop by searching for `Key Vault` and then select `Get Secret`. This will load the speech to text API key once.
+With all of these ready, add a new action by searching for `Key Vault` and then select `Get Secret`. This will load the speech to text API key once.
 
 ![Logic App Key Vault Connection](assets/logic-app-key-vault-connection.png)
 
@@ -750,18 +768,18 @@ Select the Key Vault and the name of the secret.
 
 ![Logic App Get Secret](assets/logic-app-get-secret.png)
 
-With that ready, add a new action in the loop by searching for `Http`, then fill in the different parameters like this:
+Next, add a new action by searching for `Http`, then fill in the different parameters like this:
 
 ![Logic App HTTP Action](assets/logic-app-http-action.png)
 
-Notice the region of your cognitive service account and the language to use are specified in the API Url.
+Notice the region of your cognitive service account and the language to use are specified in the API Url. All parameters can be found in the default [sample](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/get-started-speech-to-text?tabs=macos%2Cterminal&pivots=programming-language-rest&ocid=AID3051475&WT.mc_id=javascript-76678-cxa#recognize-speech-from-a-file)
 
 To validate the flow, go to your storage account and delete the audio file from the `audios` container and upload it once again (to trigger the updated logic app).
 In the Logic App `Run History`, you should see the transcript of the audio file as a text output from the HTTP call to Speech to Text API.
 
 </details>
 
-### Store data to Cosmos DB (30 minutes)
+### Store data to Cosmos DB
 
 Azure Cosmos DB is a fully managed NoSQL database which offers Geo-redundancy and multi-region write capabilities. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL APIs and offers a serverless option which is perfect for our use case.
 
@@ -822,12 +840,21 @@ In the last run of your Logic App look at the output body of your HTTP action, a
 {
   "RecognitionStatus": "Success",
   "Offset": 1500000,
-  "Duration": 32400000,
+  "Duration": 12100000,
+  "NBest": [
+    {
+      "Confidence": 0.954211,
+      "Lexical": "what's the weather like",
+      "ITN": "what's the weather like",
+      "MaskedITN": "what's the weather like",
+      "Display": "What's the weather like?"
+    }
+  ],
   "DisplayText": "What's the weather like?"
 }
 ```
 
-To help you manipulate the JSON output from speech to text add a `Parse Json` action into the Logic App and use the above as a "Sample payload to generate schema" and choose the `Body` response as input:
+To help you manipulate the JSON output from speech to text add a `Parse Json` action into the Logic App and pass the above output into the `Sample payload to generate schema` menu item to generate the Schema section for you. Finally, choose the `Body` response as input:
 
 ![Parse HTTP response](assets/logic-app-parse-http-response.png)
 
@@ -848,11 +875,13 @@ Finally, it's time to compose the document object to insert using JSON and the `
 
 ![Cosmos DB Insert Document](assets/cosmos-db-insert-document.png)
 
+The path is like we did previously: `uriPath(triggerBody()?['data']?['url'])`.
+
 You can now validate the workflow : delete and upload once again the audio file. You should see the new item created above in your Cosmos DB container !
 
 </details>
 
-## Add an API (1 hour)
+## Add an API
 
 ### Azure Functions : A bit of theory
 
@@ -865,9 +894,9 @@ Azure Functions are event-driven : They must be triggered by an event coming fro
 
 In the same `Function App` you will be able to add multiple `functions`, each with its own set of triggers and bindings. These triggers and bindings can benefit from existing `expressions`, which are parameter conventions easing the overall development experience. For example, you can use an expression to use the execution timestamp, or generate a unique `GUID` name for a file uploaded to a storage account.
 
-Azure functions run and benefit from the App Service platform, offering features like: deployment slots, continuous deployment, HTTPS support, hybrid connections and others. Apart from the `Consumption` (Serverless) model we're most interested in this Lab, Azure Functions can also be deployed a dedicated `App Service Plan`or in a hybrid model called `Premium Plan`.
+Azure Functions run and benefit from the App Service platform, offering features like: deployment slots, continuous deployment, HTTPS support, hybrid connections and others. Apart from the `Consumption` (Serverless) model we're most interested in this Lab, Azure Functions can also be deployed a dedicated `App Service Plan`or in a hybrid model called `Premium Plan`.
 
-### Azure Functions : Let's practice (1 hour)
+### Azure Functions : Let's practice
 
 At this stage in our scenario, the serverless transcription engine is ready and the first lab is almost complete. The last thing you need to add is an API to upload the audio file with a unique `GUID` name to your storage account.
 
@@ -884,6 +913,7 @@ For this step you will create an `Azure Function` with a POST `HTTP Trigger` and
 </div>
 
 The naming conventions to use are:
+
 For the Azure function: `func-<environment>-<region>-<application-name>-<owner>-<instance>`
 For the storage account associated to it: `stfunc<environment><region><application-name><owner><instance>`
 
@@ -918,9 +948,9 @@ az storage account create --name <function-storage-account-name> \
 # Create a serverless function app in the resource group.
 az functionapp create --name <function-name> \
                       --storage-account <function-storage-account-name> \
-                      --consumption-plan-location <region>
-                      --runtime python
-                      --os-type Linux
+                      --consumption-plan-location <region> \
+                      --runtime python \
+                      --os-type Linux \
                       --resource-group <resource-group> \
                       --functions-version 4
 ```
@@ -1049,30 +1079,35 @@ Deployment via Azure Function Core Tools :
 func azure functionapp publish func-<environment>-<region>-<application-name>-<owner>-<instance>
 ```
 
-Let's give a try using Postman:
+Let's give a try using Postman. Go to the Azure Function and select `Functions` the `AudioUpload` and select the `Get Function Url` with the `default (function key)`. 
+The Azure Function url is protected by a code to ensure a basic security layer. 
+
+![Azure Function url credentials](assets/func-url-credentials.png)
+
+Use this url into your Postman to upload the audio file:
 
 ![Postman](assets/func-postman.png)
 
 </details>
 
+### Connect the Web App
+
+It's now time to connect the Azure Function which stand for a small API to upload your audio file and the Static Web App which is the front end of your application. The API Management (APIM) will be added in a future lab.
+
 <div class="task" data-title="Task">
 
-> Check the README of the project to explore the environment variables supported by the Web App and set the value of `FILE_UPLOADING_URL` to the url of the upload function which you have created in the previous lab.
+> Check the README of the web app project to explore the environment variables supported by the Web App you deployed on Lab 0 and set the value of `FILE_UPLOADING_URL` to the url of the upload function which you have created in the previous lab.
 
 </div>
 
 <details>
-
 <summary>Toggle solution</summary>
 
-```sh
-az functionapp function show \
-    --function-name <function-name> \
-    --name <function-app-name> \
-    --resource-group <resource-group> \
-    --query "invokeUrlTemplate" \
-    --output tsv
-```
+First, go to the Azure Static Web App and inside `Configuration` in the `Application Settings` set the environment variable `FILE_UPLOADING_URL` to the same Url you used inside Postman previously.
+
+Now if you try to upload a file using the Web App interface you should see a green box on the bottom left corner with a success message.
+
+![Web App](assets/static-web-app-upload-succeeded.png)
 
 </details>
 
@@ -1084,7 +1119,7 @@ By now you should have a solution that :
 - Will invoke the execution of a Logic App Workflow responsible for retrieving the audio transcription thanks to a Speech to Text (Cognitive Service) call.
 - Once the transcription is retrieved, the Logic App will store this value in a CosmosDB database.
 
-The Azure Function API created in the last step of this Lab also paves the way to the next lab where a Web App frontend will be added to the scenario. It also offers a first security to the solution as the Azure Function API requires a key to be called, as well as makes sure all the files are stores with a uniquely generated name (GUID).
+The Azure Function API created in the Lab offers a first security layer to the solution as it requires a key to be called, as well as makes sure all the files are stores with a uniquely generated name (GUID).
 
 The entire architecture is `serverless` : Azure compute resources will only be consumed when a new audio file is uploaded via the Azure Function API. You can leave the resources for a few days to see that _no compute resources are billed_ when no audio file is uploaded.
 
@@ -1098,7 +1133,7 @@ The entire architecture is `serverless` : Azure compute resources will only be c
 
 ---
 
-# Lab 2 : Retrieve transcriptions
+# Lab 2 : Retrieve transcriptions (1 hour)
 
 On this second lab, we will focus on getting back the transcriptions of audio files and displaying them on the demo Web App.
 
@@ -1106,19 +1141,20 @@ Previously processed transcriptions will be retrieved using HTTP GET requests wh
 
 ![Achitecture scope of Lab 2](assets/architecture-lab2.svg)
 
-## Getting transcriptions on-demand (30 minutes)
+## Getting transcriptions on-demand
 
 First, let's create a function which returns the latest 50 transcriptions from Cosmos DB.
 
-Transcriptions should have at least the following properties:
+If you open an item in your Cosmos Db by navigating to the `Data Explorer`, you should have at least the following properties:
 
 ```typescript
-interface Transcription {
-  id: string;
-  path: string;
-  result: string;
-  status: string;
-  _ts: number;
+{
+    "id": "<item-id>",
+    "path": "<audio-path>",
+    "result": "<audio-content>",
+    "status": "<transcription-status>",
+    "_ts": <time-span>
+    ...other default properties
 }
 ```
 
@@ -1128,8 +1164,8 @@ This function will be used to show all existing transcriptions on the demo Web A
 
 > Create an HTTP-triggered function which returns transcriptions from Cosmos DB:
 >
-> - Trigger: HTTP request
-> - Action: Return the latest 50 transcriptions, in JSON format
+> - Trigger: `HTTP request`
+> - Action: Return the latest `50 transcriptions`, in `JSON` format
 > - Transcriptions should include the following props: `id`, `path`, `result`, `status`, and `_ts`
 
 </div>
@@ -1151,38 +1187,42 @@ This function will be used to show all existing transcriptions on the demo Web A
 <details>
 <summary>Toggle solution</summary>
 
-Following the same procedure from Lab1, add a new HTTP-triggered function `GetTranscriptions` to your Function App and use the following settings:
+Add a new HTTP-triggered function `GetTranscriptions` to your Function App and use the following settings:
 
 `function.json`:
 
 ```json
 {
-  "scriptFile": "func.py",
-  "bindings": [
-    {
-      "authLevel": "anonymous",
-      "type": "httpTrigger",
-      "direction": "in",
-      "name": "req",
-      "methods": ["get"]
-    },
-    {
-      "type": "http",
-      "direction": "out",
-      "name": "$return"
-    },
-    {
-      "name": "transcriptions",
-      "type": "cosmosDB",
-      "direction": "in",
-      "databaseName": "%COSMOS_DB_DATABASE_ID%",
-      "collectionName": "%COSMOS_DB_CONTAINER_ID%",
-      "sqlQuery": "SELECT * FROM c ORDER BY c._ts DESC OFFSET 0 LIMIT 50",
-      "connectionStringSetting": "cosmosDBConnectionString"
-    }
-  ]
+    "scriptFile": "func.py",
+    "bindings": [
+        {
+            "authLevel": "function",
+            "type": "httpTrigger",
+            "direction": "in",
+            "name": "req",
+            "methods": [
+                "get"
+            ]
+        },
+        {
+            "type": "http",
+            "direction": "out",
+            "name": "$return"
+        },
+        {
+            "name": "transcriptions",
+            "type": "cosmosDB",
+            "direction": "in",
+            "databaseName": "%COSMOS_DB_DATABASE_NAME%",
+            "collectionName": "%COSMOS_DB_CONTAINER_ID%",
+            "sqlQuery": "SELECT * FROM c ORDER BY c._ts DESC OFFSET 0 LIMIT 50",
+            "connectionStringSetting": "COSMOS_DB_CONNECTION_STRING_SETTING"
+        }
+    ]
 }
 ```
+
+The `connectionStringSetting` property of triggers and bindings is a special case and automatically resolves values as app settings, without percent signs like the `databaseName` and `collectionName` use.
 
 `func.py`:
 
@@ -1198,13 +1238,25 @@ def main(req: func.HttpRequest, transcriptions: func.DocumentList) -> func.HttpR
     )
 ```
 
+Now, go to the Azure Function in your Azure Portal, inside the `Configuration` and `Application settings` add the 3 new settings values based on the Lab 1:
+
+- Set `COSMOS_DB_DATABASE_NAME` to HolDb
+- Set `COSMOS_DB_CONTAINER_ID` to audios_transcripts
+- Set `COSMOS_DB_CONNECTION_STRING_SETTING` with one of the connection string in the `Keys` section of your Cosmos Db resource on Azure.
+
+Don't forget to add an empty `__init__.py` for Python discovery mecanism.
+
 </details>
 
 Once you make sure you are getting the expected response by calling the HTTP endpoint of the function, you can go ahead and update the configuration of the demo Web App with the function's endpoint.
 
-You can do that by setting the value of the environment variable `TRANSCRIPTION_FETCHING_URL` to the url of the `GetTranscriptions` function.
+You can do that by setting the value of the environment variable `TRANSCRIPTION_FETCHING_URL` to the url of the `GetTranscriptions` function inside the `Configuration` section exactly like the Lab 1.
 
-## Getting transcriptions in real-time (1 hour)
+If everything is working correctly, you will be able to see the list of transcriptions like this:
+
+![Web App](assets/static-web-app-transcriptions.png)
+
+## Getting transcriptions in real-time
 
 The next step is to listen to new transcriptions and show them on the demo Web App as they get generated.
 
@@ -1212,18 +1264,18 @@ To achieve this, we will be relying on [Azure Web PubSub](https://learn.microsof
 
 The flow will be the following:
 
-- A new function `CosmosToWebPubSub` will be triggered whenever we add a new transcription to Cosmos DB.
+- A new function `CosmosToWebPubSub` will be triggered whenever a new transcription is added to Cosmos DB.
 - The function will create a new notification in an [Azure Web PubSub hub](https://learn.microsoft.com/en-us/azure/azure-web-pubsub/key-concepts). The contents of the notification will be the new transcription.
 - The demo Web App will be listening to new messages on the same Web PubSub hub and will show new transcriptions on real-time.
 
-### Using Azure Web PubSub for real-time communication (10 minutes)
+### Using Azure Web PubSub for real-time communication
 
 <div class="task" data-title="Task">
 
 > Create an instance of Azure Web PubSub:
 >
-> - SKU: Free
-> - Naming convention: `wps-<environment>-<region>-<application-name>-<owner>-<instance>`
+> - SKU: `Free`
+> - Web PubSub naming convention: `wps<environment><region><application-name><owner><instance>` do not put dashes on this resource, otherwise you will have an error later on the lab with the Azure Function.
 
 </div>
 
@@ -1252,7 +1304,7 @@ az webpubsub create \
 
 </details>
 
-### Publishing new transcriptions using Web PubSub (40 minutes)
+### Publishing new transcriptions using Web PubSub
 
 The next step is to use the newly created Web PubSub instance to publish new transcriptions as they get added to Cosmos DB.
 
@@ -1260,9 +1312,9 @@ The next step is to use the newly created Web PubSub instance to publish new tra
 
 > Create an Cosmos DB-triggered function which publishes new records to your Web PubSub instance:
 >
-> - Name: CosmosToWebPubSub
-> - Trigger: Cosmos DB
-> - Action: Detect new transcriptions and publish them to Azure Web PubSub in JSON format
+> - Name: `CosmosToWebPubSub`
+> - Trigger: `Cosmos DB`
+> - Action: Detect new transcriptions and publish them to Azure Web PubSub in `JSON` format
 > - Audience: All clients listening to updates on the Web PubSub hub
 
 </div>
@@ -1283,26 +1335,26 @@ Add a new Cosmos DB-triggered function `CosmosToWebPubSub` to your Function App 
 
 ```json
 {
-  "scriptFile": "func.py",
-  "bindings": [
-    {
-      "type": "cosmosDBTrigger",
-      "name": "transcriptions",
-      "direction": "in",
-      "leaseCollectionName": "leases",
-      "connectionStringSetting": "cosmosDBConnectionString",
-      "databaseName": "%COSMOS_DB_DATABASE_ID%",
-      "collectionName": "%COSMOS_DB_CONTAINER_ID%",
-      "createLeaseCollectionIfNotExists": true
-    },
-    {
-      "type": "webPubSub",
-      "name": "actions",
-      "hub": "%WEB_PUBSUB_HUB_ID%",
-      "connection": "webPubSubConnectionString",
-      "direction": "out"
-    }
-  ]
+    "scriptFile": "func.py",
+    "bindings": [
+        {
+            "type": "cosmosDBTrigger",
+            "name": "transcriptions",
+            "direction": "in",
+            "leaseCollectionName": "leases",
+            "connectionStringSetting": "COSMOS_DB_CONNECTION_STRING_SETTING",
+            "databaseName": "%COSMOS_DB_DATABASE_NAME%",
+            "collectionName": "%COSMOS_DB_CONTAINER_ID%",
+            "createLeaseCollectionIfNotExists": true
+        },
+        {
+            "type": "webPubSub",
+            "name": "actions",
+            "hub": "%WEB_PUBSUB_HUB_ID%",
+            "connection": "WEB_PUBSUB_CONNECTION_STRING",
+            "direction": "out"
+        }
+    ]
 }
 ```
 
@@ -1324,15 +1376,24 @@ def main(transcriptions: func.DocumentList, actions: func.Out[str]) -> None:
         }))
 ```
 
+Don't forget to add an empty `__init__.py` for Python discovery mecanism.
+
+As you have probably already noticed the `connectionStringSetting`, `databaseName` and `collectionName` are populated with the same key as the previous Function. And because you deploy all your Functions in the same Azure Function from an infrastructure point of view, they are already shared accross the `Application settings`. However you must add 2 new settings values which are:
+
+- Set `WEB_PUBSUB_HUB_ID` to audios_transcripts
+- Set `WEB_PUBSUB_CONNECTION_STRING` with one of the connection string in the `Keys` section of your Web PubSub resource on Azure.
+
 </details>
 
-### Consuming new transcriptions from Web PubSub (10 minutes)
+### Consuming new transcriptions from Web PubSub
 
-The last step is to consume the newly published transcriptions in the deom Web App from the Web PubSub hub.
+The last step is to consume the newly published transcriptions in the demo Web App from the Web PubSub hub.
 
 <div class="task" data-title="Task">
 
-> - Get a connection string from Web PubSub and set it in the `WPS_CONNECTION_STRING` environment variable in the demo Web App.
+> Set environment variables in your Static Web App for:
+> - The connection string of the Web PubSub with `WPS_CONNECTION_STRING`
+> - The Web PubSub name with `WPS_HUB_NAME`
 > - Ensure that new transcriptions are displayed in the Web App as you upload new audio files.
 
 </div>
@@ -1345,6 +1406,8 @@ The last step is to consume the newly published transcriptions in the deom Web A
 
 <details>
 <summary>Toggle solution</summary>
+
+You can retreive a connection string for the Web PubSub directly with the Azure Portal or using this command line:
 
 ```sh
 az webpubsub key show \
@@ -1372,7 +1435,12 @@ By now you should have a solution that :
 - Transcribes the uploaded audio file and displays it in a web interface in real-time
 - Retrieves the latest 50 transcriptions using a RESTful API
 
+---
+
+# Closing the workshop
+
 Once you're done with this lab you can delete the resource group you created at the beginning.
+
 To do so, click on `delete resource group` in the Azure Portal to delete all the resources and audio content at once. The following Az-Cli command can also be used to delete the resource group :
 
 ```bash
