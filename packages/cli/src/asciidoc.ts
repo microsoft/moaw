@@ -222,27 +222,27 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     const result = escapeForHtml(text);
     switch (type) {
       case 'monospaced': {
-        return `\`${result.replace(/`/g, '\\`')}\``;
+        return `\`${result.replaceAll('`', '\\`')}\``;
       }
 
       case 'emphasis': {
-        return `*${result.replace(/\*/g, '\\*')}*`;
+        return `*${result.replaceAll('*', '\\*')}*`;
       }
 
       case 'strong': {
-        return `**${result.replace(/\*\*/g, '\\*\\*')}**`;
+        return `**${result.replaceAll('**', '\\*\\*')}**`;
       }
 
       case 'mark': {
-        return `==${result.replace(/==/g, '\\=\\=')}==`;
+        return `==${result.replaceAll('==', '\\=\\=')}==`;
       }
 
       case 'superscript': {
-        return `^${result.replace(/[^]/g, '\\^')}^`;
+        return `^${result.replaceAll(/[^]/g, '\\^')}^`;
       }
 
       case 'subscript': {
-        return `~${result.replace(/~/g, '\\~')}~`;
+        return `~${result.replaceAll('~', '\\~')}~`;
       }
 
       case 'double': {

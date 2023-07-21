@@ -119,7 +119,7 @@ export async function getMoawRepositoryFromPackage(): Promise<GitHubRepository |
 
   try {
     const pkg = await readJson(pkgFile);
-    const repository = parseRepository(pkg.repository?.url || pkg.repository);
+    const repository = parseRepository((pkg.repository?.url || pkg.repository) as string);
     debug(
       repository ? 'Repository found in package.json:' : 'No repository found in package.json',
       repository ? getShorthandString(repository) : ''
