@@ -167,7 +167,7 @@ With everything ready let's start the lab 🚀
 
 # Lab 0 : The Web Application (1 hour)
 
-## Create a resource group
+## Create a resource group (5 min)
 
 Let's start by creating the resource group for this Hand's On Lab. The resource group is a logical structure to store Azure components used to group your Azure resources.
 
@@ -204,7 +204,7 @@ az group create --name <resource-group> --location <region>
 
 </details>
 
-## Web App Portal
+## Web App Portal (55 min)
 
 We have created a Static Web App to help assess progress on this Hands-on-Lab and make it easier to upload and get back transcriptions using a simple web interface.
 
@@ -298,7 +298,7 @@ For this first lab, you will focus on the following scope :
 
 ![Hand's On Lab Architecture Lab 1](assets/architecture-lab1.svg)
 
-## Create the storage
+## Create the storage (5 min)
 
 The Azure storage account is used to store data objects, including blobs, file shares, queues, tables, and disks. You will use it to store the audios files inside an `audios` container.
 
@@ -354,7 +354,7 @@ To check everything was created as expected, open the [Azure Portal][az-portal] 
 
 [az-portal]: https://portal.azure.com
 
-## Detect a file upload event
+## Detect a file upload event (25 min)
 
 ### Events services
 
@@ -436,7 +436,7 @@ Now you should see the Event Grid System Topic in your Resource Group :
 
 </details>
 
-## Process the event
+## Process the event (1 hour 30 min)
 
 You'll now build a Logic App workflow that will be trigger when a blob will be uploaded to the storage account created earlier.
 This section of the Lab will describe all the steps that the Logic App will take to address this scenario :
@@ -881,7 +881,7 @@ You can now validate the workflow : delete and upload once again the audio file.
 
 </details>
 
-## Add an API
+## Add an API (1 hour)
 
 ### Azure Functions : A bit of theory
 
@@ -1141,7 +1141,7 @@ Previously processed transcriptions will be retrieved using HTTP GET requests wh
 
 ![Achitecture scope of Lab 2](assets/architecture-lab2.svg)
 
-## Getting transcriptions on-demand
+## Getting transcriptions on-demand (10 min)
 
 First, let's create a function which returns the latest 50 transcriptions from Cosmos DB.
 
@@ -1256,7 +1256,7 @@ If everything is working correctly, you will be able to see the list of transcri
 
 ![Web App](assets/static-web-app-transcriptions.png)
 
-## Getting transcriptions in real-time
+## Getting transcriptions in real-time (50 min)
 
 The next step is to listen to new transcriptions and show them on the demo Web App as they get generated.
 
