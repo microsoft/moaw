@@ -26,7 +26,7 @@ Welcome to this Azure Serverless Workshop. You'll be experimenting with Azure Se
 
 During this workshop you will have the instructions to complete each steps. It is recommended to search for the answers in provided resources and links before looking at the solutions placed under the 'Toggle solution' panel.
 
-## Prerequisites (15 minutes)
+## Prerequisites
 
 Before starting this workshop, be sure you have:
 
@@ -165,7 +165,7 @@ With everything ready let's start the lab 🚀
 
 # Lab 0 : The Web Application
 
-## Create a resource group (5 minutes)
+## Create a resource group
 
 Let's start by creating the resource group for this Hand's On Lab. The resource group is a logical structure to store Azure components used to group your Azure resources.
 
@@ -202,7 +202,7 @@ az group create --name <resource-group> --location <region>
 
 </details>
 
-## Web App Portal (20 minutes)
+## Web App Portal
 
 We have created a Static Web App to help assess progress on this Hands-on-Lab and make it easier to upload and get back transcriptions using a simple web interface.
 
@@ -296,7 +296,7 @@ For this first lab, you will focus on the following scope :
 
 ![Hand's On Lab Architecture Lab 1](assets/architecture-lab1.svg)
 
-## Create the storage (5 minutes)
+## Create the storage
 
 The Azure storage account is used to store data objects, including blobs, file shares, queues, tables, and disks. You will use it to store the audios files inside an `audios` container.
 
@@ -352,9 +352,9 @@ To check everything was created as expected, open the [Azure Portal][az-portal] 
 
 [az-portal]: https://portal.azure.com
 
-## Detect a file upload event (20 minutes)
+## Detect a file upload event
 
-### Events services (5 min)
+### Events services
 
 Serverless is all about designing the application around event-driven architectures. Azure offers several options when it comes to message and event brokering, with the principal following services :
 
@@ -373,14 +373,14 @@ The Event Grid is an event broker that you can use to integrate applications whi
 
 The main Event Grid concept we'll use for the rest of this lab is called `System Topic`. A system topic in Event Grid represents one or more events published by Azure services such as Azure Storage and Azure Event Hubs. It basically plays the role of a pub-sub topic centralizing all the events of the associated Azure resource, and send them to all the subscribers based on their defined `event filters`.
 
-### Create the Event Grid System Topic (15 min)
+### Create the Event Grid System Topic
 
 You can create Event Grid System Topics :
 
 - Directly from the resource you want to monitor (for instance a storage account) using the `Events` menu. A system topic will be created automatically with a unique name and will be linked to the resource.
 - Manually, using the `System Topics` resource type in the Azure Portal, or thanks to the Azure CLI. This will allow you to define the name of the system topic and the resource it will be linked to.
 
-For this step, creating the Event Grid System Topic will be enough, as the actual `event subscription` and `event filters` will be defined and automatically created by the Logic App trigger setup [later on](workshop/serverless-overview/?step=1#trigger-the-logic-app-20-minutes).
+For this step, creating the Event Grid System Topic will be enough, as the actual `event subscription` and `event filters` will be defined and automatically created by the Logic App trigger setup [later on](workshop/serverless-overview/?step=1#trigger-the-logic-app).
 
 <div class="task" data-title="Tasks">
 
@@ -434,14 +434,14 @@ Now you should see the Event Grid System Topic in your Resource Group :
 
 </details>
 
-## Process the event (2 hours)
+## Process the event
 
 You'll now build a Logic App workflow that will be trigger when a blob will be uploaded to the storage account created earlier.
 This section of the Lab will describe all the steps that the Logic App will take to address this scenario :
 
 ![logic-apps-hol-overview](assets/logic-app-hol-overview.png)
 
-### Create the Logic App (10 minutes)
+### Create the Logic App
 
 Azure Logic Apps is an integration platform as a service where you can create and run automated workflows with little to no code. The design of Logic Apps is mainly designer oriented, and a visual designer can be used to compose a workflow with prebuilt operations which can quickly build a workflow that integrates and manages your apps, data, services, and systems. While creating and testing a flow is way easier with the help of the designer, it still gives capabilities to export the resulting flow as a JSON `template` file to enable versioning, DevOps or separate environment requirements.
 
@@ -502,7 +502,7 @@ az logic workflow create --resource-group <resource-group> \
 
 </details>
 
-### Trigger the Logic app (20 minutes)
+### Trigger the Logic app
 
 Next step is to actually trigger the Logic App based on the event raised by Event Grid when a file is uploaded to the audios' container.
 
@@ -592,7 +592,7 @@ It is also possible to rename the different operations of your Logic App to make
 
 [az-portal]: https://portal.azure.com
 
-### Retrieve file content (30 minutes)
+### Retrieve file content
 
 Now we have a blob upload event triggering the Logic App, we will be able to work with extended `metadata` shared in the event message.
 
@@ -671,7 +671,7 @@ Your Logic App should look like this:
 
 </details>
 
-### Consume Speech to Text APIs (30 minutes)
+### Consume Speech to Text APIs
 
 The Azure Cognitive Services are cloud-based AI services that give the ability to developers to quickly build intelligent apps thanks to these pre-trained models. They are available through client library SDKs in popular development languages and REST APIs.
 
@@ -777,7 +777,7 @@ In the Logic App `Run History`, you should see the transcript of the audio file 
 
 </details>
 
-### Store data to Cosmos DB (30 minutes)
+### Store data to Cosmos DB
 
 Azure Cosmos DB is a fully managed NoSQL database which offers Geo-redundancy and multi-region write capabilities. It currently supports NoSQL, MongoDB, Cassandra, Gremlin, Table and PostgreSQL APIs and offers a serverless option which is perfect for our use case.
 
@@ -879,9 +879,9 @@ You can now validate the workflow : delete and upload once again the audio file.
 
 </details>
 
-## Add an API (1 hour)
+## Add an API
 
-### Azure Functions : A bit of theory (5 min)
+### Azure Functions : A bit of theory
 
 Azure Functions is a `compute-on-demand` solution, offering a common function programming model for various languages. To use this serverless solution, no need to worry about deploying and maintaining infrastructures, Azure provides with the necessary up-to-date compute resources needed to keep your applications running. Focus on your code and let Azure Functions handle the rest.
 
@@ -894,7 +894,7 @@ In the same `Function App` you will be able to add multiple `functions`, each wi
 
 Azure Functions run and benefit from the App Service platform, offering features like: deployment slots, continuous deployment, HTTPS support, hybrid connections and others. Apart from the `Consumption` (Serverless) model we're most interested in this Lab, Azure Functions can also be deployed a dedicated `App Service Plan`or in a hybrid model called `Premium Plan`.
 
-### Azure Functions : Let's practice (65 min)
+### Azure Functions : Let's practice
 
 At this stage in our scenario, the serverless transcription engine is ready and the first lab is almost complete. The last thing you need to add is an API to upload the audio file with a unique `GUID` name to your storage account.
 
@@ -1088,9 +1088,9 @@ Use this url into your Postman to upload the audio file:
 
 </details>
 
-### Connect the Web App (10 min)
+### Connect the Web App
 
-It's now time to connect the Azure Function which stand for a small API to upload your audio file and the Static Web App which is the front end of your application.
+It's now time to connect the Azure Function which stand for a small API to upload your audio file and the Static Web App which is the front end of your application. The API Management (APIM) will be added in a future lab.
 
 <div class="task" data-title="Task">
 
@@ -1139,7 +1139,7 @@ Previously processed transcriptions will be retrieved using HTTP GET requests wh
 
 ![Achitecture scope of Lab 2](assets/architecture-lab2.svg)
 
-## Getting transcriptions on-demand (30 minutes)
+## Getting transcriptions on-demand
 
 First, let's create a function which returns the latest 50 transcriptions from Cosmos DB.
 
@@ -1237,7 +1237,7 @@ Once you make sure you are getting the expected response by calling the HTTP end
 
 You can do that by setting the value of the environment variable `TRANSCRIPTION_FETCHING_URL` to the url of the `GetTranscriptions` function.
 
-## Getting transcriptions in real-time (1 hour)
+## Getting transcriptions in real-time
 
 The next step is to listen to new transcriptions and show them on the demo Web App as they get generated.
 
@@ -1249,7 +1249,7 @@ The flow will be the following:
 - The function will create a new notification in an [Azure Web PubSub hub](https://learn.microsoft.com/en-us/azure/azure-web-pubsub/key-concepts). The contents of the notification will be the new transcription.
 - The demo Web App will be listening to new messages on the same Web PubSub hub and will show new transcriptions on real-time.
 
-### Using Azure Web PubSub for real-time communication (10 minutes)
+### Using Azure Web PubSub for real-time communication
 
 <div class="task" data-title="Task">
 
@@ -1285,7 +1285,7 @@ az webpubsub create \
 
 </details>
 
-### Publishing new transcriptions using Web PubSub (40 minutes)
+### Publishing new transcriptions using Web PubSub
 
 The next step is to use the newly created Web PubSub instance to publish new transcriptions as they get added to Cosmos DB.
 
@@ -1359,7 +1359,7 @@ def main(transcriptions: func.DocumentList, actions: func.Out[str]) -> None:
 
 </details>
 
-### Consuming new transcriptions from Web PubSub (10 minutes)
+### Consuming new transcriptions from Web PubSub
 
 The last step is to consume the newly published transcriptions in the deom Web App from the Web PubSub hub.
 
