@@ -93,12 +93,12 @@ export function escapeForHtml(unsafe?: string) {
 export function unescapeHtml(html?: string) {
   return (
     html
-      ?.replaceAll(/&(amp|#38);/i, '&')
-      .replaceAll(/&(lt|#60);/i, '<')
-      .replaceAll(/&(gt|#62);/i, '>')
-      .replaceAll(/&(quot|#34);/i, '"')
-      .replaceAll(/&(apos|#39);/i, "'")
-      .replaceAll(/&#(\d+);/i, (_match, numberString: string) => {
+      ?.replaceAll(/&(amp|#38);/gi, '&')
+      .replaceAll(/&(lt|#60);/gi, '<')
+      .replaceAll(/&(gt|#62);/gi, '>')
+      .replaceAll(/&(quot|#34);/gi, '"')
+      .replaceAll(/&(apos|#39);/gi, "'")
+      .replaceAll(/&#(\d+);/gi, (_match, numberString: string) => {
         const number_ = Number.parseInt(numberString, 10);
         return String.fromCodePoint(number_);
       }) ?? ''
