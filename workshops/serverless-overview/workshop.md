@@ -35,7 +35,7 @@ Before starting this workshop, be sure you have:
 - The [Azure CLI][az-cli-install] installed on your machine
 - The [Azure Functions Core Tools][az-func-core-tools] installed, this will be useful for creating the scaffold of your Azure Functions using command line.
 - If you are using VS Code, you can also install the [Azure Function extension][azure-function-vs-code-extension]
-- Register the Azure providers on your Azure Subscription if not done yet: `Microsoft.CognitiveServices`, `Microsoft.DocumentDB`, `Microsoft.EventGrid`, `Microsoft.KeyVault`, `Microsoft.Logic`,`Microsoft.Web`
+- Register the Azure providers on your Azure Subscription if not done yet: `Microsoft.CognitiveServices`, `Microsoft.DocumentDB`, `Microsoft.EventGrid`, `Microsoft.KeyVault`, `Microsoft.Logic`, `Microsoft.SignalRService`, `Microsoft.Web`
 
 <div class="task" data-title="Task">
 
@@ -72,6 +72,8 @@ az provider register --namespace 'Microsoft.EventGrid'
 az provider register --namespace 'Microsoft.KeyVault'
 # Azure Logic Apps
 az provider register --namespace 'Microsoft.Logic'
+# Azure Web PubSub
+az provider register --namespace 'Microsoft.SignalRService'
 # Azure Functions
 az provider register --namespace 'Microsoft.Web'
 
@@ -1143,15 +1145,16 @@ Previously processed transcriptions will be retrieved using HTTP GET requests wh
 
 First, let's create a function which returns the latest 50 transcriptions from Cosmos DB.
 
-Transcriptions should have at least the following properties:
+If you open an item in your Cosmos Db by navigating to the `Data Explorer`, you should have at least the following properties:
 
 ```typescript
-interface Transcription {
-  id: string;
-  path: string;
-  result: string;
-  status: string;
-  _ts: number;
+{
+    "id": "<item-id>",
+    "path": "<audio-path>",
+    "result": "<audio-content>",
+    "status": "<transcription-status>",
+    "_ts": <time-span>
+    ...other default properties
 }
 ```
 
@@ -1161,8 +1164,8 @@ This function will be used to show all existing transcriptions on the demo Web A
 
 > Create an HTTP-triggered function which returns transcriptions from Cosmos DB:
 >
-> - Trigger: HTTP request
-> - Action: Return the latest 50 transcriptions, in JSON format
+> - Trigger: `HTTP request`
+> - Action: Return the latest `50 transcriptions`, in `JSON` format
 > - Transcriptions should include the following props: `id`, `path`, `result`, `status`, and `_ts`
 
 </div>
@@ -1184,38 +1187,42 @@ This function will be used to show all existing transcriptions on the demo Web A
 <details>
 <summary>Toggle solution</summary>
 
-Following the same procedure from Lab1, add a new HTTP-triggered function `GetTranscriptions` to your Function App and use the following settings:
+Add a new HTTP-triggered function `GetTranscriptions` to your Function App and use the following settings:
 
 `function.json`:
 
 ```json
 {
-  "scriptFile": "func.py",
-  "bindings": [
-    {
-      "authLevel": "anonymous",
-      "type": "httpTrigger",
-      "direction": "in",
-      "name": "req",
-      "methods": ["get"]
-    },
-    {
-      "type": "http",
-      "direction": "out",
-      "name": "$return"
-    },
-    {
-      "name": "transcriptions",
-      "type": "cosmosDB",
-      "direction": "in",
-      "databaseName": "%COSMOS_DB_DATABASE_ID%",
-      "collectionName": "%COSMOS_DB_CONTAINER_ID%",
-      "sqlQuery": "SELECT * FROM c ORDER BY c._ts DESC OFFSET 0 LIMIT 50",
-      "connectionStringSetting": "cosmosDBConnectionString"
-    }
-  ]
+    "scriptFile": "func.py",
+    "bindings": [
+        {
+            "authLevel": "function",
+            "type": "httpTrigger",
+            "direction": "in",
+            "name": "req",
+            "methods": [
+                "get"
+            ]
+        },
+        {
+            "type": "http",
+            "direction": "out",
+            "name": "$return"
+        },
+        {
+            "name": "transcriptions",
+            "type": "cosmosDB",
+            "direction": "in",
+            "databaseName": "%COSMOS_DB_DATABASE_NAME%",
+            "collectionName": "%COSMOS_DB_CONTAINER_ID%",
+            "sqlQuery": "SELECT * FROM c ORDER BY c._ts DESC OFFSET 0 LIMIT 50",
+            "connectionStringSetting": "COSMOS_DB_CONNECTION_STRING_SETTING"
+        }
+    ]
 }
 ```
+
+The `connectionStringSetting` property of triggers and bindings is a special case and automatically resolves values as app settings, without percent signs like the `databaseName` and `collectionName` use.
 
 `func.py`:
 
@@ -1231,11 +1238,23 @@ def main(req: func.HttpRequest, transcriptions: func.DocumentList) -> func.HttpR
     )
 ```
 
+Now, go to the Azure Function in your Azure Portal, inside the `Configuration` and `Application settings` add the 3 new settings values based on the Lab 1:
+
+- Set `COSMOS_DB_DATABASE_NAME` to HolDb
+- Set `COSMOS_DB_CONTAINER_ID` to audios_transcripts
+- Set `COSMOS_DB_CONNECTION_STRING_SETTING` with one of the connection string in the `Keys` section of your Cosmos Db resource on Azure.
+
+Don't forget to add an empty `__init__.py` for Python discovery mecanism.
+
 </details>
 
 Once you make sure you are getting the expected response by calling the HTTP endpoint of the function, you can go ahead and update the configuration of the demo Web App with the function's endpoint.
 
-You can do that by setting the value of the environment variable `TRANSCRIPTION_FETCHING_URL` to the url of the `GetTranscriptions` function.
+You can do that by setting the value of the environment variable `TRANSCRIPTION_FETCHING_URL` to the url of the `GetTranscriptions` function inside the `Configuration` section exactly like the Lab 1.
+
+If everything is working correctly, you will be able to see the list of transcriptions like this:
+
+![Web App](assets/static-web-app-transcriptions.png)
 
 ## Getting transcriptions in real-time
 
@@ -1245,7 +1264,7 @@ To achieve this, we will be relying on [Azure Web PubSub](https://learn.microsof
 
 The flow will be the following:
 
-- A new function `CosmosToWebPubSub` will be triggered whenever we add a new transcription to Cosmos DB.
+- A new function `CosmosToWebPubSub` will be triggered whenever a new transcription is added to Cosmos DB.
 - The function will create a new notification in an [Azure Web PubSub hub](https://learn.microsoft.com/en-us/azure/azure-web-pubsub/key-concepts). The contents of the notification will be the new transcription.
 - The demo Web App will be listening to new messages on the same Web PubSub hub and will show new transcriptions on real-time.
 
@@ -1255,8 +1274,8 @@ The flow will be the following:
 
 > Create an instance of Azure Web PubSub:
 >
-> - SKU: Free
-> - Naming convention: `wps-<environment>-<region>-<application-name>-<owner>-<instance>`
+> - SKU: `Free`
+> - Web PubSub naming convention: `wps<environment><region><application-name><owner><instance>` do not put dashes on this resource, otherwise you will have an error later on the lab with the Azure Function.
 
 </div>
 
@@ -1293,9 +1312,9 @@ The next step is to use the newly created Web PubSub instance to publish new tra
 
 > Create an Cosmos DB-triggered function which publishes new records to your Web PubSub instance:
 >
-> - Name: CosmosToWebPubSub
-> - Trigger: Cosmos DB
-> - Action: Detect new transcriptions and publish them to Azure Web PubSub in JSON format
+> - Name: `CosmosToWebPubSub`
+> - Trigger: `Cosmos DB`
+> - Action: Detect new transcriptions and publish them to Azure Web PubSub in `JSON` format
 > - Audience: All clients listening to updates on the Web PubSub hub
 
 </div>
@@ -1316,26 +1335,26 @@ Add a new Cosmos DB-triggered function `CosmosToWebPubSub` to your Function App 
 
 ```json
 {
-  "scriptFile": "func.py",
-  "bindings": [
-    {
-      "type": "cosmosDBTrigger",
-      "name": "transcriptions",
-      "direction": "in",
-      "leaseCollectionName": "leases",
-      "connectionStringSetting": "cosmosDBConnectionString",
-      "databaseName": "%COSMOS_DB_DATABASE_ID%",
-      "collectionName": "%COSMOS_DB_CONTAINER_ID%",
-      "createLeaseCollectionIfNotExists": true
-    },
-    {
-      "type": "webPubSub",
-      "name": "actions",
-      "hub": "%WEB_PUBSUB_HUB_ID%",
-      "connection": "webPubSubConnectionString",
-      "direction": "out"
-    }
-  ]
+    "scriptFile": "func.py",
+    "bindings": [
+        {
+            "type": "cosmosDBTrigger",
+            "name": "transcriptions",
+            "direction": "in",
+            "leaseCollectionName": "leases",
+            "connectionStringSetting": "COSMOS_DB_CONNECTION_STRING_SETTING",
+            "databaseName": "%COSMOS_DB_DATABASE_NAME%",
+            "collectionName": "%COSMOS_DB_CONTAINER_ID%",
+            "createLeaseCollectionIfNotExists": true
+        },
+        {
+            "type": "webPubSub",
+            "name": "actions",
+            "hub": "%WEB_PUBSUB_HUB_ID%",
+            "connection": "WEB_PUBSUB_CONNECTION_STRING",
+            "direction": "out"
+        }
+    ]
 }
 ```
 
@@ -1357,15 +1376,25 @@ def main(transcriptions: func.DocumentList, actions: func.Out[str]) -> None:
         }))
 ```
 
+Don't forget to add an empty `__init__.py` for Python discovery mecanism.
+
+As you have probably already noticed the `connectionStringSetting`, `databaseName` and `collectionName` are populated with the same key as the previous Function. And because you deploy all your Functions in the same Azure Function from an infrastructure point of view, they are already shared accross the `Application settings`. However you must add 2 new settings values which are:
+
+- Set `WEB_PUBSUB_HUB_ID` to audios_transcripts
+- Set `WEB_PUBSUB_CONNECTION_STRING` with one of the connection string in the `Keys` section of your Web PubSub resource on Azure.
+
 </details>
 
 ### Consuming new transcriptions from Web PubSub
 
-The last step is to consume the newly published transcriptions in the deom Web App from the Web PubSub hub.
+The last step is to consume the newly published transcriptions in the demo Web App from the Web PubSub hub.
 
 <div class="task" data-title="Task">
 
-> - Get a connection string from Web PubSub and set it in the `WPS_CONNECTION_STRING` environment variable in the demo Web App.
+> - Set environment variables in your Static Web App for:
+> The connection string of the Web PubSub with `WPS_CONNECTION_STRING`
+> The Web PubSub name with `WPS_HUB_NAME`
+
 > - Ensure that new transcriptions are displayed in the Web App as you upload new audio files.
 
 </div>
@@ -1378,6 +1407,8 @@ The last step is to consume the newly published transcriptions in the deom Web A
 
 <details>
 <summary>Toggle solution</summary>
+
+You can retreive a connection string for the Web PubSub directly with the Azure Portal or using this command line:
 
 ```sh
 az webpubsub key show \
@@ -1405,7 +1436,12 @@ By now you should have a solution that :
 - Transcribes the uploaded audio file and displays it in a web interface in real-time
 - Retrieves the latest 50 transcriptions using a RESTful API
 
+---
+
+# Closing the workshop
+
 Once you're done with this lab you can delete the resource group you created at the beginning.
+
 To do so, click on `delete resource group` in the Azure Portal to delete all the resources and audio content at once. The following Az-Cli command can also be used to delete the resource group :
 
 ```bash
