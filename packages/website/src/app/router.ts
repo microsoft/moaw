@@ -89,9 +89,11 @@ export function setQueryParams(params: Record<string, any>, replace = false, add
   }
   if (addToHistory) {
     window.history.pushState({}, url.pathname, url);
+    trackPageView();
   } else {
     window.history.replaceState({}, url.pathname, url);
   }
+
   updateRoute();
 }
 
@@ -139,4 +141,9 @@ export function trackPageView() {
     page_location: location.href,
     page_path: location.pathname
   });
+
+  try {
+    const track = (window as any).track || function () {};
+    track.trackPageView();
+  } catch (e) {}
 }
