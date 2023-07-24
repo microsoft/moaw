@@ -1,5 +1,16 @@
 import createDebug from 'debug';
-import Processor, { type Asciidoctor } from 'asciidoctor';
+import Processor, {
+  type AbstractConverter,
+  type Html5Converter,
+  type Asciidoctor,
+  type AbstractNode,
+  type Block,
+  type List,
+  type Inline,
+  type Document,
+  type Section,
+  type Table
+} from 'asciidoctor';
 import { escapeForHtml, unescapeHtml } from './util.js';
 import { createFrontmatter, type FrontMatterData, validateMetadata } from './frontmatter.js';
 
@@ -44,8 +55,8 @@ export async function convertToMarkdown(
   };
 }
 
-class MarkdownConverter implements Asciidoctor.AbstractConverter {
-  baseConverter: Asciidoctor.Html5Converter;
+class MarkdownConverter implements AbstractConverter {
+  baseConverter: Html5Converter;
   warnings: string[] = [];
   errors: string[] = [];
 
@@ -53,69 +64,69 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     this.baseConverter = asciidoctor.Html5Converter.create();
   }
 
-  convert(node: Asciidoctor.AbstractNode, transform?: string, options?: unknown): string {
+  convert(node: AbstractNode, transform?: string, options?: unknown): string {
     // Adapted to markdown from original HTML5 converter:
     // https://github.com/asciidoctor/asciidoctor/blob/main/lib/asciidoctor/converter/html5.rb
     const type = node.getNodeName();
     switch (type) {
       case 'preamble': {
-        return this.convertPreamble(node as Asciidoctor.Block);
+        return this.convertPreamble(node as Block);
       }
 
       case 'paragraph': {
-        return this.convertParagraph(node as Asciidoctor.Block);
+        return this.convertParagraph(node as Block);
       }
 
       case 'ulist': {
-        return this.convertUlist(node as Asciidoctor.List);
+        return this.convertUlist(node as List);
       }
 
       case 'olist': {
-        return this.convertOlist(node as Asciidoctor.List);
+        return this.convertOlist(node as List);
       }
 
       case 'admonition': {
-        return this.convertAdmonition(node as Asciidoctor.Block);
+        return this.convertAdmonition(node as Block);
       }
 
       case 'image': {
-        return this.convertImage(node as Asciidoctor.Block);
+        return this.convertImage(node as Block);
       }
 
       case 'inline_quoted': {
-        return this.convertInlineQuoted(node as Asciidoctor.Inline) ?? '';
+        return this.convertInlineQuoted(node as Inline) ?? '';
       }
 
       case 'document': {
-        return this.convertDocument(node as Asciidoctor.Document);
+        return this.convertDocument(node as Document);
       }
 
       case 'inline_anchor': {
-        return this.convertInlineAnchor(node as Asciidoctor.Inline);
+        return this.convertInlineAnchor(node as Inline);
       }
 
       case 'section': {
-        return this.convertSection(node as Asciidoctor.Section);
+        return this.convertSection(node as Section);
       }
 
       case 'listing': {
-        return this.convertListing(node as Asciidoctor.List);
+        return this.convertListing(node as List);
       }
 
       case 'page_break': {
-        return this.convertPageBreak(node as Asciidoctor.Block);
+        return this.convertPageBreak(node as Block);
       }
 
       case 'thematic_break': {
-        return this.convertThematicBreak(node as Asciidoctor.Block);
+        return this.convertThematicBreak(node as Block);
       }
 
       case 'table': {
-        return this.convertTable(node as Asciidoctor.Table);
+        return this.convertTable(node as Table);
       }
 
       case 'quote': {
-        return this.convertQuote(node as Asciidoctor.Block);
+        return this.convertQuote(node as Block);
       }
 
       // Case 'literal': return convert_literal(node);
@@ -147,11 +158,11 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     }
   }
 
-  convertParagraph(node: Asciidoctor.Block) {
+  convertParagraph(node: Block) {
     return `${node.getContent()}\n`;
   }
 
-  convertPreamble(node: Asciidoctor.Block) {
+  convertPreamble(node: Block) {
     const doc = node.getDocument();
     const tocPlacement = doc.getAttribute('toc-placement') as string;
     let toc = '';
@@ -162,7 +173,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return `${node.getContent()}\n${toc}`;
   }
 
-  convertUlist(node: Asciidoctor.List) {
+  convertUlist(node: List) {
     const checklist = node.isOption('checklist');
     const items = node.getItems();
     const result = items.map((item) => {
@@ -172,7 +183,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return result.join('\n') + '\n';
   }
 
-  convertOlist(node: Asciidoctor.List) {
+  convertOlist(node: List) {
     const items = node.getItems();
     const reversed = node.isOption('reversed') ?? false;
     const start = node.getAttribute('start', reversed ? items.length : 1) as number;
@@ -183,8 +194,8 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return result.join('\n') + '\n';
   }
 
-  convertAdmonition(node: Asciidoctor.Block) {
-    const content = unescapeHtml(node.getContent().split('\n').join('\n> '));
+  convertAdmonition(node: Block) {
+    const content = unescapeHtml(node.getContent()?.split('\n').join('\n> '));
     const name = (node.getAttribute('name') as string | undefined)?.toLowerCase() ?? '';
     const title = escapeForHtml(node.getTitle() ?? name);
 
@@ -199,7 +210,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return result;
   }
 
-  convertImage(node: Asciidoctor.Block) {
+  convertImage(node: Block) {
     const target = node.getAttribute('target') as string;
     const caption = node.getCaption();
     const alt = unescapeHtml(node.getAlt());
@@ -216,33 +227,33 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return result;
   }
 
-  convertInlineQuoted(node: Asciidoctor.Inline) {
+  convertInlineQuoted(node: Inline) {
     const type = node.getType();
     const text = node.getText();
     const result = escapeForHtml(text);
     switch (type) {
       case 'monospaced': {
-        return `\`${result.replace(/`/g, '\\`')}\``;
+        return `\`${result.replaceAll('`', '\\`')}\``;
       }
 
       case 'emphasis': {
-        return `*${result.replace(/\*/g, '\\*')}*`;
+        return `*${result.replaceAll('*', '\\*')}*`;
       }
 
       case 'strong': {
-        return `**${result.replace(/\*\*/g, '\\*\\*')}**`;
+        return `**${result.replaceAll('**', '\\*\\*')}**`;
       }
 
       case 'mark': {
-        return `==${result.replace(/==/g, '\\=\\=')}==`;
+        return `==${result.replaceAll('==', '\\=\\=')}==`;
       }
 
       case 'superscript': {
-        return `^${result.replace(/[^]/g, '\\^')}^`;
+        return `^${result.replaceAll(/[^]/g, '\\^')}^`;
       }
 
       case 'subscript': {
-        return `~${result.replace(/~/g, '\\~')}~`;
+        return `~${result.replaceAll('~', '\\~')}~`;
       }
 
       case 'double': {
@@ -270,7 +281,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     }
   }
 
-  convertDocument(node: Asciidoctor.Document) {
+  convertDocument(node: Document) {
     const title = String(node.getDocumentTitle());
     const authors = node
       .getAuthor()
@@ -303,7 +314,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return `${createFrontmatter(metadata)}\n# ${title}\n\n${node.getContent()}`;
   }
 
-  convertInlineAnchor(node: Asciidoctor.Inline) {
+  convertInlineAnchor(node: Inline) {
     const text = unescapeHtml(node.getText());
     const type = node.getType();
     const target = node.getTarget() ?? '';
@@ -331,7 +342,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     }
   }
 
-  convertSection(node: Asciidoctor.Section) {
+  convertSection(node: Section) {
     const level = node.getLevel() + 1;
     const title = unescapeHtml(node.getTitle());
     const content = unescapeHtml(node.getContent());
@@ -339,7 +350,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return result;
   }
 
-  convertListing(node: Asciidoctor.List) {
+  convertListing(node: List) {
     const caption = node.getCaption();
     const content = unescapeHtml(node.getContent());
     const language = (node.getAttribute('language') as string | undefined) ?? '';
@@ -347,15 +358,15 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return result;
   }
 
-  convertPageBreak(_node: Asciidoctor.Block) {
+  convertPageBreak(_node: Block) {
     return `\n---\n`;
   }
 
-  convertThematicBreak(_node: Asciidoctor.Block) {
+  convertThematicBreak(_node: Block) {
     return `***\n`;
   }
 
-  convertTable(node: Asciidoctor.Table) {
+  convertTable(node: Table) {
     let result = '';
     const title = node.getCaptionedTitle();
     const columns = node.getColumns();
@@ -363,13 +374,13 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     const header = rows.getHead();
     const body = rows.getBody();
     const footer = rows.getFoot();
-    const mapRows = (rows: Asciidoctor.Table.Cell[][], header = false) =>
+    const mapRows = (rows: Table.Cell[][], header = false) =>
       rows
         .map(
-          (cells: Asciidoctor.Table.Cell[]) =>
+          (cells: Table.Cell[]) =>
             `| ` +
             cells
-              .map((cell: Asciidoctor.Table.Cell) => {
+              .map((cell: Table.Cell) => {
                 const style = cell.getStyle();
                 if (!header && style === 'literal') {
                   return `\`${cell.getText()}\``;
@@ -390,7 +401,7 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     result +=
       '| ' +
       columns
-        .map((column: Asciidoctor.Table.Column) => {
+        .map((column: Table.Column) => {
           const align = column.getHorizontalAlign();
           switch (align) {
             case 'left': {
@@ -430,10 +441,10 @@ class MarkdownConverter implements Asciidoctor.AbstractConverter {
     return result;
   }
 
-  convertQuote(node: Asciidoctor.Block) {
+  convertQuote(node: Block) {
     const attribution = (node.getAttribute('attribution') as string | undefined) ?? '';
     const citetitle = (node.getAttribute('citetitle') as string | undefined) ?? '';
-    const content = unescapeHtml(node.getContent().split('\n').join('\n> '));
+    const content = unescapeHtml(node.getContent()?.split('\n').join('\n> '));
     const citeContent = citetitle ? `<cite>${citetitle}</cite>` : '';
     const attributionText = attribution ? `— ${attribution}${citetitle ? '<br>\n> ' : ''}` : '';
     return `> ${content}${attribution || citetitle ? '\n> ' + attributionText + citeContent : ''}`;
