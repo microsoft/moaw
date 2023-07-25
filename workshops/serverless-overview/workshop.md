@@ -13,7 +13,7 @@ contacts: # Required. Must match the number of authors
   - "@damienaicheh"
   - "@justrebl"
   - "@ikhemissi"
-duration_minutes: 180
+duration_minutes: 300
 tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email, app service, web pubsub, static web app, csu
 navigation_levels: 3
 sections_title:
@@ -150,7 +150,7 @@ We will use this convention for the rest of the scenario:
 
 ## Programming language
 
-We will have to create few functions in this workshop to address our overall scenario. You can choose the programming language you are the most comfortable with among the ones [supported by Azure Functions][az-func-languages]. We will provide examples in Python for the moment, but other languages might come in the future.
+We will have to create few functions in this workshop to address our overall scenario. You can choose the programming language you are the most comfortable with among the ones [supported by Azure Functions][az-func-languages]. We will provide examples in Python and .NET 7 (isolated) for the moment, but other languages might come in the future.
 
 With everything ready let's start the lab 🚀
 
@@ -908,7 +908,7 @@ For this step you will create an `Azure Function` with a POST `HTTP Trigger` and
 > 
 > - The `Linux` Operating System
 > - A plan type set to `Consumption (Serverless)`
-> - The language you are most comfortable with (Python in our example)
+> - The language you are most comfortable with (Python or .NET 7 in our example)
 
 </div>
 
@@ -923,7 +923,7 @@ For the storage account associated to it: `stfunc<environment><region><applicati
 > Azure Functions in `consumption` (Serverless) mode will need an associated Storage Account in which store the Function App package.
 > A default one will be created if not specified, but if you want to use an existing storage account to, make sure to use the same region for both the Function App and the Storage Account.
 >
-> An Azure Function example solution will be provided below in Python.
+> An Azure Function example solution will be provided below in Python and .NET 7.
 >
 > [Azure Functions][azure-function]<br> 
 > [Azure Function Core Tools][azure-function-core-tools]<br> 
@@ -937,6 +937,10 @@ For the storage account associated to it: `stfunc<environment><region><applicati
 <details>
 <summary>Toggle solution</summary>
 
+#### Preparation
+
+You must create a storage account dedicated to your Azure Function in order to not mix the audios files and the Azure Function specificities.
+
 ```bash
 
 # Create an Azure storage account dedicated to the Azure Function App.
@@ -944,7 +948,11 @@ az storage account create --name <function-storage-account-name> \
                           --location <region>  \
                           --resource-group <resource-group> \
                           --sku Standard_LRS
+```
 
+#### Python implementation
+
+```bash
 # Create a serverless function app in the resource group.
 az functionapp create --name <function-name> \
                       --storage-account <function-storage-account-name> \
@@ -954,8 +962,6 @@ az functionapp create --name <function-name> \
                       --resource-group <resource-group> \
                       --functions-version 4
 ```
-
-You must create a storage account dedicated to your Azure Function in order to not mix the audios files and the Azure Function specificities.
 
 For the coding part, let's create a function using the [Azure Function Core Tools][azure-function-core-tools], **create a folder** and then run:
 
@@ -1062,9 +1068,112 @@ def main(req: func.HttpRequest, outputblob: func.Out[bytes]) -> func.HttpRespons
     )
 ```
 
+#### .NET 7 implementation
+
+In this version of the implementation, we will be using the [.NET 7 Isolated](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-in-process-differences) runtime.
+
+First, we will need to create a Function App:
+
+```bash
+# Create a serverless function app in the resource group.
+az functionapp create --name <function-name> \
+                      --storage-account <function-storage-account-name> \
+                      --consumption-plan-location <region> \
+                      --runtime dotnet-isolated \
+                      --runtime-version 7 \
+                      --os-type Linux \
+                      --resource-group <resource-group> \
+                      --functions-version 4
+```
+
+Next, we will create a function using [Azure Function Core Tools][azure-function-core-tools]:
+
+```bash
+# Locally create a folder for your function app and navigate to it
+mkdir <function-app-name>
+cd <function-app-name>
+
+# Create the new function app as a .NET 7 Isolated project
+# No need to specify a name, the folder name will be used by default
+func init --worker-runtime dotnet-isolated --target-framework net7.0
+
+# Create a new function endpoint with an HTTP trigger to which you'll be able to send the audio file
+func new --name AudioUpload --template 'HTTP Trigger'
+
+# Add a new Nuget package dependency to the Blob storage SDK
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.Storage.Blobs --version 5.0.0
+
+# Open the new projet inside VS Code
+code .
+
+```
+
+Now that we have a skeleton for our `AudioUpload` function in the `AudioUpload.cs` file, we will need to update it to meet the task goals:
+- It should to read the uploaded file from the body of the POST request
+- It should store the file as a blob in the blob storage account
+- It should respond to user with a status code 200 (OK)
+
+To simplify uploading the file, we will rely on the blob output binding [`BlobOutput`](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-output?tabs=python-v2%2Cin-process&pivots=programming-language-csharp) which will take care of the logic of connecting to the storage and uploading the function with minimal changes from our side.
+
+To do this, let's start by adding a `AudioUploadOutput` class to the `AudioUpload.cs` file:
+
+```csharp
+public class AudioUploadOutput
+{
+    [BlobOutput("%STORAGE_ACCOUNT_CONTAINER%/{rand-guid}.wav", Connection="STORAGE_ACCOUNT_CONNECTION_STRING")]
+    public byte[] Blob { get; set; }
+
+    public HttpResponseData HttpResponse { get; set; }
+}
+```
+
+This class will handle uploading the blob and returning the HTTP response:
+- the blob will be stored in the container identified by `STORAGE_ACCOUNT_CONTAINER`
+- the blob will be named `{rand-guid}.wav` which resolves to a UUID followed by `.wav`.
+- `STORAGE_ACCOUNT_CONNECTION_STRING` is the name of App setting which contains the connection string that we will use to connect to the blob storage account
+
+Next, we will need to update the class `AudioUpload` to add the logic for reading the file from the request, and then use `AudioUploadOutput` to perform the blob upload and returning the response.
+
+Update the code of the `Run` method in the `AudioUpload` class as follows:
+
+```csharp
+[Function(nameof(AudioUpload))]
+public AudioUploadOutput Run(
+    [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req
+)
+{
+    _logger.LogInformation("C# HTTP trigger function processed a request.");
+
+    // Read the file contents from the request
+    // and store it in the `audioFileData` buffer
+    var audioFileData = default(byte[]);
+    using (var memstream = new MemoryStream())
+    {
+        req.Body.CopyTo(memstream);
+        audioFileData = memstream.ToArray();
+    }
+
+    // Prepare the response to return to the user
+    var response = req.CreateResponse(HttpStatusCode.OK);
+    response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+    response.WriteString("Uploaded!");
+
+    // Use AudioUploadOutput to return the response and store the blob
+    return new AudioUploadOutput()
+    {
+        Blob = audioFileData,
+        HttpResponse = response
+    };
+}
+```
+
+The function will accept POST requests with a file in the body, then it will upload the file to a blob storage, and then return a `200` response to indicate that the request was processed successfully.
+
+#### Deployment and testing
+
 Deploy your function using the VS Code extension or by command line:
 
-Deploy your function using the VS Code :
+##### Deploy your function using the VS Code
 
 - Open the Azure extension in VS Code left panel
 - Make sure you're signed in to your Azure account
@@ -1073,7 +1182,7 @@ Deploy your function using the VS Code :
 
 ![Deploy to Function App](assets/function-app-deploy.png)
 
-Deployment via Azure Function Core Tools :
+##### Deployment via Azure Function Core Tools
 
 ```bash
 func azure functionapp publish func-<environment>-<region>-<application-name>-<owner>-<instance>
