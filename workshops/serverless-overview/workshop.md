@@ -952,6 +952,8 @@ az storage account create --name <function-storage-account-name> \
 
 #### Python implementation
 
+In this version of the implementation, we will be using Python. So let's create an Azure Function with the Python runtime.
+
 ```bash
 # Create a serverless function app in the resource group.
 az functionapp create --name <function-name> \
@@ -980,7 +982,6 @@ func new --language python --name AudioUpload --template 'HTTP Trigger'
 
 # Open the new projet inside VS Code
 code .
-
 ```
 
 Create a dev environment for the project:
@@ -1045,7 +1046,7 @@ And don't forget to change the `scriptFile` to use `func.py`:
 }
 ```
 
-Open the Azure Function App resource in the [Azure Portal][az-portal] and go to the `Configuration` panel. Then update the app settings with the `STORAGE_ACCOUNT_CONTAINER` to `audios` and get a connection string from the storage account with your audios container and set the `STORAGE_ACCOUNT_CONNECTION_STRING`.
+Open the Azure Function App resource in the [Azure Portal][az-portal] and go to the `Configuration` panel. Then update the App Settings with the `STORAGE_ACCOUNT_CONTAINER` to `audios` and get a connection string from the storage account with your audios container and set the `STORAGE_ACCOUNT_CONNECTION_STRING`.
 
 Update the `func.py` to:
 
@@ -1072,7 +1073,7 @@ def main(req: func.HttpRequest, outputblob: func.Out[bytes]) -> func.HttpRespons
 
 In this version of the implementation, we will be using the [.NET 7 Isolated](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-in-process-differences) runtime.
 
-First, we will need to create a Function App:
+First, we will need to create a Function App with the dotnet runtime:
 
 ```bash
 # Create a serverless function app in the resource group.
@@ -1086,7 +1087,7 @@ az functionapp create --name <function-name> \
                       --functions-version 4
 ```
 
-Next, we will create a function using [Azure Function Core Tools][azure-function-core-tools]:
+Next, we will create a function using the [Azure Function Core Tools][azure-function-core-tools]:
 
 ```bash
 # Locally create a folder for your function app and navigate to it
@@ -1108,14 +1109,14 @@ code .
 
 ```
 
-Now that we have a skeleton for our `AudioUpload` function in the `AudioUpload.cs` file, we will need to update it to meet the task goals:
-- It should to read the uploaded file from the body of the POST request
-- It should store the file as a blob in the blob storage account
-- It should respond to user with a status code 200 (OK)
+Now that we have a skeleton for our `AudioUpload` function in the `AudioUpload.cs` file, you will need to update it to meet the following goals:
+- It should read the uploaded file from the body of the POST request
+- It should store the file as a blob inside the blob Storage Account
+- It should respond to user with a status code 200
 
-To simplify uploading the file, we will rely on the blob output binding [`BlobOutput`](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-output?tabs=python-v2%2Cin-process&pivots=programming-language-csharp) which will take care of the logic of connecting to the storage and uploading the function with minimal changes from our side.
+To upload the file, you will rely on the blob output binding [`BlobOutput`](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob-output?tabs=python-v2%2Cin-process&pivots=programming-language-csharp) of the Azure Function, which will take care of the logic of connecting to the Storage Account and uploading the function with minimal line of code in our side.
 
-To do this, let's start by adding a `AudioUploadOutput` class to the `AudioUpload.cs` file:
+To do this, let's start by adding a `AudioUploadOutput` class to the `AudioUpload.cs` file for simplicity but it can be done in a specific class.
 
 ```csharp
 public class AudioUploadOutput
@@ -1128,11 +1129,11 @@ public class AudioUploadOutput
 ```
 
 This class will handle uploading the blob and returning the HTTP response:
-- the blob will be stored in the container identified by `STORAGE_ACCOUNT_CONTAINER`
-- the blob will be named `{rand-guid}.wav` which resolves to a UUID followed by `.wav`.
-- `STORAGE_ACCOUNT_CONNECTION_STRING` is the name of App setting which contains the connection string that we will use to connect to the blob storage account
+- The blob will be stored in the container identified by `STORAGE_ACCOUNT_CONTAINER` which is an environment variable.
+- The blob will be named `{rand-guid}.wav` which resolves to a UUID followed by `.wav`.
+- `STORAGE_ACCOUNT_CONNECTION_STRING` is the name of App setting which contains the connection string that you will use to connect to the blob storage account
 
-Next, we will need to update the class `AudioUpload` to add the logic for reading the file from the request, and then use `AudioUploadOutput` to perform the blob upload and returning the response.
+Next, you will need to update the class `AudioUpload` to add the logic for reading the file from the request, and then use `AudioUploadOutput` to perform the blob upload and returning the response.
 
 Update the code of the `Run` method in the `AudioUpload` class as follows:
 
@@ -1167,7 +1168,9 @@ public AudioUploadOutput Run(
 }
 ```
 
-The function will accept POST requests with a file in the body, then it will upload the file to a blob storage, and then return a `200` response to indicate that the request was processed successfully.
+The function will accept POST requests with a file in the body, upload the file to a blob storage, and then return a `200` response to indicate that the request was processed successfully.
+
+Open the Azure Function App resource in the [Azure Portal][az-portal] and go to the `Configuration` panel. Then update the App Settings with the `STORAGE_ACCOUNT_CONTAINER` to `audios` and get a connection string from the storage account with your audios container and set the `STORAGE_ACCOUNT_CONNECTION_STRING`.
 
 #### Deployment and testing
 
@@ -1302,7 +1305,7 @@ Add a new HTTP-triggered function `GetTranscriptions` to your Function App and u
 
 | App setting                         | Description                     | Value                |
 |-------------------------------------|---------------------------------|----------------------|
-| COSMOS_DB_DATABASE_NAME             | Name of the Cosmos DB database  | `HoldDb`             |
+| COSMOS_DB_DATABASE_NAME             | Name of the Cosmos DB database  | `HolDb`             |
 | COSMOS_DB_CONTAINER_ID              | Name of the container in the DB | `audios_transcripts` |
 | COSMOS_DB_CONNECTION_STRING_SETTING | Cosmos DB connection string     |                      |
 
@@ -1371,7 +1374,7 @@ First of all, let's define a class for transcriptions as described in the task d
 Create a `Transcription.cs` file with the following contents:
 
 ```csharp
-namespace serverless_workshop_functions_dotnet
+namespace YOUR_NAMESPACE_HERE
 {
     public class Transcription
     {
@@ -1384,9 +1387,9 @@ namespace serverless_workshop_functions_dotnet
 }
 ```
 
-Feel free to rename the `namespace` to the one used in the other classes (e.g. `AudioUpload.cs`).
+Don't forget to set the `namespace` to the one used in the other classes (e.g. `AudioUpload.cs`).
 
-Next, we will create the skeleton of the function using the following commands:
+Next, you will create the skeleton of the function using the following commands:
 
 ```sh
 # Create an HTTP-triggered function called GetTranscriptions
@@ -1398,13 +1401,13 @@ dotnet add package Microsoft.Azure.Functions.Worker.Extensions.CosmosDB --versio
 
 This will generate a new file `GetTranscriptions.cs` with a `GetTranscriptions` class.
 
-As we will need to return a JSON response, let's start by adding the following line at the top of the file:
+As you will need to return a JSON response, let's start by adding the following dependency at the top of the file:
 
 ```csharp
 using System.Text.Json;
 ```
 
-Next, we will need to update the logic of the `Run` method of this new class to fetch transcriptions from Cosmos DB and return it to the user.
+Next, you will have to update the logic of the `Run` method of this new class to fetch transcriptions from Cosmos DB and return it to the user.
 
 ```csharp
 [Function(nameof(GetTranscriptions))]
@@ -1434,11 +1437,11 @@ public HttpResponseData Run(
 
 Notice the usage of the Cosmos DB input binding [`CosmosDBInput`](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-input?tabs=python-v2%2Cisolated-process%2Cextensionv4&pivots=programming-language-csharp) which simplifies retrieving data from a Cosmos DB collection.
 
-In addition to defining the connection settings (e.g. name of the database, collection, and the connection string), we have also defined a query (`SqlQuery`) to fetch the last 50 items from the collection.
+In addition to defining the environment variables such as the name of the database, collection, and the connection string, you have also defined a query (`SqlQuery`) to fetch the last 50 items from the collection.
 
 Check the [Query items guide](https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/how-to-dotnet-query-items) for more details about the query language.
 
-Lastly, go to the Azure Function in your Azure Portal, inside the `Configuration` and `Application settings` add the 3 new settings values based on the Lab 1:
+Lastly, go to the Azure Function in your Azure Portal, inside the `Configuration` and `Application settings` and add the 3 new settings values:
 
 - Add the App settings `COSMOS_DB_DATABASE_NAME` and `COSMOS_DB_CONTAINER_ID` and set their values like defined in the Overview section above 
 - Set value of the connection string `COSMOS_DB_CONNECTION_STRING_SETTING` using the `Keys` section of your Cosmos Db resource on Azure.
@@ -1530,13 +1533,10 @@ The next step is to use the newly created Web PubSub instance to publish new tra
 
 Add a new Cosmos DB-triggered function `CosmosToWebPubSub` to your Function App and use the following settings:
 
-| App setting                         | Description                     | Value                |
-|-------------------------------------|---------------------------------|----------------------|
-| COSMOS_DB_DATABASE_NAME             | Name of the Cosmos DB database  | `HoldDb`             |
-| COSMOS_DB_CONTAINER_ID              | Name of the container in the DB | `audios_transcripts` |
-| COSMOS_DB_CONNECTION_STRING_SETTING | Cosmos DB connection string     |                      |
-| WEB_PUBSUB_HUB_ID                   | Name of the Web PubSub hub      | `audios_transcripts` |
-| WEB_PUBSUB_CONNECTION_STRING        | Web PubSub connection string    |                      |
+| App setting                         | Description                     | 
+|-------------------------------------|---------------------------------|
+| WEB_PUBSUB_HUB_ID                   | Web PubSub hub name     |  
+| WEB_PUBSUB_CONNECTION_STRING        | Web PubSub hub connection string    |                      
 
 
 #### Python implementation
@@ -1590,7 +1590,7 @@ Don't forget to add an empty `__init__.py` for Python discovery mecanism.
 
 As you have probably already noticed the `connectionStringSetting`, `databaseName` and `collectionName` are populated with the same key as the previous Function. And because you deploy all your Functions in the same Azure Function from an infrastructure point of view, they are already shared accross the `Application settings`. However you must add 2 new settings values which are:
 
-- Set `WEB_PUBSUB_HUB_ID` to audios_transcripts
+- Set `WEB_PUBSUB_HUB_ID` with the name of the Web PubSub
 - Set `WEB_PUBSUB_CONNECTION_STRING` with one of the connection string in the `Keys` section of your Web PubSub resource on Azure.
 
 #### .NET 7 implementation
@@ -1605,9 +1605,9 @@ func new --name CosmosToWebPubSub --template "CosmosDBTrigger"
 dotnet add package Microsoft.Azure.Functions.Worker.Extensions.WebPubSub --version 1.5.0-beta.1
 ```
 
-This will should create a `CosmosToWebPubSub.cs` file with a function that will trigger whenever we add a new item to a Cosmos DB collection.
+This should create a `CosmosToWebPubSub.cs` file with a function that will trigger whenever you add a new item to a Cosmos DB collection.
 
-Next, we will need to update the `Run` method with the following contents:
+Next, you will need to update the `Run` method with the following contents:
 
 ```csharp
 [Function(nameof(CosmosToWebPubSub))]
@@ -1636,7 +1636,7 @@ public SendToAllAction? Run(
 }
 ```
 
-As the notification data will be sent in the JSON format, we will need to add the following line at the top of the file:
+As the notification data will be sent in the JSON format, you will need to add the following dependency at the top of the file:
 
 ```csharp
 using System.Text.Json;
@@ -1644,12 +1644,12 @@ using System.Text.Json;
 
 Notice the use of the 2 bindings to simplify the interaction with other services:
 - `CosmosDBTrigger`: this trigger will detect automatically new items added to the collection and run the function whenever that happens
-- `WebPubSubOutput`: this output binding will send a notification to the hub defined in its constructor. To send a notification to everyone in the hub, we need to return a `SendToAllAction` instance.
+- `WebPubSubOutput`: this output binding will send a notification to the hub defined in its constructor. To send a notification to everyone in the hub, you need to return a `SendToAllAction` instance.
 
 Finally, you need to update the App settings of the Function App by adding the 2 new settings:
 
-- `WEB_PUBSUB_HUB_ID`: set it to `audios_transcripts`
-- `WEB_PUBSUB_CONNECTION_STRING`: use one of the connection string in the `Keys` section of your Web PubSub resource on Azure.
+- Set `WEB_PUBSUB_HUB_ID` with the name of the Web PubSub
+- Set `WEB_PUBSUB_CONNECTION_STRING` with one of the connection string in the `Keys` section of your Web PubSub resource on Azure.
 
 </details>
 
