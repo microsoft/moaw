@@ -1296,7 +1296,17 @@ This function will be used to show all existing transcriptions on the demo Web A
 <details>
 <summary>Toggle solution</summary>
 
+#### Overview
+
 Add a new HTTP-triggered function `GetTranscriptions` to your Function App and use the following settings:
+
+| App setting                         | Description                     | Value                |
+|-------------------------------------|---------------------------------|----------------------|
+| COSMOS_DB_DATABASE_NAME             | Name of the Cosmos DB database  | `HoldDb`             |
+| COSMOS_DB_CONTAINER_ID              | Name of the container in the DB | `audios_transcripts` |
+| COSMOS_DB_CONNECTION_STRING_SETTING | Cosmos DB connection string     |                      |
+
+#### Python implementation
 
 `function.json`:
 
@@ -1349,11 +1359,89 @@ def main(req: func.HttpRequest, transcriptions: func.DocumentList) -> func.HttpR
 
 Now, go to the Azure Function in your Azure Portal, inside the `Configuration` and `Application settings` add the 3 new settings values based on the Lab 1:
 
-- Set `COSMOS_DB_DATABASE_NAME` to HolDb
-- Set `COSMOS_DB_CONTAINER_ID` to audios_transcripts
-- Set `COSMOS_DB_CONNECTION_STRING_SETTING` with one of the connection string in the `Keys` section of your Cosmos Db resource on Azure.
+- Add the App settings `COSMOS_DB_DATABASE_NAME` and `COSMOS_DB_CONTAINER_ID` and set their values like defined in the Overview section above 
+- Set value of the connection string `COSMOS_DB_CONNECTION_STRING_SETTING` using the `Keys` section of your Cosmos Db resource on Azure.
 
 Don't forget to add an empty `__init__.py` for Python discovery mecanism.
+
+#### .NET 7 implementation
+
+First of all, let's define a class for transcriptions as described in the task details.
+
+Create a `Transcription.cs` file with the following contents:
+
+```csharp
+namespace serverless_workshop_functions_dotnet
+{
+    public class Transcription
+    {
+        public string id { get; set; }
+        public string path { get; set; }
+        public string result { get; set; }
+        public string status { get; set; }
+        public int _ts { get; set; }
+    }
+}
+```
+
+Feel free to rename the `namespace` to the one used in the other classes (e.g. `AudioUpload.cs`).
+
+Next, we will create the skeleton of the function using the following commands:
+
+```sh
+# Create an HTTP-triggered function called GetTranscriptions
+func new --name GetTranscriptions --template "HTTP trigger" --authlevel "function"
+
+# Add the Nuget package of Cosmos DB for Functions
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.CosmosDB --version 3.0.9
+```
+
+This will generate a new file `GetTranscriptions.cs` with a `GetTranscriptions` class.
+
+As we will need to return a JSON response, let's start by adding the following line at the top of the file:
+
+```csharp
+using System.Text.Json;
+```
+
+Next, we will need to update the logic of the `Run` method of this new class to fetch transcriptions from Cosmos DB and return it to the user.
+
+```csharp
+[Function(nameof(GetTranscriptions))]
+public HttpResponseData Run(
+    [HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequestData req,
+    [CosmosDBInput(
+        databaseName: "%COSMOS_DB_DATABASE_NAME%",
+        collectionName: "%COSMOS_DB_CONTAINER_ID%",
+        ConnectionStringSetting = "COSMOS_DB_CONNECTION_STRING_SETTING",
+        SqlQuery = "SELECT * FROM c ORDER BY c._ts DESC OFFSET 0 LIMIT 50")
+    ] IEnumerable<Transcription> transcriptions
+)
+{
+    _logger.LogInformation("C# HTTP trigger function processed a request.");
+
+    // Prepare the response to return to the user
+    var response = req.CreateResponse(HttpStatusCode.OK);
+    response.Headers.Add("Content-Type", "application/json");
+
+    // Serialize the transcriptions which we got from Cosmos DB in the JSON format
+    string jsonData = JsonSerializer.Serialize(transcriptions);
+    response.WriteString(jsonData);
+
+    return response;
+}
+```
+
+Notice the usage of the Cosmos DB input binding [`CosmosDBInput`](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2-input?tabs=python-v2%2Cisolated-process%2Cextensionv4&pivots=programming-language-csharp) which simplifies retrieving data from a Cosmos DB collection.
+
+In addition to defining the connection settings (e.g. name of the database, collection, and the connection string), we have also defined a query (`SqlQuery`) to fetch the last 50 items from the collection.
+
+Check the [Query items guide](https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/how-to-dotnet-query-items) for more details about the query language.
+
+Lastly, go to the Azure Function in your Azure Portal, inside the `Configuration` and `Application settings` add the 3 new settings values based on the Lab 1:
+
+- Add the App settings `COSMOS_DB_DATABASE_NAME` and `COSMOS_DB_CONTAINER_ID` and set their values like defined in the Overview section above 
+- Set value of the connection string `COSMOS_DB_CONNECTION_STRING_SETTING` using the `Keys` section of your Cosmos Db resource on Azure.
 
 </details>
 
@@ -1438,7 +1526,20 @@ The next step is to use the newly created Web PubSub instance to publish new tra
 <details>
 <summary>Toggle solution</summary>
 
+#### Overview
+
 Add a new Cosmos DB-triggered function `CosmosToWebPubSub` to your Function App and use the following settings:
+
+| App setting                         | Description                     | Value                |
+|-------------------------------------|---------------------------------|----------------------|
+| COSMOS_DB_DATABASE_NAME             | Name of the Cosmos DB database  | `HoldDb`             |
+| COSMOS_DB_CONTAINER_ID              | Name of the container in the DB | `audios_transcripts` |
+| COSMOS_DB_CONNECTION_STRING_SETTING | Cosmos DB connection string     |                      |
+| WEB_PUBSUB_HUB_ID                   | Name of the Web PubSub hub      | `audios_transcripts` |
+| WEB_PUBSUB_CONNECTION_STRING        | Web PubSub connection string    |                      |
+
+
+#### Python implementation
 
 `function.json`:
 
@@ -1491,6 +1592,64 @@ As you have probably already noticed the `connectionStringSetting`, `databaseNam
 
 - Set `WEB_PUBSUB_HUB_ID` to audios_transcripts
 - Set `WEB_PUBSUB_CONNECTION_STRING` with one of the connection string in the `Keys` section of your Web PubSub resource on Azure.
+
+#### .NET 7 implementation
+
+Let's create a Cosmos DB triggered function using the template `CosmosDBTrigger` and use the `WebPubSub` extension to send notifications to the `Web PubSub` hub using the `WebPubSubOutput` output binding.
+
+```sh
+# Create a skeleton of a Cosmos DB triggered function
+func new --name CosmosToWebPubSub --template "CosmosDBTrigger"
+
+# Use the latest version of the Web PubSub Nuget package (prerelease) to interact with Web PubSub
+dotnet add package Microsoft.Azure.Functions.Worker.Extensions.WebPubSub --version 1.5.0-beta.1
+```
+
+This will should create a `CosmosToWebPubSub.cs` file with a function that will trigger whenever we add a new item to a Cosmos DB collection.
+
+Next, we will need to update the `Run` method with the following contents:
+
+```csharp
+[Function(nameof(CosmosToWebPubSub))]
+[WebPubSubOutput(Hub = "%WEB_PUBSUB_HUB_ID%", Connection = "WEB_PUBSUB_CONNECTION_STRING")]
+public SendToAllAction? Run(
+    [CosmosDBTrigger(
+        databaseName: "%COSMOS_DB_DATABASE_NAME%",
+        collectionName: "%COSMOS_DB_CONTAINER_ID%",
+        ConnectionStringSetting = "COSMOS_DB_CONNECTION_STRING_SETTING",
+        LeaseCollectionName = "leases")
+    ] IReadOnlyList<Transcription> input
+)
+{
+    if (input != null && input.Count > 0)
+    {
+        _logger.LogInformation("Document Id: " + input[0].id);
+
+        return new SendToAllAction
+        {
+            Data = BinaryData.FromString(JsonSerializer.Serialize(input[0])),
+            DataType = WebPubSubDataType.Json
+        };
+    }
+
+    return null;
+}
+```
+
+As the notification data will be sent in the JSON format, we will need to add the following line at the top of the file:
+
+```csharp
+using System.Text.Json;
+```
+
+Notice the use of the 2 bindings to simplify the interaction with other services:
+- `CosmosDBTrigger`: this trigger will detect automatically new items added to the collection and run the function whenever that happens
+- `WebPubSubOutput`: this output binding will send a notification to the hub defined in its constructor. To send a notification to everyone in the hub, we need to return a `SendToAllAction` instance.
+
+Finally, you need to update the App settings of the Function App by adding the 2 new settings:
+
+- `WEB_PUBSUB_HUB_ID`: set it to `audios_transcripts`
+- `WEB_PUBSUB_CONNECTION_STRING`: use one of the connection string in the `Keys` section of your Web PubSub resource on Azure.
 
 </details>
 
