@@ -144,7 +144,7 @@ https://lilablobssc.blob.core.windows.net/snapshotserengeti-v-2-0
 
 Provide an appropriate connection name, and for the Authentication kind select `Anonymous` and click `Create`.
 
-![Create Data Pipeline](assets/create-connection.png)
+![Create Connection](assets/create-connection.png)
 
 Back on the `Source` tab, in the `File path`, the container name as `snapshotserengeti-v-2-0` leave the directory empty and for the File name, click on the `Add dynamic content` button and from the pane that appears click on `ForEach CurrentItem`. Then click `Ok` to close the pane.
 
@@ -351,21 +351,21 @@ To create relationship : Click the **Model** below the screen where you have Dat
 
 1. Click **Categories[id]** and drag to connect to **train_annotations[category_id]**.
 A screen will pop up with Create Relationship. 
-    a. Caridinality : One to Many
+    a. Cardinality : One to Many
     b. Cross filter direction : Single
     c. Make this relationship active: Ticked
     d. Click **Confirm**
     
 2. Click **Season[season]** and drag to connect to **train_annotation[season]**
 A screen will pop up with Create Relationship. 
-    a. Caridinality : One to Many
+    a. Cardinality : One to Many
     b. Cross filter direction : Single
     c. Make this relationship active: Ticked
     d. Click **Confirm**
 
 3. Click **train_images[id]** and drag to connect to **train_annotation[images_id]**
 A screen will pop up with Create Relationship. 
-    a. Caridinality : One to Many
+    a. Cardinality : One to Many
     b. Cross filter direction : Single
     c. Make this relationship active: Ticked
     d. Click **Confirm**
@@ -1319,7 +1319,7 @@ Finally the output will be a number representing the class label of our image. B
 
 As we already have our model logged in Microsoft Fabric using mlflow, we can download the `pkl` files and use it in our applications. Additionally, we can go ahead and visualize our model performance using Power BI.
 
-This concludes our workshop for today. The next section covers all the resources you will need to continue your Microsoft Fabric journey.
+This concludes our workshop. The next section covers all the resources you will need to continue your Microsoft Fabric journey.
 
 ---
 
