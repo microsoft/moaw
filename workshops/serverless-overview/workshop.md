@@ -1172,6 +1172,8 @@ The function will accept POST requests with a file in the body, upload the file 
 
 Open the Azure Function App resource in the [Azure Portal][az-portal] and go to the `Configuration` panel. Then update the App Settings with the `STORAGE_ACCOUNT_CONTAINER` to `audios` and get a connection string from the storage account with your audios container and set the `STORAGE_ACCOUNT_CONNECTION_STRING`.
 
+Make sure to set `FILE_UPLOADING_FORMAT` to `binary` in the Web App settings as this function implementation expects the audio file contents to be passed directly in the POST request body, without using a form.
+
 #### Deployment and testing
 
 Deploy your function using the VS Code extension or by command line:
@@ -1212,10 +1214,18 @@ It's now time to connect the Azure Function which stand for a small API to uploa
 
 </div>
 
+<div class="tip" data-title="Tips">
+
+> If your function expects a binary in the POST request body (instead of a multipart form) then you will also need to set `FILE_UPLOADING_FORMAT` to `binary`.
+
+</div>
+
 <details>
 <summary>Toggle solution</summary>
 
 First, go to the Azure Static Web App and inside `Configuration` in the `Application Settings` set the environment variable `FILE_UPLOADING_URL` to the same Url you used inside Postman previously.
+
+If your function expects a binary as an input then you will also need to set `FILE_UPLOADING_FORMAT` to `binary`
 
 Now if you try to upload a file using the Web App interface you should see a green box on the bottom left corner with a success message.
 
