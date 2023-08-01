@@ -27,6 +27,7 @@ sections_title:
   - Preparing your data for Training
   - Training and Evaluating the Machine Learning model
   - Resources
+  - Appendix
 
 wt_id: data-91115-jndemenge
 
@@ -72,10 +73,10 @@ To complete this workshop you will need the following:
 3. A [Microsoft Fabric License](https://learn.microsoft.com/en-us/fabric/enterprise/licenses?WT.mc_id=data-91115-jndemenge) or [Start the Fabric (Preview) trial](https://learn.microsoft.com/en-us/fabric/get-started/fabric-trial?WT.mc_id=data-91115-jndemenge#start-the-fabric-preview-trial)
 4. A [Workspace in Microsoft Fabric](https://learn.microsoft.com/fabric/data-warehouse/tutorial-create-workspace?WT.mc_id=data-91115-davidabu)
 5. Make sure your Workspace has the Data Model settings activated 
-    a. Click **Workspace settings**
-    b. Click **Power BI**
-    c. Open **Power BI** and **Click General**
-    d. **Tick** the small box with "Users can edit data models in Power BI service
+    - Click **Workspace settings**
+    - Click **Power BI**
+    - Open **Power BI** and **Click General**
+    - **Check** the small box with "Users can edit data models in Power BI service
 
 ---
 
@@ -520,6 +521,11 @@ I hope you enjoyed this session, You can explore and build more visualizations w
 ---
 
 ## Data Analysis & Transformation with Apache Spark in Fabric
+
+<div class="info" data-title ="Skip Notice">
+
+> You can skip this section (section 6) and Section 7 by downloading the [prep_and_transform notebook](assets/notebooks/prep_and_transform.ipynb) and follow the instructions in the `Appendix Section` to import the notebook into your workspace. Then run all the cells in the notebook.
+</div>
 
 Now that we have successfully, loaded the data into the Lakehouse and explored how to leverage the SQL endpoint to create views and build relationships, we will now explore how to use Fabric Notebooks to perform data analysis and transformation.
 
@@ -1325,10 +1331,28 @@ This concludes our workshop. The next section covers all the resources you will 
 
 ## Resources
 
-- [Notebook for training our model](assets/train_model.ipynb)
-- [Notebook for preparing and transforming our data](assets/prep_and_transform.ipynb)
+- [Notebook for training our model](assets/notebooks/train_model.ipynb)
+- [Notebook for preparing and transforming our data](assets/notebooks/prep_and_transform.ipynb)
 - [Get Started with Microsoft Fabric](https://learn.microsoft.com/en-us/fabric/get-started/microsoft-fabric-overview?WT.mc_id=academic-91115-bethanycheum)
 - [Explore Lakehouses in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-lakehouses/?WT.mc_id=academic-91115-bethanycheum)
 - [Ingest Data with Dataflows Gen2 in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/use-dataflow-gen-2-fabric/?WT.mc_id=academic-91115-bethanycheum)
 - [Get Started with data science in Microsoft Fabric](https://learn.microsoft.com/en-us/training/modules/get-started-data-science-fabric/?WT.mc_id=academic-91115-bethanycheum)
 - [Grow and Learn with the Microsoft Fabric Community](https://community.fabric.microsoft.com/?WT.mc_id=academic-91115-bethanycheum)
+
+---
+
+## Appendix
+
+### Importing Notebook into the Workspace
+To import an existing notebook into the workspace, on the bottom left of your workspace switch to the `Data Engineering` workload. In the page that appears click on `Import Notebook` then click the `Upload` button on the pane that opens.
+
+![Importing Notebook](assets/import_notebook.png)
+
+Select the notebook you want to import. After successful import, navigate back to your workspace and you will find the recently imported notebook. 
+
+Open the notebook and if the Lakehouse explorer indicates that `Missing Lakehouse`, click on the arrows to the left of the error and on the dialog that appears click on `Add Lakehouse`.
+
+![Missing Lakehouse](assets/missing_lakehouse.png)
+
+On the dialog that appears SELECT `Existing lakehouse` and click `Add`. Select your preferred lakehouse and click `Add`.
+
