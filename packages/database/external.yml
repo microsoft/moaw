@@ -210,7 +210,7 @@
   tags: azure, web apps, api apps, app service plan, container, docker, app service, csu
 
 - title: Product Hands-on Lab - Code to Cloud
-  url: https://microsoft.github.io/moaw/workshop/gh:hands-on-lab-code-to-cloud/tree/main/docs
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-code-to-cloud/tree/main/docs
   github_url: https://github.com/microsoft/hands-on-lab-code-to-cloud
   language: en
   last_updated: 2023-02-08
