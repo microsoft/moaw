@@ -379,7 +379,7 @@ The main Event Grid concept we'll use for the rest of this lab is called `System
 
 You can create Event Grid System Topics :
 
-- Directly from the resource you want to monitor (for instance a storage account) using the `Events` menu. A system topic will be created automatically with a unique name and will be linked to the resource.
+- Directly from the resource you want to monitor using the `Events` menu. A system topic will be created automatically with a unique name and will be linked to the resource.
 - Manually, using the `System Topics` resource type in the Azure Portal, or thanks to the Azure CLI. This will allow you to define the name of the system topic and the resource it will be linked to.
 
 For this step, creating the Event Grid System Topic will be enough, as the actual `event subscription` and `event filters` will be defined and automatically created by the Logic App trigger setup [later on](workshop/serverless-overview/?step=1#trigger-the-logic-app).
@@ -580,7 +580,7 @@ Next step would be to configure the event type you want to listen to. In our cas
 Parameters below will help in filtering the events you want to listen to. In our case, you will filter on the `audios` container, and the `.wav` file extension.
 The convention to filter on a specific blob container is as follows : `/blobServices/default/containers/<container-name>`.
 
-Finally, set the Event Grid `Subscription Name` to `evgs-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>`.
+Finally, set the Event Grid `Subscription Name` to `evgs-audios-uploaded-<environment>-<region>-<application-name>-<owner>-<instance>` this will be automatically created for you.
 
 Once everything is set, click on the `Save` button on the top left corner and the trigger operation should look like this :
 
