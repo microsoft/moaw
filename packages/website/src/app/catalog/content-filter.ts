@@ -7,10 +7,11 @@ export interface ContentFilter {
 }
 
 export function matchEntry(workshop: ContentEntry, filter: ContentFilter) {
-  const searchTooShort = filter.search.length < 3;
-  const matchTitle = searchTooShort || workshop.title.toLowerCase().includes(filter.search);
-  const matchDescription = searchTooShort || workshop.description.toLowerCase().includes(filter.search);
-  const matchTag = searchTooShort || workshop.tags.some((tag) => tag.toLowerCase().includes(filter.search));
+  const search = filter.search.toLowerCase();
+  const searchTooShort = search.length < 3;
+  const matchTitle = searchTooShort || workshop.title.toLowerCase().includes(search);
+  const matchDescription = searchTooShort || workshop.description.toLowerCase().includes(search);
+  const matchTag = searchTooShort || workshop.tags.some((tag) => tag.toLowerCase().includes(search));
   const matchLanguage = filter.language === 'all' || workshop.language === filter.language;
   const matchTags = filter.tags.length === 0 || filter.tags.every((tag) => workshop.tags.includes(tag));
 

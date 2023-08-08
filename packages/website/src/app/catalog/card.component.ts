@@ -35,7 +35,10 @@ import { ChipComponent } from '../shared/components/chip.component';
         flex-direction: column;
         background: var(--background);
         border-radius: var(--border-radius);
-        box-shadow: 0 0px 1px 0 rgba(0 0 0 / 20%), 0 2px 1px -1px rgba(0 0 0 / 10%), 0 2px 2px 0 rgba(0 0 0 / 10%);
+        box-shadow:
+          0 0px 1px 0 rgba(0 0 0 / 20%),
+          0 2px 1px -1px rgba(0 0 0 / 10%),
+          0 2px 2px 0 rgba(0 0 0 / 10%);
         overflow: hidden;
         transition-property: box-shadow, transform;
         transition-duration: var(--transition-duration);

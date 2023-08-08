@@ -215,7 +215,8 @@ a {
   }
 }
 
-img {
+img,
+iframe {
   max-width: 100%;
   margin: var(--space-xs) 0;
 }

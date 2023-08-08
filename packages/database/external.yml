@@ -208,3 +208,22 @@
   audience: students, pro devs, ops, admin
   level: beginner 
   tags: azure, web apps, api apps, app service plan, container, docker, app service, csu
+
+- title: Product Hands-on Lab - Code to Cloud
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-code-to-cloud/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-code-to-cloud
+  language: en
+  last_updated: 2023-02-08
+  type: workshop
+  description: This workshop will cover Microsoft Dev Box, Az Dev CLI.
+  authors:
+    - Damien Aicheh
+    - Lucas Peirone
+  contacts:
+    - '@damienaicheh'
+    - '@lucas.peirone'
+  duration_minutes: 90
+  audience: students, pro devs
+  level: beginner
+  tags: azure, Azure Dev Center, Microsoft Dev Box, Azure Deployment Environment, Az Dev CLI, csu
+  navigation_levels: 3
