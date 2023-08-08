@@ -129,10 +129,10 @@ az acr login --name $acr_name
 
 ### Create a container image and push it to ACR
 
-Clone the [Deploying to Azure Container Apps](https://github.com/duffney/deploying-to-azure-container-apps) repository to your local machine using the following command:
+Clone the [Deploying to Azure Container Apps](https://github.com/duffney/deploying-to-aca) repository to your local machine using the following command:
 
 ```powershell
-git clone 'https://github.com/duffney/deploying-to-azure-container-apps.git'
+git clone 'https://github.com/duffney/deploying-to-aca.git'
 ```
 
 Change into the root of the repository and create a container image using the following command:
