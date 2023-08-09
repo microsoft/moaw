@@ -228,7 +228,7 @@ Run the following commands to create a container app:
 <summary>PowerShell</summary>
 
 ```powershell
-$container_app_name='myContainerApp'
+$container_app_name='my-container-app'
 $token=az acr login --name $acr_name --expose-token --output tsv --query accessToken;
 $login_server=az acr show --name $acr_name --query loginServer --output tsv;
 
@@ -252,7 +252,7 @@ az containerapp create `
 <summary>Bash</summary>
 
 ```bash
-container_app_name='myContainerApp'
+container_app_name='my-container-app'
 token=$(az acr login --name $acr_name --expose-token --output tsv --query accessToken);
 login_server=$(az acr show --name $acr_name --query loginServer --output tsv);
 
