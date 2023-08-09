@@ -35,10 +35,50 @@ You'll learn how to:
 | Git                 | [Install Git](https://git-scm.com/downloads) |
 
 ---
+## Set up Local Development Space
+In this section, you'll clone a github repository into your local device
 
-## Build and Push the Container Image
+Open up your prefered terminal. if you'd like, make a folder to contain your work:
 
-In this section, you'll build and push a container image to Azure Container Registry (ACR). That image will be used in the next section to deploy a container app to Azure Container Apps.
+```powershell
+mkdir Summer-Demo
+cd Summer-Demo
+```
+
+Clone the [Deploying to Azure Container Apps](https://github.com/duffney/deploying-to-aca) repository to your local machine using the following command:
+
+```powershell
+git clone 'https://github.com/duffney/deploying-to-aca.git'
+```
+
+Change into the root of the repository:
+
+```powershell
+cd deploying-to-azure-container-apps;
+```
+
+
+### Add the containerapp extension to the Azure CLI
+
+Run the following command to add the containerapp extension to the Azure CLI:
+
+```powershell
+az extension add --name containerapp
+```
+
+You now have code on your local device. 
+<div class="task" data-title="Task">
+
+> Optional: explore the files you've downloaded - open them in visual Studio Code, list them with the terminal command "ls", hypothesize what the different files do, and what the final web app might look like.
+
+
+</div>
+
+---
+
+## Set up Azure Resources
+
+Next we need to set up the azure resources that will support our work. 
 
 ### Log in to the Azure CLI
 
@@ -47,7 +87,6 @@ Run the following command to log in to the Azure CLI:
 ```powershell
 az login
 ```
-
 ### Create a resource group 
 
 <details>
@@ -78,8 +117,7 @@ az group create \
 
 </details>
 
-
-### Deploy an Azure Container Registry instance
+### Create an Empty Container Registry
 
 Next, run the following command to deploy an Azure Container Registry instance:
 
@@ -117,7 +155,6 @@ az acr create \
 
 </details>
 
-
 ### Log in to Azure Container Registry
 
 Run the following commands to log in to your ACR instance:
@@ -126,61 +163,6 @@ Run the following commands to log in to your ACR instance:
 ```powershell
 az acr login --name $acr_name
 ```
-
-### Create a container image and push it to ACR
-
-Clone the [Deploying to Azure Container Apps](https://github.com/duffney/deploying-to-aca) repository to your local machine using the following command:
-
-```powershell
-git clone 'https://github.com/duffney/deploying-to-aca.git'
-```
-
-Change into the root of the repository and create a container image using the following command:
-
-```powershell
-cd deploying-to-azure-container-apps;
-```
-
-Next, build the container image using the following command:
-
-<details>
-<summary>PowerShell</summary>
-
-```powershell
-$image_name='webapp'
-$tag='v1.0'
-
-az acr build --registry $acr_name --image "$acr_name.azurecr.io/${image_name}:${tag}" .
-```
-
-</details>
-
-<details>
-<summary>Bash</summary>
-
-```bash
-image_name='webapp'
-tag='v1.0'
-
-az acr build --registry $acr_name --image "$acr_name.azurecr.io/$image_name:$tag" .
-```
-
-</details>
-
----
-
-## Deploy a Container image to Azure Container Apps
-
-In this section, you'll deploy a containerized Go web application to Azure Container Apps. The application will be accessible via an external ingress and will use environment variables and Azure Container Registry secrets to modify the application's behavior.
-
-### Add the containerapp extension to the Azure CLI
-
-Run the following command to add the containerapp extension to the Azure CLI:
-
-```powershell
-az extension add --name containerapp
-```
-
 ### Create an Azure Container Apps environment
 
 An Azure Container Apps environment is a logical grouping of resources that are used to deploy containerized applications. Within an environment, you can deploy one or more container apps and share resources such as a container registry and secrets.
@@ -217,9 +199,53 @@ az containerapp env create \
 
 </details>
 
+---
+
+## Build and Push the Container Image
+
+In this section, you'll build and push a container image to Azure Container Registry (ACR). That image will be used in the next section to deploy a container app to Azure Container Apps.
+
+### Create a container image and push it to ACR
+
+
+Build the container image using the following command:
+
+<details>
+<summary>PowerShell</summary>
+
+```powershell
+$image_name='webapp'
+$tag='v1.0'
+
+az acr build --registry $acr_name --image "$acr_name.azurecr.io/${image_name}:${tag}" .
+```
+
+</details>
+
+<details>
+<summary>Bash</summary>
+
+```bash
+image_name='webapp'
+tag='v1.0'
+
+az acr build --registry $acr_name --image "$acr_name.azurecr.io/$image_name:$tag" .
+```
+
+</details>
+
+---
+
+## Deploy a Container image to Azure Container Apps
+
+In this section, you'll deploy a containerized Go web application to Azure Container Apps. The application will be accessible via an external ingress and will use environment variables and Azure Container Registry secrets to modify the application's behavior.
+
+
+
+
 ### Create the container app
 
-Container apps define the container image to deploy, the environment variables to set, and the secrets and or volumes to mount. You can pull imags from Azure Container Registry or Docker Hub and set environment variables and secrets from Azure Key Vault. Container apps can also be deployed with an external ingress, which allows you to access the application from outside the environment. Internal ingress is also available, which allows you to access the application from within the environment.
+Container apps define the container image to deploy, the environment variables to set, and the secrets and or volumes to mount. You can pull images from Azure Container Registry or Docker Hub and set environment variables and secrets from Azure Key Vault. Container apps can also be deployed with an external ingress, which allows you to access the application from outside the environment. Internal ingress is also available, which allows you to access the application from within the environment.
 
 Run the following commands to create a container app:
 
@@ -279,9 +305,9 @@ az containerapp create \
 
 ---
 
-## Deploy a Revision
+## Update Your App
 
-In this section, you'll deploy a revision of the container app. 
+In this section, you'll update your container app. 
 
 Revisions allow you to deploy new versions of the container app without having to create a new container app. Revisions can be deployed with a new container image, environment variables, secrets, and volumes. 
 
@@ -319,7 +345,7 @@ Follow the steps below to update the container app:
 Once the container app is open for editing, follow the steps below to add the secret as an environment variable:
 
 1. Under **Environment Variables**, click **+ Add**.
-2. Enter `WELCOME_NAME` for the **Name**.
+2. Enter `VISITOR_NAME` for the **Name**.
 3. Select `Reference a secret` as the source.
 4. Then, select `welcome-secret` as the **Value**.
 5. Click **Save**.
@@ -329,11 +355,14 @@ Once the container app is open for editing, follow the steps below to add the se
 
 ### View the new revision
 
-Once the container app is updated, a new revision will be deployed. Follow the steps below to view the new revision:
+Once the container app is updated, a new revision will be deployed. Azure Container apps supports zero downtime deployment. As the new revision is provisioned, the oldder revision will recieve all the traffic. Only once the new revision is fully provisioned will the container app switch traffic to the new revision. This way, the app has no downtime. 
+
+Follow the steps below to track the update:
 
 1. Select **Revision Management** from the left-hand menu under **Application**.
-2. Click the revision with the latest **Created** date.
-3. Click the link next to the **Revision URL** to view the application.
+2. refresh the page to see the revisions change status and traffic.
+3. Once the more recently-created revision has 100% traffic, the app will be updated.
+4. After the new revision is set, the previous revision will deactivate. View older revisions in the "inactive Revisions" tab 
 
 ![View the new revision](./assets/view_new_revision.png)
 
