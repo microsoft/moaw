@@ -3,3 +3,5 @@ dist/
 .DS_Store
 Thumbs.db
 TODO
+
+.vscode/ltex*
