@@ -47,6 +47,7 @@ GitHub Copilot is an AI-powered code assistant that helps developers write bette
 | .Net Core   | [Download .Net Core](https://dotnet.microsoft.com/download) |
 | GitHub account | [Create free GitHub account](https://github.com/join) |
 | GitHub Copilot Access | A 60 day trial can be [requested here](https://github.com/github-copilot/signup) |
+| GitHub Copilot Chat Public Beta Access | [requested here](https://github.com/github-copilot/chat_waitlist_signup/join)
 | A code editor  | [Download VS Code](https://code.visualstudio.com/Download) |
 | some VSCode extensions |  The first one [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and the second one ([GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs)) will allow you to send custom commands (a.k.a. `brushes` which are in fact `prompts`).|
 | A browser      | [Download Microsoft Edge](https://www.microsoft.com/edge) |
@@ -525,7 +526,7 @@ struct Date validateDate(char *date) {
 
 </div>
 
-We'll see later that we can do it more efficiently with Copilot Labs and Copilot Chat (Copilot X).
+We'll see later that we can do it more efficiently with Copilot Labs and Copilot Chat.
 
 *`It's also able to work on more exotic language`: it worked on an language used by a customer that we didn't even found traces on internet. By the way it's not listed in the languages supported by Copilot but it worked. You can't rely only on it to migrate the whole source code without having the developper to understand what happens but it sure will help accelerate the process.*
 
@@ -799,16 +800,11 @@ For this exercise, you want to deploy your previously developed Web application 
 
 # Secure code
 
-GitHub Copilot is a generative AI and thus, perfect to generate code, but did you know you can use it to find security issues or bad practices in your code?
+GitHub Copilot is a generative AI and thus, perfect to generate code, but did you know you can use it to find security issues or bad practices in your code? This is a job where copilot Chat is very useful.
 
 ## Prerequisites
 
-You'll need additional VSCode extensions because a chatbot could help you when **GitHub Labs** is not sufficient. You can either use:
-
-- [Copilot Chat](https://github.com/github-copilot/chat_waitlist_signup/join) (which is in Preview and with a waitlist)
-- [chatgpt-copilot](https://marketplace.visualstudio.com/items?itemName=feiskyer.chatgpt-copilot)
-
-> For the second one, you can either sign-up for a free OpenAI account or if you are doing the workshop with a Microsoft employee, you may use an Azure OpenAI Service endpoint.
+You'll need additional VSCode extensions because a chatbot could help you when **GitHub Labs** is not sufficient. You can use [Github Copilot Chat](https://github.com/github-copilot/chat_waitlist_signup/join) (which is in Preview and with a waitlist)
 
 ## Secure your code
 
