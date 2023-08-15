@@ -53,7 +53,7 @@ git clone 'https://github.com/duffney/deploying-to-aca.git'
 Change into the root of the repository:
 
 ```powershell
-cd deploying-to-azure-container-apps;
+cd deploying-to-aca;
 ```
 
 
@@ -125,7 +125,7 @@ Next, run the following command to deploy an Azure Container Registry instance:
 
 ```powershell
 $random = Get-Random -Minimum 1000 -Maximum 9999
-$acr_name="myRegistry$random"
+$acr_name="myregistry$random"
 
 az acr create `
   --name $acr_name `
@@ -142,7 +142,7 @@ az acr create `
 
 ```bash
 random=$RANDOM
-acr_name="myRegistry$random"
+acr_name="myregistry$random"
 
 az acr create \
   --name $acr_name \
