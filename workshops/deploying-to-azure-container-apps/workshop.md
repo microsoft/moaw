@@ -20,10 +20,9 @@ In this workshop, you'll learn how deploy a containerized application to Azure C
 ## Objectives
 
 You'll learn how to:
-- Create an Azure Container Apps environment
-- Deploy a web application to Azure Container Apps
-- Allow access to the web application with an external ingress
-- Deploy revisions of the web application
+- Create an Azure Container Apps environment, 
+- Deploy a web application to Azure Container Apps from a local development space
+- Edit and update the web application
 
 ## Prerequisites
 
@@ -36,13 +35,13 @@ You'll learn how to:
 
 ---
 ## Set up Local Development Space
-In this section, you'll clone a github repository into your local device
+In this section, you'll clone a github repository to get the workshops code on your local computer. 
 
-Open up your prefered terminal. if you'd like, make a folder to contain your work:
+Open up your prefered terminal (This tutorial has powershell and lynux instructions). if you'd like, make a folder to contain your work:
 
 ```powershell
-mkdir Summer-Demo
-cd Summer-Demo
+mkdir Reactor-Summer-2023
+cd Reactor-Summer-2023
 ```
 
 Clone the [Deploying to Azure Container Apps](https://github.com/duffney/deploying-to-aca) repository to your local machine using the following command:
