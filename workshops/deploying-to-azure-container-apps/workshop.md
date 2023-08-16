@@ -68,7 +68,7 @@ az extension add --name containerapp
 You now have code on your local device. 
 <div class="task" data-title="Task">
 
-> Optional: explore the files you've downloaded - open them in visual Studio Code, list them with the terminal command "ls", hypothesize what the different files do, and what the final web app might look like.
+> Optional: explore the files you've downloaded - open them in visual Studio Code, list the files with the terminal command "ls", hypothesize what the different files do, and what the final web app might look like.
 
 
 </div>
@@ -95,9 +95,9 @@ az login
 $resource_group='myResourceGroup'
 $location='northcentralus'
 
-New-AzResourceGroup `
-  -Name $resource_group `
-  -Location $location
+az group create `
+--name $resource_group `
+--location $location
 ```
 
 </details>
@@ -215,8 +215,9 @@ Build the container image using the following command:
 ```powershell
 $image_name='webapp'
 $tag='v1.0'
+$server="$acr_name.azurecr.io"
 
-az acr build --registry $acr_name --image "$acr_name.azurecr.io/${image_name}:${tag}" .
+az acr build --registry $acr_name --image "$server/${image_name}:${tag}" .
 ```
 
 </details>
@@ -255,20 +256,21 @@ Run the following commands to create a container app:
 
 ```powershell
 $container_app_name='my-container-app'
-$token=az acr login --name $acr_name --expose-token --output tsv --query accessToken;
-$login_server=az acr show --name $acr_name --query loginServer --output tsv;
+$password=az acr credential show --name $acr_name --output tsv --query "passwords[0].value"
 
 az containerapp create `
     --name $container_app_name `
     --resource-group $resource_group `
     --environment $container_app_environment_name  `
-    --image "$login_server/${image_name}:${tag}" `
+    --image "$server/${image_name}:${tag}" `
     --target-port 8080 `
     --ingress 'external' `
-    --registry-server $login_server `
-    --registry-username 00000000-0000-0000-0000-000000000000 `
-    --registry-password $token `
-    --query properties.configuration.ingress.fqdn --output tsv
+    --registry-server $server `
+    --registry-username $acr_name `
+    --registry-password $password `
+    --query properties.configuration.ingress.fqdn `
+    --output tsv
+
 ```
 
 </details>
@@ -288,7 +290,7 @@ az containerapp create \
 --image "$server/$image_name:$tag" \
 --registry-server $server \
 --registry-username $acr_name \
---registry-password $password
+--registry-password $password \
 --target-port 8080 \
 --ingress 'external' \
 --query properties.configuration.ingress.fqdn 
