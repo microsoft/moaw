@@ -37,7 +37,7 @@ You'll learn how to:
 ## Set up Local Development Space
 In this section, you'll clone a github repository to get the workshops code on your local computer. 
 
-Open up your prefered terminal (This tutorial has powershell and lynux instructions). if you'd like, make a folder to contain your work:
+Open up your prefered terminal (This tutorial has powershell and bash instructions). if you'd like, make a folder to contain your work:
 
 ```powershell
 mkdir Reactor-Summer-2023
@@ -314,7 +314,7 @@ You'll trigger a new deployment by updating updating the container app's environ
 
 ### Create a secret
 
-In the [Azure Portal](https://portal.azure.com/), navigate to your Azure Container App that was deployed to the `rg-user<userNumber>` resource group. 
+In the [Azure Portal](https://portal.azure.com/), navigate to your Azure Container App that was deployed to the `myResourceGroup` resource group. 
 
 Next, follow the steps below to create a secret:
 
