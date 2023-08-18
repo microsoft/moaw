@@ -1,5 +1,5 @@
 ---
-published: false # Optional. Set to true to publish the workshop (default: false)
+published: true # Optional. Set to true to publish the workshop (default: false)
 type: workshop # Required.
 title: Microsoft Build 2023 Pre-day Workshop (PRE03) # Required. Full title of the workshop
 short_title: Getting Started with AKS # Optional. Short title displayed in the header
