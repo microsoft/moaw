@@ -1,16 +1,16 @@
 ---
 published: true # Optional. Set to true to publish the workshop (default: false)
 type: workshop # Required.
-title: Microsoft Build 2023 Pre-day Workshop (PRE03) # Required. Full title of the workshop
+title: Getting Started with Azure Kubernetes Service (AKS) # Required. Full title of the workshop
 short_title: Getting Started with AKS # Optional. Short title displayed in the header
-description: This is a workshop for AKS # Required.
+description: This is a workshop for getting started AKS which was originally delivered at Microsoft Build 2023 Pre-day Workshop (PRE03) # Required.
 level: beginner # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors: # Required. You can add as many authors as needed
   - "Paul Yu"
 contacts: # Required. Must match the number of authors
   - "@pauldotyu"
-duration_minutes: 60 # Required. Estimated duration in minutes
-tags: kubernetes, azure # Required. Tags for filtering and searching
+duration_minutes: 90 # Required. Estimated duration in minutes
+tags: kubernetes, azure, aks # Required. Tags for filtering and searching
 ---
 
 # Getting started
