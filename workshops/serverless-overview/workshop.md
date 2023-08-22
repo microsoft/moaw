@@ -227,7 +227,7 @@ To do this, you need to [fork the project](https://github.com/ikhemissi/serverle
 # - <unique-web-app-name>: unique Static Web App name
 # - <github-username> : your username or organisation in Github where you forked the project
 # - <resource-group> : name of your resource group
-# - westeurope : you can use a different location if you want to deploy the web app somewhere else
+# - westeurope : you can use a different location if you want to deploy the web app somewhere else. Static Web App might not be available in every Azure Region but selecting another one that the default defined above will not be an issue for the rest of the lab. 
 
 az staticwebapp create \
     --name <unique-web-app-name> \
@@ -273,15 +273,9 @@ npm install
 # 4. Build the Web App
 npm run swa:build
 
-# 5. Rebuild the API if the instruction above fails to do it
-cd api
-npm install
-npm run build
-
-# 6. Deploy the web app code into the Static Web App
+# 5. Deploy the web app code into the Static Web App
 # Replace <resource-group> with the name of your resource group
 # Back to the root repository
-cd ..
 npm run swa:deploy -- \
   --resource-group <resource-group> \
   --app-name <unique-web-app-name>
