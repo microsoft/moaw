@@ -278,7 +278,8 @@ npm run swa:build
 # Back to the root repository
 npm run swa:deploy -- \
   --resource-group <resource-group> \
-  --app-name <unique-web-app-name>
+  --app-name <unique-web-app-name> \
+  --no-use-keychain
 ```
 
 Et voila, now you should have a running demo Web App 🚀
