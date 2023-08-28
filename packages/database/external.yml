@@ -213,7 +213,7 @@
   url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-code-to-cloud/main/docs/
   github_url: https://github.com/microsoft/hands-on-lab-code-to-cloud
   language: en
-  last_updated: 2023-02-08
+  last_updated: 2023-08-02
   type: workshop
   description: This workshop will cover Microsoft Dev Box, Az Dev CLI.
   authors:
@@ -226,4 +226,25 @@
   audience: students, pro devs
   level: beginner
   tags: azure, Azure Dev Center, Microsoft Dev Box, Azure Deployment Environment, Az Dev CLI, csu
+  navigation_levels: 3
+
+- title: Product Hands-on Lab - Serverless
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-serverless/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-serverless
+  language: en
+  last_updated: 2023-08-28
+  type: workshop
+  description:  This workshop will cover multiple serverless services that you will use to build a complete real world scenario.
+  authors:
+    - Damien Aicheh
+    - Julien Strebler
+    - Iheb Khemissi
+  contacts:
+    - "@damienaicheh"
+    - "@justrebl"
+    - "@ikhemissi"
+  duration_minutes: 300
+  audience: students, pro devs
+  level: beginner
+  tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email, app service, web pubsub, static web app, csu
   navigation_levels: 3
