@@ -34,11 +34,11 @@ In this workshop, you will perform a series of tasks with the end result being a
 
 <div class="info" data-title="Info">
 
-> This workshop was originally developed as part of the AKS landing zone accelerator program. Check out [the repo](https://aka.ms/AKSLZA/referenceimplementation) for more information
+> This workshop was originally developed as part of the AKS landing zone accelerator program. Check out [the repo](https://aka.ms/akslza/aiscenario) for more information
 
 </div> 
 
-The lab environment was pre-configured with the following:
+You will need to have the following installed on your system if you are not using Azure cloud shell. The .devcontainer of the repo you will be cloning comes preinstalled with them:
 
 - Kubectl, preferably 1.25 and above  ( `az aks install-cli` ) 
 - [Azure Subscription](https://azure.microsoft.com/free)
@@ -96,7 +96,6 @@ RGNAME=embedding-openai-rg
 LOCATION=eastus
 SIGNEDINUSER=$(az ad signed-in-user show --query id --out tsv) && echo "Current user is $SIGNEDINUSER"
 
-# az group create -l $LOCATION -n $RGNAME
 ```
 
 ---
@@ -151,6 +150,12 @@ az deployment sub create \
 ```
 ### Set Output Variables
 
+<div class="important" data-title="important">
+
+> If you already had an OpenAI resource before you began this deployment that had either gpt-35-turbo or text-embedding-ada-002 turbo, you will need to change the OPENAI_ACCOUNTNAME, OPENAI_RGNAME, OPENAI_API_BASE, OPENAI_ENGINE and OPENAI_EMBEDDINGS_ENGINE environment variables in the commands below to the actual names used in your previous deployment. If you only created one of the two required models previously, you will need to create the other one manually.
+
+</div> 
+
 ```bash
 KV_NAME=$(az deployment sub show --name main-$UNIQUESTRING --query properties.outputs.kvAppName.value -o tsv) && echo "The Key Vault name is $KV_NAME"
 OIDCISSUERURL=$(az deployment sub show --name main-$UNIQUESTRING --query properties.outputs.aksOidcIssuerUrl.value -o tsv) && echo "The OIDC Issue URL is $OIDCISSUERURL"
@@ -159,11 +164,14 @@ BLOB_ACCOUNT_NAME=$(az deployment sub show --name main-$UNIQUESTRING --query pro
 FORMREC_ACCOUNT=$(az deployment sub show --name main-$UNIQUESTRING --query properties.outputs.formRecognizerName.value -o tsv) && echo "The Document Intelligence account name is $FORMREC_ACCOUNT"
 FORM_RECOGNIZER_ENDPOINT=$(az deployment sub show --name main-$UNIQUESTRING --query properties.outputs.formRecognizerEndpoint.value -o tsv) && echo "The Document Intelligence endpoint URL is $FORM_RECOGNIZER_ENDPOINT"
 TRANSLATOR_ACCOUNT=$(az deployment sub show --name main-$UNIQUESTRING --query properties.outputs.translatorName.value -o tsv) && echo "The Translator account name is $TRANSLATOR_ACCOUNT"
+ACR_NAME=$(az acr list -g $RGNAME --query '[0]'.name -o tsv) && echo "The Azure OpenAI GPT Model is $ACR_NAME"
+# If you created the OpenAI service separate from the deployment steps in this workshop, dont run the commands below, instead provide the name of your exisitng OpenAI deployments as the value of these environment variables.
 OPENAI_ACCOUNTNAME=$(az deployment sub show --name main-$UNIQUESTRING --query properties.outputs.openAIAccountName.value -o tsv) && echo "The Azure OpenAI account name is $OPENAI_ACCOUNTNAME"
 OPENAI_API_BASE=$(az deployment sub show --name main-$UNIQUESTRING  --query properties.outputs.openAIURL.value -o tsv) && echo "The Azure OpenAI instance API URL is $OPENAI_API_BASE"
 OPENAI_RGNAME=$(az deployment sub show --name main-$UNIQUESTRING  --query properties.outputs.openAIRGName.value -o tsv) && echo "The Azure OpenAI Resource Group is $OPENAI_RGNAME"
 OPENAI_ENGINE=$(az deployment sub show --name main-$UNIQUESTRING  --query properties.outputs.openAIEngineName.value -o tsv) && echo "The Azure OpenAI GPT Model is $OPENAI_ENGINE"
 OPENAI_EMBEDDINGS_ENGINE=$(az deployment sub show --name main-$UNIQUESTRING  --query properties.outputs.openAIEmbeddingEngine.value -o tsv) && echo "The Azure OpenAI Embedding Model is $OPENAI_EMBEDDINGS_ENGINE"
+
 ```
 
 If variables are empty (some shells like zsh may have this issue) - see Troubleshooting section below.
@@ -185,36 +193,28 @@ OpenAI API, Blob Storage, Form Recognizer and Translator keys will be secured in
 </div> 
 
 Enter the commands below to store the required secrets in Key vault
-    ```bash
-    az keyvault secret set --name openaiapikey  --vault-name $KV_NAME --value $(az cognitiveservices account keys list -g $OPENAI_RGNAME -n $OPENAI_ACCOUNTNAME --query key1 -o tsv)
+  ```bash
+  az keyvault secret set --name openaiapikey  --vault-name $KV_NAME --value $(az cognitiveservices account keys list -g $OPENAI_RGNAME -n $OPENAI_ACCOUNTNAME --query key1 -o tsv)
 
-    az keyvault secret set --name formrecognizerkey  --vault-name $KV_NAME --value $(az cognitiveservices account keys list -g $RGNAME -n $FORMREC_ACCOUNT --query key1 -o tsv)
+  az keyvault secret set --name formrecognizerkey  --vault-name $KV_NAME --value $(az cognitiveservices account keys list -g $RGNAME -n $FORMREC_ACCOUNT --query key1 -o tsv)
 
-    az keyvault secret set --name translatekey  --vault-name $KV_NAME --value $(az cognitiveservices account keys list -g $RGNAME -n $TRANSLATOR_ACCOUNT --query key1 -o tsv)
+  az keyvault secret set --name translatekey  --vault-name $KV_NAME --value $(az cognitiveservices account keys list -g $RGNAME -n $TRANSLATOR_ACCOUNT --query key1 -o tsv)
 
-    az keyvault secret set --name blobaccountkey  --vault-name $KV_NAME --value $(az storage account keys list -g $RGNAME -n $BLOB_ACCOUNT_NAME --query \[1\].value -o tsv)
-    ```
+  az keyvault secret set --name blobaccountkey  --vault-name $KV_NAME --value $(az storage account keys list -g $RGNAME -n $BLOB_ACCOUNT_NAME --query \[1\].value -o tsv)
+  ```
 
 ---
 
 ## Federate AKS MI with Service account 
 Create and record the required federation to allow the CSI Secret driver to use the AD Workload identity, and to update the manifest files.
 
-```bash
-CSIIdentity=($(az aks show -g $RGNAME -n $AKSCLUSTER --query "[addonProfiles.azureKeyvaultSecretsProvider.identity.resourceId,addonProfiles.azureKeyvaultSecretsProvider.identity.clientId]" -o tsv |  cut -d '/' -f 5,9 --output-delimiter ' '))
-
-CLIENT_ID=${CSIIdentity[2]} && echo "CLIENT_ID is $CLIENT_ID"
-IDNAME=${CSIIdentity[1]} && echo "IDNAME is $IDNAME"
-IDRG=${CSIIdentity[0]} && echo "IDRG is $IDRG"
-
-az identity federated-credential create --name aksfederatedidentity --identity-name $IDNAME --resource-group $IDRG --issuer $OIDCISSUERURL --subject system:serviceaccount:default:serversa
-```
-
 <div class="important" data-title="important">
 
-> If running the commands below in **zsh** or in **Github Code Spaces**, order of the variables is different. Make sure the variables make sense by taking a look at the echo'ed strings in your terminal. 
+> If running the commands below in **zsh** or in **Github Code Spaces**, order of the variables is different. Make sure the variables make sense by taking a look at the echo'ed strings in your terminal. Use Option 1 below. If you are not using either of those two terminals, use Option 2 below.
 
 </div> 
+
+#### Option 1 for **zsh** or **Github Code Spaces**
 
 ```bash
 CSIIdentity=($(az aks show -g $RGNAME -n $AKSCLUSTER --query "[addonProfiles.azureKeyvaultSecretsProvider.identity.resourceId,addonProfiles.azureKeyvaultSecretsProvider.identity.clientId]" -o tsv |  cut -d '/' -f 5,9 --output-delimiter ' '))
@@ -226,10 +226,31 @@ IDRG=${CSIIdentity[1]} && echo "IDRG is $IDRG"
 az identity federated-credential create --name aksfederatedidentity --identity-name $IDNAME --resource-group $IDRG --issuer $OIDCISSUERURL --subject system:serviceaccount:default:serversa
 ```
 
+#### Option 2 for other Bash
+
+```bash
+CSIIdentity=($(az aks show -g $RGNAME -n $AKSCLUSTER --query "[addonProfiles.azureKeyvaultSecretsProvider.identity.resourceId,addonProfiles.azureKeyvaultSecretsProvider.identity.clientId]" -o tsv |  cut -d '/' -f 5,9 --output-delimiter ' '))
+
+CLIENT_ID=${CSIIdentity[2]} && echo "CLIENT_ID is $CLIENT_ID"
+IDNAME=${CSIIdentity[1]} && echo "IDNAME is $IDNAME"
+IDRG=${CSIIdentity[0]} && echo "IDRG is $IDRG"
+
+az identity federated-credential create --name aksfederatedidentity --identity-name $IDNAME --resource-group $IDRG --issuer $OIDCISSUERURL --subject system:serviceaccount:default:serversa
+```
+
+
+### Build ACR Image for the web app
+```bash
+cd ../App/
+az acr build --image oai-embeddings:v1 --registry $ACR_NAME -g $RGNAME -f ./WebApp.Dockerfile ./
+```
+
+
 ---
 
 ## Deploy the Kubernetes Resources
 In this step, you will deploy the kubernetes resources required to make the application run. This includes the ingress resources, deployments / pods, services, etc.
+
 1. Change directory to the Kubernetes manifests folder, deployment will be done using Kustomize declarations.
     ```bash
     cd ../kubernetes/
@@ -244,20 +265,21 @@ In this step, you will deploy the kubernetes resources required to make the appl
     INGRESS_IP=$(kubectl get svc nginx -n app-routing-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
     echo "Ingress IP: $INGRESS_IP"
     ```
-1. Save variables in a new .env file
+1. Save variables in a new .env file. Dont forget to change the env variables for the OPENAI_API_BASE, OPENAI_ENGIN and OPENAI_EMBEDDINGS_ENGINE variables in the command below to your actual openai deployment IF you already had an existing deployment. 
     ```bash
-      cat << EOF > .env
-      CLIENT_ID=$CLIENT_ID
-      TENANT_ID=$(az account show --query tenantId -o tsv)
-      KV_NAME=$KV_NAME
-      OPENAI_API_BASE=$OPENAI_API_BASE
-      OPENAI_ENGINE=$OPENAI_ENGINE
-      OPENAI_EMBEDDINGS_ENGINE=$OPENAI_EMBEDDINGS_ENGINE
-      LOCATION=$LOCATION
-      BLOB_ACCOUNT_NAME=$BLOB_ACCOUNT_NAME
-      FORM_RECOGNIZER_ENDPOINT=$FORM_RECOGNIZER_ENDPOINT
-      DNS_NAME=openai-$UNIQUESTRING.$INGRESS_IP.nip.io
-      EOF
+    cat << EOF > .env
+    CLIENT_ID=$CLIENT_ID
+    TENANT_ID=$(az account show --query tenantId -o tsv)
+    KV_NAME=$KV_NAME
+    OPENAI_API_BASE=$OPENAI_API_BASE
+    OPENAI_ENGINE=$OPENAI_ENGINE
+    OPENAI_EMBEDDINGS_ENGINE=$OPENAI_EMBEDDINGS_ENGINE
+    LOCATION=$LOCATION
+    BLOB_ACCOUNT_NAME=$BLOB_ACCOUNT_NAME
+    FORM_RECOGNIZER_ENDPOINT=$FORM_RECOGNIZER_ENDPOINT
+    DNS_NAME=openai-$UNIQUESTRING.$INGRESS_IP.nip.io
+    ACR_IMAGE=$ACR_NAME.azurecr.io/oai-embeddings:v1
+    EOF
     ```
 1. Deploy the Kubernetes resources. Use option 1 if you are using kubectl < 1.25. Use option 2 if you are using kubectl >= 1.25
     
@@ -272,7 +294,6 @@ In this step, you will deploy the kubernetes resources required to make the appl
     kubectl apply -k .
     ```
 
-
 ---
 
 ## Test the app
@@ -286,6 +307,8 @@ In this step, you will deploy the kubernetes resources required to make the appl
 ![add](./assets/openaiadddocs.png)
 1. Head back to the **Chat** tab, try asking the same question again and watch the chatbot answer it correctly
 ![add](./assets/openaichat.png)
+
+---
 
 ## Troubleshooting
 
@@ -313,3 +336,27 @@ Note: check if you have soft-deleted OpenAI instances taking up quota and purge 
 > If you notice that the api pod is stuck in *ContainerCreating* status, chances are that the federated identity was not created properly. To fix this, ensure that the "CSIIdentity" environment variable was created properly. You should then run the "az identity federated-credential create" command again using string values as opposed to environment variables. You can find the string values by using the **echo** command to print the environment variables in your terminal. It is the API deployment that brings the secrets from Key vault into the AKS cluster, so the other two pods require the API pod to be in a running state before they can start as well since they require the secrets.
 
 </div> 
+
+---
+
+# Build Intelligent Apps on AKS Challenge 1
+
+Create CICD pipeline to automate OpenAI web application deployment to AKS.
+
+Assumption is that infrastructure, setting variables and keyvault secrets were done following OpenAI Scenario  steps in [README.md](../AKS-OpenAI-CogServe-Redis-Embeddings/README.md)
+
+## Create GitHub Identity Federated with AAD
+
+Simplest way to create template for Github workflow is to use AKS **Automated deployments** wizard.
+It will create Github identity federated with AAD and grant to it required permissions to AKS and ACR
+
+Fork `AKS-Landing-Zone-Accelerator` repo and use wizard option to "Deploy an application" pointing it to your fork and selecting provisioned ACR and AKS
+
+## Update GitHub workflow for Kustomize steps
+Once deployment wizard is finished it will create PR with sample github flow that could be updated to match the steps required to run Kustomize
+
+- Add variables section and specify all variables that were queried from deployment 
+- Add Repo secret `CLIENT_ID` to value retrieved during infrastructure setup
+- Add step to prepare `.env` file with all replacement variables 
+- Add step to bake Kubernetes manifest from Kustomize files
+- Modify deployment step to refer to Kustomize built manifest
