@@ -10,7 +10,7 @@
   "private": true,
   "dependencies": {
     "@primer/octicons": "^19.4.0",
-    "cxa-track": "^2.1.0",
+    "cxa-track": "^3.0.0",
     "fast-glob": "^3.2.12",
     "marked": "^4.0.19",
     "node-fetch": "^3.2.10",
