@@ -360,3 +360,12 @@ Once deployment wizard is finished it will create PR with sample github flow tha
 - Add step to prepare `.env` file with all replacement variables 
 - Add step to bake Kubernetes manifest from Kustomize files
 - Modify deployment step to refer to Kustomize built manifest
+
+The completed workflow can be found in the following repo in the [workflows folder](https://github.com/Azure/AKS-Landing-Zone-Accelerator/blob/main/.github/workflows/deploy-openai-embeddings-app.yaml). 
+
+
+<div class="important" data-title="important">
+
+> You will need to update the workflow env variables to match the correct values for your deployment.
+
+</div> 
