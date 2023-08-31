@@ -83,7 +83,7 @@ npm start
 
 This will start a local development server at `http://localhost:4200/`.
 
-You can open your local workshop by navigating to `http://localhost:4200/workshop/?src=<workshop_folder_name>/workshop`.
+You can open your local workshop by navigating to `http://localhost:4200/workshop/?src=<workshop_folder_name>`.
 
 ### Admonitions
 
