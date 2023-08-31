@@ -9,8 +9,8 @@ authors:                                # Required. You can add as many authors 
   - Ayobami Ayodeji
 contacts:                               # Required. Must match the number of authors
   - "@mosabami"
-duration_minutes: 120                   # Required. Estimated duration in minutes
-tags: aks, openai, python, langchain         # Required. Tags for filtering and searching
+duration_minutes: 90                 # Required. Estimated duration in minutes
+tags: aks, openai, python, langchain, redis         # Required. Tags for filtering and searching
 #banner_url: assets/banner.jpg           # Optional. Should be a 1280x640px image
 #video_url: https://youtube.com/link     # Optional. Link to a video of the workshop
 #audience: students                      # Optional. Audience of the workshop (students, pro devs, etc.)
