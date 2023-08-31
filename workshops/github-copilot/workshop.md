@@ -16,13 +16,11 @@ tags: javascript, .net, GitHub, IA, copilot, AI, csu
 banner_url: assets/banner.jpg 
 sections_title:
   - Introduction
-  - Tutorial
-  - Writing documentation
-  - Code Refactoring
+  - Github Copilot
+  - Github Copilot Chat
   - Challenge 1 - A NodeJS server
   - Challenge 2 - A .Net Core API
   - Challenge 3 - Infra as Code
-  - Extra - Secure code (CopilotX)
   - Solutions
   - Credits
 ---
@@ -47,6 +45,7 @@ GitHub Copilot is an AI-powered code assistant that helps developers write bette
 | .Net Core   | [Download .Net Core](https://dotnet.microsoft.com/download) |
 | GitHub account | [Create free GitHub account](https://github.com/join) |
 | GitHub Copilot Access | A 60 day trial can be [requested here](https://github.com/github-copilot/signup) |
+| GitHub Copilot Chat Public Beta Access | [requested here](https://github.com/github-copilot/chat_waitlist_signup/join)
 | A code editor  | [Download VS Code](https://code.visualstudio.com/Download) |
 | some VSCode extensions |  The first one [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and the second one ([GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs)) will allow you to send custom commands (a.k.a. `brushes` which are in fact `prompts`).|
 | A browser      | [Download Microsoft Edge](https://www.microsoft.com/edge) |
@@ -373,7 +372,7 @@ Copilot can also help you write Infrastructure as code. It can generate code for
 ```js
 // Container Registry
 
-// Azure Congitive Services Custom Vision resource
+// Azure Cognitive Services Custom Vision resource
 ```
 
 ### Terraform
@@ -382,17 +381,15 @@ Copilot can also help you write Infrastructure as code. It can generate code for
 ```yml
 # Container Registry
 
-# Azure Congitive Services Custom Vision resource
+# Azure Cognitive Services Custom Vision resource
 ```
 
----
 
-
-# Writing documentation
+## Writing documentation
 
 Copilot can help you in all your documentation tasks. It can generate simple documentation comment or standardized documentation comment like JavaDoc, JsDoc, etc... it can also help you translate your documentation in different languages. Let's see how it works.
 
-## simple documentation comment
+### simple documentation comment
 
 To see that just put you pointer on top of a Class, a method or any line of code and start typing the comment handler for the selected language to trigger copilot. In language like Java, C# or TS for example, just type `// `and let the magic happen.
 
@@ -408,7 +405,7 @@ router.get("/", async function (req, res, next) {
 
 Continue to play with it and see what happens on other pieces of code.
 
-## standardized documentation comment (JavaDoc, JsDoc, etc...)
+### standardized documentation comment (JavaDoc, JsDoc, etc...)
 
 For this one, to trigger the documentation comment generation, you need to respect the specific comment format:
 -  `/**` (for JS/TS) in the `index.js` file for example
@@ -424,7 +421,7 @@ For this one, to trigger the documentation comment generation, you need to respe
 public IActionResult Get(int id)
 ```
 
-## Writing markdown and html documentation
+### Writing markdown and html documentation
 
 Copilot is also very powerfull to help you write documentation. It can generate `markdown` and `html` code and accelerate the writing of your readme.md files like for this one for example.
 
@@ -440,110 +437,160 @@ This documentation is generated with Github Copilot to show what the tool can do
 From there by starting a new line with a secondary level title it will start generating the content of the documentation and it will showcase how it will accelerate the documentation writing process.
 
 
+
 ---
 
-# Code Refactoring
+# Use Copilot Chat to improve code quality
 
-Copilot Labs is a experimental extension for Copilot that you can install in your VSCode. It's not officially supported by Github but it's a good way to test new features that will be integrated in Copilot in the future.
+GitHub Copilot is a generative AI and thus, perfect to generate code, but it has powerfull analysis capabilities on your code that can be used in several case to improve code quality like: find security issues, bad practices in your code and générate a fix, refactor and add comment to legacy code, generate tests, etc... 
 
-It provides a set of features build on top of Copilot to help you refactor your code. It can explain you the code, add comments, extracts functions, translate code to another language, etc...
+If you already feel confortable with it you can jump to the next section.
 
-<div class="warning" data-title="warning">
+## Get ready
 
-> As it's experimental, all features are not equal in term of quality and stability but still the explain code and translate code features are very powerfull and can save your day when dealing with legacy code.
+To start using Github Copilot Chat, you first need to
+- be enrolled in the public preview:  [Github Copilot Chat Preview](https://github.com/github-copilot/chat_waitlist_signup/join)
+- install the extension in your IDE. For VS Code, you can find it directly by searching for `Github Copilot Chat` in the extensions tab.
 
-</div>
+### Clone the repository
 
-<div class="info" data-title="info">
+We will use the same repository as the previous section to show how to use Copilot Chat to improve code quality. If you already have it, you can skip this step.
 
-> To start using Copilot Labs, you need to install the extension in your VSCode. You can find it directly in VSCode by searching for `Copilot Labs` in the extensions tab.
+You need to clone the following GitHub Repository: [Github Copilot Demo](https://github.com/Philess/gh-copilot-demo)
 
-</div>
+This repository is a code starter that will help you experiment all capabilities with GitHub Copilot. Take the time to look at the architecture design displayed on the page and when you're ready, clone the repository from the command line and open it in VS Code.
 
-Open the GitHub Copilot Labs extension to see all the available functionality.
+``` bash
+git clone https://github.com/Philess/gh-copilot-demo
+cd gh-copilot-demo
+code .
+```
 
-![GitHub Copilot Labs extension](assets/github-copilot-labs.png)
+## Start playing with the Chat
+
+Once Copilot Chat is setup, you can start using it:
+- by accessing the **chat view** from the left toolbar of your IDE (chat icon)
+- by pressing `Ctrl` + `Shift` + `i` shortcut for a quick **inline question** to the chat
+
+The first one is a sticky version, very usefull to keep the chat open and ask questions to copilot. 
+The second one is a quick way to ask a question and get an answer and launch commands.
+
+### Chat View
+
+The chat view gives you a full chat experience, integrate as any other tool view in your IDE. Once the view is open you can start chatting with Copilot as your personnal code coach. It keeps the history of the conversation and you can ask question related to the previoius answers. It also provides suggestions for questions along the way. You can:
+- ask general question about coding on any language or best practice
+- ask to generate or fix code related to the current file and inject the code directly in the file
+
+It's a more high level copilot than the vanilla copilot which is specialized on providing code completion.
+
+Try it with a few questions like:
+
+```
+> How to generate a random number in C#?
+> What is the best way to secure a route is ASP.NET Core?
+> What is the easiest way to generate a static website with NodeJS?
+```
+
+Try it then with some of your code files in the repository. Open a file a try asking:
+
+```
+> Can you explain me what this code does?
+> (with only part of the code selected) Can you explain me what the selected code does?
+> Can you generate a function that returns a random number between 1 and 10?
+> Can you add documentation commentes to this function?
+```
+
+Try also using the questions suggestions that appears along the way.
+
+### Inline question
+
+The inline question is a quick way to ask a question to Copilot and get an answer. It's a good way to ask a question about a specific piece of code. It's also a good way to launch commands to Copilot. You can ask it to generate code, fix code, generate tests, etc...
+
+try it by pressing `Ctrl` + `Shift` + `i` and type the same type of commands you tried in the chat view.
+
+### Slash Commands
+
+To further help Copilot give you more relevant answers, you can choose a topic for your questions through "slash commands."
+
+You can prepend your chat inputs with a specific topic name to help Copilot give you a more relevant response. When you start typing /, you’ll see the list of possible topics:
+- **/explain**: Explain step-by-step how the selected code works.
+- **/fix**: Propose a fix for the bugs in the selected code.
+- **/help**: Prints general help about GitHub Copilot.
+- **/tests**: Generate unit tests for the selected code.
+- **/vscode**: Questions about VS Code commands and settings.
+- **/clear**: Clear the session.
 
 
-# Code Translation
+## Secure your code
 
-## Standard Copilot
+Copilot can help you find security issues in your code and fix them. It can also help you find bad practices in your code and fix them. Let's see how it works.
+
+Open the `album-api/Controllers/UnsecuredController.cs` file and type questions like these to the chat:
+
+```
+> Can you check this code for security issues?
+> Do you see any quality improvement to do on this code?
+```
+
+Once you have the answer, you can ask to fix the issues by typing:
+
+```
+> Can you propose a fix?
+```
+
+When you have the fix in the code you choose to **copy it or inject it directy in the file** by hovering the code block in the chat and selecting the right option on the top left.
+
+
+## Code Explanation and documentation
+
+You can use Copilot Chat to explain code to you. It can `explain you the code in natural language or generate documentation comments for you`. Let's try that with the following commands:
+
+```
+> /explain
+> Generate documentation comments for this code
+```
+
+
+## Code Refactoring
+
+More impressive, Copilot chat can help you refactor your code. It can help you `rename variables, extract methods, extract classes, etc...`. 
+
+You can try some of these commands on the `album-api/Controllers/UnsecuredController.cs` file:
+
+```
+> extract methods
+> create Async version of each methods when it makes sense
+```
+
+## Code Translation
 
 *Copilot can understand and generate natural languages and code language in both way so by combining everything you can use it to `translate code pieces from a language to another one`*
 
-To translate a piece of code in a specific language, create a new file with the extension of the language you want to translate to (ie: `validator.c` in C language) and try to build the prompt like that:
+To translate a piece of code in a specific language, open it and ask to the chat to translate it to another language. For example open the `validators.ts` file created in the first section dedicated to Copilot autocompletion and ask to translate it to C for example.
 
-```c
-// translate the following code from typescript to java:
-// <code here>
+In case of dealing with Legacy code like COBOL for example it can be very useful. Open the `legacy/albums.cbl` file and try translating the code to Python.
+
+## Tests generation
+
+Copilot can also help you generate tests for your code. It can generate `unit tests, integration tests, end to end tests, and load testing` tests with jmeters scripts for example. 
+
+Open the `album-api/Controllers/UnsecuredController.cs` file and type questions like these to the chat:
+
+```
+> Generate a unit tests class for this code
 ```
 
-And go to a new line to trigger copilot. It will try generate the code in the new language.
-
-```c
-// translate the following code from typescript to c:
-// function validateDate(date: string): Date {
-//     const dateParts = date.split('/');
-//     const day = parseInt(dateParts[0], 10);
-//     const month = parseInt(dateParts[1], 10) - 1;
-//     const year = parseInt(dateParts[2], 10);
-//     return new Date(year, month, day);
-// }
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-struct Date {
-    int day;
-    int month;
-    int year;
-};
-
-struct Date validateDate(char *date) {
-    struct Date d;
-    char *dateParts[3];
-    char *token;
-    int i = 0;
-
-    token = strtok(date, "/");
-    while (token != NULL) {
-        dateParts[i++] = token;
-        token = strtok(NULL, "/");
-    }
-
-    d.day = atoi(dateParts[0]);
-    d.month = atoi(dateParts[1]) - 1;
-    d.year = atoi(dateParts[2]);
-
-    return d;
-}
+You can also use copilot to help you generate Stubs and Mocks for your tests.
 ```
-<div class="warning" data-title="warning">
+> Generate a mock for FileStream class
+> Use that mock in the unit tests
+```
 
-> It's not working perfectly every time as it's quickly confusing for copilot which part is the prompt and which part is the code to translate but once it's working it's pretty impressive with common languages: `C, Java, C#, TS, Python, Go, VB.Net, F#, Kotlin, etc...`
+<div class="info" data-title="note">
+
+> Remember that Copilot chat is keeping track of the previous Q & A in the conversation, that's why you can reference the previously generated mock and test easily. 
 
 </div>
-
-We'll see later that we can do it more efficiently with Copilot Labs and Copilot Chat (Copilot X).
-
-*`It's also able to work on more exotic language`: it worked on an language used by a customer that we didn't even found traces on internet. By the way it's not listed in the languages supported by Copilot but it worked. You can't rely only on it to migrate the whole source code without having the developper to understand what happens but it sure will help accelerate the process.*
-
-## Copilot Labs
-
-Let's try it with copilot labs. Open the copilot Labs panel from the left toolbar of your VS Code and select the `language translation` tab.
-
-Open the `validator.ts` file and select the code you want to translate. Then select the target language click on the `Translate` button in the copilot labs panel.
-
-
-# Code Explanation
-
-Still in Copilot Labs panel take a look at the `explain code` tab. Ithelp you understand pieces of legacy or uncommented code. Give it a try with few files and pieces of code in the project.
-
-# Other features
-
-Don't hesitate to try by yourself the other features like unit test generation (only for Javascript and Typescript functions for now), and the brushes to refactor your code.
-
 
 ---
 
@@ -797,87 +844,6 @@ For this exercise, you want to deploy your previously developed Web application 
 
 ---
 
-# Secure code
-
-GitHub Copilot is a generative AI and thus, perfect to generate code, but did you know you can use it to find security issues or bad practices in your code?
-
-## Prerequisites
-
-You'll need additional VSCode extensions because a chatbot could help you when **GitHub Labs** is not sufficient. You can either use:
-
-- [Copilot Chat](https://github.com/github-copilot/chat_waitlist_signup/join) (which is in Preview and with a waitlist)
-- [chatgpt-copilot](https://marketplace.visualstudio.com/items?itemName=feiskyer.chatgpt-copilot)
-
-> For the second one, you can either sign-up for a free OpenAI account or if you are doing the workshop with a Microsoft employee, you may use an Azure OpenAI Service endpoint.
-
-## Secure your code
-
-Take the following code and paste it into a new empty file, ideally with a C# extension (*.cs). Try to find as many security issues/bad practices thanks to GitHub Copilot.
-
-```csharp
-using Microsoft.Data.SqlClient;
-using System.Data;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-
-namespace UnsecureApp.Controllers
-{
-    public class MyController
-    {
-
-        public string ReadFile(string userInput)
-        {
-            using (FileStream fs = File.Open(userInput, FileMode.Open))
-            {
-                byte[] b = new byte[1024];
-                UTF8Encoding temp = new UTF8Encoding(true);
-
-                while (fs.Read(b, 0, b.Length) > 0)
-                {
-                    return temp.GetString(b);
-                }
-            }
-
-            return null;
-        }
-
-        public int GetProduct(string productName)
-        {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                SqlCommand sqlCommand = new SqlCommand()
-                {
-                    CommandText = "SELECT ProductId FROM Products WHERE ProductName = '" + productName + "'",
-                    CommandType = CommandType.Text,
-                };
-
-                SqlDataReader reader = sqlCommand.ExecuteReader();
-                return reader.GetInt32(0); 
-            }
-        }
-
-        public void GetObject()
-        {
-            try
-            {
-                object o = null;
-                o.ToString();
-            }
-            catch (Exception e)
-            {
-                this.Response.Write(e.ToString());
-            }
-        
-        }
-
-
-        private string connectionString = "";
-    }
-}
-```
-
----
-
 # Solutions
 
 Here you can find the solution to the different exercises.
@@ -1016,4 +982,4 @@ private string connectionString = "";
 
 # Credits
 
-This workshop is a fork from the original Hackaton [accessible here](https://github.com/microsoft/CopilotHackathon). I just wanted to integrate it into the [MOAW](https://github.com/microsoft/moaw) format and add some exercises. A big thanks to them <3
+This workshop's challenges are a fork from the original Hackaton [accessible here](https://github.com/microsoft/CopilotHackathon). I just wanted to integrate it into the [MOAW](https://github.com/microsoft/moaw) format and add some exercises. A big thanks to them <3
