@@ -315,7 +315,7 @@ git push
 
 You should now be able to access your workshop using this url:
 
-`https://aka.ms/ws?src=gh:<your-github-username>/moaw/main/workshops/<your-workshop-name>`.
+`https://aka.ms/ws?src=gh:<your-github-username>/moaw/main/workshops/<your-workshop-name>/workshop.md`.
 
 This is also a convenient way to quickly host your workshop without having to wait for it to be published on the main website.
 
