@@ -8,7 +8,25 @@
 # - last_updated: Required. The last update date of the workshop (YYYY-MM-DD)
 # - github_url: Optional. The URL of the workshop's GitHub repository
 # ****************************************************************************
+- title: Azure Confidential Computing powered by AMD SEV-SNP - Workshop
+  description: In this technical workshop, you will gain a comprehensive understanding of Azure's Confidential Computing capabilities powered by AMD SEV-SNP. 
+  url: https://aka.ms/Azure-CC-AMD-Workshop              
+  language: en                          
+  last_updated: 2023-07-06                
+  type: workshop                       
+  level: advanced                         
+  github_url: https://github.com/microsoft/MDCC/    
+  authors:                   
+    - Jumelet Arnaud
+    - Ren Jacques     
+  contacts:                               
+    - '@Arnaud_Jumelet'
+    - 'in/jacques-ren/'
+  duration_minutes: 300                
+  audience: students, pro devs         
+  tags: Security, Confidential Computing
 
+  
 - title: Azure Blinking IoT Compressor
   url: https://iot-workshop.maneu.fr/
   github_url: https://github.com/cmaneu/Azure-Blinking-IoT-Compressor
