@@ -266,3 +266,24 @@
   level: beginner
   tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email, app service, web pubsub, static web app, csu
   navigation_levels: 3
+
+- title: Product Hands-on Lab - Redis Cache in the Azure world
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-redis/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-redis
+  language: en
+  last_updated: 2023-09-22
+  type: workshop
+  description:  This workshop will show you how Azure Cache for Redis is integrated with other Azure Services.
+  authors:
+    - Damien Aicheh
+    - Julien Strebler
+    - Iheb Khemissi
+  contacts:
+    - "@damienaicheh"
+    - "@justrebl"
+    - "@ikhemissi"
+  duration_minutes: 180
+  audience: students, pro devs
+  level: beginner
+  tags: azure, azure cache for redis, database, serverless, apim, cache, csu
+  navigation_levels: 3
