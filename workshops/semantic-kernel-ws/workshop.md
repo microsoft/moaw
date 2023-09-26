@@ -3,7 +3,7 @@ published: false                        # Optional. Set to true to publish the w
 type: workshop                          # Required.
 title: Semantic Kernel Workshop         # Required. Full title of the workshop
 short_title: SKWS     # Optional. Short title displayed in the header
-description: This is a workshop for discover Semantic Kernel through the usage and the discovery of different topics.  # Required.
+description: This is a workshop to discover Semantic Kernel through the usage and the discovery of different topics.  # Required.
 level: advanced                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors:                                # Required. You can add as many authors as needed      
   - Maxime Villeger
