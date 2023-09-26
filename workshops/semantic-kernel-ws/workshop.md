@@ -45,6 +45,10 @@ content for 1
 
 ## Semantic Kernel Challenge : gain full control over your AI app
 
+### Getting started
+
+Follow [these instructions](https://github.com/microsoft/semantic-kernel/blob/main/dotnet/README.md) to (create a Semantic function)?
+
 ### Semantic and Native functions
 
 Semantic Kernel makes the difference between Semantic functions and Native functions. Semantic functions make use of a prompt to call a Large Language Model (LLM). Native functions don't need LLMs and can be written in C#.
@@ -69,7 +73,7 @@ Planners use LLMs to orchestrate the usage of Semantc and Native functions. Prev
 
 The planner is given the goal that the developper wants to achieve and the functions (Semantic and Native) that are available to him. The planner leverages the natural language understanding and generation capabilities of LLMs to propose a plan, i.e. a step by step usage of the available functions to achieve the goal. The proposed plan is then executed.
 
-In Semantic Kernel, three planners are available:
+In Semantic Kernel, 4 planners are available:
   - Plan Object Model : ? 
   - Action Planner: produces a full-fledged plan at once.
   - Sequential Planner: produces a full-fledged plan at once.
@@ -81,7 +85,7 @@ For many needs, the Action or Sequential Planners are sufficient. The Stepwise P
 
 ### Nice-to-haves
 
-- Feel free to add any nice-to-have feature that you think make sense. Below are a few examples.
+Feel free to add any nice-to-have feature that you think make sense. Below are a few examples:
 
 - Add memory : keep track of the previuosly sent excuses to make sure that you don't use the same excuse twice. See [Semantic Memory](https://github.com/microsoft/semantic-kernel/blob/main/dotnet/samples/KernelSyntaxExamples/Example14_SemanticMemory.cs) for a sample.
 
