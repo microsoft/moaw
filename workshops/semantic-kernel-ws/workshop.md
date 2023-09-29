@@ -22,7 +22,13 @@ sections_title:                         # Optional. Override titles for each sec
    
    - Introduction 
 
-   - Challenge 1
+   - Prerequisites
+
+   - Challenge 1 - Azure OpenAi Playground
+
+   - Challenge 2 - Semantic Kernel Samples
+
+   - Challenge 3 - Build it from Scratch
 ---
 
 # Semantic Kernel Workshop
@@ -72,14 +78,20 @@ Semantic Kernetl, git, knowledge
 
 ---
 
-## Challenge 1
+## Challenge 1: Azure OpenAi Playground
 
 content for 1
 
 ---
 
-## Challenge 2
+## Challenge 2: Semantic Kernel Samples
 
 Content for 2
+
+---
+
+## Challenge 3: Build it from Scratch
+
+Content for 3
 
 ---
