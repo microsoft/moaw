@@ -31,29 +31,16 @@ This is an envisioning workshop, based on Microsoft's Copilot stack [Microsoft's
 
 ---
 
-## Introduction
 
-Content for second section
+## Challenge 3 : build it from scratch
 
----
+### Step 1 : define a semantic function and a native function
 
-## Challenge 1
+Semantic Kernel makes the difference between **semantic functions** and **native functions**. Semantic functions make use of a prompt to call a Large Language Model (LLM). Native functions don't need LLMs and can be written in C#.
 
-content for 1
+The full power of Semantic Kernel comes from combining semantic and native functions.
 
----
-
-## Semantic Kernel Challenge : gain full control over your AI app
-
-### Getting started
-
-Follow [these instructions](https://github.com/microsoft/semantic-kernel/blob/main/dotnet/README.md) to (create a Semantic function)?
-
-### Semantic and Native functions
-
-Semantic Kernel makes the difference between Semantic functions and Native functions. Semantic functions make use of a prompt to call a Large Language Model (LLM). Native functions don't need LLMs and can be written in C#.
-
-The full power of Semantic Kernel comes from combining Semantic and Native functions.
+#### step 1 goals
 
 - Write a semantic function that generates an excuse email for your boss to avoid work and watch the next world cup rugby game. The function takes as input the day and time of the game, which you provide manually.
 The function generates:
@@ -61,31 +48,129 @@ The function generates:
   - its topic
   - its recipient.
 
-- Write a native function that sends the previously generated email to your boss (or use another recipient email address).
+- Write a native function that calls a REST API (e.g. Bing search) to automatically retrieve the day and time of the next world cup rugby game.
 
-- Write a native function that calls a REST API (e.g. Bing search) to automatically retrieve the day and time of the next game.
+#### step 1 useful concepts and syntax
 
-- Integrate it to your email excuse tool. For now we encourage you to do the integration by writing native code. In the next part, we will see how Planners leverage LLMs to deal with the orchestration of functions. 
+Functions (both native and semantic) are grouped into plugins. In other words, a plugin is a collection of functions. Some plugins are already defined by the Semantic Kernel package. See the source code [here](https://github.com/microsoft/semantic-kernel/tree/main/dotnet/src/Plugins). You can use these plugins in your code with the following syntax:
+```csharp
+var timePlugin = new Timeskill(); // instantiate an out-of-the-box plugin
+var daysAgo = time.DaysAgo; // instantiate a native function of this plugin
+```
 
-### Planner
+In the above snippet, Timeskill is the name of the plugin and DaysAgo is the name of one of its functions.
 
-Planners use LLMs to orchestrate the usage of Semantc and Native functions. Previously we integrated the email generation and API calls with native code. By using a planner, we can rely on an LLM to integrate Semantic and Native functions in order to achieve a goal.
+Other plugins are defined by developers. In the semantic kernel repository, you will find examples of such plugins [here](https://github.com/microsoft/semantic-kernel/tree/main/samples/plugins). If you want to use these plugins in your solution, you have to copy paste them into your codebase. You can also create your own plugins. The documentation explains how to [organise your plugins folder](https://learn.microsoft.com/en-us/semantic-kernel/ai-orchestration/plugins/native-functions/using-the-skfunction-decorator?tabs=Csharp#finding-a-home-for-your-native-functions). Note that within a plugin, each semantic function has its own folder whereas native functions are all defined in a single C# file.
 
-The planner is given the goal that the developper wants to achieve and the functions (Semantic and Native) that are available to him. The planner leverages the natural language understanding and generation capabilities of LLMs to propose a plan, i.e. a step by step usage of the available functions to achieve the goal. The proposed plan is then executed.
+To use a developer defined plugin, you can use the following syntax:
+```csharp
+var emailPlugin = kernel.ImportSemanticSkillFromDirectory("./Plugins", "Email");
+var generateExcuse = emailPlugin["GenerateExcuse"];
+```
+In the above snippet, `Plugins` is the name of the folder containing all the developer defined plugins. `Email` is the name of the folder containing the email plugin. `GenerateExcuse` is the name of the folder that defines the semantic function that generates an excuse email. `GenerateExcuse` contains two files: `config.json` and `skprompt.txt`.
 
-In Semantic Kernel, 4 planners are available:
-  - Plan Object Model : ? 
-  - Action Planner: produces a full-fledged plan at once.
-  - Sequential Planner: produces a full-fledged plan at once.
+It is possible to parametrize semantic functions by adding a parameter in `config.json`:
+```json
+{
+     "input": {
+          "parameters": [
+               {
+                    "name": "myParameter",
+                    "description": "",
+                    "defaultValue": ""
+               }
+          ]
+     }
+}
+```
+and giving the parameter in `skprompt.txt`:
+```txt
+this prompt depends on the following parameter {{$myParameter}}.
+```
+
+The value of a parameter can be defined in the main program through context variables:
+```csharp
+var contextVariables = new ContextVariables
+        {
+            ["myParameter"] = "myValueForThisExecution",
+        };
+```
+
+### Step 2 : orchestrate functions manually
+
+#### step 2 goal
+
+Integrate your semantic and native functions in order to generate your email excuse. For now we encourage you to do the integration by writing native code. In the next part, we will see how **planners** leverage LLMs to deal with the orchestration of functions. 
+
+#### step 2 concepts and syntax
+
+A semantic function must be called through a kernel:
+```csharp
+var result = await kernel.RunAsync(contextVariables, mySemanticFunction);
+```
+
+A kernel can be instantiated as follows:
+```csharp
+var builder = new KernelBuilder();
+builder.WithAzureChatCompletionService(
+        // Azure OpenAI Deployment Name,
+        // Azure OpenAI Endpoint,
+        // Azure OpenAI Key,
+        );      
+var kernel = builder.Build();
+```
+
+A native function can be called directly from the main program:
+```csharp
+var timePlugin = new Timeskill(); // instantiate an out-of-the-box plugin
+var daysAgo = time.DaysAgo; // instantiate a native function of this plugin
+var dateInAWeek = daysAgo(-7); // call a native function
+```
+
+### Step 3 : orchestrate functions with a planner
+
+#### step 3 goal
+
+Leverage a planner to orchestrate the previously written semantic and native functions: date retrieval, email generation.
+
+#### step 3 concepts and syntax
+
+Planners use LLMs to orchestrate the usage of semantic and native functions. At step 2, we integrated the email generation and API calls with native code. By using a planner, we can rely on an LLM to integrate semantic and native functions in order to achieve a goal. It's a declarative way of programming.
+
+The planner is given the goal that the developper wants to achieve and the functions (semantic and native) that are available to him. The planner leverages the natural language understanding and generation capabilities of LLMs to propose a plan, i.e. a step by step usage of the available functions to achieve the goal. The proposed plan is then executed.
+
+In Semantic Kernel, the 3 following planners are available:
+  - Action Planner: chooses a single function in order to achieve the given goal.
+  - Sequential Planner: chains several functions (semantic and native) to achieve the given goal.
   - Stepwise Planner: iteratively and adaptively produces a plan: the next step may depend on the result of the execution of the previous steps. 
 
-For many needs, the Action or Sequential Planners are sufficient. The Stepwise Planner offers more flexibility at the cost of more LLM calls.
+For a planner to know which plugins it can use to generate a plan, plugins must be registered to a kernel.
 
-- Leverage a planner to orchestrate the previously written Semantic and Native functions: date retrieval, email generation, email sending.
+Developer-defined plugins are registered with the syntax that we already used previously:
+```csharp
+var emailPlugin = kernel.ImportSemanticSkillFromDirectory("./Plugins", "Email");
+var generateExcuse = emailPlugin["GenerateExcuse"];
+```
 
-### Nice-to-haves
+For an out-of-the-box plugin, you can use the following syntax to register it to a kernel:
+```csharp
+kernel.ImportSkill(time);
+```
 
-Feel free to add any nice-to-have feature that you think make sense. Below are a few examples:
+To use the sequential planner, you can use the following syntax:
+```csharp
+var planner = new SequentialPlanner(kernel); // instantiate a planner
+var plan = await planner.CreatePlanAsync("ask for the goal to achieve"); // create a plan
+var result = await plan.InvokeAsync(); // execute the plan
+```
+Other planners (e.g. ActionPlanner and StepwisePlanner) follow a similar syntax.
+
+
+### Step 4 : add nice-to-haves
+
+Feel free to add any nice-to-have feature that you think makes sense.
+
+#### step 4 goals
 
 - Add memory : keep track of the previuosly sent excuses to make sure that you don't use the same excuse twice. See [Semantic Memory](https://github.com/microsoft/semantic-kernel/blob/main/dotnet/samples/KernelSyntaxExamples/Example14_SemanticMemory.cs) for a sample.
 
@@ -95,4 +180,6 @@ Feel free to add any nice-to-have feature that you think make sense. Below are a
 
 - ...
 
----
+### Validate the challenge
+
+In order to validate the challenge, you should provide a manual orchestration and a planner orchestration of semantic and native functions.
