@@ -91,9 +91,9 @@ To access the Azure OpenAI portal, go to [Azure OpenAI portal](https://oai.azure
 ![NavToPortal](assets/nav-to-portal.png)
 
 
-Once, in the Azure OpenAI portal, you'll find everything to take the most advantage of the service: 
+Once in the Azure OpenAI portal, you'll find everything to take the most advantage of the service: 
 - You'll be able to manage your **models and your deployments (1)**. 
-- You will have interractibve playground to customize and test your models with the **playgrounds (2)**
+- You will have interractive playgrounds to customize and test your models with the **playgrounds (2)**
 - You will find very usefull resources like **samples (3)** to accelerate your development 
 
 ![Oai Portal](assets/oai-portal.png)
