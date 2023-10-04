@@ -5,7 +5,9 @@ title: Semantic Kernel Workshop         # Required. Full title of the workshop
 short_title: SKWS     # Optional. Short title displayed in the header
 description: This is a workshop to discover Semantic Kernel through the usage and the discovery of different topics.  # Required.
 level: advanced                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
-authors:                                # Required. You can add as many authors as needed      
+authors:  
+  - Vivien Londe
+  - Philippe Didiergeorges                          # Required. You can add as many authors as needed      
   - Maxime Villeger
 contacts:                               # Required. Must match the number of authors
   - mavilleg@microsoft.com
@@ -39,24 +41,28 @@ This is an envisioning workshop, based on Microsoft's Copilot stack [Microsoft's
 
 ---
 
-## Introduction 
+# Introduction 
 
-Semantic Kernel is an open-source SDK that lets you easily combine AI services like [OpenAI](https://platform.openai.com/docs/), [Azure OpenAI](https://azure.microsoft.com/products/cognitive-services/openai-service/), and [Hugging Face](https://huggingface.co/) with conventional programming languages like C# and Python. By doing so, you will create AI apps that combine the best of both worlds.
+Semantic Kernel is an open-source SDK that lets you easily combine and orchestrate AI services like [OpenAI](https://platform.openai.com/docs/), [Azure OpenAI](https://azure.microsoft.com/products/cognitive-services/openai-service/), and [Hugging Face](https://huggingface.co/) with conventional programming languages like C# and Python. By doing so, you will create AI apps that combine the best of both worlds. The Semantic Kernel has been engineered to allow developers to flexibly integrate AI services into their existing apps. To do so, Semantic Kernel provides a set of connectors that make it easy to add [memories](https://learn.microsoft.com/en-us/semantic-kernel/memories/) and models. In this way, Semantic Kernel is able to add a simulated "brain" to your app.
 
-The Semantic Kernel has been engineered to allow developers to flexibly integrate AI services into their existing apps. To do so, Semantic Kernel provides a set of connectors that make it easy to add [memories](https://learn.microsoft.com/en-us/semantic-kernel/memories/) and models. In this way, Semantic Kernel is able to add a simulated "brain" to your app.
+Why use an AI orchestrator you may ask ?
+
+If you wanted, you could use the APIs for popular AI services directly and feed the results into your existing apps and services. This, however, requires you to learn the APIs for each service and then integrate them into your app. Using the APIs directly also does not allow you to easily draw from the recent advances in AI research that require solutions on top of these services. For example, the existing APIs do not provide planning or AI memories out-of-the-box. To simplify the creation of AI apps, open source projects have emerged. Semantic Kernel is Microsoft's contribution to this space and is designed to support enterprise app developers who want to integrate AI into their existing apps.
+
+By using multiple AI models, plugins, and memory all together within Semantic Kernel, you can create sophisticated pipelines that allow AI to automate complex tasks for users.
+For example, with Semantic Kernel, you could create a pipeline that helps a user send an email to their marketing team. With memory, you could retrieve information about the project and then use planner to autogenerate the remaining steps using available plugins (e.g., ground the user's ask with Microsoft Graph data, generate a response with GPT-4, and send the email). Finally, you can display a success message back to your user in your app using a custom plugin.
+
+![ImageSK](assets/kernel-flow.png)
 
 Additionally, Semantic Kernel makes it easy to add skills to your applications with AI plugins that allow you to interact with the real world. These plugins are composed of prompts and native functions that can respond to triggers and perform actions. In this way, plugins are like the "body" of your AI app.
 
 Because of the extensibility Semantic Kernel provides with connectors and plugins, you can use it to orchestrate AI plugins from both OpenAI and Microsoft on top of nearly any model. For example, you can use Semantic Kernel to orchestrate plugins built for ChatGPT, Bing, and Microsoft 365 Copilot on top of models from OpenAI, Azure, or even Hugging Face.
 
-Semantic Kernel can orchestrate AI plugins from any provider ![ImageSK](assets/mind-and-body-of-semantic-kernel.png)
-
-As a developer, you can use these pieces individually or together. For example, if you just need an abstraction over OpenAI and Azure OpenAI services, you could use the SDK to just run pre-configured prompts within your plugins, but the real power of Semantic Kernel comes from combining these components together.
-
+In a nutshell it will allow you to orchestrate AI plugins from any provider.
 
 ---
 
-## Prerequisites
+# Prerequisites
 
 In just a few steps, you can start running the getting started guides for Semantic Kernel in either C# or Python. After completing the guides, you'll know how to...
 - Configure your local machine to run Semantic Kernel
@@ -75,10 +81,7 @@ Before running the guides in C#, make sure you have the following installed on y
 
 If you are using Python, you just need git and python. 
 
-First go to the [semantic Kernel](https://github.com/microsoft/semantic-kernel)
-Semantic Kernetl, git, knowledge 
-
----
+--- 
 
 ## Challenge 1: Azure OpenAi Playground
 
@@ -141,6 +144,15 @@ In order to validate the challenge, you should be able to demonstrate a working 
 ---
 
 ## Challenge 2: Semantic Kernel Samples
+
+
+We are about to embark on a remarkable journey. However, instead of a DeLorean, our vehicle will be our collective creativity, innovation and the semantic Kernel. Before diving head first into the future let's set some ground rules to score point. Basically, each of the folowing challenges are composed of different step that weight 1 point. Once all the steps of a challenge are completed, an additional 5 points will be awarded. The total score of the challenge will be the sum of the points earned for each step and the bonus points for completing the challenge. 
+
+But that's not it !
+
+In addition, during challenge 3 some extra points may be awarded by your beloved coach regarding the creativity of you application, its humor or hallucinativity. Each of those item weighting 2 additional points. 
+
+As we buckle up and ignite our flux capacitors for this workshop, let's channel the spirit of the future and let's dive into the world of innovation and creativity.
 
 ### Prerequisites
 
