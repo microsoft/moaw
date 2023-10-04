@@ -287,3 +287,19 @@
   level: beginner
   tags: azure, azure cache for redis, database, serverless, apim, cache, csu
   navigation_levels: 3
+
+- title: Using Copilot with Node.js and Azure
+  url: https://microsoft.github.io/moaw/workshop/gh:azure-samples/copilot-nodejs-todo/main/docs/
+  github_url: https://github.com/Azure-Samples/copilot-nodejs-todo
+  language: en
+  last_updated: 2023-07-18
+  type: workshop
+  description: Discover how to use GitHub Copilot to quickly build a Node.js application with Azure Cosmos DB and App Service.
+  authors:
+    - Yohan Lasorsa
+  contacts:
+    - '@sinedied'
+  duration_minutes: 30
+  audience: students, pro devs
+  level: intermediate
+  tags: github copilot, node.js, azure, express, javascript, typescript, app service, cosmos db, github actions, github codespaces
