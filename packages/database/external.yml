@@ -305,8 +305,7 @@
   tags: github copilot, node.js, azure, express, javascript, typescript, app service, cosmos db, github actions, github codespaces
 
   - title: Unleash the Power of Azure Open AI
-  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/azurechat/main/docs/
-  github_url: https://github.com/microsoft/azurechat
+  url: https://github.com/microsoft/azurechat
   language: en
   last_updated: 2023-10-03
   type: workshop
@@ -314,7 +313,7 @@
   authors:
     - Thivy
   contacts:
-    - '@thivy' https://github.com/thivy
+    - 'https://github.com/thivy' 
   duration_minutes: 60
   audience: students, pro devs
   level: intermediate
