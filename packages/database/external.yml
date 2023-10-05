@@ -303,3 +303,19 @@
   audience: students, pro devs
   level: intermediate
   tags: github copilot, node.js, azure, express, javascript, typescript, app service, cosmos db, github actions, github codespaces
+
+  - title: Unleash the Power of Azure Open AI
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/azurechat/main/docs/
+  github_url: https://github.com/microsoft/azurechat
+  language: en
+  last_updated: 2023-10-03
+  type: workshop
+  description: Discover how to deploy a private chat tenant in their Azure Subscription, with a familiar user experience and the added capabilities of chatting over your data and files with Azure Chat Solution Accelerator powered by Azure Open AI Service.
+  authors:
+    - Thivy
+  contacts:
+    - '@thivy' https://github.com/thivy
+  duration_minutes: 60
+  audience: students, pro devs
+  level: intermediate
+  tags: azure, open AI
