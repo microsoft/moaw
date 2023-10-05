@@ -2,12 +2,16 @@
 published: false                        # Optional. Set to true to publish the workshop (default: false)
 type: workshop                          # Required.
 title: Semantic Kernel Workshop         # Required. Full title of the workshop
-short_title: SKWS     # Optional. Short title displayed in the header
+short_title: Semantic Kernel Workshop   # Optional. Short title displayed in the header
 description: This is a workshop to discover Semantic Kernel through the usage and the discovery of different topics.  # Required.
 level: advanced                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors:                                # Required. You can add as many authors as needed      
+  - Philippe Didiergeorges
+  - Vivien Londe
   - Maxime Villeger
 contacts:                               # Required. Must match the number of authors
+  - philipped@microsoft.com
+  - vilonde@microsoft.com
   - mavilleg@microsoft.com
 duration_minutes: 1440                   # Required. Estimated duration in minutes
 tags: C#, GenAI, OpenAI                  # Required. Tags for filtering and searching
@@ -18,8 +22,6 @@ tags: C#, GenAI, OpenAI                  # Required. Tags for filtering and sear
 #oc_id: <marketing_tracking_id>          # Optional. Set marketing tracking code for supported links
 #navigation_levels: 2                    # Optional. Number of levels displayed in the side menu (default: 2)
 sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
-   - Semantic Kernel Workshop 
-   
    - Introduction 
 
    - Prerequisites
@@ -28,20 +30,26 @@ sections_title:                         # Optional. Override titles for each sec
 
    - Challenge 2 - Semantic Kernel Samples
 
-   - Challenge 3 - Build it from Scratch
+   - Challenge 3 - Build your first plugins
 
-   - Challenge 4 - Extra-challenges
+   - Challenge 4 - Plugins orchestration
+
+   - Challenge 5 - Extra-challenges
 ---
 
 # Semantic Kernel Workshop
 
 This is an envisioning workshop, based on Microsoft's Copilot stack [Microsoft's Copilot stack](https://learn.microsoft.com/en-us/semantic-kernel/overview/#semantic-kernel-is-at-the-center-of-the-copilot-stack), to rethink user experience, architecture, and app development by leveraging the intelligence of foundation models. This workshop will use Semantic Kernel (SK), along with SK's Design thinking material, to guide you through the lifecycle of intelligent app development. 
 
----
+![Copilot Stack](assets/copilot-stack.png)
 
-## Introduction 
+<div class="warning" data-title="warning">
 
-Semantic Kernel is an open-source SDK that lets you easily combine AI services like [OpenAI](https://platform.openai.com/docs/), [Azure OpenAI](https://azure.microsoft.com/products/cognitive-services/openai-service/), and [Hugging Face](https://huggingface.co/) with conventional programming languages like C# and Python. By doing so, you will create AI apps that combine the best of both worlds.
+> Semantic Kernel and the Azure OpenAI Services are quickly evolving products and thus this workshop may not be 100% up to date with the differentes features of the different extensions you are going to use. Please be clever.
+
+</div>
+
+**Semantic Kernel** is an open-source SDK that lets you easily combine AI services like [OpenAI](https://platform.openai.com/docs/), [Azure OpenAI](https://azure.microsoft.com/products/cognitive-services/openai-service/), and [Hugging Face](https://huggingface.co/) with conventional programming languages like C# and Python. By doing so, you will create AI apps that combine the best of both worlds.
 
 The Semantic Kernel has been engineered to allow developers to flexibly integrate AI services into their existing apps. To do so, Semantic Kernel provides a set of connectors that make it easy to add [memories](https://learn.microsoft.com/en-us/semantic-kernel/memories/) and models. In this way, Semantic Kernel is able to add a simulated "brain" to your app.
 
@@ -187,7 +195,7 @@ Now that you have an app that can generate book for childrens, try to add a new 
 ---
 
 
-## Challenge 3 : build it from scratch
+## Challenge 3 : build your first plugins
 
 ### Step 1 : define a semantic function and a native function
 
@@ -257,6 +265,10 @@ var contextVariables = new ContextVariables
         };
 ```
 
+--- 
+
+## Challenge 4: Plugins orchestration
+
 ### Step 2 : orchestrate functions manually
 
 #### Step 2 goal
@@ -287,6 +299,12 @@ var timePlugin = new Timeskill(); // instantiate an out-of-the-box plugin
 var daysAgo = time.DaysAgo; // instantiate a native function of this plugin
 var dateInAWeek = daysAgo(-7); // call a native function
 ```
+
+### Validate the challenge
+
+In order to validate the challenge, you should provide a manual orchestration and a planner orchestration of semantic and native functions.
+
+---
 
 ### Step 3 : orchestrate functions
 
@@ -334,7 +352,7 @@ In order to validate the challenge, you should provide a manual orchestration an
 
 ---
 
-### Step 4 : add nice-to-haves
+### Extra-challenge : add nice-to-haves
 
 Feel free to add any nice-to-have feature that you think makes sense.
 
