@@ -308,7 +308,7 @@ Leverage a planner to orchestrate the previously written semantic and native fun
 
 #### Step 3 concepts and syntax
 
-Planners uses LLMs to orchestrate the usage of semantic and native functions. At step 2, we integrated the email generation and API calls with native code. By using a planner, we can rely on an LLM to integrate semantic and native functions in order to achieve a goal. It's a declarative way of programming.
+Planners use LLMs to orchestrate the usage of semantic and native functions. At step 2, we integrated the email generation and API calls with native code. By using a planner, we can rely on an LLM to integrate semantic and native functions in order to achieve a goal. It's a declarative way of programming.
 
 The planner is given the goal that the developper wants to achieve and the functions (semantic and native) that are available to him. The planner leverages the natural language understanding and generation capabilities of LLMs to propose a plan, i.e. a step by step usage of the available functions to achieve the goal. The proposed plan is then executed.
 
@@ -350,7 +350,7 @@ In order to validate the challenge, you should provide a manual orchestration an
 
 Feel free to add any nice-to-have feature that you think makes sense.
 
-#### step 4 goals
+#### step 4 examples
 
 - Add memory : keep track of the previuosly sent excuses to make sure that you don't use the same excuse twice. See [Semantic Memory](https://github.com/microsoft/semantic-kernel/blob/main/dotnet/samples/KernelSyntaxExamples/Example14_SemanticMemory.cs) for a sample.
 
