@@ -300,7 +300,7 @@ var daysAgo = time.DaysAgo; // instantiate a native function of this plugin
 var dateInAWeek = daysAgo(-7); // call a native function
 ```
 
-### Step 3 : orchestrate functions
+### Step 3 : orchestrate functions with a planner
 
 #### Step 3 goal
 
