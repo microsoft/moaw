@@ -2,14 +2,16 @@
 published: false                        # Optional. Set to true to publish the workshop (default: false)
 type: workshop                          # Required.
 title: Semantic Kernel Workshop         # Required. Full title of the workshop
-short_title: SKWS     # Optional. Short title displayed in the header
+short_title: Semantic Kernel Workshop   # Optional. Short title displayed in the header
 description: This is a workshop to discover Semantic Kernel through the usage and the discovery of different topics.  # Required.
 level: advanced                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
-authors:  
+authors:                                # Required. You can add as many authors as needed      
+  - Philippe Didiergeorges
   - Vivien Londe
-  - Philippe Didiergeorges                          # Required. You can add as many authors as needed      
   - Maxime Villeger
 contacts:                               # Required. Must match the number of authors
+  - philipped@microsoft.com
+  - vilonde@microsoft.com
   - mavilleg@microsoft.com
 duration_minutes: 1440                   # Required. Estimated duration in minutes
 tags: C#, GenAI, OpenAI                  # Required. Tags for filtering and searching
@@ -20,8 +22,6 @@ tags: C#, GenAI, OpenAI                  # Required. Tags for filtering and sear
 #oc_id: <marketing_tracking_id>          # Optional. Set marketing tracking code for supported links
 #navigation_levels: 2                    # Optional. Number of levels displayed in the side menu (default: 2)
 sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
-   - Semantic Kernel Workshop 
-   
    - Introduction 
 
    - Prerequisites
@@ -30,20 +30,28 @@ sections_title:                         # Optional. Override titles for each sec
 
    - Challenge 2 - Semantic Kernel Samples
 
-   - Challenge 3 - Build it from Scratch
+   - Challenge 3 - Build your first plugins
 
-   - Challenge 4 - Extra-challenges
+   - Challenge 4 - Plugins orchestration
+
+   - Challenge 5 - Extra-challenges
 ---
 
 # Semantic Kernel Workshop
 
 This is an envisioning workshop, based on Microsoft's Copilot stack [Microsoft's Copilot stack](https://learn.microsoft.com/en-us/semantic-kernel/overview/#semantic-kernel-is-at-the-center-of-the-copilot-stack), to rethink user experience, architecture, and app development by leveraging the intelligence of foundation models. This workshop will use Semantic Kernel (SK), along with SK's Design thinking material, to guide you through the lifecycle of intelligent app development. 
 
----
+![Copilot Stack](assets/copilot-stack.png)
 
-# Introduction 
+<div class="warning" data-title="warning">
 
-Semantic Kernel is an open-source SDK that lets you easily combine and orchestrate AI services like [OpenAI](https://platform.openai.com/docs/), [Azure OpenAI](https://azure.microsoft.com/products/cognitive-services/openai-service/), and [Hugging Face](https://huggingface.co/) with conventional programming languages like C# and Python. By doing so, you will create AI apps that combine the best of both worlds. The Semantic Kernel has been engineered to allow developers to flexibly integrate AI services into their existing apps. To do so, Semantic Kernel provides a set of connectors that make it easy to add [memories](https://learn.microsoft.com/en-us/semantic-kernel/memories/) and models. In this way, Semantic Kernel is able to add a simulated "brain" to your app.
+> Semantic Kernel and the Azure OpenAI Services are quickly evolving products and thus this workshop may not be 100% up to date with the differentes features of the different extensions you are going to use. Please be clever.
+
+</div>
+
+**Semantic Kernel** is an open-source SDK that lets you easily combine AI services like [OpenAI](https://platform.openai.com/docs/), [Azure OpenAI](https://azure.microsoft.com/products/cognitive-services/openai-service/), and [Hugging Face](https://huggingface.co/) with conventional programming languages like C# and Python. By doing so, you will create AI apps that combine the best of both worlds.
+
+The Semantic Kernel has been engineered to allow developers to flexibly integrate AI services into their existing apps. To do so, Semantic Kernel provides a set of connectors that make it easy to add [memories](https://learn.microsoft.com/en-us/semantic-kernel/memories/) and models. In this way, Semantic Kernel is able to add a simulated "brain" to your app.
 
 Why use an AI orchestrator you may ask ?
 
@@ -81,11 +89,12 @@ Before running the guides in C#, make sure you have the following installed on y
 
 If you are using Python, you just need git and python. 
 
---- 
+---
 
-## Challenge 1: Azure OpenAi Playground
 
-### Prerequisites
+# Challenge 1: Azure OpenAi Playground
+
+## Prerequisites
 
 - An Azure account with an active subscription. [Create an account for free](https://azure.microsoft.com/free/?WT.mc_id=academic-0000-jabenn).
 - An Azure OpenAI Services Instance. [Create an instance](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/create-resource?pivots=web-portal).
@@ -112,7 +121,7 @@ For the upcomming Hands-on-lab we recommend that you deploy at least a **GPT mod
 
 </div>
 
-### Step 1: Set Up a Conversational Agent
+## Step 1: Set Up a Conversational Agent
 
 In the Azure OpenAI Studio, open the Chat playground by clicking on the link in the left pane.
 ![Chat Playground](assets/chat-playground.png)
@@ -130,20 +139,21 @@ There's a few parameters that will have big impact on the kind of answer that wi
 
 Try to play with the parameters and see how it impacts the answer.
 
-### Step 2: Build, Train and Deploy you assistant with your own data
+## Step 2: Build, Train and Deploy you assistant with your own data
 
 Now that you started building your assistant, you can start training it with your own data. As the OpenAI service is a constantly evolving service, the way you can train your assistant can change over time. 
 
 You will find a step by step guide on how to train your assistant with your own data from the playground [here](https://learn.microsoft.com/en-us/azure/ai-services/openai/use-your-data-quickstart).
 
 
-### Validate the challenge:
+## Validate the challenge:
 
-In order to validate the challenge, you should be able to demonstrate a working conversational agent that can answer questions based on your own data.
+In order to validate the challenge, you should be able to:
+- demonstrate a working conversational agent that can answer questions based on your own data.
 
 ---
 
-## Challenge 2: Semantic Kernel Samples
+# Challenge 2: Semantic Kernel Samples
 
 
 We are about to embark on a remarkable journey. However, instead of a DeLorean, our vehicle will be our collective creativity, innovation and the semantic Kernel. Before diving head first into the future let's set some ground rules to score point. Basically, each of the folowing challenges are composed of different step that weight 1 point. Once all the steps of a challenge are completed, an additional 5 points will be awarded. The total score of the challenge will be the sum of the points earned for each step and the bonus points for completing the challenge. 
@@ -154,7 +164,7 @@ In addition, during challenge 3 some extra points may be awarded by your beloved
 
 As we buckle up and ignite our flux capacitors for this workshop, let's channel the spirit of the future and let's dive into the world of innovation and creativity.
 
-### Prerequisites
+## Prerequisites
 
 It's time to play with Semantic Kernel! Let's start by cloning the repository and open it in VS Code (or your favorite IDE).
 
@@ -171,7 +181,7 @@ You'll find a few folders containing everything you need to build AI Apps with s
 - **/*.md files**: you'll find this documentation that will help you get started with Semantic Kernel, explaining concepts and how to run the samples
 
 
-### Simple Chat Summary sample
+## Simple Chat Summary sample
 
 Let's start by the most simple sample: the Simple Chat Summary sample. This sample is a simple chatbot that will summarize the conversation.
 You'll find it in the **samples/apps** folder.
@@ -180,13 +190,13 @@ Take your time to build and run this sample and explore the skills and the code.
 
 Your goal here is simply to run the sample and try to understand how it works. Once you're pretty confident with it, you can go to the next step: the **Book Generator sample** to start seeing another powerful feature of Semantic Kernel: the planner, that helps you orchestrate skills together to build more complex scenarios.
 
-### Book Generator sample
+## Book Generator sample
 
 The power of semantic kernel is the ability to orchestrate skills together to build more complex scenarios. You can create static plans by assembling skills together, but you can also leverage the power of semantic kernel to dynamically create plans based on the context of the conversation.
 
 In this sample, you'll find a simple book generator that will generate a book based on the conversation. You'll find it in the **samples/apps** folder. Try it and see how it works.
 
-### Validate the Challenge 
+## Validate the Challenge 
 
 Now that you have an app that can generate book for childrens, try to add a new skill to the book generator that will generate a book cover based on the conversation with the Dall-E service. You can find a sample of a skill that generates a book cover in the **samples/skills** folder.
 
@@ -199,9 +209,9 @@ Now that you have an app that can generate book for childrens, try to add a new 
 ---
 
 
-## Challenge 3 : build it from scratch
+# Challenge 3 : build your first plugins
 
-### Step 1 : define a semantic function and a native function
+## Step 1 : define a semantic function and a native function
 
 Semantic Kernel makes the difference between **semantic functions** and **native functions**. Semantic functions make use of a prompt to call a Large Language Model (LLM). Native functions don't need LLMs and can be written in C#.
 
@@ -213,17 +223,25 @@ The full power of Semantic Kernel comes from combining semantic and native funct
 
 </div>
 
-#### Step 1 goals
+### Step 1 goals
 
-1 - **Write a semantic function** that generates an excuse email for your boss to avoid work and watch the next world cup rugby game. The function takes as input the day and time of the game, which you provide manually.
+1 - **Write a semantic function** that generates an excuse email for your boss to avoid work and watch the next ***[your favorite team and sport]*** game. The function takes as input the day and time of the game, which you provide manually.
 The function generates:
   - the body of the email
   - its topic
   - its recipient.
 
-2 - **Write a native function** that calls a REST API (e.g. Bing search) to automatically retrieve the day and time of the next world cup rugby game.
+2 - **Write a native function** that calls a REST API (e.g. Bing search) to automatically retrieve the day and time of the next ***[your favorite team and sport]*** game in order to be integrated in the email.
 
-#### Step 1 useful concepts and syntax
+
+<div class="tip">
+
+> If you don't have a REST API to retrieve the date and time of the next ***[your favorite team and sport]*** game, why not trying using Bing Search (with integrated ChatGPT) or Github Copilot to help you build a solution to retrieve it.
+
+</div>
+
+
+### Step 1 useful concepts and syntax
 
 Functions (both native and semantic) are grouped into plugins. In other words, a plugin is a collection of functions. Some plugins are already defined by the Semantic Kernel package. See the source code [here](https://github.com/microsoft/semantic-kernel/tree/main/dotnet/src/Plugins). You can use these plugins in your code with the following syntax:
 ```csharp
@@ -269,13 +287,13 @@ var contextVariables = new ContextVariables
         };
 ```
 
-### Step 2 : orchestrate functions manually
+## Step 2 : chain functions 
 
-#### Step 2 goal
+### Step 2 goal
 
 Integrate your semantic and native functions in order to generate your email excuse. For now we encourage you to do the integration by writing native code. In the next part, we will see how **planners** leverage LLMs to deal with the orchestration of functions. 
 
-#### Step 2 concepts and syntax
+### Step 2 concepts and syntax
 
 A semantic function must be called through a kernel:
 ```csharp
@@ -300,13 +318,25 @@ var daysAgo = time.DaysAgo; // instantiate a native function of this plugin
 var dateInAWeek = daysAgo(-7); // call a native function
 ```
 
-### Step 3 : orchestrate functions with a planner
+## Validate the challenge
 
-#### Step 3 goal
+In order to validate the challenge, you should:
+- demonstrate your plugins by generating an email excuse and retrieving the date of the next ***[your favorite team and sport]*** game.
+- demonstrate a manual orchestration that uses function chaining between semantic and native functions to achieve the goal of generating an email excuse. 
+- ***Bonus***: find the way to pass multiple variables thru the chain of functions using context.
+- ***Bonus***: use a native function that calls a REST API to retrieve the date of the next ***[your favorite team and sport]*** game.
+
+---
+
+# Challenge 4 : plugins orchestration
+
+## Orchestrate functions with a Planner
+
+### Goal
 
 Leverage a planner to orchestrate the previously written semantic and native functions: date retrieval, email generation.
 
-#### Step 3 concepts and syntax
+### Concepts and syntax
 
 Planners use LLMs to orchestrate the usage of semantic and native functions. At step 2, we integrated the email generation and API calls with native code. By using a planner, we can rely on an LLM to integrate semantic and native functions in order to achieve a goal. It's a declarative way of programming.
 
@@ -341,21 +371,23 @@ Other planners (e.g. ActionPlanner and StepwisePlanner) follow a similar syntax.
 
 ### Validate the challenge
 
-In order to validate the challenge, you should provide a manual orchestration and a planner orchestration of semantic and native functions.
+In order to validate the challenge, you should demonstrate:
+- a planner orchestration of semantic and native functions to achieve the goal of generating an email excuse.
+- ***Bonus***: using a stepwise planner that can adaptively generate a plan depending on the result of retrieving the date of the next ***[your favorite team and sport]*** game.
 
 
 ---
 
-### Step 4 : add nice-to-haves
+# Extra-challenge : add nice-to-haves
 
 Feel free to add any nice-to-have feature that you think makes sense.
 
-#### step 4 examples
+## Examples of goals to achieve
 
 - Add memory : keep track of the previuosly sent excuses to make sure that you don't use the same excuse twice. See [Semantic Memory](https://github.com/microsoft/semantic-kernel/blob/main/dotnet/samples/KernelSyntaxExamples/Example14_SemanticMemory.cs) for a sample.
 
 - Add telemetry : See [ApplicationInsights](https://github.com/microsoft/semantic-kernel/blob/main/dotnet/samples/ApplicationInsightsExample/Program.cs) for a sample.
 
-- Add a nicer user interface.
+- Build a nicer user interface.
 
 - ...
