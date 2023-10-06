@@ -236,7 +236,7 @@ The function generates:
 
 <div class="tip">
 
-> If you don't have a REST API to retrieve the date and time of the next ***[your favorite team and sport]*** game, why not trying using Bing Search (with integrated ChatGPT) or Github Copilot to help you build a solution to retrieve it.
+> If you don't have a REST API to retrieve the date and time of the next ***[your favorite team and sport]*** game, why not trying using Bing Chat or Github Copilot to help you build a solution to retrieve it.
 
 </div>
 
