@@ -283,7 +283,7 @@ npm start
 
 This will start a local development server on port 4200.
 
-You can then open [`http://localhost:4200/workshop/<your-workshop-name>`](http://localhost:4200/workshop/<your-workshop-name>) in your browser to preview your workshop.
+You can then open [`http://localhost:4200/workshop/<your-workshop-name>/`](http://localhost:4200/workshop/<your-workshop-name>/) in your browser to preview your workshop.
 
 
 #### Use MOAW CLI
@@ -315,7 +315,7 @@ git push
 
 You should now be able to access your workshop using this url:
 
-`https://aka.ms/ws?src=gh:<your-github-username>/moaw/main/workshops/<your-workshop-name>`.
+`https://aka.ms/ws?src=gh:<your-github-username>/moaw/main/workshops/<your-workshop-name>/`.
 
 This is also a convenient way to quickly host your workshop without having to wait for it to be published on the main website.
 

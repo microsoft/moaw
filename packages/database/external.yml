@@ -8,7 +8,25 @@
 # - last_updated: Required. The last update date of the workshop (YYYY-MM-DD)
 # - github_url: Optional. The URL of the workshop's GitHub repository
 # ****************************************************************************
+- title: Azure Confidential Computing powered by AMD SEV-SNP - Workshop
+  description: In this technical workshop, you will gain a comprehensive understanding of Azure's Confidential Computing capabilities powered by AMD SEV-SNP. 
+  url: https://aka.ms/Azure-CC-AMD-Workshop              
+  language: en                          
+  last_updated: 2023-07-06                
+  type: workshop                       
+  level: advanced                         
+  github_url: https://github.com/microsoft/MDCC/    
+  authors:                   
+    - Jumelet Arnaud
+    - Ren Jacques     
+  contacts:                               
+    - '@Arnaud_Jumelet'
+    - 'in/jacques-ren/'
+  duration_minutes: 300                
+  audience: students, pro devs         
+  tags: Security, Confidential Computing
 
+  
 - title: Azure Blinking IoT Compressor
   url: https://iot-workshop.maneu.fr/
   github_url: https://github.com/cmaneu/Azure-Blinking-IoT-Compressor
@@ -248,3 +266,55 @@
   level: beginner
   tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email, app service, web pubsub, static web app, csu
   navigation_levels: 3
+
+- title: Product Hands-on Lab - Redis Cache in the Azure world
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-redis/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-redis
+  language: en
+  last_updated: 2023-09-22
+  type: workshop
+  description:  This workshop will show you how Azure Cache for Redis is integrated with other Azure Services.
+  authors:
+    - Damien Aicheh
+    - Julien Strebler
+    - Iheb Khemissi
+  contacts:
+    - "@damienaicheh"
+    - "@justrebl"
+    - "@ikhemissi"
+  duration_minutes: 180
+  audience: students, pro devs
+  level: beginner
+  tags: azure, azure cache for redis, database, serverless, apim, cache, csu
+  navigation_levels: 3
+
+- title: Using Copilot with Node.js and Azure
+  url: https://microsoft.github.io/moaw/workshop/gh:azure-samples/copilot-nodejs-todo/main/docs/
+  github_url: https://github.com/Azure-Samples/copilot-nodejs-todo
+  language: en
+  last_updated: 2023-07-18
+  type: workshop
+  description: Discover how to use GitHub Copilot to quickly build a Node.js application with Azure Cosmos DB and App Service.
+  authors:
+    - Yohan Lasorsa
+  contacts:
+    - '@sinedied'
+  duration_minutes: 30
+  audience: students, pro devs
+  level: intermediate
+  tags: github copilot, node.js, azure, express, javascript, typescript, app service, cosmos db, github actions, github codespaces
+
+- title: Unleash the Power of Azure Open AI
+  url: https://github.com/microsoft/azurechat
+  language: en
+  last_updated: 2023-10-03
+  type: workshop
+  description: Discover how to deploy a private chat tenant in their Azure Subscription, with a familiar user experience and the added capabilities of chatting over your data and files with Azure Chat Solution Accelerator powered by Azure Open AI Service.
+  authors:
+    - Thivy
+  contacts:
+    - 'https://github.com/thivy' 
+  duration_minutes: 60
+  audience: students, pro devs
+  level: intermediate
+  tags: azure, open AI
