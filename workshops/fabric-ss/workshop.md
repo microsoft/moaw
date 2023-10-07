@@ -771,7 +771,7 @@ We will have to install the libraries separately. To install torch we run the co
 To install torchvision we run the command below:
 
 ```python
-%pip install torch
+%pip install torchvision
 ```
 
 As our datasets are now as delta files, we load our data and convert it to a Pandas dataframe to easily manipulate and visualize our data with inbuilt Pandas tools starting with the train files:
@@ -855,6 +855,7 @@ To train our model, we will be working with Pytorch. To do this, we will need to
 ```python
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
+from torchvision import transforms
 
 import os
 from PIL import Image
