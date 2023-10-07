@@ -14,7 +14,7 @@
 		// Configure properties specific to VS Code.
 		"vscode": {
 			// Add the IDs of extensions you want installed when the container is created.
-			"extensions": ["angular.ng-template", "esbenp.prettier-vscode"]
+			"extensions": ["angular.ng-template", "EditorConfig.EditorConfig", "esbenp.prettier-vscode"]
 		}
 	},
 

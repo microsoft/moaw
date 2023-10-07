@@ -189,19 +189,59 @@ The `data-title` attribute is optional, and can be used to add a title to the ad
 
 ### Add images and resources
 
-Any images or resources you want to use in your workshop should be placed under the `workshops/<your-workshop-name>/assets/` subfolder. If this folder doesn't exist, you can create it.
+Any images or resources you want to use in your workshop should be placed under the `workshops/<your-workshop-name>/\assets/` subfolder. If this folder doesn't exist, you can create it.
 
 You can then reference the images in your workshop using the following syntax:
 
 ```md
-![Image description](assets/image.png)
+![Image description](\assets/image.png)
 ```
 
 You can also add links to any external resources you may need in your workshop:
 
 ```md
-[Link text](assets/code-solution.zip)
+[Link text](\assets/code-solution.zip)
 ```
+
+<div class="info" data-title="Note">
+
+> Locally referenced resources must be placed under the `\assets/` subfolder as because all links starting with `\assets/` or `\./assets/` will be rewritten to point to the `\assets/` folder of the published workshop. If you don't want your link to be rewritten (for example in a code block), you can simply escape it with a backslash, for example: `\\assets/code-solution.zip`.
+
+</div>
+
+### Embed videos
+
+You can embed videos from YouTube in your workshop by copying the embed code from YouTube, and pasting it in your workshop file inside a `div` with the `video-embed` class:
+
+```html
+<div class="video-embed">
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/zchTNKmay6M" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+</div>
+```
+
+This will render as:
+
+<div class="video-embed">
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/zchTNKmay6M" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+</div>
+
+<div class="info" data-title="Note">
+
+> You can omit the enclosing `<div>` element if you don't want your video to take the full width of the page. It will still be responsive though.
+
+</div>
+
+### Embed audio
+
+You can embed audio files in your workshop by simply using the `<audio>` HTML tag:
+
+```html
+<audio controls src="\assets/audio.mp3"></audio>
+```
+
+This will render as:
+
+<audio controls src="assets/audio.mp3"></audio>
 
 ### Add foldable sections
 
@@ -243,7 +283,7 @@ npm start
 
 This will start a local development server on port 4200.
 
-You can then open [`http://localhost:4200/moaw/workshop/<your-workshop-name>`](http://localhost:4200/moaw/workshop/<your-workshop-name>) in your browser to preview your workshop.
+You can then open [`http://localhost:4200/workshop/<your-workshop-name>/`](http://localhost:4200/workshop/<your-workshop-name>/) in your browser to preview your workshop.
 
 
 #### Use MOAW CLI
@@ -275,7 +315,7 @@ git push
 
 You should now be able to access your workshop using this url:
 
-`https://aka.ms/ws?src=gh:<your-github-username>/moaw/main/workshops/<your-workshop-name>`.
+`https://aka.ms/ws?src=gh:<your-github-username>/moaw/main/workshops/<your-workshop-name>/`.
 
 This is also a convenient way to quickly host your workshop without having to wait for it to be published on the main website.
 
@@ -305,11 +345,17 @@ git commit -m "Publish <my-workshop>"
 git push
 ```
 
+<div class="info" data-title="note">
+
+> The `published` field controls whether the workshop is visible on the website workshops list and appears in the search index. Even when set to `false`, your workshop will still be accessible using its direct link, so you can share it privately for review before publishing it.
+
+</div>
+
 ### Creating a pull request
 
 Finally, submit a pull request to the main repository:
 
-1. Open your fork on GitHub, and select the **Contribute** then click on the **Open pull request** button:
+1. Open your fork on GitHub, select the **Contribute** button then click on the **Open pull request** button:
 
    ![Open a pull request on GitHub](assets/open-pr.png)
 
