@@ -10,9 +10,9 @@ authors:                                # Required. You can add as many authors 
   - Vivien Londe
   - Maxime Villeger
 contacts:                               # Required. Must match the number of authors
-  - philipped@microsoft.com
-  - vilonde@microsoft.com
-  - mavilleg@microsoft.com
+  - @Philess
+  - @vivienlonde
+  - @mavilleg
 duration_minutes: 1440                   # Required. Estimated duration in minutes
 tags: C#, GenAI, OpenAI                  # Required. Tags for filtering and searching
 #banner_url: assets/banner.jpg           # Optional. Should be a 1280x640px image
