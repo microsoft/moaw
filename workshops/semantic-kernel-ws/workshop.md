@@ -1,5 +1,5 @@
 ---
-published: false                        # Optional. Set to true to publish the workshop (default: false)
+published: true                        # Optional. Set to true to publish the workshop (default: false)
 type: workshop                          # Required.
 title: Semantic Kernel Workshop         # Required. Full title of the workshop
 short_title: Semantic Kernel Workshop   # Optional. Short title displayed in the header
