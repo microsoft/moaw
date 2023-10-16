@@ -82,23 +82,23 @@ export async function recursiveCopy(source: string, dest: string): Promise<void>
 export function escapeForHtml(unsafe?: string) {
   return (
     unsafe
-      ?.replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;') ?? ''
+      ?.replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;') ?? ''
   );
 }
 
 export function unescapeHtml(html?: string) {
   return (
     html
-      ?.replace(/&(amp|#38);/gi, '&')
-      .replace(/&(lt|#60);/gi, '<')
-      .replace(/&(gt|#62);/gi, '>')
-      .replace(/&(quot|#34);/gi, '"')
-      .replace(/&(apos|#39);/gi, "'")
-      .replace(/&#(\d+);/gi, (_match, numberString) => {
+      ?.replaceAll(/&(amp|#38);/gi, '&')
+      .replaceAll(/&(lt|#60);/gi, '<')
+      .replaceAll(/&(gt|#62);/gi, '>')
+      .replaceAll(/&(quot|#34);/gi, '"')
+      .replaceAll(/&(apos|#39);/gi, "'")
+      .replaceAll(/&#(\d+);/gi, (_match, numberString: string) => {
         const number_ = Number.parseInt(numberString, 10);
         return String.fromCodePoint(number_);
       }) ?? ''

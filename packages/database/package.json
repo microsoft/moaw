@@ -9,8 +9,8 @@
   },
   "private": true,
   "dependencies": {
-    "@primer/octicons": "^17.5.0",
-    "cxa-track": "^2.1.0",
+    "@primer/octicons": "^19.4.0",
+    "cxa-track": "^3.0.0",
     "fast-glob": "^3.2.12",
     "marked": "^4.0.19",
     "node-fetch": "^3.2.10",
@@ -19,9 +19,9 @@
   },
   "devDependencies": {
     "@types/marked": "^4.0.7",
-    "@types/node": "^16.11.62",
-    "prettier": "^2.7.1",
-    "typescript": "^4.8.4"
+    "@types/node": "^18.16.19",
+    "prettier": "^3.0.0",
+    "typescript": "^5.1.6"
   },
   "prettier": {
     "printWidth": 120,

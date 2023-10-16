@@ -58,10 +58,15 @@ export function updateAssetsBasePath(markdown: string, baseUrl: string): string 
     baseUrl = baseUrl.substring(0, baseUrl.length - 1);
   }
 
-  // Match all occurrences of "assets/" not within a code block
-  const assetsRegex = new RegExp(`(?:\.\/)?${assetsFolder}(?=[^\`]*(?:\`[^\`]*\`[^\`]*)*$)`, 'gm');
+  // Match all occurrences of unescaped "assets/"
+  const assetsRegex = new RegExp(`(?<!\\\\|\\\\\.\/)(?:\.\/)?${assetsFolder}`, 'gm');
+  markdown = markdown.replace(assetsRegex, `${baseUrl}/${assetsFolder}`);
 
-  return markdown.replace(assetsRegex, `${baseUrl}/${assetsFolder}`);
+  // Match all occurrences of escaped "assets/"
+  const escapedAssetsRegex = new RegExp(`\\\\(?:\.\/)?${assetsFolder}`, 'gm');
+  markdown = markdown.replace(escapedAssetsRegex, (match) => match.slice(1));
+
+  return markdown;
 }
 
 export function updateTrackingCodes(markdown: string, options?: LoaderOptions): string {
