@@ -940,6 +940,7 @@ After this code is executed, the `model` object will be a pre-trained DenseNet 2
 
 ```python
 import torchvision
+import torch.nn as nn
 
 # load the pre-trained DenseNet 201 model
 model = torchvision.models.densenet201(pretrained=True)
@@ -954,6 +955,7 @@ model = model.to(device)
 We use the cross-entropy loss function and the Adam optimizer to train the model. The code is as follows:
 
 ```python
+import torch.optim as optim
 # define the loss function
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
