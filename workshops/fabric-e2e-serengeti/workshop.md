@@ -977,7 +977,7 @@ We will have to install the libraries separately. To install torch we run the co
 To install torchvision we run the command below:
 
 ```python
-%pip install torch
+%pip install torchvision
 ```
 
 As our datasets are now as delta files, we load our data and convert it to a Pandas dataframe to easily manipulate and visualize our data with inbuilt Pandas tools starting with the train files:
@@ -1061,6 +1061,7 @@ To train our model, we will be working with Pytorch. To do this, we will need to
 ```python
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
+from torchvision import transforms
 
 import os
 from PIL import Image
@@ -1145,6 +1146,7 @@ After this code is executed, the `model` object will be a pre-trained DenseNet 2
 
 ```python
 import torchvision
+import torch.nn as nn
 
 # load the pre-trained DenseNet 201 model
 model = torchvision.models.densenet201(pretrained=True)
@@ -1159,6 +1161,7 @@ model = model.to(device)
 We use the cross-entropy loss function and the Adam optimizer to train the model. The code is as follows:
 
 ```python
+import torch.optim as optim
 # define the loss function
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
