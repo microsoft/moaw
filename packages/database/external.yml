@@ -318,3 +318,38 @@
   audience: students, pro devs
   level: intermediate
   tags: azure, open AI
+
+- title: Azure Container Apps - Workshop
+  url: https://azure.github.io/aca-dotnet-workshop
+  language: en
+  last_updated: 2023-10-10
+  type: workshop
+  description: A Dotnet Azure Container Apps workshop showcasing how to accelerate developers ability to develop and ship distributed applications.
+  authors:
+    - simonkurtz
+  contacts:
+    - '@simonkurtz' 
+  duration_minutes: 420
+  audience: students, pro devs, architect
+  level: intermediate
+  tags: azure, ACA, Dapr, keda, container, .net, app, container apps, csu
+
+- title: Build an Intelligent App with AI - Workshop
+  url: https://github.com/Azure/intro-to-intelligent-apps/tree/main
+  language: en
+  last_updated: 2023-10-10
+  type: workshop
+  description: This repository introduces and helps organizations get started with building AI Apps and incorporating Large Language Models (LLMs) into them.
+  authors:
+    - Kevin Harris
+    - Dennis Zielke
+    - Mark Whitby
+  contacts:
+    - '@kevinhar'
+    - '@dzielke'
+    - '@mawhitby'
+  duration_minutes: 420
+  audience: students, pro devs, architect
+  level: beginner
+  tags: azure, llm, Large Language Models, Vectorstores, OpenAI, AI, embeddings, Langchain, Semantic Kernel, prompt engineering, csu
+  
