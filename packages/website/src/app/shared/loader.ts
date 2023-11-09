@@ -6,11 +6,12 @@ import { getCurrentRoute, getPathAfterRoute, redirectRoutePath } from '../router
 const cdnUrl = 'https://cdn.jsdelivr.net/npm/';
 const assetsFolder = 'assets/';
 const defaultWtid = 'javascript-76678-cxa';
-const defaultOcid = 'AID3051475';
+const defaultOcid = undefined;
 
 export interface LoaderOptions {
   ocid?: string;
   wtid?: string;
+  vars?: string;
 }
 
 export interface FileContents extends FrontMatterParseResult {
@@ -31,7 +32,8 @@ export async function loadFile(
     throw new Error(error);
   }
 
-  const text = await response.text();
+  let text = await response.text();
+  text = replaceVariables(text, options?.vars);
   let { meta, markdown } = parseFrontMatter(text);
 
   const currentRoute = getCurrentRoute();
@@ -120,4 +122,23 @@ export function injectCode(code: string): void {
 
 export function getRepoPath(source: string): string {
   return source ?? getPathAfterRoute();
+}
+
+export function replaceVariables(text: string, vars?: string) {
+  if (!vars) {
+    return text;
+  }
+  const variables = vars
+    .split(',')
+    .map((variable) => {
+      const [key, value] = variable.trim().split(':');
+      return Boolean(key) ? [key, value] : undefined;
+    })
+    .filter(Boolean) as [string, string][];
+
+  for (const [key, value] of variables) {
+    // Replace $$key$$ with value
+    text = text.replaceAll(new RegExp(`\\$\\$${key}\\$\\$`, 'gm'), value);
+  }
+  return text;
 }
