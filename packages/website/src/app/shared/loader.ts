@@ -131,8 +131,8 @@ export function replaceVariables(text: string, vars?: string) {
   const variables = vars
     .split(',')
     .map((variable) => {
-      const [key, value] = variable.trim().split(':');
-      return Boolean(key) ? [key, value] : undefined;
+      const [key, ...value] = variable.trim().split(':');
+      return Boolean(key) ? [key, value.join(':')] : undefined;
     })
     .filter(Boolean) as [string, string][];
 
