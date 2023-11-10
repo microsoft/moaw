@@ -91,3 +91,7 @@ details {
     display: none;
   }
 }
+
+div[data-visible^="$$"] {
+  display: none;
+}
