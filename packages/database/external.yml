@@ -352,4 +352,23 @@
   audience: students, pro devs, architect
   level: beginner
   tags: azure, llm, Large Language Models, Vectorstores, OpenAI, AI, embeddings, Langchain, Semantic Kernel, prompt engineering, csu
+
+- title: Create your own ChatGPT with Retrieval-Augmented-Generation
+  url: https://microsoft.github.io/moaw/workshop/gh:azure-samples/azure-openai-rag-workshop/main/docs/
+  language: en
+  last_updated: 2023-11-10
+  type: workshop
+  description: Discover how to create and populate a vector database, create a Web chat interface and an API to expose your agent to the Web interface. 
+  authors:
+    - Yohan Lasorsa
+    - Julien Dubois
+    - Christopher Maneu
+  contacts:
+    - '@sinedied'
+    - '@juliendubois'
+    - '@cmaneu'
+  duration_minutes: 120
+  audience: students, devs
+  level: intermediate
+  tags: chatgpt, openai, langchain, retrieval-augmented-generation, azure, containers, docker, static web apps, javascript, typescript, node.js, azure cognitive search, fastify, azure container apps
   
