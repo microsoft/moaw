@@ -6,18 +6,19 @@ short_title: GitHub Copilot, your new AI pair programmer
 description: Discover how to leverage GitHub Copilot to develop your project
 level: beginner
 authors:
-  - Louis-Guillaume MORAND
   - Philippe DIDIERGEORGES
+  - Louis-Guillaume MORAND
 contacts:
-  - '@lgmorand'
   - '@philess'
-duration_minutes: 120
+  - '@lgmorand'
+duration_minutes: 240
 tags: javascript, .net, GitHub, IA, copilot, AI, csu
 banner_url: assets/banner.jpg 
 sections_title:
   - Introduction
   - Github Copilot
   - Github Copilot Chat
+  - Advanced Prompt Engineering
   - Challenge 1 - A NodeJS server
   - Challenge 2 - A .Net Core API
   - Challenge 3 - Infra as Code
@@ -141,6 +142,9 @@ Once you start typing a prompt and copilot generate proposals, you can use the f
 
 ## Code Generation
 
+**What is a prompt?**
+In the context of Copilot, a prompt is a piece of natural language description that is used to generate code suggestions. It's the input that Copilot uses to generate code. It can be a single line or a multiple lines description.
+
 **Generate code from prompt**
 
 - Create a new `album-viewer/utils/validators.ts` file and start with the prompt:
@@ -190,7 +194,9 @@ public IActionResult Get(int id)
 // function that sort albums by name, artist or genre
 ```
 
-## Big Prompts and Short Prompts
+## Big tasks vs small tasks
+
+### Big Prompts and Short Prompts
 
 Copilot will probably will always more effective with prompt to generate small but precisely described pieces of code rather than a whole class with a unique multiple lines prompt.
 
@@ -200,22 +206,63 @@ Copilot will probably will always more effective with prompt to generate small b
 
 </div>
 
-**Big prompts that works**
+**Big prompts that *could* works**
 
 - Back in the `albums-viewer/utils` add a new file `viz.ts` to create a function that generates a graphe. Here is a sample of prompt to do that:
 
 ```ts
 // generate a plot with d3js of the selling price of the album by year
 // x-axis are the month series and y-axis show the numbers of album selled
+// data from the sales of album are loaded in from an external source and are in json format
 ```
->You can try to add details when typing by adding it or following copilot's suggestions and see what happens
+<div class="info" data-title="info">
 
-- Once you achieved to generate the code for the chart you probably see that your IDE warn you about the d3 object that is unknow. For that also Copilot helps.
+>Copilot will probably try to complete the prompt by adding more details. You can try to add more details yourself or follow copilot's suggestions. When you want it to stop and start generating the code just jump on another line and let him work.
+
+</div>
+
+- Once you achieved to generate the code for the chart you probably see that your IDE warn you about the d3 object that is unknown. For that also Copilot helps.
 Return on top of the file and start typing `import d3` to let copilot autocomplete
 
 ```ts
 import d3 from "d3";
 ```
+
+Look at what Copilot has been able to generate. It's possible that the code is working fine and does everything you asked for but also you probably hit the token limit and Copilot was not able to generate the whole code. 
+
+It's because Copilot for autocompletion is not made for creating big pieces of code at once, but is more specialized in generating small pieces step by step. 
+
+**Try again by build it step by step**
+
+Try to generate the code for the plot by cutting it into small pieces following the steps below:
+```ts	
+import * as d3 from 'd3';
+
+// load the data from a json file and create the d3 svg in the then function
+```
+Inside the then function, starts by setting up the basics of the plot
+```ts	
+// create the svg
+```
+
+```ts	
+// create the scales for the x and y axis
+// x-axis are the month series and y-axis show the numbers of album selled
+```
+
+```ts	
+// create axes for the x and y axis
+```
+From there you can just ask to copilot to complete the chart
+```ts	
+// generate a line chart based on the albums sales data
+```
+
+<div class="tip" data-title="tip">
+
+You will **always** get better results by cutting big task into small chunks with copilot autocomplete. It's also a good way to show that copilot is not magic and you have to use it with your other IDE feature and your developer logic.
+
+</div>
 
 ## Code Documentation 
 
@@ -591,6 +638,123 @@ You can also use copilot to help you generate Stubs and Mocks for your tests.
 > Remember that Copilot chat is keeping track of the previous Q & A in the conversation, that's why you can reference the previously generated mock and test easily. 
 
 </div>
+
+---
+
+# Prompt engineering in Copilot Chat
+
+In the previous section you discovered how to use basic prompts to get code from Copilot Chat. In this section you will learn techniques to get more accurate results using prompt engineering techniques.
+
+
+**What is prompt engineering?**
+Prompt engineering is the process of designing high quality prompts to generate high quality code suggestions. There are good practices and tips to write better prompts. Let's see some of them.
+
+
+## Provide examples: one-shot and few-shots programming
+
+Talking about prompt engineering, you can also use the chat to provide examples to Copilot. It's a good way to help Copilot understand what you want to do and generate better code. You can provide examples in the chat by typing with the validator.ts file open:
+
+```bash
+# one-shot programming
+
+Write me unit tests for phone number validators methods using mocha and chai in the current file.
+Use the following examples for positive test (test that should return true): 
+it('should return true if the phone number is a valid international number', () => { expect(validatePhoneNumber('+33606060606')).to.be.true; });
+Organize test in logic suites and generate at least 4 positives tests and 2 negatives tests for each method.
+```
+
+```bash
+# few-shot programming
+
+Write me unit tests for all validators methods using mocha and chai in the current file.
+Use the following examples for positive test (test that should return true): 
+it('should return true if the phone number is a valid international number', () => { expect(validatePhoneNumber('+33606060606')).to.be.true; });
+it('should return true if the phone number is a valid local american number', () => { expect(validatePhoneNumber('202-939-9889')).to.be.true; });
+it('should throw an error if the given phone number is empty', () => { expect(validatePhoneNumber('')).to.throw(); });
+Organize test in logic suites and generate at least 4 positives tests and 2 negatives tests for each method.
+```
+
+You can use this technique to **generate code that keeps the styling code from another file**. For example if you want to create sample records for music style like the Albums in albums-api>Models>Album.cs file, open it and type:
+
+```bash
+Write a MusicStyle record that conatins a List<MusicStyle> with 6 sample values like in the Album.cs file.
+```
+
+
+## Provide external references
+
+The chat copilot can use external references to build more accurate suggestions. For exemple if you want to generate a code that make a request to an API you can provide an example of the API response in the chat or the url to the API reference. Copilot will use it to generate better code.
+
+```bash
+Write a TS function that retreiev all dog breeds from the following API and return an array of Breed objects Request: HTTP GET https://dog.ceo/api/breeds/list/all
+```
+
+Copilot will use the given external reference to generate the code. You will see that he wil generate the Breef interface (or class) with a subBreeds property. It's coming from the API given by the external reference.
+
+```ts
+interface Breed {
+  name: string;
+  subBreeds: string[];
+}
+```
+<div class="tips" data-title="tip">
+
+> You can also provide links to external documentations like SDK, libraries, etc... or event normative documents like RFCs, etc...
+
+</div>
+
+## Role Prompting
+
+Also called foundational prompt, it's a general prompt you're giving to Copilot Chat to personnalise his behavior and setup your flavour of Copilot.
+
+This is probably the first thing to do when you start a new task with Copilot Chat: **provide a clear description of what you want to build and how do you want copilot to help you**. 
+
+<div class="warning" data-title="Important">
+
+> **This is very powerfull when handled properly** so be sure to start every coding sessions with a role prompt and save your best prompt for future use. 
+
+</div>
+
+***Structure of a role prompt***
+
+What can you include in a role prompt:
+- Provide solid context and background information on what you want to build.
+- Define GitHub Copilot’s role and setting expectations about what feedback we are looking for.
+- Be specific in the quality of answers and ask for reference and additional resources to learn more and ensure the answers you receive are correct
+- Resume the task and ask if the instructions are clear
+
+***Example of a role prompt***
+
+Start a new conversation and type the following prompt:
+
+```bash
+I'm working on a new mobile application that is built on React Native. 
+I need to build a new feature that will allow the user to upload a picture of a dog and get the breed of the dog. 
+I will need to use the following set of APIs to work on the breeds: https://dog.ceo/api/breeds. I need to be sure that my code is secured againt at least the OWASP Top 10 treats (https://owasp.org/Top10/). 
+I need to have unit tests for the code and i want my application to be fully accessible and conforms with the WCAG 2.1 level A and AA success criteria defined at https://www.w3.org/TR/WCAG21/.
+I need you to act as my own code coach to ensure that my code fits all these requirements. 
+When possible, please provide links and references for additional learning. 
+Do you understand these instructions? 
+```
+
+From there you can start asking questions and from time to time, ensure Copilot still follows the instructions by asking:
+
+```bash
+Are you still using the instructions I provided?
+``` 
+
+***Test your role prompt***
+
+You can test your role prompt by asking questions about best practices for accessibility on React Native Apps and OWASP Top 10 treats. You can also ask to generate code for the upload feature and check if the generated code is secured and accessible.
+
+Try these questions for example:
+
+```bash
+how can i make my app accessible with react native?
+
+what is the most secure way to upload a photo from my app?
+```
+
 
 ---
 
@@ -982,4 +1146,8 @@ private string connectionString = "";
 
 # Credits
 
-This workshop's challenges are a fork from the original Hackaton [accessible here](https://github.com/microsoft/CopilotHackathon). I just wanted to integrate it into the [MOAW](https://github.com/microsoft/moaw) format and add some exercises. A big thanks to them <3
+This workshop's challenges are a fork from the original Hackaton [accessible here](https://github.com/microsoft/CopilotHackathon). We just wanted to integrate it into the [MOAW](https://github.com/microsoft/moaw) format and add some exercises. 
+
+Role Prompts described in the Prompt engineering section are inspired by this [great blog post](https://github.blog/2023-10-09-prompting-github-copilot-chat-to-become-your-personal-ai-assistant-for-accessibility/) from Github's engineers [Ed Summers](https://github.com/edsummersnc) and [Jesse Dugas](https://github.com/jadugas).
+
+A big thanks to them <3

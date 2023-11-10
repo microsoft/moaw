@@ -1,9 +1,9 @@
 ---
 published: true                        # Optional. Set to true to publish the workshop (default: false)
 type: workshop                          # Required.
-title: Semantic Kernel Workshop         # Required. Full title of the workshop
-short_title: Semantic Kernel Workshop   # Optional. Short title displayed in the header
-description: This is a workshop to discover Semantic Kernel through the usage and the discovery of different topics.  # Required.
+title: Build intelligent apps with Azure OpenAI & Semantic Kernel # Required. Full title of the workshop
+short_title: Build intelligent apps with Azure OpenAI & Semantic Kernel   # Optional. Short title displayed in the header
+description: This is a workshop to discover how to use the power of Azure OpenAI services & Semantic Kernel to build intelligent apps in the form of a series of progressive challenges  # Required.
 level: advanced                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors:                                # Required. You can add as many authors as needed      
   - Philippe Didiergeorges
@@ -39,6 +39,8 @@ sections_title:                         # Optional. Override titles for each sec
 
 # Semantic Kernel Workshop
 
+## Introduction
+
 This is an envisioning workshop, based on Microsoft's Copilot stack [Microsoft's Copilot stack](https://learn.microsoft.com/en-us/semantic-kernel/overview/#semantic-kernel-is-at-the-center-of-the-copilot-stack), to rethink user experience, architecture, and app development by leveraging the intelligence of foundation models. This workshop will use Semantic Kernel (SK), along with SK's Design thinking material, to guide you through the lifecycle of intelligent app development. 
 
 ![Copilot Stack](assets/copilot-stack.png)
@@ -68,6 +70,101 @@ Because of the extensibility Semantic Kernel provides with connectors and plugin
 
 In a nutshell it will allow you to orchestrate AI plugins from any provider.
 
+## Running this workshop as a challenge
+
+Are you running this workshop in the form of a challenge? Either if you're doing it bt teams or individually, here is a proposal for counting points along the way with the challenges.
+
+There is very precise rules for challenges:
+- challenges are composed of different **steps** that weight **1 point** each
+- when **all the steps** of a challenge are completed, **5 more points** will be awarded
+- if you complete the **bonus steps** of the challenges, it will give you **2 extra points** each
+
+But that's not it !
+
+In addition, during the challenges some extra points may be awarded by your beloved coach regarding the **creativity** of you application, its **humor** or **hallucinativity**. Each of those item weighting **2 additional points**. 
+
+<!-- Here is a sample scorecard you can use to track the challenger's progress:
+convert this as html table:
+| Team name | Challenge 1 | Challenge 2 | Challenge 3 | Challenge 4 | Challenge 5 | Total | 
+| --- | --- | --- | --- | --- | --- | --- |
+| Team 1 | 1 | 1 | 1 | 1 | 1 | 5 |
+| Team 2 | 1 | 1 | 1 | 1 | 1 | 5 |
+| Team 3 | 1 | 1 | 1 | 1 | 1 | 5 |
+--->
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">Team name</th>
+      <th colspan="2">Challenge 1</th>
+      <th colspan="2">Challenge 2</th>
+      <th colspan="2">Challenge 3</th>
+      <th colspan="2">Challenge 4</th>
+      <th colspan="2">Challenge 5</th>
+      <th rowspan="2">Coach Bonus</th>
+      <th rowspan="2">Total Score</th>
+    </tr>
+    <tr>
+      <th>score</th>
+      <th>bonus</th>
+      <th>score</th>
+      <th>bonus</th>
+      <th>score</th>
+      <th>bonus</th>
+      <th>score</th>
+      <th>bonus</th>
+      <th>score</th>
+      <th>bonus</th>
+    </tr>  
+  </thead>
+  <tbody>
+    <tr>
+      <td>Team1</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Team2</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>Team3</td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
 ---
 
 # Prerequisites
@@ -84,10 +181,13 @@ Before running the guides in C#, make sure you have the following installed on y
 - `git` or the GitHub app
 - VSCode or Visual Studio
 - An OpenAI key 
+- NodeJS and yarn to run the sample apps of the Semantic Kernel
+
+If you prefer to do the Workshop in C#:
 - .Net 7 SDK - for C# notebook guides
 - In VS Code the Polyglot Notebook - for notebook guides
 
-If you are using Python, you just need git and python. 
+If you are using Python, you just need python. 
 
 ---
 
@@ -150,17 +250,14 @@ You will find a step by step guide on how to train your assistant with your own 
 
 In order to validate the challenge, you should be able to:
 - demonstrate a working conversational agent that can answer questions based on your own data.
+- ***Bonus***: demonstrate a deployed version of your agent (Webapp or Power Virtual Agent)
 
 ---
 
 # Challenge 2: Semantic Kernel Samples
 
 
-We are about to embark on a remarkable journey. However, instead of a DeLorean, our vehicle will be our collective creativity, innovation and the semantic Kernel. Before diving head first into the future let's set some ground rules to score point. Basically, each of the folowing challenges are composed of different step that weight 1 point. Once all the steps of a challenge are completed, an additional 5 points will be awarded. The total score of the challenge will be the sum of the points earned for each step and the bonus points for completing the challenge. 
-
-But that's not it !
-
-In addition, during challenge 3 some extra points may be awarded by your beloved coach regarding the creativity of you application, its humor or hallucinativity. Each of those item weighting 2 additional points. 
+We are about to embark on a remarkable journey. However, instead of a DeLorean, our vehicle will be our collective creativity, innovation and the semantic Kernel. 
 
 As we buckle up and ignite our flux capacitors for this workshop, let's channel the spirit of the future and let's dive into the world of innovation and creativity.
 
@@ -198,11 +295,14 @@ In this sample, you'll find a simple book generator that will generate a book ba
 
 ## Validate the Challenge 
 
-Now that you have an app that can generate book for childrens, try to add a new skill to the book generator that will generate a book cover based on the conversation with the Dall-E service. You can find a sample of a skill that generates a book cover in the **samples/skills** folder.
+In order to validate the challenge, you should be able to:
+- Demonstrate the Sample "Chat summary" running
+- Demonstrate the Sample "Book Generator" running
+- ***Bonus***: Now that you have an app that can generate book for childrens, try to add a call to the Azure OpenAI Dall-E endpoint that will generate a book cover based on the story generated. Try adding this to the react app first, using the ***Javascript Azure OpenAI Client***. You'll be able to integrate it as a Skill later on this workshop. 
 
 <div class="info" data-title="note">
 
-> If you don't have a Dall-E deployment and you're running this Hands-On-Lab in a proctored session, ask to your proctor to provide a Dall-E model for you.
+> If you don't have a Dall-E deployment and you're running this Hands-On-Lab in a proctored session, ask to your proctor to provide a Dall-E endpoint for you.
 
 </div>
 
