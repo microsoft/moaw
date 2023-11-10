@@ -1,27 +1,24 @@
 ---
 published: true
 type: workshop
-title: Product Hands-on Lab - GitHub Copilot, your new AI pair programmer for Java Developer 
+title: Product Hands-on Lab - GitHub Copilot, your new AI pair programmer for Java Developer
 short_title: GitHub Copilot, your new AI pair programmer
 description: Discover how to leverage GitHub Copilot to develop your project
 level: beginner
 authors:
   - Yoshio Terada
 contacts:
-  - '@yoshioterada'
+  - "@yoshioterada"
 duration_minutes: 120
 tags: java, GitHub, copilot, AI, csu
-banner_url: assets/banner.jpg 
+banner_url: assets/banner.jpg
 sections_title:
   - Introduction
   - Install Environment
   - Create a new Sample Spring Boot Application
   - Github Copilot for Java Development
   - Github Copilot Chat for Java Development
-  - Solutions
-  - Credits
 ---
-
 
 # Activate GitHub Copilot to become more efficient
 
@@ -29,31 +26,31 @@ This workshop aims to teach you how to utilize GitHub Copilot with Java through 
 
 GitHub Copilot is a code assistant, powered by artificial intelligence, designed to assist developers in writing superior code more efficiently. It employs machine learning models that have been trained with billions of lines of code, to suggest whole lines or even entire functions, based on the context of your current work. By using GitHub Copilot, you can enhance your coding skills and boost your productivity.
 
-## Who can use the GitHub Copilot 
+## Who can use the GitHub Copilot
 
 GitHub Copilot can be managed through an individual account for personal use, or an Organization account for GitHub Copilot for Business.
 
-GitHub Copilot is free for verified students, teachers, and maintainers of general open-source projects. If you are not a student, teacher, or maintainer of a popular open-source project, you can try GitHub Copilot for free with a one-time 30-day trial. After the free trial, a paid subscription is necessary to continue using it. 
+GitHub Copilot is free for verified students, teachers, and maintainers of general open-source projects. If you are not a student, teacher, or maintainer of a popular open-source project, you can try GitHub Copilot for free with a one-time 30-day trial. After the free trial, a paid subscription is necessary to continue using it.
 
 ## Things you can do with GitHub Copilot:
 
 With GitHub Copilot, you can perform the following tasks:
 
-* `Automatic Code Generation`: Upon entering a part of your code, GitHub Copilot diligently auto-generates the remaining code for you.
-* `Code Correction`: If there are any errors in your code, GitHub Copilot detects them and kindly provides suggested corrections.
-* `Code Prediction`: Even before you input any code, GitHub Copilot anticipates and predicts the code you might enter next.
-* `Code Completion`: While you are entering your code, GitHub Copilot graciously offers code completion.
-* `Automatic Comment Generation`: When you input a comment, GitHub Copilot courteously auto-generates subsequent comments for you.
-* `Create Comment from Code`: Upon entering a comment, GitHub Copilot dutifully generates an explanation of the comments for you.
+- `Automatic Code Generation`: Upon entering a part of your code, GitHub Copilot diligently auto-generates the remaining code for you.
+- `Code Correction`: If there are any errors in your code, GitHub Copilot detects them and kindly provides suggested corrections.
+- `Code Prediction`: Even before you input any code, GitHub Copilot anticipates and predicts the code you might enter next.
+- `Code Completion`: While you are entering your code, GitHub Copilot graciously offers code completion.
+- `Automatic Comment Generation`: When you input a comment, GitHub Copilot courteously auto-generates subsequent comments for you.
+- `Create Comment from Code`: Upon entering a comment, GitHub Copilot dutifully generates an explanation of the comments for you.
 
 ## Things you can do with GitHub Copilot Chat:
 
 With GitHub Copilot Chat, you can perform the following tasks:
 
-* `Creation of Unit Tests`: GitHub Copilot Chat is capable of diligently crafting unit tests for your code.
-* `Explanation of Code`: GitHub Copilot Chat graciously provides descriptions and explanations of your code.
-* `Proposal for Code Correction`: If there are any areas in your code that need improvement, GitHub Copilot Chat kindly suggests appropriate corrections.
-* `Answering Coding-related Questions`: GitHub Copilot Chat is always ready to courteously answer any questions you may have about coding.
+- `Creation of Unit Tests`: GitHub Copilot Chat is capable of diligently crafting unit tests for your code.
+- `Explanation of Code`: GitHub Copilot Chat graciously provides descriptions and explanations of your code.
+- `Proposal for Code Correction`: If there are any areas in your code that need improvement, GitHub Copilot Chat kindly suggests appropriate corrections.
+- `Answering Coding-related Questions`: GitHub Copilot Chat is always ready to courteously answer any questions you may have about coding.
 
 <div class="warning" data-title="warning">
 
@@ -69,14 +66,14 @@ In order to develop Java applications using GitHub Copilot, the following enviro
 
 ## Pre-Requisites Software and Tools
 
-| Component | Download Location |
-|----------------|-----------------|
-| Editor | [Visual Studio Code](https://code.visualstudio.com/download) <br> [IntelliJ IDEA](https://www.jetbrains.com/idea/promo/)|
-| VS Code for Java Extension | [Coding Pack for Java - Windows](https://aka.ms/vscode-java-installer-win) <br> [Coding Pack for Java - macOS](https://aka.ms/vscode-java-installer-mac) |
-| OpenJDK | [Microsoft Build OpenJDK 21](https://learn.microsoft.com/java/openjdk/download#openjdk-21)　<br>  [Microsoft Build OpenJDK 17](https://learn.microsoft.com/java/openjdk/download#openjdk-17) <br> [Microsoft Build OpenJDK 11](https://learn.microsoft.com/ja-jp/java/openjdk/download#openjdk-11)|
-| GitHub account | [Create free GitHub account](https://github.com/join) |
-| GitHub Copilot Access | A 60 day trial can be [requested here](https://github.com/github-copilot/signup) |
-| A browser      | [Download Microsoft Edge](https://www.microsoft.com/edge) |
+| Component                  | Download Location                                                                                                                                                                                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Editor                     | [Visual Studio Code](https://code.visualstudio.com/download) <br> [IntelliJ IDEA](https://www.jetbrains.com/idea/promo/)                                                                                                                                                                          |
+| VS Code for Java Extension | [Coding Pack for Java - Windows](https://aka.ms/vscode-java-installer-win) <br> [Coding Pack for Java - macOS](https://aka.ms/vscode-java-installer-mac)                                                                                                                                          |
+| OpenJDK                    | [Microsoft Build OpenJDK 21](https://learn.microsoft.com/java/openjdk/download#openjdk-21)　<br> [Microsoft Build OpenJDK 17](https://learn.microsoft.com/java/openjdk/download#openjdk-17) <br> [Microsoft Build OpenJDK 11](https://learn.microsoft.com/ja-jp/java/openjdk/download#openjdk-11) |
+| GitHub account             | [Create free GitHub account](https://github.com/join)                                                                                                                                                                                                                                             |
+| GitHub Copilot Access      | A 60 day trial can be [requested here](https://github.com/github-copilot/signup)                                                                                                                                                                                                                  |
+| A browser                  | [Download Microsoft Edge](https://www.microsoft.com/edge)                                                                                                                                                                                                                                         |
 
 <div class="warning" data-title="Important">
 
@@ -90,9 +87,9 @@ In order to develop Java applications using GitHub Copilot, the following enviro
 
 If you installed the Extension Pack for `GitHub Copilot Tools Pack`, you will install the following extensions:
 
-* GitHub Copilot
-* GitHub Copilot Labs
-* GitHub Copilot Chat
+- GitHub Copilot
+- GitHub Copilot Labs
+- GitHub Copilot Chat
 
 ![Install GitHub Copilot Tools Pack Extension 1](assets/github-copilot-toolkit-ext-install-1.png)
 
@@ -105,11 +102,9 @@ If you installed the Extension Pack for `GitHub Copilot Tools Pack`, you will in
 7. Go back to Visual Studio Code and press the `Sign in to GitHub` button to utilize the `GitHub Copilot Lab`.
 8. Since you are already logged into GitHub, select the necessary organization and press the `Continue` button.
 
-
 <video controls playsinline width="100%" autoplay loop muted="true" src="assets/vscode-github-copilot-setup.mp4" type="video/mp4" >
  Sorry, your browser doesn't support embedded videos.
 </video>
-
 
 ## IntelliJ IDEA Setup
 
@@ -134,7 +129,7 @@ To install GitHub Copilot in the IntelliJ IDEA environment, follow the steps bel
 
 # Create a new Sample Spring Boot Application
 
-In this section, you will create a sample Java project to be used for testing GitHub Copilot in the following chapters. 
+In this section, you will create a sample Java project to be used for testing GitHub Copilot in the following chapters.
 If you are using an existing Java project, feel free to skip this chapter and use your own Java project.
 
 ## Create a Spring Boot Application
@@ -150,7 +145,7 @@ If you are using an existing Java project, feel free to skip this chapter and us
            -d groupId=com.microsoft.sample \
            -d artifactId=CopilotSample \
            -o my-project.zip
-> unzip my-project.zip 
+> unzip my-project.zip
 ```
 
 Unzip the file and you will see the following structure:
@@ -207,14 +202,14 @@ When you open the project in VS Code, the screen below will appear. Here, click 
 
 ## Create Hello World REST Controller
 
-Next, You will create a REST Controller. Right-click on the `src/main/java/com/microsoft/sample` folder and select `New File`. 
+Next, You will create a REST Controller. Right-click on the `src/main/java/com/microsoft/sample` folder and select `New File`.
 Then, type `HelloRestController.java` and press the Enter key. The following screen will appear.
 
 ![Create HelloWorld REST Controller](assets/create-helloworld-rest-controller-1.png)
 
-
 ---
 
+# Github Copilot for Java Development
 
 ## 4.1 Check if GitHub Copilot is Activated
 
@@ -222,7 +217,7 @@ The icon for the `GitHub Copilot Status Menu` is displayed at the bottom right o
 
 ![GitHub Copilot Status menu icon](assets/github-copilot-icon.png)
 
-By clicking on this icon, you can check the status of GitHub Copilot. 
+By clicking on this icon, you can check the status of GitHub Copilot.
 If it displays `Status: Ready` as shown below, GitHub Copilot is available for use.
 
 ![GitHub Copilot Enabled confirmation](assets/github-copilot-status.png)
@@ -231,24 +226,24 @@ If it does not display `Ready`, please go back to [Install Environment](/worksho
 
 ## 4.2 Basic Operations of GitHub Copilot
 
-Here is a basic guide on how to use GitHub Copilot. It is not just about turning on the features of GitHub Copilot. 
-By executing the shortcut commands during program implementation, or changing the content of your comments, 
+Here is a basic guide on how to use GitHub Copilot. It is not just about turning on the features of GitHub Copilot.
+By executing the shortcut commands during program implementation, or changing the content of your comments,
 you can alter the code that is suggested. So, please try out these basic operations of GitHub Copilot yourself.
 
 ### 4.2.1 Code Suggestions and Explicit Triggers
 
-Please open the `HelloRestController.java` file that You created in the previous chapter in your editor. 
+Please open the `HelloRestController.java` file that You created in the previous chapter in your editor.
 There, by pressing the Tab key or entering a newline character, GitHub Copilot will start to suggest code for you.
 
 ![First Trigger of GitHub Copilot](assets/github-copilot-first-trigger.png)
 
-Alternatively, you can explicitly trigger it. If code suggestions are not being made, please enter the following shortcut key. 
+Alternatively, you can explicitly trigger it. If code suggestions are not being made, please enter the following shortcut key.
 This will execute the `editor.action.inlineSuggest.trigger` command and display the code that GitHub Copilot recommends.
 
-|OS| Trigger Inline Suggestion|
-|--|--|
-|macOS|`Option (⌥) or Alt + \`|
-|Windows| `Alt + \`|
+| OS      | Trigger Inline Suggestion |
+| ------- | ------------------------- |
+| macOS   | `Option (⌥) or Alt + \`   |
+| Windows | `Alt + \`                 |
 
 <div class="warning" data-title="warning">
 
@@ -260,24 +255,24 @@ This will execute the `editor.action.inlineSuggest.trigger` command and display 
 
 When a code suggestion is displayed, you can confirm it by pressing the `Tab` key.
 
-If you do not want to accept all the suggestions that Copilot displays and only wish to adopt parts of it, 
+If you do not want to accept all the suggestions that Copilot displays and only wish to adopt parts of it,
 you can do so by pressing the `Command(Ctrl) + Right Arrow` key instead of the `Tab` key. This allows you to adopt suggestions word by word.
 
-|OS| Determin the proposal|
-|--|--|
-|macOS|`Command + right arrow`|
-|Windows| `Ctrl + right arrow`|
+| OS      | Determin the proposal   |
+| ------- | ----------------------- |
+| macOS   | `Command + right arrow` |
+| Windows | `Ctrl + right arrow`    |
 
 ### 4.2.3 Displaying Alternate Suggestions (Functionality may slightly vary depending on the environment)
 
-There may be instances where the source code suggestions given by GitHub Copilot do not match the code you want to implement. 
-In such cases, you can also display alternative suggestions for the initial code displayed. 
+There may be instances where the source code suggestions given by GitHub Copilot do not match the code you want to implement.
+In such cases, you can also display alternative suggestions for the initial code displayed.
 To show alternate suggestions, please press the following shortcut key.
 
-|OS| See next suggestion| See previous suggestion|
-|--|--|--|
-|macOS|`Option (⌥) or Alt + ]`|`Option (⌥) or Alt + [`|
-|Windows| `Alt + \`|`Alt + [`|
+| OS      | See next suggestion     | See previous suggestion |
+| ------- | ----------------------- | ----------------------- |
+| macOS   | `Option (⌥) or Alt + ]` | `Option (⌥) or Alt + [` |
+| Windows | `Alt + \`               | `Alt + [`               |
 
 When you press the shortcut key, it will be displayed as follows.
 
@@ -291,9 +286,9 @@ If you press the shortcut key again, a different code will be output from the on
 
 Furthermore, if you are using Visual Studio Code, pressing the following shortcut key will display up to 10 alternative suggestions.
 
-|OS| Next 10 suggestion|
-|--|--|
-|macOS, Windows|`Ctrl + Enter`|
+| OS             | Next 10 suggestion |
+| -------------- | ------------------ |
+| macOS, Windows | `Ctrl + Enter`     |
 
 ![Alternative Code 3](assets/github-copilot-altenative-lists.png)
 
@@ -305,27 +300,26 @@ As shown above, not only by simply turning on the GitHub Copilot feature, but al
 
 You can use GitHub Copilot in various scenarios during the development of Java applications.
 
-* Creating source code
-* Creating Markdown/HTML documents
-* Editing Java property files
+- Creating source code
+- Creating Markdown/HTML documents
+- Editing Java property files
 
 #### Creating source code
 
-As shown in the basic operations above, it provides various hints during the implementation of the source code. 
+As shown in the basic operations above, it provides various hints during the implementation of the source code.
 If you use Visual Studio Code, utilizing GitHub Copilot Chat, as mentioned later, will further enhance your development productivity.
-
 
 #### Creating Markdown/HTML documents
 
-When creating documents to use in your project, you will likely write these documents in Markdown. 
-GitHub Copilot can also be used when creating Markdown documents. 
+When creating documents to use in your project, you will likely write these documents in Markdown.
+GitHub Copilot can also be used when creating Markdown documents.
 Open a Markdown file, click on the GitHub Copilot Status Menu icon, and select `Enable Completion for markdown`.
 
 ![Enable Completion for Markdown](assets/github-copilot-enable-completion-for-markdown.png)
 
-Once enabled, it will provide various hints while you are writing your Markdown document. 
+Once enabled, it will provide various hints while you are writing your Markdown document.
 
-For example, if you input '#', it will prompt you to enter a string following the '#', 
+For example, if you input '#', it will prompt you to enter a string following the '#',
 and it can even predict what to write next based on the context of the content in your document.
 
 ![Enable Completion for Markdown 2](assets/github-copilot-enable-completion-for-markdown-2.png)
@@ -334,8 +328,8 @@ And you will also be able to use it when writing HTML documents.
 
 #### Editing Java property files
 
-Additionally, it can also be used when editing Java property files. 
-Properties are set according to the libraries you use. However, it might be difficult to remember all the properties. 
+Additionally, it can also be used when editing Java property files.
+Properties are set according to the libraries you use. However, it might be difficult to remember all the properties.
 In such cases, when you enter the property keyword, it will display a possible property candidates for you.
 
 ![Enable Completion for Java Properties](assets/github-copilot-for-java-properties.png)
@@ -346,9 +340,9 @@ Let introduce a few specific ways to utilize GitHub Copilot when editing Java so
 
 ### 4.4.1 Creating Sample Dummy Data
 
-When implementing a program, sometimes you may create sample data and test it locally. 
-In such cases, you can easily create sample data. 
-For example, if you want to create sample data for stock tickers symbols, by entering as shown below, 
+When implementing a program, sometimes you may create sample data and test it locally.
+In such cases, you can easily create sample data.
+For example, if you want to create sample data for stock tickers symbols, by entering as shown below,
 it will create a list of sample stock symbols for you.
 
 ```text
@@ -371,8 +365,8 @@ In fact, the list of name of men by GitHub Copilot looks like the following.
 
 ### 4.4.2 Implementing Check Methods and Utility Methods
 
-Furthermore, it can be used in various places during the implementation of a Java program. 
-For example, you might implement check methods or utility methods in Java. 
+Furthermore, it can be used in various places during the implementation of a Java program.
+For example, you might implement check methods or utility methods in Java.
 In such cases, by writing comments, GitHub Copilot will propose the code for you.
 
 #### Checking the Format of Email Addresses
@@ -381,9 +375,9 @@ For instance, when implementing a method to determine whether the format of an e
 
 ```text
 /**
- * Determine whether the string specified as an argument is 
+ * Determine whether the string specified as an argument is
  * in the format of valid email address
- * 
+ *
  * @param email
  * @return true if the string is a valid email address, false otherwise
 */
@@ -395,7 +389,8 @@ The actual outputted code looks like the following
 
 The above regular expression `^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$` is used to validate the format of a typical email address. However, it does not cover some specific cases:
 
-For example, 
+For example,
+
 1. The last part of the domain name (TLD, Top Level Domain) is limited to a range of 2 to 4 characters. However, nowadays there are TLDs with more than 4 characters, such as .info, .museum.
 2. The username part does not allow special characters (for example + or =). However, these characters are allowed in some email systems.
 
@@ -421,7 +416,7 @@ Next, to implement a method for checking leap year determination, write a commen
 ```text
 /**
  * Determine whether the year specified by the argument is a leap year
- * 
+ *
  * @param year
  * @return true if the string is leap year, false otherwise
 */
@@ -431,14 +426,14 @@ When you write a comment, the code will be output as shown below.
 
 ![Java Coding Sample 4](assets/java-implementation-sample4.png)
 
-Of course, with the above code, you can determine a 'leap year', but by using the switch expression added in Java 14, 
+Of course, with the above code, you can determine a 'leap year', but by using the switch expression added in Java 14,
 you can implement it more concisely. To write using the switch expression added in Java 14, modify the comment as shown below.
 
 ```text
 /**
 * Determine whether the year specified by the argument is a leap year
 * The implementation will use the switch expression introduced in Java 14
-* 
+*
 * @param year
 * @return true if the string is leap year, false otherwise
 */
@@ -446,14 +441,12 @@ you can implement it more concisely. To write using the switch expression added 
 
 ![Java Coding Sample 5](assets/java-implementation-sample5.png)
 
-
 <div class="info" data-title="info">
 
-> The code output will be changed depending on the comments you write. In some cases, code using older Java language specifications or old libraries may be used. 
-In such cases, by specifically instructing the code you want to write, it will be output as instructed.
+> The code output will be changed depending on the comments you write. In some cases, code using older Java language specifications or old libraries may be used.
+> In such cases, by specifically instructing the code you want to write, it will be output as instructed.
 
 </div>
-
 
 #### Display files and directories that exist under the directory specified in the argument.
 
@@ -468,27 +461,24 @@ Then, a code like the one below will be suggested.
 
 ![Modernize Java Coding Style 2](assets/modernize-java-code-sample2.png)
 
-The above code will work without any problems, but using Java NIO or Steam API allows for a more concise description. 
-To write according to the new language specification, let's try to modify the comments. 
+The above code will work without any problems, but using Java NIO or Steam API allows for a more concise description.
+To write according to the new language specification, let's try to modify the comments.
 Write a comment as shown below.
 
 ```text
-
-```text
-/** 
- * In accordance with the Java 17 language specifications, 
+/**
+ * In accordance with the Java 17 language specifications,
  * using like NIO.2, Stream API, Files.walk.
- * to recursively show the files and directories 
+ * to recursively show the files and directories
  * that exist under the specified directory.
  *
  * @param directoryName
  */
-```
+````
 
 As a result, a modern code like the one below has been output.
 
 ![Modernize Java Coding Style 1](assets/modernize-java-code-sample1.png)
-
 
 <div class="info" data-title="info">
 
@@ -496,815 +486,373 @@ As a result, a modern code like the one below has been output.
 
 </div>
 
-
 ---
 
 <div class="info" data-title="info">
 
-> GitHub Copilot Chat は現時点で、まだベータ版です。そのため、GitHub Copilot Chat は、IntelliJ IDEA 用のプラグインは提供されていません。ここでは Vusual Studio Code を利用して、GitHub Copilot Chat を利用する方法を説明します。
+> At the moment, GitHub Copilot Chat does not provide a plugin for IntelliJ IDEA. Here, we will explain how to use GitHub Copilot Chat using Visual Studio Code.
 
 </div>
 
-## 5.1 GitHub Copilot Chat について
+## 5.1 About GitHub Copilot Chat
 
-GitHub Copilot Chat は、GitHub Copilot と同じく、AI を利用したコード補完機能を提供します。GitHub Copilot Chat は、コード補完機能だけでなく、コードの説明や、コードの修正提案など、コードに関する質問にも答えてくれ、コードの品質向上のために利用できます。
+Like GitHub Copilot, GitHub Copilot Chat provides code completion functionality using AI. GitHub Copilot Chat not only provides code completion, but also answers questions about code, such as explanations and suggestions for code modifications, and can be used to improve code quality.
 
-##　　5.2 GitHub Copilot Chat の利用方法
+Scenarios where GitHub Copilot Chat can be applied to Java application development include the following.
 
-![](./assets/github-copilot-chat-start1.png=100x20) ![](./assets/github-copilot-chat-start2.png)
+- Code generation
+- Code explanation
+- Code correction
+- Answering coding-related questions
+- Creating unit tests
+- Explaining the error
+- Fixing the error
 
+##　　5.2 How to Use GitHub Copilot Chat
 
+GitHub Copilot can be used in two ways:
 
-## Start playing with GitHub Copilot
+* Using the dedicated GitHub Copilot chat window
+* Using Copilot Chat inline on the editor
 
-Once you start typing a prompt and copilot generate proposals, you can use the following shortcuts to interact with Copilot:
+### 5.2.1 Using the dedicated GitHub Copilot chat window
 
+By clicking on the GitHub Copilot icon in the lower left of VS Code, the GitHub Copilot chat window will be displayed.
 
-## Natural Language Translations
-
-**Automate text translation**
-
-- Open file `album-viewer/lang/translations.json`
-```json
-[
-    {
-        "language": "en",
-        "values": {
-            "main-title": "Welcome to the world of the future",
-            "main-subtitle": "The future is now with copilot",
-            "main-button": "Get started"
-        }
-    }
-]
-```
-
-<br>
-
-## Code Generation
-
-**Generate code from prompt**
-
-- Create a new `album-viewer/utils/validators.ts` file and start with the prompt:
-```ts
-// validate date from text input in french format and convert it to a date object
-```
-
-- Copilot can help you also to write `RegExp patterns`. Try these:
-```ts
-// function that validates the format of a GUID string
-
-// function that validates the format of a IPV6 address string
-```
-
-<br>
-
-**Discover new tool and library on the job with Copilot**
-
-- Still on the same `album-viewer/utils/validators.ts` file add the following prompt:
-```ts
-// validate phone number from text input and extract the country code
-```
-<div class="info" data-title="info">
-
->For this one it will probably give you proposal that call some methods not defined here and needed to be defined. It's a good opportunity to explore the alternatives using the `ctrl+enter` shortcut to display the copilot pane. 
-<br>You can choose one that uses something that looks like coming for an external library and use copilot to import it showing that the tool helps you discover new things.
-
-</div>
-
-**Complex algoritms generation**
-
-- In the `albums-api/Controllers/AlbumController.cs` file try to complete the `GetByID` method by replace the current return:
-
-```cs
-// GET api/<AlbumController>/5
-[HttpGet("{id}")]
-public IActionResult Get(int id)
-{
-    //here
-}
-```
-
-- In the same file you can show other prompts like:
-```cs
-// function that search album by name, artist or genre
-
-// function that sort albums by name, artist or genre
-```
-
-## Big Prompts and Short Prompts
-
-Copilot will probably will always more effective with prompt to generate small but precisely described pieces of code rather than a whole class with a unique multiple lines prompt.
-
-<div class="tip" data-title="tip">
-
-> The best strategy to generate big piece of code, is starting by the basic shell of your code with a simple prompt and then adding small pieces one by one.
-
-</div>
-
-**Big prompts that works**
-
-- Back in the `albums-viewer/utils` add a new file `viz.ts` to create a function that generates a graphe. Here is a sample of prompt to do that:
-
-```ts
-// generate a plot with d3js of the selling price of the album by year
-// x-axis are the month series and y-axis show the numbers of album selled
-```
->You can try to add details when typing by adding it or following copilot's suggestions and see what happens
-
-- Once you achieved to generate the code for the chart you probably see that your IDE warn you about the d3 object that is unknow. For that also Copilot helps.
-Return on top of the file and start typing `import d3` to let copilot autocomplete
-
-```ts
-import d3 from "d3";
-```
-
-## Code Documentation 
-
-Copilot can understand a natural language prompt and generate code and because it's just language to it, it can also `understand code and explain it in natural language` to help you document your code.
-
-### Simple documentation comment
-
-To see that just put you pointer on top of a Class, a method or any line of code and start typing the comment handler for the selected language to trigger copilot. In language like Java, C# or TS for example, just type `// `and let the magic happen.
-
-Here is an example in the `albums-viewer/routes/index.js` file. Insert a line and start typing on line 13 inside the `try block`
-
-```js
-router.get("/", async function (req, res, next) {
-  try {
-    // Invoke the album-api via Dapr
-    const url = `http://127.0.0.1:${DaprHttpPort}/v1.0/invoke/${AlbumService}/method/albums`;
-
-```
-
-Continue to play with it and see what happens on other pieces of code.
-
-### Standardized documentation comment (JavaDoc, JsDoc, etc...)
-
-For this one, to trigger the documentation comment generation, you need to respect the specific comment format:
--  `/**` (for JS/TS) in the `index.js` file for example
-- `///` for C# in the `AlbumController.cs` of the AlbumApi file for example
-
-```cs
-/// <summary>
-/// function that returns a single album by id
-/// </summary>
-/// <param name="id"></param>
-/// <returns></returns>
-[HttpGet("{id}")]
-public IActionResult Get(int id)
-```
-
-
-## Tests
-
-Copilot can help generate all kind of tests that are written with code. It Includes `unit tests, integration tests, end to end tests, and load testing` tests with jmeters scripts for example.
-
-- Add a new file `validators.test.ts` in the `albums-viewer/tests` folder
-
-- To have good test suggestion, you hould provide some basic informations to Copilot such as the test framework you want to use:
-
-```ts
-import { describe }
-```
-
-When you start typing the `describe` function, copilot will see you're in test file in TS and suggest you to import the `describe` and `it` functions from Mochai which is a famous test framework for JS/TS.
-Accept the suggestion and it will automatically suggest also the `expect` function from Chai: accept it also.
-
-```ts
-import {describe, it} from 'mocha';
-import {expect} from 'chai';
-```
-
-You have your test framework in place! Now just import the functions you want to test by starting a new line by `import` keyword copilot will see you are in a test file, to test some `validators` because of the name and it will suggest something like that:
-
-```ts
-import {validateAlbumId} from '../src/validators';
-```
-
-It looks ok but because Copilot doesn't have access to all your code, only the open tab and limited informations, you can see that both the path and the function name are wrong.
-<br>
-... At least he tried ... 
-<br>
-but it's a good way to show that Copilot is not magic and you have to use it with your other IDE feature and your brain :)
-
-- Accept the suggestion and change the path. You will be able to have VS Code to give you the available function with the `ctrl+space` shortcut.
-
-- Add a comment with the first function you want to test and let the magic happen:
-
-
-```ts
-import {describe, it} from 'mocha';
-import {expect} from 'chai';
-
-import {validateDate, validateIPV6} from '../utils/validators';
-
-// test the validataDate function
-```
-Boom!
-```ts	
-describe('validateDate', () => {
-    it('should return a date object when given a valid date string', () => {
-        const date = '01/01/2019';
-        const expectedDate = new Date(2019, 0, 1);
-        expect(validateDate(date)).to.deep.equal(expectedDate);
-    });
-
-    it('should throw an error when given an invalid date string', () => {
-        const date = '01/01/2019';
-        expect(() => validateDate(date)).to.throw();
-    });
-});
-```
-
-*You can add other `it` block to add more test cases and also add the tests for the other functions. For example try add a new `it` block for the validateDate function to test that it throws and error when given en empty string.*
-
-
-## Writing CI pipelines
-
-*Copilot will help you in writing your pipeline definition files to generate the code for the different steps and tasks. Here are some examples of what it can do:*
-- *generate a pipeline definition file `from scratch`*
-- *accelerate the writing of a pipeline definition file by `generating the code` for the different `steps, tasks and pieces of script`*
-- *help `discover marketplace tasks and extensions` that match your need*
-
-### Step 1: generate from scratch
-
-- Create a new file `pipeline.yml` in the `.github/workflow` folder of the project and start typing the following prompt:
-
-```yml
-# Github Action pipeline that runs on push to main branch
-# Docker build and push the album-api image to ACR
-```
-
-*Copilot will generate the pipeline block by block. Generation pipelines Yaml, you will sometimes need to jump to a new line to trigger the generation of the next block more often than with other type of code.*
-
-*It will often generate a task with a few errores coming from bad indentation or missing quote around a task name. You can easily fix these with your IDE and your developer skills :)*
-
-
-### Step 2: add tasks from prompts
-
-- You probably have a github action workflow with at least a "login" task to your container registry and a "docker build and deploy" task. Add a new comment after those tasks to tag the docker image with the github run id and push it to the registry:
-
-```yml
-# tag the image with the github run id and push to docker hub
-```
-
-- you can play with other prompts like:
-```yml
-# run tests on the album-api image
-
-# deploy the album-api image to the dev AKS cluster
-```
-
-### Step 3: add scripts from prompts
-
-- Copilot is also very usefull when you need to write custom script like the following example:
-
-```yml
-# find and replace the %%VERSION%% by the github action run id in every appmanifest.yml file
-```
-
-## Infra As Code
-
-Copilot can also help you write Infrastructure as code. It can generate code for `Terraform, ARM, Bicep, Pulumi, etc...` and also `Kubernetes manifest files`.
-
-### Bicep
-- open the `main.bicep`file in `iac/bicep` folder and start typing prompts at the end of the file to add new resources:
-
-```js
-// Container Registry
-
-// Azure Cognitive Services Custom Vision resource
-```
-
-### Terraform
-- open the `app.tf`file in `iac/terraform` folder and start typing prompts at the end of the file to add new resources:
-
-```yml
-# Container Registry
-
-# Azure Cognitive Services Custom Vision resource
-```
-
-
-## Writing documentation
-
-Copilot can help you in all your documentation tasks. It can generate simple documentation comment or standardized documentation comment like JavaDoc, JsDoc, etc... it can also help you translate your documentation in different languages. Let's see how it works.
-
-### simple documentation comment
-
-To see that just put you pointer on top of a Class, a method or any line of code and start typing the comment handler for the selected language to trigger copilot. In language like Java, C# or TS for example, just type `// `and let the magic happen.
-
-Here is an example in the `albums-viewer/routes/index.js` file. Insert a line and start typing on line 13 inside the `try block`
-
-```js
-router.get("/", async function (req, res, next) {
-  try {
-    // Invoke the album-api via Dapr
-    const url = `http://127.0.0.1:${DaprHttpPort}/v1.0/invoke/${AlbumService}/method/albums`;
-
-```
-
-Continue to play with it and see what happens on other pieces of code.
-
-### standardized documentation comment (JavaDoc, JsDoc, etc...)
-
-For this one, to trigger the documentation comment generation, you need to respect the specific comment format:
--  `/**` (for JS/TS) in the `index.js` file for example
-- `///` for C# in the `AlbumController.cs` of the AlbumApi file for example
-
-```cs
-/// <summary>
-/// function that returns a single album by id
-/// </summary>
-/// <param name="id"></param>
-/// <returns></returns>
-[HttpGet("{id}")]
-public IActionResult Get(int id)
-```
-
-### Writing markdown and html documentation
-
-Copilot is also very powerfull to help you write documentation. It can generate `markdown` and `html` code and accelerate the writing of your readme.md files like for this one for example.
-
-You can show that by creating a new file `demo.md` in the root of the project and start typing the following prompt:
-
-```md
-# Github Copilot documentation
-This documentation is generated with Github Copilot to show what the tool can do.
-
-##
-```
-
-From there by starting a new line with a secondary level title it will start generating the content of the documentation and it will showcase how it will accelerate the documentation writing process.
-
-
-
----
-
-# Use Copilot Chat to improve code quality
-
-GitHub Copilot is a generative AI and thus, perfect to generate code, but it has powerfull analysis capabilities on your code that can be used in several case to improve code quality like: find security issues, bad practices in your code and générate a fix, refactor and add comment to legacy code, generate tests, etc... 
-
-If you already feel confortable with it you can jump to the next section.
-
-## Get ready
-
-To start using Github Copilot Chat, you first need to
-- be enrolled in the public preview:  [Github Copilot Chat Preview](https://github.com/github-copilot/chat_waitlist_signup/join)
-- install the extension in your IDE. For VS Code, you can find it directly by searching for `Github Copilot Chat` in the extensions tab.
-
-### Clone the repository
-
-We will use the same repository as the previous section to show how to use Copilot Chat to improve code quality. If you already have it, you can skip this step.
-
-You need to clone the following GitHub Repository: [Github Copilot Demo](https://github.com/Philess/gh-copilot-demo)
-
-This repository is a code starter that will help you experiment all capabilities with GitHub Copilot. Take the time to look at the architecture design displayed on the page and when you're ready, clone the repository from the command line and open it in VS Code.
-
-``` bash
-git clone https://github.com/Philess/gh-copilot-demo
-cd gh-copilot-demo
-code .
-```
-
-## Start playing with the Chat
-
-Once Copilot Chat is setup, you can start using it:
-- by accessing the **chat view** from the left toolbar of your IDE (chat icon)
-- by pressing `Ctrl` + `Shift` + `i` shortcut for a quick **inline question** to the chat
-
-The first one is a sticky version, very usefull to keep the chat open and ask questions to copilot. 
-The second one is a quick way to ask a question and get an answer and launch commands.
-
-### Chat View
-
-The chat view gives you a full chat experience, integrate as any other tool view in your IDE. Once the view is open you can start chatting with Copilot as your personnal code coach. It keeps the history of the conversation and you can ask question related to the previoius answers. It also provides suggestions for questions along the way. You can:
-- ask general question about coding on any language or best practice
-- ask to generate or fix code related to the current file and inject the code directly in the file
-
-It's a more high level copilot than the vanilla copilot which is specialized on providing code completion.
-
-Try it with a few questions like:
-
-```
-> How to generate a random number in C#?
-> What is the best way to secure a route is ASP.NET Core?
-> What is the easiest way to generate a static website with NodeJS?
-```
-
-Try it then with some of your code files in the repository. Open a file a try asking:
-
-```
-> Can you explain me what this code does?
-> (with only part of the code selected) Can you explain me what the selected code does?
-> Can you generate a function that returns a random number between 1 and 10?
-> Can you add documentation commentes to this function?
-```
-
-Try also using the questions suggestions that appears along the way.
-
-### Inline question
-
-The inline question is a quick way to ask a question to Copilot and get an answer. It's a good way to ask a question about a specific piece of code. It's also a good way to launch commands to Copilot. You can ask it to generate code, fix code, generate tests, etc...
-
-try it by pressing `Ctrl` + `Shift` + `i` and type the same type of commands you tried in the chat view.
-
-### Slash Commands
+#### Slash Commands
 
 To further help Copilot give you more relevant answers, you can choose a topic for your questions through "slash commands."
 
 You can prepend your chat inputs with a specific topic name to help Copilot give you a more relevant response. When you start typing /, you’ll see the list of possible topics:
+
+- **/api**: Ask about VS Code extension development.
 - **/explain**: Explain step-by-step how the selected code works.
 - **/fix**: Propose a fix for the bugs in the selected code.
-- **/help**: Prints general help about GitHub Copilot.
+- **/new**: Scaffold code for a new workspace.　(ex. /new spring boot)
+- **/newNotebook**: Create a new Jupyter Notebook. (Not available for Java)
+- **/terminal**: Ask how to do somethings in the terminal.
 - **/tests**: Generate unit tests for the selected code.
 - **/vscode**: Questions about VS Code commands and settings.
+- **/help**: Prints general help about GitHub Copilot.
 - **/clear**: Clear the session.
 
+#### Chat View
 
-## Secure your code
+The chat view gives you a full chat experience, integrate as any other tool view in your IDE. Once the view is open you can start chatting with Copilot as your personnal code coach. It keeps the history of the conversation and you can ask question related to the previoius answers. It also provides suggestions for questions along the way. You can:
 
-Copilot can help you find security issues in your code and fix them. It can also help you find bad practices in your code and fix them. Let's see how it works.
+ask general question about coding on any language or best practice
+ask to generate or fix code related to the current file and inject the code directly in the file
 
-Open the `album-api/Controllers/UnsecuredController.cs` file and type questions like these to the chat:
+![GitHub Copilot Chat Windows](./assets/github-copilot-chat-start1.png)
 
+### 5.2.2 Using GitHub Copilot Chat Inline on the Editor
+
+By entering `Command + i` (or `Ctrl + Shift + i`) on the editor, a window that accepts inline commands for Copilot Chat will be displayed within the editor.
+
+In inline mode, you can do the following:
+
+- Code explanation: You can request an explanation for a block of code. This helps you understand what the code is doing and how it works.
+- Generate test code: You can generate unit tests for the selected code. This helps confirm that the code is working as expected.
+- Code modification request: If there is a problem with the selected code, you can request a modification.
+- Generate new code: You can generate code for new features, classes, functions, etc.
+
+These requests are based on the selected code or the position of the cursor. Also, these requests can be made by starting an inline chat session
+
+![GitHub Copilot Inline windows1](./assets/github-copilot-chat-start2.png)
+
+Also, entering `/` will display the commands that can be executed in GitHub Copilot Chat.
+
+![GitHub Copilot Inline windows2](./assets/github-copilot-chat-start3.png)
+
+### 5.2.3 GitHub Copilot Chat in Enterprise Usage
+
+If you set up a Copilot Business subscription for your organization, you can configure GitHub Copilot settings in your organization.
+
+For example, if you are implementing code in a corporate environment, you may not want to use code that is publicly available due to the rules of the enterprise environment or the licensing of the code.
+In such cases, you can configure GitHub Copilot Chat not to use publicly published code.
+
+In order to configure this, you need to set up a [Settings Copilot](https://github.com/settings/copilot) for your organization as follows.
+
+![GitHub Copilot Rejected Prompt](./assets/GitHub-Copilot-Chat-Blocked-Public.png)
+
+Once the above settings are made, GitHub Copilot Chat will not use public code. If, after entering a prompt, GitHub Copilot Chat tries to use public code, it will display the following message and stop processing.
+
+![GitHub Copilot Rejected Prompt](./assets/GitHub-Copilot-Chat-rejected-prompt.png)
+
+## 5.3 Code generation
+
+GitHub Copilot Chat can generate code for you.
+
+### 5.3.1 Create CRUD Operation for Spring Boot Application
+
+When creating a web application, you may need to create an application that performs CRUD operations. In that case, you have to implement the web frontend, backend processing, and configure property files. In such cases, if you enter a comment like the one below to GitHub Copilot Chat, it will suggest an implementation for an application that performs CRUD operations.
+
+```text
+> Create a sample application that performs CRUD operations to manage
+  people (name, id, e-mail, address) in Spring Boot.
+  The data should be persisted to the DB, and the database operations
+  should be implemented in Spring Data JPA.
+  The front should be implemented in Tymeleaf.
+  Please show all implementation of classes and methods and
+  application property configuration file.
 ```
-> Can you check this code for security issues?
+Then, the code suggested by GitHub Copilot will be displayed as shown below.
+
+<video controls playsinline width="100%" autoplay loop muted="true" src="assets/github-copilot-code-generation.mp4" type="video/mp4" >
+ Sorry, your browser doesn't support embedded videos.
+</video>
+
+### 5.3.2 Create a new Server-Sent Events endpoint with Spring Boot
+
+While implementing, you may sometimes forget how to implement the method by Java. In such cases, you can ask to generate code by specifically indicating the implementation method using a particular technology. For example, if you forget how to implement using Server-Sent Events in Spring Boot, you enter a comment like the one below in GitHub Copilot Chat.
+
+
+```text
+> Create sample code that periodically sends back data in a Server-Sent Events
+to a user who connects to the Spring Boot REST endpoint.
+```
+
+If you write a comment like this, the following explanations and code will be generated.
+aaaaa
+![GitHub Copilot Saple 1](./assets/GitHub-Copilot-chat-sample1.png)
+
+And it also show the sample Java code like the following.
+
+![GitHub Copilot Saple 2](./assets/GitHub-Copilot-chat-sample2.png)
+
+## 5.4 Code explanation
+
+Next, in order to comprehend the contents of the Java source code that is currently open in VS Code, You can get an explanation of the source code.  
+In GitHub Copilot Chat, commands for elucidating source code have been prearranged. Therefore, you can exhibit the explanations by utilizing this commands.  
+Initially, please input `/` in the console of GitHub Copilot Chat. Subsequently, the commands that are viable in GitHub Copilot Chat will appear as depicted below.
+
+![GitHub Copilot Chat Explain 1](./assets/GitHub-Copilot-Chat-Code-Explain-1.png)
+
+At this point, please select `/explain`. It will appear as shown below. Please proceed by pressing the enter key in this status.
+
+![GitHub Copilot Chat Explain 2](./assets/GitHub-Copilot-Chat-Code-Explain-2.png)
+
+For example, select the following Java source code and execute the command.
+
+![GitHub Copilot Chat Explain 2](./assets/GitHub-Copilot-Chat-explanation-code.png)
+
+Subsequently, it will be presented an explanation of the Java source code, as depicted below.
+
+![GitHub Copilot Chat Explain 3](./assets/GitHub-Copilot-Chat-Code-Explain-3.png)
+
+### 5.5 Code correction
+
+GitHub Copilot can be used for code modification. For example, in a Java application that was implemented in the past, if there is code that was implemented with an old language specification version, you can modify that code to match the latest language specifications.
+
+![GitHub Copilot Chat Modify the Code 1](./assets/GitHub-Copilot-Chat-modify-the-code-1.png)
+
+For example, you enter content like the following into the GitHub Copilot Chat prompt.
+
+```test
+> Follow the latest Java 17 language specification and modify your code
+to use NIO.2 or the Stream API. Use var to define variables
+```
+
+Then, it will suggest Java code that conforms to the latest language specifications.
+
+![GitHub Copilot Chat Modify the Code 2](./assets/GitHub-Copilot-Chat-modify-the-code-2.png)
+
+
+When you move the mouse cursor　to the top of the window with the suggested code, a menu like the one below will appear.
+
+![GitHub Copilot Chat Modify the Code 3](./assets/GitHub-Copilot-Chat-modify-the-code-3.png)
+
+You can perform the following actions:
+
+- `Copy` : Copy the code to the clipboard
+- `Insert at Cursor [^Enter]` : Insert the code at the cursor position
+- `Insert into New File` : Insert the code into a new file
+- `Run in Terminal` :  Execute the code (This function cannot be used in Java as you cannot directly execute the code)
+
+By performing the above `Copy` and Paste or `Insert at Cursor [^Enter]`, you can modify the old Java code to be compliant with the latest language specifications.
+
+## 5.6 Answering coding-related questions
+
+Using GitHub Copilot Chat, you can get answers to questions about Java implementation.
+
+- Questions about the language specifications of the programming language
+- Questions about the Java runtime environment
+- Questions about library migration
+- Questions about how to use a specific library
+
+### 5.6.1 Questions about the language specifications of the programming language
+
+When you are programming in Java, there may be times when you want to know more about the language specifications of Java. In such cases, you can ask various questions to GitHub Copilot Chat.
+
+For example, if you want to know about the language specifications of Java 17, you can ask as follows:
+
+If you want to know about the language specifications added from Java 11 to Java 17, you can ask as follows.
+
+```text
+> What language specifications have been added from
+Java 11 to Java 17? In particular,
+please tell us in detail about the new writing style
+with sample code.
+```
+
+### 5.6.2 Questions about the Java runtime environment
+
+There may be times when you want to understand points of caution in development environments, runtime environments, and production environments. 
+In such cases, you can also ask questions about points that should be noted.
+
+```text
+> Please tell me about the differences in Java VM startup options and VM behavior between Java 11 and 17.
+```
+
+### 5.6.3 Questions about library migration
+
+Application development is not only about new development, but also about modernizing source code and migrating from other old frameworks. In such cases, you can inquire about points to note in modernization and specific procedures for migration.
+
+```text
+> What should I keep in mind when migrating from a 2.7.x
+project to 3.1.5 with Spring Boot?
+```
+
+###　5.6.4 Questions about how to use a specific library
+
+Also, when using a specific library for the first time, you may want to know how to use that library. In such cases, you can ask about how to use the library.
+
+```text
+> Please explain the implementation code for asynchronous
+processing using Mono and Flux of Project Reactor
+in an easy-to-understand manner with sample code.
+```
+
+### 5.6.5 Points to Note about GitHub Copilot Chat Questions and Answers 
+
+One thing to note when using GitHub Copilot Chat is that not all inquiries will return the correct answer. For example, in the author's environment, the following inquiry did not return the correct answer.
+
+```text
+> Please explain the details of JEP 450
+```
+
+As a result of the inquiry, the following result was returned.
+
+![GitHub Copilot Chat Mistake 1](./assets/GitHub-Copilot-Chat-ask-mistake-1.png)
+
+However, the actual JEP 450 is [JEP 450: Compact Object Headers (Experimental)](https://openjdk.org/jeps/450), and it is not a JEP related to Unicode 14 as mentioned above.
+
+![GitHub Copilot Chat Mistake 2](./assets/GitHub-Copilot-Chat-ask-mistake-2.png)
+
+The proposed contents by GitHub Copilot Chat is not always correct. Please understand the proposed contents make corrections as necessary.
+
+### 5.6.6 Other Inquiry Examples
+
+In Java development, you can make various inquiries to GitHub Copilot Chat. Here are some examples of inquiries, so please give them a try.
+
+```text
+> Please tell me more about 
+  JEP 394: Pattern Matching for instanceof, 
+  including detailed sample code.
+
+> What does Erasure mean in Java Generics? Please explain in detail.
+
+> Please tell me the most recommended way to concatenate strings 
+  in Java 17. Also, please explain the differences between 
+  StringBuffer, StringBuilder, and + in an easy-to-understand manner.
+
+> Please tell me 10 recommended Extensions that are useful 
+  when developing Java applications in VS Code.
+
+> Please tell me about the differences in Java VM startup options 
+  and VM behavior between Java 11 and 17.
+
+> Please tell me how to enable remote debugging for Java 
+  in a container environment.
+
+> Please explain in detail how to create a custom JRE 
+  using the jdeps and jlink commands.
+
+> Please tell me 10 items to check before running a Java application 
+  in a production environment.
+
+> What should I keep in mind when migrating from a 2.7.x project to 
+  3.1.5 with Spring Boot?
+
+> I have an Java Web Application implemented with the Facade pattern 
+  in Struts 1.x. Please tell me the specific procedures and 
+  configuration methods to migrate this to Spring Boot 3.1.x, 
+  including sample code.
+
+> Please tell me the points to be aware of when migrating a 
+  Spring Boot application to a Quarkus application, 
+  and the specific migration method.
+
+> Please explain the implementation code for asynchronous
+  processing using Mono and Flux of Project Reactor
+  in an easy-to-understand manner with sample code.
+```
+
+## 5.7 Creating unit tests
+
+GitHub Copilot Chat can also generate unit tests for you.
+
+### 5.7.1 Create a unit test for Spring Boot application
+
+When implementing a Spring Boot application, you may want to create a unit test for the application.
+
+In such cases, you can select the class or method you want to test and ask GitHub Copilot Chat to create a unit test for you.
+
+For example, if you want to create a unit test for `ProductController` class, you can select the code and ask GitHub Copilot Chat to create a unit test for you.
+
+![GitHub Copilot Chat Generate Test Res 1](./assets/GitHub-Copilot-Chat-Test-Generate-Res-1.png)
+
+After selected the code, please ask GitHub Copilot Chat with type `/tests` and `Enter`.
+
+![GitHub Copilot Chat Generate Test 1](./assets/GitHub-Copilot-Chat-Generate-Test1.png)
+
+Then, an explanation like the one below and the Unit Test code will be generated.
+
+![GitHub Copilot Chat Generate Test Res 4](./assets/GitHub-Copilot-Chat-Test-Generate-Res-4.png)
+![GitHub Copilot Chat Generate Test Res 3](./assets/GitHub-Copilot-Chat-Test-Generate-Res-3.png)
+![GitHub Copilot Chat Generate Test Res 2](./assets/GitHub-Copilot-Chat-Test-Generate-Res-2.png)
+
+## 5.8 Explaining error and Fix the error
+
+In Java application development, there may be times when errors occur at compile time or runtime. In such cases, you can ask GitHub Copilot Chat about the content of the error, and it will explain the error to you.
+
+For example, when running a Java application, an exception may occur, and at first glance, the content of the error may be hard to understand. However, by asking GitHub Copilot Chat about the error, it will explain the content of the error to you.
+
+```text
+> When running the application, the following exception was output. 
+  What does the following mean?
+
+### Exception
+Copy & Paste the Java Stack Trace
+###
+```
+
+Furthermore, you can even inquire about how to deal with the problem that occurred.
+
+```text
+> How can I solve the above issues?
+
+> Can you propose a fix?
+
+> To solve the issue, please let me know 
+  how to implement *** with sample code.
+```
+
+When you inquire about an actual exception that occurred and ask for how to deal with it, you will receive an answer as shown below.
+
+<video controls playsinline width="100%" autoplay loop muted="true" src="assets/GitHub-Copilot-Chat-fix-error.mp4" type="video/mp4" >
+ Sorry, your browser doesn't support embedded videos.
+</video>
+
+In addition to using it to solve actual problems as shown above, you can also use it to find potential bugs or improve the quality of your code by asking about the following contents.
+
+```text
+> Can you check this code for potential bugs or security issues?
+
 > Do you see any quality improvement to do on this code?
 ```
 
-Once you have the answer, you can ask to fix the issues by typing:
+## 5.9 Finally
 
-```
-> Can you propose a fix?
-```
+GitHub Copilot Chat is a tool that can be used in various ways in Java application development. By using GitHub Copilot Chat, you can improve your productivity and code quality. Please try it out.
 
-When you have the fix in the code you choose to **copy it or inject it directy in the file** by hovering the code block in the chat and selecting the right option on the top left.
-
-
-## Code Explanation and documentation
-
-You can use Copilot Chat to explain code to you. It can `explain you the code in natural language or generate documentation comments for you`. Let's try that with the following commands:
-
-```
-> /explain
-> Generate documentation comments for this code
-```
-
-
-## Code Refactoring
-
-More impressive, Copilot chat can help you refactor your code. It can help you `rename variables, extract methods, extract classes, etc...`. 
-
-You can try some of these commands on the `album-api/Controllers/UnsecuredController.cs` file:
-
-```
-> extract methods
-> create Async version of each methods when it makes sense
-```
-
-## Code Translation
-
-*Copilot can understand and generate natural languages and code language in both way so by combining everything you can use it to `translate code pieces from a language to another one`*
-
-To translate a piece of code in a specific language, open it and ask to the chat to translate it to another language. For example open the `validators.ts` file created in the first section dedicated to Copilot autocompletion and ask to translate it to C for example.
-
-In case of dealing with Legacy code like COBOL for example it can be very useful. Open the `legacy/albums.cbl` file and try translating the code to Python.
-
-## Tests generation
-
-Copilot can also help you generate tests for your code. It can generate `unit tests, integration tests, end to end tests, and load testing` tests with jmeters scripts for example. 
-
-Open the `album-api/Controllers/UnsecuredController.cs` file and type questions like these to the chat:
-
-```
-> Generate a unit tests class for this code
-```
-
-You can also use copilot to help you generate Stubs and Mocks for your tests.
-```
-> Generate a mock for FileStream class
-> Use that mock in the unit tests
-```
-
-<div class="info" data-title="note">
-
-> Remember that Copilot chat is keeping track of the previous Q & A in the conversation, that's why you can reference the previously generated mock and test easily. 
-
-</div>
-
----
-
-# Develop a NodeJS server
-
-In this first exercise, you are going to develop a real project following functional requirements. You can do it by yourself or...with the help of GitHub Copilot.
-
-## Instructions
-
-- Download to local the [exercicefile](assets/src/exercisefiles.zip) folder
-- Open `NodeServer.js` and begin by writing a Nodejs server, check the first suggestions based on the initial text
-- Open `test.js` file and analyze the current test
-- Open a command prompt and run the test (`mocha test.js`)
-- See the result, it should display something like:
-
-``` bash
-mocha test.js
-server is listening on port 3000
-
-  Node Server
-    
-    √ should return "key not passed" if key is not passed
-
-  1 passing (34ms)
-
-```
-
-- In the `NodeServer.js` develop the rest of the methods described in the Exercise described in the section below
-  
-> Do not forget to open `color.json` file in Visual Studio Code, so GitHub Copilot get all the context to make better recommendations
-
-- In the Test.js file add the methods to test the functionality
-- Run the tests to verify that all is working
-- Open the `dockerfile` file, and fill it, to create a docker container with a node image that can run the web server
-- Create a command to run docker in port 4000
-- Test that the application is working in port 4000
-- In the **nodeserver.js** file, you can type a new line like `//run a curl command to test the server` so we can see how GitHub Copilot based on the current file produces a curl command, to be executed in the command line.
-- Note: you can be more specific like `//run a curl command to test the daysBetweenDates` method. It should generate a test for a specific method
-
-## Exercise
-
-You must now develop and add new features to your server. The requests that the server must attend are the following:
-
-<div class="tip" data-title="tip">
-
-> As you type GitHub Copilot will make suggestions, you can accept them by pressing Tab. If nothing shows up after GitHub Copilot write some lines, press enter and wait a couple of seconds. On Windows or Linux, press Ctrl + Enter, then click Open GitHub Copilot.
-
-</div>
-
-<div class="info" data-title="note">
-
-> There are a lot of code to write but you may be surprised by the time it will take to you to complete it. You can also only write 7 or 8 of them if you want, the exercise is not meant to be boring.
-
-</div>
-
-| Method | Requirements|
-|---|---|
-|**/Get**|Return a hello world message|
-|**/DaysBetweenDates**|Calculate days between two dates. <br/>Receive by query string 2 parameters date1 and date 2 , and calcualte the days that are between those two dates.|
-|**/Validatephonenumber**|Receive by querystring a parameter called `phoneNumber`. <br/>Validate `phoneNumber` with Spanish format, for example +34666777888<br/>if `phoneNumber` is valid return "valid"<br/>if `phoneNumber` is not valid return "invalid"|
-|**/ValidateSpanishDNI**|Receive by querystring a parameter called `dni`. calculate DNI letter<br/>if DNI is valid return "valid"<br/>if DNI is not valid return "invalid"<br/>We will create automated tests to check that the functionality is correctly implemented.<br/>When the development is completed, we will build a container using Docker|
-|**/ReturnColorCode**|Receive by querystring a parameter called `color`<br/>read `colors.json` file and return the `rgba` field<br/>get color var from querystring<br/>iterate for each color in colors.json to find the color<br/>return the code.hex field|
-|**/TellMeAJoke**|Make a call to the joke api and return a random joke using axios|
-|**/MoviesByDirector**|(this will require to browse to [https://www.omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx) and request a FREE API Key)<br/>Receive by querystring a parameter called director<br/>Make a call to the movie api and return a list of movies of that director using axios<br/>Return the full list of movies|
-|**/ParseUrl**|Retrieves a parameter from querystring called someurl<br/>Parse the url and return the protocol, host, port, path, querystring and hash<br/>Return the parsed host|
-|**/ListFiles**|Get the current directory<br/>Get the list of files in the current directory<br/>Return the list of files|
-|**/GetFullTextFile**|Read `sample.txt` and return lines that contains the word "Fusce". (becareful with this implementation, since this normally reads the full content of the file before analizing it, so memory usage is high and may fail when files are too big)|
-|**/GetLineByLinefromtTextFile**|Read `sample.txt` line by line<br/>Create a promise to read the file line by line, and return a list of lines that contains the word "Fusce"<br/>Return the list of lines|
-|**/CalculateMemoryConsumption**|Return the memory consumption of the process in GB, rounded to 2 decimals|
-|**/MakeZipFile**|Using zlib create a zip file called `sample.gz` that contains `sample.txt`|
-|**/RandomEuropeanCountry**|Make an array of european countries and its ISO codes<br/>Return a random country from the array<br/>Return the country and its ISO code|
-
-## GitHub Copilot Labs exercises
-
-These tasks can be performed with the [GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs) add-in, currently PREVIEW functionality, expect some bugs or weird behavior (you've been warned <:o)).
-
-Open the GitHub Copilot Labs extension to see all the available functionality.
-
-![GitHub Copilot Labs extension](assets/github-copilot-labs.png)
-
-- **Explain**
-
-Select the line that has the regex in the validatePhoneNumber method, in EXPLAIN section click "Ask Copilot". You will see an explanation detailing what each different notation does in the regular expression.
-
-- **Language translation**
-
-Select some source code, like this line:
-
-``` js
-var randomCountry = countries[Math.floor(Math.random() * countries.length)];
-```
-
-In "**LANGUAGE TRANSLATION**" section select **python** and click "Ask Copilot" button, you should see new code generated in **python**
-
-- **Readable**
-
-Select the content of MakeZipFile
-
-In the BRUSHES section, click the "Readable" button. See how comments are added and also variables that have short names are renamed to more understandable names.
-
--- **Fix Bug**
-
-In the exercise, there should be no bugs, since most of the code will be done by GitHub Copilot. We can force some errors and then test the debug functionality.
-
-Force some errors like:
-
-In a for loop change the beginning to (change the 0 for a 1):
-
-``` js
-    for (var i = 1
-```
-
-select the text and in the "BRUSHES" section press the "Fix Bug" button.
-
--- **Debug**
-
-Select some lines of text that contain variables, like:
-
-``` js
-    var queryData = url.parse(req.url, true).query;
-    var color = queryData.color;
-    var colorFound = "not found";
-```
-
-select the text and in the "BRUSHES" section press the "Debug" button.
-
--- **Clean**
-
-TBD
-
--- **List steps**
-
-Select some lines of code that do not have comments and in the  "BRUSHES" section press the "List steps" button.
-
--- **Make robust**
-
-Select some text that comes from input, for example, variables that come from query string:
-
-``` js
-        var queryData = url.parse(req.url, true).query;
-        var date1 = queryData.date1;
-        var date2 = queryData.date2;
-```
-
-In the "BRUSHES" section press the "Make robust" button and you will see that additional validation is added.
-
--- **Document**
-
-Select some line (e.g. a method or the beginning of the if clause)
-
-``` js
-    else if (req.url.startsWith('/GetFullTextFile')) 
-```
-
-In the  "BRUSHES" section press the "Document" button, you will see that comments explaining what the code does are added before the line.
-
----
-
-# Infrastructure as Code
-
-Generating code from a programming language is one thing, but can GitHub Copilot help to generate configurations such as Terraform, Bicep, etc?
-
-For this exercise, you want to deploy your previously developed Web application and want to host it on Azure. Here are the requirements:
-
-- The application will be hosted on an Azure Web App name `my-webapp`
-- The App Service Plan (CPU & Memory) is named `my-plan` and is using the SKU (size) `B1`
-- The Web app is hosted in West Europe in a resource group name `oh-yeah`
-
-<div class="tip" data-title="tip">
-
-> There are several ways of using GitHub Copilot for that. For instance, you can write several consecutive lines of comments before letting GitHub Copilot giving recommandations. Furthermore, is the result is not conclusive, you can open a side panel to generate 10 alternatives suggestions. To do so, click `ctrl` + `Enter`
-
-</div>
-
-
----
-
-# Solutions
-
-Here you can find the solution to the different exercises.
-
-## Coding
-
-The solution of the coding exercise can be [downloaded here](assets/src/completesolution.zip)
-
-## Infra As Code
-
-This part is the easiest one but GitHub Copilot can randomly generate bad or commented code.
-
-``` bicep
-param webAppName string = 'my-webapp'
-param webAppPlanName string = 'my-plan'
-param webAppPlanSku string = 'B1'
-param webAppPlanLocation string = 'westeurope'
-param resourceGroupName string = 'oh-yeah'
-
-resource appServicePlan 'Microsoft.Web/serverfarms@2021-02-01' = {
-  name: webAppPlanName
-  location: webAppPlanLocation
-  kind: 'app'
-  sku: {
-    name: webAppPlanSku
-    tier: 'Basic'
-    size: 'B1'
-  }
-}
-
-resource webApp 'Microsoft.Web/sites@2021-02-01' = {
-  name: webAppName
-  location: webAppPlanLocation
-  kind: 'app'
-  properties: {
-    serverFarmId: appServicePlan.id
-  }
-}
-
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: resourceGroupName
-  location: webAppPlanLocation
-}
-```
-
-## DevSecOps
-
-GitHub Copilot may not be able to fix and refactor all the code by himself (for instance using the `fix bug` prompt) but it is pretty good to recognize code smells and bad practices if you ask him through the chat.
-
-Several security flaws are present in this short piece of code. You should have at least found 4 major bad practices:
-
-This code seems innocent but it could allow [Path injection](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca3003). It means someone can try to access another file on the disk.
-
-``` csharp
-using (FileStream fs = File.Open(userInput, FileMode.Open))
-    {
-        //         If possible, limit file paths based on user input to an explicitly known safe list. For example, if your application only needs to access "red.txt", "green.txt", or "blue.txt", only allow those values.
-        // Check for untrusted filenames and validate that the name is well formed.
-        // Use full path names when specifying paths.
-        // Avoid potentially dangerous constructs such as path environment variables.
-        // Only accept long filenames and validate long name if user submits short names.
-        // Restrict end user input to valid characters.
-        // Reject names where MAX_PATH length is exceeded.
-        // Handle filenames literally, without interpretation.
-        // Determine if the filename represents a file or a device.
-
-        byte[] b = new byte[1024];
-        UTF8Encoding temp = new UTF8Encoding(true);
-
-        while (fs.Read(b, 0, b.Length) > 0)
-        {
-            return temp.GetString(b);
-        }
-    }
-
-    return null;
-}
-```
-
-This one is a famous example of [SQL Injection](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca3001). The best thing to do is to use a parameter that will handle any attempt of escape code or wrong parameter boxing (type).
-
-``` csharp
-public int GetProduct(string productName)
-{
-    using (SqlConnection connection = new SqlConnection(connectionString))
-    {
-        SqlCommand sqlCommand = new SqlCommand()
-        {
-            CommandText = "SELECT ProductId FROM Products WHERE ProductName = '" + productName + "'",
-            CommandType = CommandType.Text,
-        };
-
-        // The secure way
-        // SqlCommand sqlCommand = new SqlCommand()
-        // {
-        //     CommandText = "SELECT ProductId FROM Products WHERE ProductName = @productName",
-        //     CommandType = CommandType.Text,
-        // };
-        // sqlCommand.Parameters.AddWithValue("@productName", productName);
-
-        SqlDataReader reader = sqlCommand.ExecuteReader();
-        return reader.GetInt32(0); 
-    }
-
-}
-```
-
-A general good practice is to never display ([Disclosing information](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca3004)) any technical error to the end-user. It can show the used technology, the version of a plugin or even the stack trace which are additional information an attacker could use against your application.
-
-``` csharp
-public void GetObject()
-{
-    try
-    {
-        object o = null;
-        o.ToString();
-    }
-    catch (Exception e)
-    {
-        this.Response.Write(e.ToString());
-        // better to do
-        // myLogger.Log(e.ToString()); // or any way to log the exception information
-        // this.Response.Write("An exception has occured"); // return a generic message
-    }
-
-}
-```
-
-This one is tricky and simple at the same time. The connectionString may contain credentials and must NEVER be hard coded. You can't change it easily but more important, anyone accessing the source code can get access to the secret.
-
-``` csharp
-private string connectionString = "";
-```
-
----
-
-# Credits
-
-This workshop's challenges are a fork from the original Hackaton [accessible here](https://github.com/microsoft/CopilotHackathon). I just wanted to integrate it into the [MOAW](https://github.com/microsoft/moaw) format and add some exercises. A big thanks to them <3
