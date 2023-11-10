@@ -619,7 +619,7 @@ For example, enter content like the following into the GitHub Copilot Chat promp
 
 ```test
 > Follow the latest Java 17 language specification and modify your code  
-to use NIO.2 or the Stream API. Use var to define variables  
+  to use NIO.2 or the Stream API. Use var to define variables  
 ```
 
 Then, it will suggest Java code that conforms to the latest language specifications.
@@ -658,9 +658,9 @@ If you want to know about the language specifications added from Java 11 to Java
 
 ```text
 > What language specifications have been added from  
-Java 11 to Java 17? In particular,  
-please provide detailed information about the new writing style  
-with sample code.  
+  Java 11 to Java 17? In particular,  
+  please provide detailed information about the new writing style  
+  with sample code.  
 ```
 
 ### 5.6.2 Questions about the Java runtime environment
@@ -679,7 +679,7 @@ Application development is not only about new development, but also about modern
 
 ```text
 > What should I keep in mind when migrating from a 2.7.x  
-project to 3.1.5 with Spring Boot?
+  project to 3.1.5 with Spring Boot?
 ```
 
 ###　5.6.4 Questions about how to use a specific library
@@ -688,8 +688,8 @@ Also, when using a specific library for the first time, you may want to know how
 
 ```text
 > Please explain the implementation code for asynchronous  
-processing using Mono and Flux of Project Reactor  
-in an easy-to-understand manner with sample code.
+  processing using Mono and Flux of Project Reactor  
+  in an easy-to-understand manner with sample code.
 ```
 
 ### 5.6.5 Points to Note about GitHub Copilot Chat Questions and Answers
