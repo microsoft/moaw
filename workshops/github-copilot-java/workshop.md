@@ -495,7 +495,7 @@ Click on the GitHub Copilot icon in the lower left of VS Code to display the Git
 
 #### Slash Commands
 
-To help Copilot provide more relevant answers, you can specify a topic for your questions using `slash commands`. Prepend your chat inputs with a specific topic name to guide Copilot towards a more relevant response. When you start typing `/``, a list of possible topics will appear:  
+To help Copilot provide more relevant answers, you can specify a topic for your questions using `slash commands`. Prepend your chat inputs with a specific topic name to guide Copilot towards a more relevant response. When you start typing `/`, a list of possible topics will appear:  
 
 - **/api**: Ask about VS Code extension development.  
 - **/explain**: Request a step-by-step explanation of the selected code.  
