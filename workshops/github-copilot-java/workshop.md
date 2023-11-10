@@ -122,6 +122,20 @@ To install GitHub Copilot in the IntelliJ IDEA environment, follow the steps bel
  Sorry, your browser doesn't support embedded videos.
 </video>
 
+## Avoid Using Publicly Published Code
+
+If you set up a Copilot Business subscription for your organization, you can configure GitHub Copilot settings for your organization.  
+
+For instance, if you're coding in a corporate environment, you might not want to use publicly available code due to enterprise rules or code licensing. In such cases, you can configure GitHub Copilot Chat to avoid using publicly published code.  
+
+To do this, you need to set up a [Settings Copilot](https://github.com/settings/copilot) for your organization.  
+
+![GitHub Copilot Rejected Prompt](./assets/GitHub-Copilot-Chat-Blocked-Public.png)
+
+Once these settings are in place, GitHub Copilot Chat will not use public code. If GitHub Copilot Chat attempts to use public code after entering a prompt, it will display a message and stop processing.  
+
+![GitHub Copilot Rejected Prompt](./assets/GitHub-Copilot-Chat-rejected-prompt.png)
+
 ---
 
 # Creating a New Sample Spring Boot Application
@@ -535,20 +549,6 @@ These requests are based on the selected code or the cursor's position. Also, th
 Additionally, typing `/` will display the commands that can be executed in GitHub Copilot Chat.  
 
 ![GitHub Copilot Inline windows2](./assets/github-copilot-chat-start3.png)
-
-### 5.2.3 GitHub Copilot Chat in Enterprise Usage
-
-If you set up a Copilot Business subscription for your organization, you can configure GitHub Copilot settings for your organization.  
-
-For instance, if you're coding in a corporate environment, you might not want to use publicly available code due to enterprise rules or code licensing. In such cases, you can configure GitHub Copilot Chat to avoid using publicly published code.  
-
-To do this, you need to set up a [Settings Copilot](https://github.com/settings/copilot) for your organization.  
-
-![GitHub Copilot Rejected Prompt](./assets/GitHub-Copilot-Chat-Blocked-Public.png)
-
-Once these settings are in place, GitHub Copilot Chat will not use public code. If GitHub Copilot Chat attempts to use public code after entering a prompt, it will display a message and stop processing.  
-
-![GitHub Copilot Rejected Prompt](./assets/GitHub-Copilot-Chat-rejected-prompt.png)
 
 ## 5.3 Code generation
 
