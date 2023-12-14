@@ -50,10 +50,11 @@ export async function serve(options: ServeOptions = {}) {
       debug(`Using first workshop found: ${workshopFile}`);
       debug(`Workshop folder: ${workshopFolder}`);
       targetPath = isCurrentFolder ? workshopFile : workshopFolder;
+      debug(`Target path: ${targetPath}`);
       isPathFolder = !isCurrentFolder;
     }
 
-    const startPath = `/workshop/${isPathFolder ? targetPath + '/' : path.basename(targetPath)}`;
+    const startPath = `/workshop/${path.basename(targetPath) + (isPathFolder ?  '/' : '')}`;
 
     browserSync.init(
       {
