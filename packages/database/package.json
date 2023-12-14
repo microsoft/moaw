@@ -12,13 +12,12 @@
     "@primer/octicons": "^19.4.0",
     "cxa-track": "^3.0.0",
     "fast-glob": "^3.2.12",
-    "marked": "^4.0.19",
+    "marked": "^9.1.6",
     "node-fetch": "^3.2.10",
     "ts-node": "^10.9.1",
     "yaml": "^2.1.1"
   },
   "devDependencies": {
-    "@types/marked": "^4.0.7",
     "@types/node": "^18.16.19",
     "prettier": "^3.0.0",
     "typescript": "^5.1.6"

@@ -5,7 +5,7 @@ export function getFirstHeading(markdown: string): string | undefined {
   let firstHeading;
   try {
     const options = markedOptionsFactory();
-    options.renderer.heading = (_text, _level, raw, _slugger) => {
+    options.renderer.heading = (_text, _level, raw) => {
       firstHeading = raw;
       throw new Error(); // Quiclky exit parser
     };
