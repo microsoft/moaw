@@ -15,27 +15,28 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^16.1.6",
-    "@angular/compiler": "^16.1.6",
-    "@angular/core": "^16.1.6",
-    "@angular/platform-browser": "^16.1.6",
+    "@angular/common": "^17.0.7",
+    "@angular/compiler": "^17.0.7",
+    "@angular/core": "^17.0.7",
+    "@angular/platform-browser": "^17.0.7",
     "@primer/octicons": "^19.4.0",
     "clipboard": "^2.0.11",
     "cxa-track": "^3.0.0",
-    "marked": "^4.0.19",
-    "ngx-markdown": "^16.0.0",
+    "github-slugger": "^2.0.0",
+    "marked": "^9.1.6",
+    "ngx-markdown": "^17.1.1",
     "rxjs": "~7.8.1",
     "tslib": "^2.3.0",
     "yaml": "^2.1.1",
-    "zone.js": "~0.13.1"
+    "zone.js": "~0.14.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^16.1.5",
-    "@angular/cli": "^16.1.5",
-    "@angular/compiler-cli": "^16.1.6",
-    "@types/primer__octicons": "^17.3.0",
+    "@angular-devkit/build-angular": "^17.0.7",
+    "@angular/cli": "^17.0.7",
+    "@angular/compiler-cli": "^17.0.7",
+    "@types/primer__octicons": "^19.6.3",
     "prettier": "^3.0.0",
-    "typescript": "~5.1.6"
+    "typescript": "~5.2.2"
   },
   "browserslist": [
     "last 1 Chrome version",

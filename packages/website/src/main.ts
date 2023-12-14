@@ -1,7 +1,7 @@
 import 'zone.js';
 import { enableProdMode, importProvidersFrom, SecurityContext } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
+import { MarkdownModule, MARKED_OPTIONS } from 'ngx-markdown';
 import { AppComponent } from './app/app.component';
 import { markedOptionsFactory } from './app/shared/markdown';
 import { environment } from './environments/environment';
@@ -16,7 +16,7 @@ bootstrapApplication(AppComponent, {
       MarkdownModule.forRoot({
         sanitize: SecurityContext.NONE,
         markedOptions: {
-          provide: MarkedOptions,
+          provide: MARKED_OPTIONS,
           useFactory: markedOptionsFactory
         }
       })
