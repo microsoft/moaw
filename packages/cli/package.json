@@ -31,11 +31,11 @@
     "@types/minimist": "^1.2.2",
     "@types/node": "^18.14.1",
     "@types/update-notifier": "^6.0.2",
-    "semantic-release": "^21.0.7",
+    "semantic-release": "^22.0.12",
     "semantic-release-monorepo": "^7.0.5",
     "semantic-release-npm-github": "^5.0.0",
     "typescript": "^5.1.6",
-    "xo": "^0.55.0"
+    "xo": "^0.56.0"
   },
   "dependencies": {
     "asciidoctor": "^3.0.2",
@@ -44,7 +44,7 @@
     "fast-glob": "^3.2.12",
     "lodash.kebabcase": "^4.1.1",
     "minimist": "^1.2.8",
-    "update-notifier": "^6.0.2",
+    "update-notifier": "^7.0.0",
     "yaml": "^2.2.1"
   },
   "keywords": [
