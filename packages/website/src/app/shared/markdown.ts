@@ -1,7 +1,7 @@
-import { marked, Renderer } from 'marked';
+import { marked, Renderer, Tokens } from 'marked';
+import GithubSlugger from 'github-slugger';
 import * as octicons from '@primer/octicons';
 
-const slugger = new marked.Slugger();
 
 export interface MarkdownHeading {
   text: string;
@@ -9,16 +9,11 @@ export interface MarkdownHeading {
   url: string;
 }
 
-export const slugify = (text: string) => slugger.slug(text);
-
 export function markedOptionsFactory() {
   const renderer = new Renderer();
+  const slugger = new GithubSlugger();
 
-  // renderer.blockquote = (text: string) => {
-  //   return '<blockquote class="blockquote"><p>' + text + '</p></blockquote>';
-  // };
-
-  renderer.heading = (text, level, raw, slugger) => {
+  renderer.heading = (text, level, raw) => {
     const slug = slugger.slug(raw);
     const anchorLink = `<a class="heading-anchor" href="javascript:void(0)" onclick="window.location.hash = '${slug}'" aria-hidden="true">#</a>`;
     return `<h${level} id="${slug}" class="heading">${text} ${anchorLink}</h${level}>`;
@@ -35,20 +30,20 @@ export function markedOptionsFactory() {
   };
 
   return {
-    renderer: renderer,
-    smartLists: true
+    renderer: renderer
   };
 }
 
 export function getHeadings(markdown: string): MarkdownHeading[] {
+  const slugger = new GithubSlugger();
   const parser = new marked.Parser(markedOptionsFactory());
   const domParser = new DOMParser();
   return marked
     .lexer(markdown)
-    .filter((token: marked.Token): token is marked.Tokens.Heading => token.type === 'heading')
+    .filter((token): token is Tokens.Heading => token.type === 'heading')
     .map((token) => {
       const html = parser.parseInline(token.tokens, parser.textRenderer as any);
       const text = domParser.parseFromString(html, 'text/html').body.textContent || '';
-      return { text, level: token.depth, url: '#' + slugify(text) };
+      return { text, level: token.depth, url: '#' + slugger.slug(text) };
     });
 }
