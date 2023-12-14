@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "target": "es2021",
-    "module": "esnext",
+    "module": "nodenext",
     "moduleResolution": "nodenext",
     "lib": ["es2021"],
     "declaration": true,
