@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "npm run -s create:db",
-    "create:db": "ts-node-esm src/create-workshop-db.ts",
+    "create:db": "node --loader ts-node/esm src/create-workshop-db.ts",
     "format": "prettier --write '(src|scripts)/**/*.{ts,json,scss}'"
   },
   "private": true,
