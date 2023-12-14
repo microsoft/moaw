@@ -54,7 +54,7 @@ export async function serve(options: ServeOptions = {}) {
       isPathFolder = !isCurrentFolder;
     }
 
-    const startPath = `/workshop/${path.basename(targetPath) + (isPathFolder ?  '/' : '')}`;
+    const startPath = `/workshop/${path.basename(targetPath) + (isPathFolder ? '/' : '')}`;
 
     browserSync.init(
       {

@@ -2,7 +2,6 @@ import { marked, Renderer, Tokens } from 'marked';
 import GithubSlugger from 'github-slugger';
 import * as octicons from '@primer/octicons';
 
-
 export interface MarkdownHeading {
   text: string;
   level: number;
