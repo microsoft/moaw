@@ -139,7 +139,7 @@ export class WorkshopComponent {
   }
 
   async ngAfterViewInit() {
-    const { src, step, wtid, ocid } = getQueryParams();
+    const { src, step, wtid, ocid, vars } = getQueryParams();
     const repoPath = getRepoPath(src);
     if (!repoPath) {
       redirectRoutePath('', true);
@@ -148,7 +148,7 @@ export class WorkshopComponent {
 
     this.loading = true;
     try {
-      this.workshop = await loadWorkshop(repoPath, { wtid, ocid });
+      this.workshop = await loadWorkshop(repoPath, { wtid, ocid, vars });
       this.menuLinks = createMenuLinks(this.workshop);
       this.updateAuthors();
     } catch (error) {

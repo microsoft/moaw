@@ -267,6 +267,92 @@ You can user *any* **Markdown** syntax as  usual here.
 
 </details>
 
+### Variables
+
+You can use variables to make some parts of your workshop dynamic. This can be useful to display content that may change depending of the event, for example the name of the event or a link to get specific credits.
+
+To define a variable, add a query parameter to the URL of your workshop with this syntax:
+
+```
+?vars=<name>:<value>
+```
+
+#### Multiple variables
+
+Multiple variables can be defined by separating them with a comma:
+
+```
+?vars=<name1>:<value1>,<name2>:<value2>
+```
+
+#### Variable substitution
+
+To substitute a variable in your workshop, use the following syntax:
+
+```md
+Hello \$$name$$!
+```
+
+This will render as: Hello $$name$$!
+
+Try adding `?vars=name:John%20Doe` to the URL of your workshop to see the variable substitution in action.
+
+<div class="info" data-title="info">
+
+> If your URL already contains a query string, you must add the variables after the other query values using `&` instead of `?`.
+
+</div>
+
+<div class="tip" data-title="tip">
+
+> If you need to avoid variables replacement, you can escape the variable syntax with a backslash:
+>
+> ```md
+> Hello \\$$name$$!
+> ```
+
+</div>
+
+#### Default values
+
+You can define a default value for a variable by adding a `:` after the variable name:
+
+```
+Hello \$$name:world$$!
+```
+
+If the variable is not defined in the URL, the default value will be used, otherwise the value from the URL will be used.
+
+This will render as: Hello $$name:world$$!
+
+### Conditional content
+
+You can add sections in your workshop that will only be visible when a specific variable is set in the URL. This can be useful to add content that is only relevant to a specific audience or event.
+
+```md
+<div data-visible="\$$myconf$$">
+
+> This content will only be visible if the variable `myconf` is defined in the URL.
+
+</div>
+```
+
+This will render as:
+
+<div data-visible="$$myconf$$">
+
+> This content will only be visible if the variable `myconf` is defined in the URL.
+
+</div>
+
+Try adding `?vars=myconf:1` to the URL of your workshop to see the conditional content in action.
+
+<div class="info" data-title="info">
+
+> If your URL already contains a query string, you must add the variables after the other query values using `&` instead of `?`.
+
+</div>
+
 ---
 
 ## Preview your workshop

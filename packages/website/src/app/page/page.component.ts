@@ -42,12 +42,12 @@ export class PageComponent implements OnInit {
   page: Page | undefined;
 
   async ngOnInit() {
-    const { src, wtid, ocid } = getQueryParams();
+    const { src, wtid, ocid, vars } = getQueryParams();
     const repoPath = getRepoPath(src);
 
     this.loading = true;
     try {
-      this.page = await loadPage(repoPath, { wtid, ocid });
+      this.page = await loadPage(repoPath, { wtid, ocid, vars });
     } catch (error) {
       console.error(error);
     }

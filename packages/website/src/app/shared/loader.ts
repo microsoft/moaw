@@ -125,20 +125,28 @@ export function getRepoPath(source: string): string {
 }
 
 export function replaceVariables(text: string, vars?: string) {
-  if (!vars) {
-    return text;
-  }
-  const variables = vars
-    .split(',')
-    .map((variable) => {
-      const [key, ...value] = variable.trim().split(/(:|%3[aA])/);
-      return Boolean(key) ? [key, decodeURIComponent(value.join(':'))] : undefined;
-    })
-    .filter(Boolean) as [string, string][];
+  if (vars) {
+    const variables = vars
+      .split(',')
+      .map((variable) => {
+        const decodedVariable = decodeURIComponent(variable);
+        const [key, ...value] = decodedVariable.trim().split(':');
+        return Boolean(key) ? [key, value.join(':')] : undefined;
+      })
+      .filter(Boolean) as [string, string][];
 
-  for (const [key, value] of variables) {
-    // Replace $$key$$ with value
-    text = text.replaceAll(new RegExp(`\\$\\$${key}\\$\\$`, 'gm'), value);
+    for (const [key, value] of variables) {
+      // Replace $$key$$ with value (but not \$$key$$)
+      console.log(`Replacing $$${key}$$ with "${value}"`);
+      text = text.replaceAll(new RegExp(`(?<!\\\\)\\$\\$${key}(:[^$\n]+?)?\\$\\$`, 'gm'), value);
+    }
   }
+
+  // Replace $$key:default_value$$ with default_value (but not \$$key:default_value$$)
+  text = text.replaceAll(/(?<!\\)\$\$[^$\s]+:[^$\n]+?\$\$/gm, (match) => match.split(':')[1].slice(0, -2));
+
+  // Replace escaped \$$key$$ with $$key$$
+  text = text.replaceAll(/(\\\$\$[^$\n]+\$\$)/gm, (match) => match.slice(1));
+
   return text;
 }
