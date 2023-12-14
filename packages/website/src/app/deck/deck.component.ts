@@ -24,12 +24,12 @@ export class DeckComponent implements OnInit {
   deck: Deck | undefined;
 
   async ngOnInit() {
-    const { src, slide, wtid, ocid } = getQueryParams();
+    const { src, slide, wtid, ocid, vars } = getQueryParams();
     const repoPath = getRepoPath(src);
 
     this.loading = true;
     try {
-      this.deck = await loadDeck(repoPath, { wtid, ocid });
+      this.deck = await loadDeck(repoPath, { wtid, ocid, vars });
     } catch (error) {
       console.error(error);
     }
