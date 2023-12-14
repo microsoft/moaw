@@ -6,7 +6,7 @@
     "build:website": "npm run build --workspace=website",
     "build:cli": "npm run build --workspace=@moaw/cli",
     "create:db": "npm run create:db --workspace=database",
-    "format": "npm run format --workspaces"
+    "format": "npm run format --workspaces --if-present"
   },
   "repository": {
     "type": "git",
