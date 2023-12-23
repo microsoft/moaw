@@ -34,7 +34,7 @@ GitHub Copilot is an AI-powered code assistant that helps developers write bette
 
 <div class="warning" data-title="warning">
 
-> GitHub Copilot is a quickly evolving product and thus this workshop may not be 100% up to date with the differentes features of the different extensions you are going to use. Please be clever.
+> GitHub Copilot is a quickly evolving product and thus this workshop may not be 100% up to date with the differentes features of the different extensions you are going to use. Please be clever if it's not exactly the same. For info, this page has been updated in December 2023.
 
 </div>
 
@@ -47,7 +47,7 @@ GitHub Copilot is an AI-powered code assistant that helps developers write bette
 | GitHub account | [Create free GitHub account](https://github.com/join) |
 | GitHub Copilot Access | A 60 day trial can be [requested here](https://github.com/github-copilot/signup) |
 | A code editor  | [Download VS Code](https://code.visualstudio.com/Download) |
-| some VSCode extensions |  The first one [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot), the second one ([GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs)) will allow you to send custom commands (a.k.a. `brushes` which are in fact `prompts`) and the last one allows to have [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat).|
+| some VSCode extensions |  The first one [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot), the second one ([GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs)) will allow you to send custom commands (a.k.a. `brushes` which are in fact `prompts` - this extension may soon be deprecated by GitHub) and the last one allows you to have [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat).|
 | A browser      | [Download Microsoft Edge](https://www.microsoft.com/edge) or any other one ;-)|
 
 <div class="warning" data-title="Important">
@@ -68,17 +68,18 @@ You can also choose to work locally on your computer.
 
 1. Install [Visual Studio Code](https://code.visualstudio.com/)
 2. Install the [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) extension
-3. Install the [GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs) extension. it contains beta features
-4. Install [Node and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-5. Install mocha
+3. Install the [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extension
+4. Install the [GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs) extension. it contains beta features
+5. Install [Node and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+6. Install mocha
 
-``` bash
- npm install --global mocha
- npm install axios
-```
+    ``` bash
+    npm install --global mocha
+    npm install axios
+    ```
 
-6. Install [Docker](https://docs.docker.com/engine/install/)
-7. Install [.NET Core](https://dotnet.microsoft.com/download)
+7. Install [Docker](https://docs.docker.com/engine/install/)
+8. Install [.NET Core](https://dotnet.microsoft.com/download)
 
 ---
 
@@ -443,6 +444,20 @@ Open the `app.tf`file in `iac/terraform` folder and start typing prompts at the 
 # Azure Cognitive Services Custom Vision resource
 ```
 
+## Generate Git Commit comment
+
+Yes, writing a comment should be mandatory and developers tend to be lazy. GitHub Copilot can help with that.
+
+1. Just edit any file by adding some relevant content into it.
+
+2. On the Git commit panel, click the small magical button on the right
+
+    ![GitHub Copilot Git comment generator](assets/git-commit.png)
+
+3. Admire Copilot having generated a comment for you
+
+    ![Generated comment(assets/git-commit2.png)
+
 ## Writing documentation
 
 Copilot can help you in all your documentation tasks. It can generate simple documentation comment or standardized documentation comment like JavaDoc, JsDoc, etc... it can also help you translate your documentation in different languages. Let's see how it works.
@@ -503,12 +518,12 @@ GitHub Copilot is a generative AI and thus, perfect to generate code, but it has
 
 If you already feel confortable with it you can jump to the next section.
 
-## Get ready
+## Let's Start
 
 To start using Github Copilot Chat, you first need to:
 
-- be enrolled in the public preview:  [Github Copilot Chat Preview](https://github.com/github-copilot/chat_waitlist_signup/join)
-- install the extension in your IDE. For VS Code, you can find it directly by searching for `Github Copilot Chat` in the extensions tab.
+- Have a valid GitHub Copilot license (personal, business or enterprise).
+- Install the extension in your IDE. For VS Code, you can find it directly by searching for `Github Copilot Chat` in the extensions tab.
 
 ### Clone the repository
 
@@ -650,6 +665,41 @@ You can also use copilot to help you generate Stubs and Mocks for your tests.
 > Remember that Copilot chat is keeping track of the previous Q & A in the conversation, that's why you can reference the previously generated mock and test easily.
 
 </div>
+
+## Use Agents
+
+Agents are like specialized experts who can assist you with specific tasks. You can mention them in the chat using the @ symbol. Currently, there are two agents available:
+
+- **@workspace**: This agent has knowledge about the code in your workspace and can help you navigate it by finding relevant files or classes. The @workspace agent uses a meta prompt to determine what information to collect from the workspace to help answer your question.
+- **@vscode**: This agent is knowledgeable about commands and features in the VS Code editor itself, and can assist you in using them.
+
+They may not be super rich for the moment but their features will continue to grow over the time. Here are some example
+
+Open the side Chat panel and type **@workspace /New* to specify that you want to create a new project. For instance, try to create an Asp.Net project
+
+```text
+> @workspace /new create a new asp.net core 6.0 project, with three views Index, Users and products.
+```
+
+It should create a structured project and even a new button to create the file. Click on "Create workspace" to see files being created.
+
+![GitHub Copilot Agents](assets/agents.png)
+
+## Tips
+
+GitHub Copilot Chat is very handful but for a developer, leaving the keyboard and having to take the mouse to open the right Chat tab can be boring. You can directly call the Chat inside the code editor.
+
+1- Open any file containing code
+
+2- Use the shortcut **Ctrl + i**. It should open the Quick chat popup, a small chat windows where you put your cursor
+
+![GitHub Copilot Quick Chat](assets/quickchat.png)
+
+3- Type any command to generate some code (i.e. "Create a C# class named Toto). The generated code is injected inside the current file which may be what you want
+
+4- Instead of accepting the solution, click on the Discard button and select *Discard to new file*. It will move the generated content to a new empty file
+
+![Discard to new file](assets/quickchat2.png)
 
 ---
 
@@ -841,6 +891,12 @@ You must now develop and add new features to your server. The requests that the 
 
 These tasks can be performed with the [GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs) add-in, currently PREVIEW functionality, expect some bugs or weird behavior (you've been warned <:o)).
 
+<div class="warning" data-title="warning">
+
+> GitHub Copilot Labs extension may be deprecated any time soon. When GitHub removes it, you won't be able to do this part of the lab.
+
+</div>
+
 Open the GitHub Copilot Labs extension to see all the available functionality.
 
 ![GitHub Copilot Labs extension](assets/github-copilot-labs.png)
@@ -1025,7 +1081,7 @@ Here you can find the solution to the different exercises.
 
 The solution of the coding exercise can be [downloaded here](assets/src/completesolution.zip)
 
-## Infra As Code
+## Infrastructure As Code
 
 This part is the easiest one but GitHub Copilot can randomly generate bad or commented code.
 
