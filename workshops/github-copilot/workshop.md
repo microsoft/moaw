@@ -118,7 +118,7 @@ Once you start typing a prompt and copilot generate proposals, you can use the f
 
 ## Natural Language Translations
 
-**Automate text translation**
+**Automate text completion**
 
 Open file `album-viewer/lang/translations.json`
 
@@ -274,43 +274,6 @@ You will **always** get better results by cutting big task into small chunks wit
 
 </div>
 
-## Code Documentation
-
-Copilot can understand a natural language prompt and generate code and because it's just language to it, it can also `understand code and explain it in natural language` to help you document your code.
-
-### Simple documentation comment
-
-To see that just put you pointer on top of a Class, a method or any line of code and start typing the comment handler for the selected language to trigger copilot. In language like Java, C# or TS for example, just type `// `and let the magic happen.
-
-Here is an example in the `albums-viewer/routes/index.js` file. Insert a line and start typing on line 13 inside the `try block`
-
-```js
-router.get("/", async function (req, res, next) {
-  try {
-    // Invoke the album-api via Dapr
-    const url = `http://127.0.0.1:${DaprHttpPort}/v1.0/invoke/${AlbumService}/method/albums`;
-
-```
-
-Continue to play with it and see what happens on other pieces of code.
-
-### Standardized documentation comment (JavaDoc, JsDoc, etc...)
-
-For this one, to trigger the documentation comment generation, you need to respect the specific comment format:
-
-- `/**` (for JS/TS) in the `index.js` file for example
-- `///` for C# in the `AlbumController.cs` of the AlbumApi file for example
-
-```cs
-/// <summary>
-/// function that returns a single album by id
-/// </summary>
-/// <param name="id"></param>
-/// <returns></returns>
-[HttpGet("{id}")]
-public IActionResult Get(int id)
-```
-
 ## Tests
 
 Copilot can help generate all kind of tests that are written with code. It Includes `unit tests, integration tests, end to end tests, and load testing` tests with jmeters scripts for example.
@@ -460,7 +423,8 @@ Yes, writing a comment should be mandatory and developers tend to be lazy. GitHu
 
 ## Writing documentation
 
-Copilot can help you in all your documentation tasks. It can generate simple documentation comment or standardized documentation comment like JavaDoc, JsDoc, etc... it can also help you translate your documentation in different languages. Let's see how it works.
+Copilot can understand a natural language prompt and generate code and because it's just language to it, it can also `understand code and explain it in natural language` to help you document your code.
+So it can help you in all your documentation tasks. It can generate simple documentation comment or standardized documentation comment like JavaDoc, JsDoc, etc... it can also help you translate your documentation in different languages. Let's see how it works.
 
 ### simple documentation comment
 
