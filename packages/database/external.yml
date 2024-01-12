@@ -354,7 +354,7 @@
   tags: azure, llm, Large Language Models, Vectorstores, OpenAI, AI, embeddings, Langchain, Semantic Kernel, prompt engineering, csu
 
 - title: Create your own ChatGPT with Retrieval-Augmented-Generation
-  url: https://microsoft.github.io/moaw/workshop/gh:azure-samples/azure-openai-rag-workshop/main/docs/
+  url: https://microsoft.github.io/moaw/workshop/gh:azure-samples/azure-openai-rag-workshop/base/docs/
   language: en
   last_updated: 2023-11-10
   type: workshop
