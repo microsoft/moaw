@@ -1,3 +1,10 @@
+# [cli-1.3.1](https://github.com/microsoft/moaw/compare/cli-1.3.0...cli-1.3.1) (2024-01-17)
+
+
+### Bug Fixes
+
+* **cli:** correct preview workshop URL when there are subfolders ([3627306](https://github.com/microsoft/moaw/commit/3627306b26f23b84c4790afaf5da6241e880dc44))
+
 # [@moaw/cli-v1.3.0](https://github.com/microsoft/moaw/compare/cli-1.2.1...cli-1.3.0) (2023-07-20)
 
 
