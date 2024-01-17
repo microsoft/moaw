@@ -25,7 +25,7 @@ jobs:
         node-version: 18
     - run: npm ci
     - run: npm run build:cli
-    - run: cd packages/cli && npx semantic-release
+    - run: cd packages/cli && npx semantic-release-monorepo
       if: success()
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
