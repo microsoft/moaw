@@ -2,7 +2,7 @@ import process from 'node:process';
 import debug from 'debug';
 import updateNotifier, { type Package } from 'update-notifier';
 import minimist from 'minimist';
-import { convert, createNew, link, serve } from './commands/index.js';
+import { convert, createNew, link, serve, build } from './commands/index.js';
 import { getPackageJson } from './util.js';
 
 const help = `Usage: moaw <command> [options]
@@ -16,6 +16,8 @@ Commands:
   c, convert <file>  Convert asciidoc to markdown
     -a, --attr <json_file>  Attributes to use for conversion
     -d, --dest <file>       Destination file (default: workshop.md)
+  b, build [<file>]  Build workshop and process file includes
+    -d, --dest <file>       Destination file (default: <file>.build.md)
   l, link [<file>]   Get link to target file (default: workshop.md)
     -r, --repo       Set GitHub repo instead of fetching it from git
     -b, --branch <name>     Set branch name (default: current branch)
@@ -84,6 +86,16 @@ export async function run(args: string[]) {
       await convert({
         file: parameters[0],
         attributes: options.attr as string,
+        destination: options.dest as string,
+        verbose: Boolean(options.verbose)
+      });
+      break;
+    }
+
+    case 'b':
+    case 'build': {
+      await build({
+        file: parameters[0],
         destination: options.dest as string,
         verbose: Boolean(options.verbose)
       });
