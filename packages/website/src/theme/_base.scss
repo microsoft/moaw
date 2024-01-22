@@ -92,6 +92,7 @@ details {
   }
 }
 
-div[data-visible^='$$'] {
+div[data-visible^='$$'],
+div[data-hidden]:not([data-hidden^='$$']) {
   display: none;
 }
