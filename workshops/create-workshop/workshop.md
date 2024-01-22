@@ -295,7 +295,9 @@ Hello \$$name$$!
 
 This will render as: Hello $$name$$!
 
-Try adding `?vars=name:John%20Doe` to the URL of your workshop to see the variable substitution in action.
+Try clicking on the button below to set the query param `vars=name:John%20Doe` in the URL. You should now see the variable substitution in action.
+
+<button onclick="const url = new window.URL(window.location.href); url.searchParams.set('vars', 'name:John%20Doe'); window.location.href = url">Set variable name</button>
 
 <div class="info" data-title="info">
 
@@ -332,7 +334,13 @@ You can add sections in your workshop that will only be visible when a specific 
 ```md
 <div data-visible="\$$myconf$$">
 
-> This content will only be visible if the variable `myconf` is defined in the URL.
+> This content is *visible* if the variable `myconf` is defined in the URL.
+
+</div>
+
+<div data-hidden="\$$myconf$$">
+
+> This content is **hidden** if the variable `myconf` is defined in the URL.
 
 </div>
 ```
@@ -341,11 +349,20 @@ This will render as:
 
 <div data-visible="$$myconf$$">
 
-> This content will only be visible if the variable `myconf` is defined in the URL.
+> This content is *visible* if the variable `myconf` is defined in the URL.
 
 </div>
 
-Try adding `?vars=myconf:1` to the URL of your workshop to see the conditional content in action.
+<div data-hidden="$$myconf$$">
+
+> This content is **hidden** if the variable `myconf` is defined in the URL.
+
+</div>
+
+Try clicking on the button below to set the query param `vars=myconf:1` in the URL. The first section should now be visible.
+
+<button onclick="const url = new window.URL(window.location.href); url.searchParams.set('vars', 'myconf:1'); window.location.href = url">Set variable myconf</button>
+
 
 <div class="info" data-title="info">
 
