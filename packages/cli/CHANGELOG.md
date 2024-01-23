@@ -1,3 +1,15 @@
+# [cli-1.4.0](https://github.com/microsoft/moaw/compare/cli-1.3.1...cli-1.4.0) (2024-01-23)
+
+
+### Bug Fixes
+
+* **cli:** broken link command on windows ([b362b27](https://github.com/microsoft/moaw/commit/b362b27f78b9379aac077bde9ec9c83b7cb564d7))
+
+
+### Features
+
+* **cli:** add build command ([8138361](https://github.com/microsoft/moaw/commit/8138361dc81da213ff7b918e721e7790d5aaedab))
+
 # [cli-1.3.1](https://github.com/microsoft/moaw/compare/cli-1.3.0...cli-1.3.1) (2024-01-17)
 
 
