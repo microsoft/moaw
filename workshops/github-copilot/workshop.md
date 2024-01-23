@@ -222,7 +222,7 @@ Copilot will probably will always more effective with prompt to generate small b
 
 <div class="info" data-title="info">
 
->Copilot will probably try to complete the prompt by adding more details. You can try to add more details yourself or follow copilot's suggestions. When you want it to stop and start generating the code just jump on another line and let him work.
+>Copilot will probably try to complete the prompt by adding more details. You can try to add more details yourself or follow copilot's suggestions. When you want it to stop and start generating the code just jump on another line and let the copilot do its work.
 
 </div>
 
@@ -1084,7 +1084,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 
 ## DevSecOps
 
-GitHub Copilot may not be able to fix and refactor all the code by himself (for instance using the `fix bug` prompt) but it is pretty good to recognize code smells and bad practices if you ask him through the chat.
+GitHub Copilot may not be able to fix and refactor all the code (for instance using the `fix bug` prompt) but it is pretty good to recognize code smells and bad practices if you ask through the chat.
 
 Several security flaws are present in this short piece of code. You should have at least found 4 major bad practices:
 
