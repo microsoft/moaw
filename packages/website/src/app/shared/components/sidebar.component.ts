@@ -72,12 +72,12 @@ import { navigate, getCurrentUrlWithoutHash } from '../../router';
           padding: var(--space-xxs) var(--space-xs);
 
           &:hover {
-            color: var(--primary);
+            color: var(--primary-dark);
             text-decoration: none;
           }
 
           &.active {
-            color: var(--primary);
+            color: var(--primary-dark);
             background: rgba(0, 0, 0, 0.05);
           }
         }
