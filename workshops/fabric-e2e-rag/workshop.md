@@ -27,14 +27,16 @@ wt_id: data-114676-jndemenge
 
 In this workshop, we'll demonstrate how to develop a context-aware question answering framework for any form of a document using [OpenAI models](https://azure.microsoft.com/products/ai-services/openai-service), [SynapseML](https://microsoft.github.io/SynapseML/) and [Azure AI Services](https://azure.microsoft.com/products/cognitive-services/). The source of data for this workshop is a PDF document, however, the same framework can be easily extended to other document formats too.
 
-
+## Learning Objectives
 We’ll cover the following key steps:
 
 1. Preprocessing PDF Documents: Learn how to load the PDF documents into a Spark DataFrame, read the documents using the [Azure AI Document Intelligence](https://azure.microsoft.com/products/ai-services/ai-document-intelligence) in Azure AI Services, and use SynapseML to split the documents into chunks.
 2. Embedding Generation and Storage: Learn how to generate embeddings for the chunks using SynapseML and [Azure OpenAI Services](https://azure.microsoft.com/products/cognitive-services/openai-service), store the embeddings in a vector store using [Azure Cognitive Search](https://azure.microsoft.com/products/search), and search the vector store to answer the user’s question.
-3. Question Answering Pipeline: Learn how to retrieve relevant document based on the user’s question and provide the answer using [Langchain](https://python.langchain.com/en/latest/index.html#).
+3. Question Answering Pipeline: Learn how to retrieve relevant document based on the user’s question and provide the answer using [Sematic Kernel](https://github.com/microsoft/semantic-kernel).
 
-To get an indepth understanding of the RAG framework, refer to [this workshop](https://moaw.dev/workshop/gh:azure-samples/azure-openai-rag-workshop/base/docs/)
+![schema](assets/schema.png)
+
+To get an in-depth understanding of the RAG framework, refer to [this workshop](https://moaw.dev/workshop/gh:azure-samples/azure-openai-rag-workshop/base/docs/)
 
 ## Prerequisites
 
@@ -50,15 +52,21 @@ This deploys the following resources:
 
 <div class="info" data-title="Note">
   
-  > The Azure Open AI deployment also includes the deployment of the ***gpt-4*** and ***text-embedding-ada-002 models*** 
+  > The Azure Open AI deployment also includes the deployment of the ***gpt-4 model*** 
 </div>
 
 ---
 
 # Loading and Preprocessing PDF Documents
-In this section, we'll load the PDF document into a spark dataframe then read the documents using the Azure AI Document Intelligence in Azure AI Services. 
 
-After extracting the text from the PDF documents, we'll use SynapseML to split the documents into chunks. The document is split into chunks to allow for more granular representation and processing of the document content.
+In this section, we'll perform the following steps:
+
+- Load the PDF document into a Spark DataFrame.
+- Read the documents using the Azure AI Document Intelligence in Azure AI Services.
+- Extract the text from the PDF documents.
+- Use SynapseML to split the documents into chunks for more granular representation and processing of the document content.
+
+## Setting up the Environment
 
 To begin with [create a Lakehouse](https://learn.microsoft.com/en-us/fabric/data-engineering/tutorial-build-lakehouse#create-a-lakehouse?WT.mc_id=data-114676-jndemenge) in your Microsoft Fabric workspace. Next in the Data Engineering workload create a new Notebook to continue.
 
@@ -83,14 +91,24 @@ aoai_deployment_name_completions = "gpt-4"
 
 # Azure AI Search
 aisearch_name = ''
-aisearch_index_name = 'wwireports'
+aisearch_index_name = 'rag-demo-index'
 aisearch_api_key = ''
 
 # Azure AI Service
 ai_services_key = ''
 ai_services_location = ''
 ```
-Upload the file you'd like to analyze to the `Files` folder in your Lakehouse.
+
+<div class="tip" data-title="Tip">
+
+> In a production scenario, it is recommended to store the credentials securely in Azure Key Vault. To access the credentials stored in Azure Key Vault, use the `mssparkutils` library. 
+
+</div>
+
+
+## Loading & Analyzing the Document
+
+In this workshop, we will be utilizing a specific document named 'support.pdf'. You can obtain this document by downloading it from [this link](https://github.com/Azure-Samples/azure-openai-rag-workshop/blob/main/data/support.pdf). Once downloaded, please upload 'support.pdf' to the `Files` directory in your Lakehouse.
 
 Now that we have the basic configuration to Azure AI Services and Azure OpenAI, we can start loading the PDF documents into a Spark DataFrame using the `spark.read.format("binaryFile")`method provided by Apache Spark. Change the `document_path` variable to the path of the PDF document you'd like to analyze.
 
@@ -100,7 +118,7 @@ Now that we have the basic configuration to Azure AI Services and Azure OpenAI, 
 from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
 
-document_path = 'Files/your_filename.pdf' # Path to the PDF document 
+document_path = 'Files/support.pdf' # Path to the PDF document 
 
 df = (
     spark.read.format('binaryFile')
@@ -151,6 +169,8 @@ display(analyzed_df)
 
 Now that we have the text content of the PDF documents, we can generate embeddings for the text using Azure OpenAI. Embeddings are vector representations of the text that can be used to compare the similarity between different pieces of text.
 
+## Text Chunking
+
 Before we can generate the embeddings, we need to split the text into chunks. To do this we leverage SynapseML’s PageSplitter to divide the documents into smaller sections, which are subsequently stored in the `chunks` column. This allows for more granular representation and processing of the document content.
 
 ```python
@@ -180,6 +200,7 @@ exploded_df = splitted_df.select("path", explode(col("chunks")).alias("chunk")).
 )
 display(exploded_df)
 ```
+## Generating Embeddings
 Next we'll generate the embeddings for each chunk. To do this we utilize both SynapseML and Azure OpenAI Service. By integrating the Azure OpenAI service with SynapseML, we can leverage the power of the Apache Spark distributed computing framework to process numerous prompts using the OpenAI service. 
 
 ```python
@@ -187,7 +208,6 @@ from synapse.ml.services import OpenAIEmbedding
 
 embedding = (
     OpenAIEmbedding()
-    .setSubscriptionKey(aoai_key)
     .setDeploymentName(aoai_deployment_name_embeddings)
     .setCustomServiceName(aoai_service_name)
     .setTextCol("chunk")
@@ -204,6 +224,7 @@ This integration enables the SynapseML embedding client to generate embeddings i
 
 For more detailed information on generating embeddings with Azure OpenAI, you can look [here]( https://learn.microsoft.com/azure/cognitive-services/openai/how-to/embeddings?tabs=console&WT.mc_id=data-114676-jndemenge).
 
+## Storing Embeddings in a Vector Store
 
 [Azure Cognitive Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search?WT.mc_id=data-114676-jndemenge) offers a user-friendly interface for creating a vector database, as well as storing and retrieving data using vector search. If you're interested in learning more about vector search, you can look [here](https://github.com/Azure/cognitive-search-vector-pr/tree/main).
 
@@ -268,7 +289,7 @@ response = requests.request("PUT", url, headers=headers, data=payload)
 print(response.status_code)
 ```
 
-Next we need to use User Defined Function (UDF) through the udf() method in order to apply functions directly to the DataFrames and SQL databases in Python, without any need to individually register them.
+Next we need to use User Defined Function (UDF) through the udf() method in order to apply functions directly to the DataFrame.
 
 ```python
 # Use Spark's UDF to insert entries to Cognitive Search
@@ -471,10 +492,4 @@ To learn more about Retrieval Augmented Generation (RAG) using Azure Search an A
 > After completing the workshop, remember to delete the Azure Resources you created to avoid incurring unnecessary costs!
 </div>
 
-To delete the resources, navigate to the resource group you created earlier and click on the `Delete` button. Or alternatively you can run the following command in the Azure CLI.
-
-```bash
-azd down --purge
-```
-
-
+To delete the resources, navigate to the resource group you created earlier and click on the `Delete` button.
