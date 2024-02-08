@@ -65,24 +65,24 @@ resource gpt4_deployment 'Microsoft.CognitiveServices/accounts/deployments@2023-
   }
 }
 
-resource adaTextEmbeddingResource 'Microsoft.CognitiveServices/accounts/deployments@2023-10-01-preview' = {
-  parent: azureOpenAiService_resource
-  name: 'text-embedding-ada-002'
-  sku: {
-    name: 'Standard'
-    capacity: 120
-  }
-  properties: {
-    model: {
-      format: 'OpenAI'
-      name: 'text-embedding-ada-002'
-      version: '2'
-    }
-    versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
-    currentCapacity: 120
-    raiPolicyName: 'Microsoft.Default'
-  }
-}
+// resource adaTextEmbeddingResource 'Microsoft.CognitiveServices/accounts/deployments@2023-10-01-preview' = {
+//   parent: azureOpenAiService_resource
+//   name: 'text-embedding-ada-002'
+//   sku: {
+//     name: 'Standard'
+//     capacity: 120
+//   }
+//   properties: {
+//     model: {
+//       format: 'OpenAI'
+//       name: 'text-embedding-ada-002'
+//       version: '2'
+//     }
+//     versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
+//     currentCapacity: 120
+//     raiPolicyName: 'Microsoft.Default'
+//   }
+// }
 
 
 resource azureAiService_resource 'Microsoft.CognitiveServices/accounts@2023-10-01-preview' = {
