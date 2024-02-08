@@ -96,3 +96,8 @@ div[data-visible^='$$'],
 div[data-hidden]:not([data-hidden^='$$']) {
   display: none;
 }
+
+// Override ngx-markdown inline-style for a11y
+div:has(app-copy button:focus) {
+  opacity: 1 !important;
+}

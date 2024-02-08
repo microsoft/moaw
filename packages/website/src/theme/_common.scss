@@ -232,7 +232,9 @@ hr {
   opacity: 0;
   transition: opacity var(--transition-duration);
 
-  .heading:hover & {
+  .heading:hover &,
+  &:focus,
+  &:active {
     opacity: 1;
   }
 }

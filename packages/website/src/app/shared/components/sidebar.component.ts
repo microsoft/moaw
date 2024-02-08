@@ -44,7 +44,8 @@ import { navigate, getCurrentUrlWithoutHash } from '../../router';
         overflow-y: auto;
         transition: left var(--transition-duration);
 
-        &.open {
+        &.open,
+        &:has(*:focus) {
           left: 0;
         }
       }
