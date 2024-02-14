@@ -13,7 +13,9 @@ duration_minutes: 60
 tags: data, Microsoft Fabric, Azure Open AI
 banner_url: assets/architecture.png
 sections_title:
+  - Welcome
   - Introduction
+  - Environment Setup
   - Loading and Preprocessing PDF Documents
   - Generating Embeddings and Storing them in a Vector Store
   - Retrieving Relevant Documents and Answering Questions
@@ -23,72 +25,105 @@ wt_id: data-114676-jndemenge
 
 ---
 
-# Introduction
+# Welcome
 
 In this workshop, we'll demonstrate how to develop a context-aware question answering framework for any form of a document using [OpenAI models](https://azure.microsoft.com/products/ai-services/openai-service), [SynapseML](https://microsoft.github.io/SynapseML/) and [Azure AI Services](https://azure.microsoft.com/products/cognitive-services/). The source of data for this workshop is a PDF document, however, the same framework can be easily extended to other document formats too.
 
-## Learning Objectives
-We’ll cover the following key steps:
+## You'll learn how to: 
 
-1. Preprocessing PDF Documents: Learn how to load the PDF documents into a Spark DataFrame, read the documents using the [Azure AI Document Intelligence](https://azure.microsoft.com/products/ai-services/ai-document-intelligence) in Azure AI Services, and use SynapseML to split the documents into chunks.
-2. Embedding Generation and Storage: Learn how to generate embeddings for the chunks using SynapseML and [Azure OpenAI Services](https://azure.microsoft.com/products/cognitive-services/openai-service), store the embeddings in a vector store using [Azure Cognitive Search](https://azure.microsoft.com/products/search), and search the vector store to answer the user’s question.
-3. Question Answering Pipeline: Learn how to retrieve relevant document based on the user’s question and provide the answer using [Sematic Kernel](https://github.com/microsoft/semantic-kernel).
+- Pre-Process PDF Documents using [Azure AI Document Intelligence](https://azure.microsoft.com/products/ai-services/ai-document-intelligence) in Azure AI Services.
+- Perform text chunking using SynapseML.
+- Generate embeddings for the chunks using SynapseML and  [Azure OpenAI Services](https://azure.microsoft.com/products/cognitive-services/openai-service).
+- Store the embeddings in a vector store using [Azure Cognitive Search](https://azure.microsoft.com/products/search).
+- Build a question answering pipeline.
+
+
+## Pre-requisites
+
+
+| | |
+|----------------------|------------------------------------------------------|
+| Azure account        | [Get a free Azure account](https://azure.microsoft.com/free) |
+| Microsoft Fabric License | [Microsoft Fabric Licenses](https://learn.microsoft.com/en-us/fabric/enterprise/licenses?WT.mc_id=data-114676-jndemenge) |
+| A workspace in Microsoft Fabric | [Create a Microsoft Fabric workspace](https://learn.microsoft.com/en-gb/fabric/data-warehouse/tutorial-create-workspace?WT.mc_id=data-114676-jndemenge) |
+| Access to Azure OpenAI API | [Request access to Azure OpenAI](https://aka.ms/oaiapply) |
+| A Web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
+| Python knowledge | [Python for beginners](https://learn.microsoft.com/en-us/training/paths/beginner-python/) |
+
+
+---
+
+
+# Introduction
+
+Analysing structured data has been an easy process for some time but the same cannot be said for unstructured data. Unstructured data, such as text, images, and videos, is more difficult to analyze and interpret. However, with the advent of advanced AI models, such as OpenAI's GPT-3 and GPT-4, it is now becoming easier to analyze and gain insights from unstructured data.
+
+An example of such analysis is the ability to query a document for specisific information using natural language which is achievable though a combination of information retrieval and language generation.
+
+By leveraging the RAG (Retrieval-Augmented Generation) framework, you can create a powerful question-and-answering pipeline that uses a large language model (LLM) and you own data to generate responses. 
+
+The architure of such an application is as shown below:
 
 ![schema](assets/schema.png)
 
 To get an in-depth understanding of the RAG framework, refer to [this workshop](https://moaw.dev/workshop/gh:azure-samples/azure-openai-rag-workshop/base/docs/)
 
-## Prerequisites
 
-To follow along with this work begin by Right-click or `Ctrl + Click` on the button below to open the Azure Portal in a new tab and begin deployment of the necessary resources.
+---
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2moaw%2Fmain.json)
+# Environment Setup
+To continue with this workshop, you'll need to create a Lakehouse in your Microsoft Fabric workspace and deploy the necessary resources in your Azure account. We'll detail the steps to do this below.
+
+## Create a Lakehouse
+To create a new Lakehouse in your Microsoft Fabric workspace, open the `Data Engineering workload` on the bottom left of the workspace and click on `Lakehouse`. Provide the name `rag_workshop` and click `Create`
+
+![lakehouse](assets/lakehouse.png)
+
+To learn more about Lakehouses in Microsoft Fabric, refer to [this resource](https://learn.microsoft.com/en-us/fabric/data-engineering/tutorial-build-lakehouse#create-a-lakehouse?WT.mc_id=data-114676-jndemenge)
+
+
+## Azure Setup
+
+To complete this workshop you'll need an Azure account. If you don't have one, you can create a [free account](https://azure.microsoft.com/en-gb/free/?WT.mc_id=data-0000-cxa) before you begin. 
+
+<div class="important" data-title="Importatnt">
+
+> Ensure that the subscription you are using has the permissions to create and manage resources.
+</div>
+
+
+Once you have the Account ready Right-click or `Ctrl + Click` on the button below to open the Azure Portal in a new tab and begin deployment of the necessary resources.
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2Fmoaw%2Fmain%2Fworkshops%2Ffabric-e2e-rag%2Fassets%2Fmain.json)
 
 This deploys the following resources:
-1. Azure OpenAI Service
-2. Azure AI Search
-3. Azure AI Services
-4. Azure Key Vault
-
-<div class="info" data-title="Note">
-  
-  > The Azure Open AI deployment also includes the deployment of the ***gpt-4 model*** 
-</div>
+1. Azure AI Search
+2. Azure AI Services
 
 ---
 
 # Loading and Preprocessing PDF Documents
 
-In this section, we'll perform the following steps:
+Now that we have all the necessary resources deployed we can now begin building the RAG application. This section covers the process of loading and preprocessing PDF documents using Document Intelligence in Azure AI Services. 
+
+To do this, we'll perform the following steps:
 
 - Load the PDF document into a Spark DataFrame.
 - Read the documents using the Azure AI Document Intelligence in Azure AI Services.
 - Extract the text from the PDF documents.
 - Use SynapseML to split the documents into chunks for more granular representation and processing of the document content.
 
-## Setting up the Environment
+## Configure Azure API keys
+To begin with create a new notebook in your Lakehouse. To create a new Notebook, click on the ```Open Notebook``` from the Lakehouse and from the drop down menu select ```New Notebook```. 
 
-To begin with [create a Lakehouse](https://learn.microsoft.com/en-us/fabric/data-engineering/tutorial-build-lakehouse#create-a-lakehouse?WT.mc_id=data-114676-jndemenge) in your Microsoft Fabric workspace. Next in the Data Engineering workload create a new Notebook to continue.
+This will open a new Notebook. On the top right corner of the workspace click on the Notebook name and rename it to ```analyze_and_create_embeddings```. Click on any empty area to close and rename the Notebook.
 
-We'll then need to install the necessary libraries. We'll use the [semantic-kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview?WT.mc_id=data-114676-jndemenge) library to build the RAG application with models from Azure OpenAI. 
+![new_notebook](assets/new_notebook.png)
 
-Copy the following code into a new cell and run it to install the libraries.
-
-```python
-%pip install --quiet semantic-kernel
-```
-Next we'll need to provide the keys for Azure AI Services and Azure OpenAI to access the respective services.Copy the values from the Azure Portal and paste them into the following code cell.
+Next we'll need to provide the keys for Azure AI Services to access the services. Copy the values from the Azure Portal and paste them into the following code cell.
 
 
 ```python
-
-# Azure Open AI
-aoai_service_name = ''
-aoai_endpoint = f'https://{aoai_service_name}.openai.azure.com/'
-aoai_key = ''
-aoai_deployment_name_embeddings = "text-embedding-ada-002"
-aoai_deployment_name_completions = "gpt-4"
-
 # Azure AI Search
 aisearch_name = ''
 aisearch_index_name = 'rag-demo-index'
@@ -108,9 +143,31 @@ ai_services_location = ''
 
 ## Loading & Analyzing the Document
 
-In this workshop, we will be utilizing a specific document named 'support.pdf'. You can obtain this document by downloading it from [this link](https://github.com/Azure-Samples/azure-openai-rag-workshop/blob/main/data/support.pdf). Once downloaded, please upload 'support.pdf' to the `Files` directory in your Lakehouse.
+In this workshop, we will be using a specific document named [support.pdf](https://github.com/Azure-Samples/azure-openai-rag-workshop/blob/main/data/support.pdf) which will be the source of our data.
 
-Now that we have the basic configuration to Azure AI Services and Azure OpenAI, we can start loading the PDF documents into a Spark DataFrame using the `spark.read.format("binaryFile")`method provided by Apache Spark. Change the `document_path` variable to the path of the PDF document you'd like to analyze.
+To download the document paste the following code in a new cell and run it.
+
+```python
+import requests
+import os
+
+url = 'https://github.com/Azure-Samples/azure-openai-rag-workshop/raw/main/data/support.pdf'
+response = requests.get(url)
+
+# Specify your path here
+path = '/lakehouse/default/Files/'
+
+# Ensure the directory exists
+os.makedirs(path, exist_ok=True)
+
+# Write the content to a file in the specified path
+with open(os.path.join(path, 'support.pdf'), 'wb') as f:
+    f.write(response.content)
+```
+
+Thus downloads and stores the documents in the `Files` directory in the Lakehouse.
+
+Next we'll load the PDF document into a Spark DataFrame using the `spark.read.format("binaryFile")`method provided by Apache Spark.
 
 ```python
 # Import required pyspark libraries
@@ -128,7 +185,7 @@ df = (
 )
 ```
 
-This code will read the PDF documents and create a Spark DataFrame named df with the contents of the PDFs. The DataFrame will have a schema that represents the structure of the PDF documents, including their textual content.
+This code will read the PDF document and create a Spark DataFrame named `df` with the contents of the PDFs. The DataFrame will have a schema that represents the structure of the PDF documents, including their textual content.
 
 Next, we'll use the Azure AI Document Intelligence to read the PDF documents and extract the text from them. 
 
@@ -169,6 +226,10 @@ display(analyzed_df)
 
 Now that we have the text content of the PDF documents, we can generate embeddings for the text using Azure OpenAI. Embeddings are vector representations of the text that can be used to compare the similarity between different pieces of text.
 
+![chunking-vector](assets/chunking-vector.SVG)
+
+This process begins by splitting the text into chuncks, then for each of the chuncks we generate Embeddings using Azure OpenAI. Thse embeddings are then stored in a vector store. 
+
 ## Text Chunking
 
 Before we can generate the embeddings, we need to split the text into chunks. To do this we leverage SynapseML’s PageSplitter to divide the documents into smaller sections, which are subsequently stored in the `chunks` column. This allows for more granular representation and processing of the document content.
@@ -188,7 +249,7 @@ splitted_df = ps.transform(analyzed_df)
 display(splitted_df)
 ```
 
-Note that the chunks for each document are presented in a single row inside an array. In order to embed all the chunks in the following cells, we need to have each chunk in a separate row. To accomplish that, we first explode these arrays so there is only one chunk in each row, then filter the Spark DataFrame in order to only keep the path to the document and the chunk in a single row.
+Note that the chunks for each document are presented in a single row inside an array. In order to embed all the chunks in the following cells, we need to have each chunk in a separate row. 
 
 ```python
 # Each column contains many chunks for the saame document as a vector.
@@ -200,16 +261,17 @@ exploded_df = splitted_df.select("path", explode(col("chunks")).alias("chunk")).
 )
 display(exploded_df)
 ```
+From this code snippet we first explode these arrays so there is only one chunk in each row, then filter the Spark DataFrame in order to only keep the path to the document and the chunk in a single row.
+
 ## Generating Embeddings
-Next we'll generate the embeddings for each chunk. To do this we utilize both SynapseML and Azure OpenAI Service. By integrating the Azure OpenAI service with SynapseML, we can leverage the power of the Apache Spark distributed computing framework to process numerous prompts using the OpenAI service. 
+Next we'll generate the embeddings for each chunk. To do this we utilize both SynapseML and Azure OpenAI Service. By integrating the built in Azure OpenAI service with SynapseML, we can leverage the power of the Apache Spark distributed computing framework to process numerous prompts using the OpenAI service. 
 
 ```python
 from synapse.ml.services import OpenAIEmbedding
 
 embedding = (
     OpenAIEmbedding()
-    .setDeploymentName(aoai_deployment_name_embeddings)
-    .setCustomServiceName(aoai_service_name)
+    .setDeploymentName('text-embedding-ada-002')
     .setTextCol("chunk")
     .setErrorCol("error")
     .setOutputCol("embeddings")
@@ -352,12 +414,31 @@ df_embeddings.show()
 
 After processing the document, we can proceed to pose a question. We will use [SynapseML](https://microsoft.github.io/SynapseML/docs/Explore%20Algorithms/OpenAI/Quickstart%20-%20OpenAI%20Embedding/) to convert the user's question into an embedding and then utilize cosine similarity to retrieve the top K document chunks that closely match the user's question. 
 
-It's worth mentioning that alternative similarity metrics can also be employed.
+## Configure Environment & Azure API Keys
+To do this, let's create a new notebook in the Lakehouse and rename it to `rag_application`. We'll use this notebook to build the RAG application.
+
+Next we'll need to provide the keys for Azure AI Services to access the services. Copy the values from the Azure Portal and paste them into the following code cell.
+```python
+
+# Azure Open AI
+aoai_service_name = ''
+aoai_endpoint = f'https://{aoai_service_name}.openai.azure.com/'
+aoai_key = ''
+aoai_deployment_name_completions = "gpt-4"
+
+# Azure AI Search
+aisearch_name = ''
+aisearch_index_name = 'rag-demo-index'
+aisearch_api_key = ''
+```
+## Generate Embeddings for the user Question
+We'll begin the retrieval process by generating embeddings for the user's question. 
+
+To do this, define a function that takes the user's question as input and converts it into an embedding. For this we'll be leveraging the  **Pre-built AI Models** in Microsoft Fabric. For this section we'll use the `text-embedding-ada-002` model to generate the embeddings.
+
 
 ```python
 # Ask a question and convert to embeddings
-
-
 def gen_question_embedding(user_question):
     # Convert question to embedding using synapseML
     from synapse.ml.services import OpenAIEmbedding
@@ -365,9 +446,7 @@ def gen_question_embedding(user_question):
     df_ques = spark.createDataFrame([(user_question, 1)], ["questions", "dummy"])
     embedding = (
         OpenAIEmbedding()
-        .setSubscriptionKey(aoai_key)
-        .setDeploymentName(aoai_deployment_name_embeddings)
-        .setCustomServiceName(aoai_service_name)
+        .setDeploymentName('text-embedding-ada-002')
         .setTextCol("questions")
         .setErrorCol("errorQ")
         .setOutputCol("embeddings")
@@ -376,7 +455,16 @@ def gen_question_embedding(user_question):
     row = df_ques_embeddings.collect()[0]
     question_embedding = row.embeddings.tolist()
     return question_embedding
+```
 
+Learn more about Pre-built AI Services in Microsoft Fabric [here](https://learn.microsoft.com/en-us/fabric/data-science/ai-services/ai-services-overview?WT.mc_id=data-114676-jndemenge)
+
+## Retrieve Relevant Documents	
+To provide a response to the user's question, we'll need to retrieve the top K document chunks that closely match the user's question from the vector database. To retrieve the top K document chunks, we'll use the following function.
+
+```python
+import json 
+import requests
 
 def retrieve_k_chunk(k, question_embedding):
     # Retrieve the top K entries
@@ -395,8 +483,7 @@ def retrieve_k_chunk(k, question_embedding):
     print(response.status_code)
     return output
 ```
-
-To provide a response to the user's question, we'll need to retrieve the top K document chunks that closely match the user's question from the vector database. These chunks will then be used to provide a context for the user's question. 
+Now that we have the top K document chunks, we can concatenate the content of the retrieved documents to form the context for the user's question. 
 
 ```python
 def get_context(user_question, retrieved_k = 5):
@@ -411,59 +498,83 @@ def get_context(user_question, retrieved_k = 5):
 
     return context
 ```
+## Answering the User's Question
+Finally we'll use the context generated from the retrieved documents to answer the user's question. To do this we'll use the pre-built AI Model in Microsoft Fabric. For this demo, we'll use the `gpt-35-turbo-16k`. This model is optimzied for conversation.
 
-Next we'll use the [semantic-kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview?WT.mc_id=data-114676-jndemenge) library to build the RAG application with models from Azure OpenAI. Initialize the kernel as follows:
-
+Begin by bring in the necessary libraries and then define a function to create a message.
 ```python
-import semantic_kernel as sk
+from pyspark.sql import Row
+from pyspark.sql.types import *
+import synapse.ml.core
+from synapse.ml.services.openai import *
 
-from semantic_kernel.connectors.ai.open_ai import (
-    OpenAIChatCompletion,
-    AzureChatCompletion,
-)
-
-# Initialize the kernel
-kernel = sk.Kernel()
-
-kernel.add_chat_service(
-    "chat_completion",
-    AzureChatCompletion(
-        deployment_name=aoai_deployment_name_completions,
-        endpoint=aoai_endpoint,
-        api_key=aoai_key
-    ),
-)
+def make_message(role, content):
+    return Row(role=role, content=content, name=role)
 ```
 
-Build the prompt template and use it in your kernel to get a response to the user's question. Replace the `user_question` variable with the question you'd like to ask relevant to the document you uploaded earlier.
+The function above creates a message with the role and content. The role can be either `user` or `system`.
+
+Next, we will define another function that gets the repsonse from the model, based on  the context and the user's question.
 
 ```python
+def get_response(user_question):
+    context = get_context(user_question)
 
-user_question = ""
+    # Write a prompt with context and user_question as variables 
+    prompt = f"""
+    context :{context}
+    Answer the question based on the context above. If the
+    information to answer the question is not present in the given context then reply "I don't know".
+    """
 
-context = get_context(user_question)
+    chat_df = spark.createDataFrame(
+        [
+            (
+                [
+                    make_message(
+                        "system", prompt
+                    ),
+                    make_message("user", user_question),
+                ],
+            ),
+        ]
+    ).toDF("messages")
 
-# Write a prompt with context and user_question as variables 
-prompt = f"""
-context :{context}
-Answer the question based on the context above. If the
-information to answer the question is not present in the given context then reply "I don't know".
-Question: {user_question}
-Answer: """
+    chat_completion = (
+        OpenAIChatCompletion()
+        .setDeploymentName("gpt-35-turbo-16k") # deploymentName could be one of {gpt-35-turbo, gpt-35-turbo-16k}
+        .setMessagesCol("messages")
+        .setErrorCol("error")
+        .setOutputCol("chat_completions")
+    )
 
+    result_df = chat_completion.transform(chat_df).select("chat_completions.choices.message.content")
 
-fx = kernel.create_semantic_function(
-    prompt,
-    function_name="docsChat",
-    temperature = 0
-)
+    result = []
+    for row in result_df.collect():
+        content_string = ' '.join(row['content'])
+        result.append(content_string)
 
-model_response = await kernel.run_async(fx)
-
-print(model_response.result)
+    # Join the list into a single string
+    result = ' '.join(result)
+    
+    return result
 ```
 
-This will return the answer to the user's question. If the information to answer the question is not present in the given context then the model will reply "I don't know".
+This function, first gets a context for the user's question, which is basically a list of documents that are relevant to the user's question. It then uses the context to create a prompt and then uses the prompt to get a response from the model.
+
+We can then use the function to get a response to the user's question.
+
+```python
+user_question = "how do i make a booking?"
+response = get_response(user_question)
+print(response)
+```
+
+This gives a result similar to the following:
+
+![response](assets/response.png)
+
 
 ---
 
@@ -476,14 +587,6 @@ This concludes this workshop, we hope you enjoyed it and learned something new.
 > If you had any issues while following this workshop, please let us know by [creating a new issue](https://github.com/microsoft/moaw/issues) on the github repository.
 </div>
 
-## Resources
-To learn more about Retrieval Augmented Generation (RAG) using Azure Search an Azure OpenAI, refer to the following resources:
-
-- [Retrieval Augmented Generation (RAG) in Azure AI Search](https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview?WT.mc_id=data-114676-jndemenge)
-- [Giving your AI memories](https://learn.microsoft.com/en-us/semantic-kernel/memories/overview?WT.mc_id=data-114676-jndemenge)
-
-***Bonus:*** For more information on creating RAG applications with Microsoft Fabric’s Lakehouse Data and prompt flow in Azure Machine Learning Service, refer to this [resource](https://blog.fabric.microsoft.com/en-us/blog/using-microsoft-fabrics-lakehouse-data-and-prompt-flow-in-azure-machine-learning-service-to-create-rag-applications).
-
 ## Clean up resources
 
 
@@ -493,3 +596,18 @@ To learn more about Retrieval Augmented Generation (RAG) using Azure Search an A
 </div>
 
 To delete the resources, navigate to the resource group you created earlier and click on the `Delete` button.
+
+
+## Resources
+To learn more about Retrieval Augmented Generation (RAG) using Azure Search an Azure OpenAI, refer to the following resources:
+
+- [Retrieval Augmented Generation (RAG) in Azure AI Search](https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview?WT.mc_id=data-114676-jndemenge)
+- [Use Azure OpenAI in Fabric with Python SDK and Synapse ML (preview)](https://learn.microsoft.com/en-gb/fabric/data-science/ai-services/how-to-use-openai-sdk-synapse?WT.mc_id=data-114676-jndemenge)
+- [Azure OpenAI for big data](https://microsoft.github.io/SynapseML/docs/Explore%20Algorithms/OpenAI/)
+
+***Bonus:*** For more information on creating RAG applications with Microsoft Fabric’s Lakehouse Data and prompt flow in Azure Machine Learning Service, refer to this [resource](https://blog.fabric.microsoft.com/en-us/blog/using-microsoft-fabrics-lakehouse-data-and-prompt-flow-in-azure-machine-learning-service-to-create-rag-applications).
+
+## References
+- This workshop URL: [aka.ms/ws/fabric-rag](https://aka.ms/ws/fabric-rag)
+- If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
+- Live Workshop on [YouTube](https://www.youtube.com/watch?v=BfNiaaBOcM8)

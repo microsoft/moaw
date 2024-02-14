@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.24.24.22086",
-      "templateHash": "2354070489136224490"
+      "version": "0.25.3.34343",
+      "templateHash": "6968767025245883167"
     }
   },
   "parameters": {
@@ -55,47 +55,6 @@
           "apiKeyOnly": {}
         }
       }
-    },
-    {
-      "type": "Microsoft.CognitiveServices/accounts",
-      "apiVersion": "2023-10-01-preview",
-      "name": "[parameters('azureOpenAiServiceName')]",
-      "location": "[parameters('openailocation')]",
-      "sku": {
-        "name": "S0"
-      },
-      "kind": "OpenAI",
-      "properties": {
-        "customSubDomainName": "[parameters('azureOpenAiServiceName')]",
-        "networkAcls": {
-          "defaultAction": "Allow",
-          "virtualNetworkRules": [],
-          "ipRules": []
-        },
-        "publicNetworkAccess": "Enabled"
-      }
-    },
-    {
-      "type": "Microsoft.CognitiveServices/accounts/deployments",
-      "apiVersion": "2023-10-01-preview",
-      "name": "[format('{0}/{1}', parameters('azureOpenAiServiceName'), 'gpt-4')]",
-      "sku": {
-        "name": "Standard",
-        "capacity": 10
-      },
-      "properties": {
-        "model": {
-          "format": "OpenAI",
-          "name": "gpt-4",
-          "version": "0613"
-        },
-        "versionUpgradeOption": "OnceNewDefaultVersionAvailable",
-        "currentCapacity": 10,
-        "raiPolicyName": "Microsoft.Default"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAiServiceName'))]"
-      ]
     },
     {
       "type": "Microsoft.CognitiveServices/accounts",
