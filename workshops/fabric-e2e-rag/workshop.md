@@ -56,13 +56,13 @@ In this workshop, we'll demonstrate how to develop a context-aware question answ
 
 # Introduction
 
-Analysing structured data has been an easy process for some time but the same cannot be said for unstructured data. Unstructured data, such as text, images, and videos, is more difficult to analyze and interpret. However, with the advent of advanced AI models, such as OpenAI's GPT-3 and GPT-4, it is now becoming easier to analyze and gain insights from unstructured data.
+Analyzing structured data has been an easy process for some time but the same cannot be said for unstructured data. Unstructured data, such as text, images, and videos, is more difficult to analyze and interpret. However, with the advent of advanced AI models, such as OpenAI's GPT-3 and GPT-4, it is now becoming easier to analyze and gain insights from unstructured data.
 
-An example of such analysis is the ability to query a document for specisific information using natural language which is achievable though a combination of information retrieval and language generation.
+An example of such analysis is the ability to query a document for specific information using natural language which is achievable though a combination of information retrieval and language generation.
 
 By leveraging the RAG (Retrieval-Augmented Generation) framework, you can create a powerful question-and-answering pipeline that uses a large language model (LLM) and you own data to generate responses. 
 
-The architure of such an application is as shown below:
+The architecture of such an application is as shown below:
 
 ![schema](assets/schema.png)
 
@@ -86,7 +86,7 @@ To learn more about Lakehouses in Microsoft Fabric, refer to [this resource](htt
 
 To complete this workshop you'll need an Azure account. If you don't have one, you can create a [free account](https://azure.microsoft.com/en-gb/free/?WT.mc_id=data-0000-cxa) before you begin. 
 
-<div class="important" data-title="Importatnt">
+<div class="important" data-title="Important">
 
 > Ensure that the subscription you are using has the permissions to create and manage resources.
 </div>
@@ -226,9 +226,9 @@ display(analyzed_df)
 
 Now that we have the text content of the PDF documents, we can generate embeddings for the text using Azure OpenAI. Embeddings are vector representations of the text that can be used to compare the similarity between different pieces of text.
 
-![chunking-vector](assets/chunking-vector.SVG)
+![chunking-vector](assets/chunking-vector.svg)
 
-This process begins by splitting the text into chuncks, then for each of the chuncks we generate Embeddings using Azure OpenAI. Thse embeddings are then stored in a vector store. 
+This process begins by splitting the text into chunks, then for each of the chunks we generate Embeddings using Azure OpenAI. These embeddings are then stored in a vector store. 
 
 ## Text Chunking
 
@@ -252,8 +252,8 @@ display(splitted_df)
 Note that the chunks for each document are presented in a single row inside an array. In order to embed all the chunks in the following cells, we need to have each chunk in a separate row. 
 
 ```python
-# Each column contains many chunks for the saame document as a vector.
-# Explode will distribute and replicate the content of a vecor across multple rows
+# Each column contains many chunks for the same document as a vector.
+# Explode will distribute and replicate the content of a vector across multiple rows
 from pyspark.sql.functions import explode, col
 
 exploded_df = splitted_df.select("path", explode(col("chunks")).alias("chunk")).select(
@@ -419,13 +419,6 @@ To do this, let's create a new notebook in the Lakehouse and rename it to `rag_a
 
 Next we'll need to provide the keys for Azure AI Services to access the services. Copy the values from the Azure Portal and paste them into the following code cell.
 ```python
-
-# Azure Open AI
-aoai_service_name = ''
-aoai_endpoint = f'https://{aoai_service_name}.openai.azure.com/'
-aoai_key = ''
-aoai_deployment_name_completions = "gpt-4"
-
 # Azure AI Search
 aisearch_name = ''
 aisearch_index_name = 'rag-demo-index'
@@ -499,7 +492,7 @@ def get_context(user_question, retrieved_k = 5):
     return context
 ```
 ## Answering the User's Question
-Finally we'll use the context generated from the retrieved documents to answer the user's question. To do this we'll use the pre-built AI Model in Microsoft Fabric. For this demo, we'll use the `gpt-35-turbo-16k`. This model is optimzied for conversation.
+Finally we'll use the context generated from the retrieved documents to answer the user's question. To do this we'll use the pre-built AI Model in Microsoft Fabric. For this demo, we'll use the `gpt-35-turbo-16k`. This model is optimized for conversation.
 
 Begin by bring in the necessary libraries and then define a function to create a message.
 ```python
@@ -514,7 +507,7 @@ def make_message(role, content):
 
 The function above creates a message with the role and content. The role can be either `user` or `system`.
 
-Next, we will define another function that gets the repsonse from the model, based on  the context and the user's question.
+Next, we will define another function that gets the response from the model, based on  the context and the user's question.
 
 ```python
 def get_response(user_question):
