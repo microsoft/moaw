@@ -44,7 +44,7 @@ In this workshop, we'll demonstrate how to develop a context-aware question answ
 | | |
 |----------------------|------------------------------------------------------|
 | Azure account        | [Get a free Azure account](https://azure.microsoft.com/free) |
-| Microsoft Fabric License | [Microsoft Fabric Licenses](https://learn.microsoft.com/en-us/fabric/enterprise/licenses?WT.mc_id=data-114676-jndemenge) |
+| Microsoft Fabric License | [Microsoft Fabric Licenses](https://learn.microsoft.com/fabric/enterprise/licenses?WT.mc_id=data-114676-jndemenge) |
 | A workspace in Microsoft Fabric | [Create a Microsoft Fabric workspace](https://learn.microsoft.com/fabric/data-warehouse/tutorial-create-workspace?WT.mc_id=data-114676-jndemenge) |
 | Access to Azure OpenAI API *(optional)* | [Request access to Azure OpenAI](https://aka.ms/oaiapply) |
 | A Web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
