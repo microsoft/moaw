@@ -46,10 +46,15 @@ In this workshop, we'll demonstrate how to develop a context-aware question answ
 | Azure account        | [Get a free Azure account](https://azure.microsoft.com/free) |
 | Microsoft Fabric License | [Microsoft Fabric Licenses](https://learn.microsoft.com/en-us/fabric/enterprise/licenses?WT.mc_id=data-114676-jndemenge) |
 | A workspace in Microsoft Fabric | [Create a Microsoft Fabric workspace](https://learn.microsoft.com/en-gb/fabric/data-warehouse/tutorial-create-workspace?WT.mc_id=data-114676-jndemenge) |
-| Access to Azure OpenAI API | [Request access to Azure OpenAI](https://aka.ms/oaiapply) |
+| Access to Azure OpenAI API *(optional)* | [Request access to Azure OpenAI](https://aka.ms/oaiapply) |
 | A Web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
 | Python knowledge | [Python for beginners](https://learn.microsoft.com/en-us/training/paths/beginner-python/) |
 
+
+<div class="warning" data-title="Note">
+
+> Since we are using the Pre-Built Open AI Models in Microsoft Fabric you do not need to request or have access to the Azure OpenAI API. However, if you are using the trial version of Microsoft Fabric or do not have an F64+ capacity, you will need to request access to the Azure OpenAI API.
+</div>
 
 ---
 
@@ -92,17 +97,43 @@ To complete this workshop you'll need an Azure account. If you don't have one, y
 </div>
 
 
-Once you have the Account ready Right-click or `Ctrl + Click` on the button below to open the Azure Portal in a new tab and begin deployment of the necessary resources.
+Navigate to the [Azure Portal](https://portal.azure.com) and click on `Create a resource` and search for `Azure AI Search`. Click on the `Azure AI Search` resource and then click on `Create`.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMicrosoft%2Fmoaw%2Fmain%2Fworkshops%2Ffabric-e2e-rag%2Fassets%2Fmain.json)
+![aisearch](assets/aisearch.png)
 
-This deploys the following resources:
-1. Azure AI Search
-2. Azure AI Services
+
+Fill out all the required fields and click `Review + Create` and once the validation is successful, click `Create`.
+
+Similarly, create another resource for the `Azure AI Services` by clicking on `Create a resource` and searching for `Azure AI Services`. Click on the `Azure AI Services` resource and then click on `Create`.
+
+![aiservice](assets/aiservice.png)
+
+Fill out all the required fields, accept the Responsible AI Notice and then click `Review + Create` and once the validation is successful, click `Create`. Ensure that you select the same ***Resource Group*** as the ***Azure AI Search resource***.
+
+## Azure Open AI Set Up
+
+If you are have an F64+ Capacity you can skip this step. 
+
+However if you are using are using the trial version of Microsoft Fabric or do not have an F64+ capacity, you will need to request access to the Azure OpenAI API from [here](https://aka.ms/oaiapply). Once you have access to the Azure OpenAI API, we'll need to create the Azure OpenAI resource in the Azure Portal.
+
+To do this navigate to the [Azure Portal] and click on `Create a resource` and search for `Azure OpenAI`. Click on the `Azure OpenAI` resource and then click on `Create`. 
+
+![openai](assets/openai.png)
+
+Fill out all the required fields and click `Review + Create` and once the validation is successful, click `Create`. Also ensure that you select the same ***Resource Group*** as the ***Azure AI Search resource*** and the ***Azure AI Services resource***.
+
+Next we'll need to create new model deployments. To do this navigate to the [Azure OpenAI Studio](https://oai.azure.com/portal). Under management click on `Deployments` and then click on `Create Deployment`. We'll need to create two deployments, one for the `text-embedding-ada-002` and another for the `gpt-35-turbo-16k`.
+
+![deployments](assets/deployments.png)
+
+<div class="warning" data-title="Note">
+
+> You will have to provide the keys and deployment names for the Azure OpenAI resource in sections that are using the Azure OpenAI models.
+</div>
 
 ---
 
-# Loading and Preprocessing PDF Documents
+# Loading and Preprocessing PDF Documents 
 
 Now that we have all the necessary resources deployed we can now begin building the RAG application. This section covers the process of loading and preprocessing PDF documents using Document Intelligence in Azure AI Services. 
 
@@ -286,6 +317,16 @@ This integration enables the SynapseML embedding client to generate embeddings i
 
 For more detailed information on generating embeddings with Azure OpenAI, you can look [here]( https://learn.microsoft.com/azure/cognitive-services/openai/how-to/embeddings?tabs=console&WT.mc_id=data-114676-jndemenge).
 
+<div class="warning" data-title="Note">
+
+> If you are using the Azure OpenAI resource deployed on Microsoft Azure you will need to provide the Key as well as the Deployment Name for the Azure OpenAI resource. To do this replace the `deploymentName` with the name of the deployment you created in the Azure OpenAI Studio and add the key as follows:
+
+```python
+    .setDeploymentName('text-embedding-ada-002')
+    .setSubscriptionKey(azure_openai_key)
+```
+</div>
+
 ## Storing Embeddings in a Vector Store
 
 [Azure Cognitive Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search?WT.mc_id=data-114676-jndemenge) offers a user-friendly interface for creating a vector database, as well as storing and retrieving data using vector search. If you're interested in learning more about vector search, you can look [here](https://github.com/Azure/cognitive-search-vector-pr/tree/main).
@@ -452,6 +493,16 @@ def gen_question_embedding(user_question):
 
 Learn more about Pre-built AI Services in Microsoft Fabric [here](https://learn.microsoft.com/en-us/fabric/data-science/ai-services/ai-services-overview?WT.mc_id=data-114676-jndemenge)
 
+<div class="warning" data-title="Note">
+
+> If you are using the Azure OpenAI resource deployed on Microsoft Azure you will need to provide the Key as well as the Deployment Name for the Azure OpenAI resource. To do this replace the `deploymentName` with the name of the deployment you created in the Azure OpenAI Studio and add the key as follows:
+
+```python
+    .setDeploymentName('text-embedding-ada-002')
+    .setSubscriptionKey(azure_openai_key)
+```
+</div>
+
 ## Retrieve Relevant Documents	
 To provide a response to the user's question, we'll need to retrieve the top K document chunks that closely match the user's question from the vector database. To retrieve the top K document chunks, we'll use the following function.
 
@@ -555,6 +606,16 @@ def get_response(user_question):
 ```
 
 This function, first gets a context for the user's question, which is basically a list of documents that are relevant to the user's question. It then uses the context to create a prompt and then uses the prompt to get a response from the model.
+
+<div class="warning" data-title="Note">
+
+> If you are using the Azure OpenAI resource deployed on Microsoft Azure you will need to provide the Key as well as the Deployment Name for the Azure OpenAI resource. To do this replace the `deploymentName` with the name of the deployment you created in the Azure OpenAI Studio and add the key as follows:
+
+```python
+    .setDeploymentName('gpt-35-turbo-16k')
+    .setSubscriptionKey(azure_openai_key)
+```
+</div>
 
 We can then use the function to get a response to the user's question.
 
