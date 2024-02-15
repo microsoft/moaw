@@ -34,7 +34,7 @@ In this workshop, we'll demonstrate how to develop a context-aware question answ
 - Pre-Process PDF Documents using [Azure AI Document Intelligence](https://azure.microsoft.com/products/ai-services/ai-document-intelligence) in Azure AI Services.
 - Perform text chunking using SynapseML.
 - Generate embeddings for the chunks using SynapseML and  [Azure OpenAI Services](https://azure.microsoft.com/products/cognitive-services/openai-service).
-- Store the embeddings in a vector store using [Azure Cognitive Search](https://azure.microsoft.com/products/search).
+- Store the embeddings in a vector store using [Azure AI Search](https://azure.microsoft.com/products/search).
 - Build a question answering pipeline.
 
 
