@@ -89,7 +89,7 @@ To learn more about Lakehouses in Microsoft Fabric, refer to [this resource](htt
 
 ## Azure Setup
 
-To complete this workshop you'll need an Azure account. If you don't have one, you can create a [free account](https://azure.microsoft.com/en-gb/free/?WT.mc_id=data-0000-cxa) before you begin. 
+To complete this workshop you'll need an Azure account. If you don't have one, you can create a [free account](https://azure.microsoft.com/free/?WT.mc_id=data-0000-cxa) before you begin. 
 
 <div class="important" data-title="Important">
 
