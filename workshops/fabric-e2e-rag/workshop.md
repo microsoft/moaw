@@ -84,7 +84,7 @@ To create a new Lakehouse in your Microsoft Fabric workspace, open the `Data Eng
 
 ![Screenshot of New Lakehouse dialog in Synapse Data Engineering tab](assets/lakehouse.png)
 
-To learn more about Lakehouses in Microsoft Fabric, refer to [this resource](https://learn.microsoft.com/en-us/fabric/data-engineering/tutorial-build-lakehouse#create-a-lakehouse?WT.mc_id=data-114676-jndemenge)
+To learn more about Lakehouses in Microsoft Fabric, refer to [this resource](https://learn.microsoft.com/fabric/data-engineering/tutorial-build-lakehouse#create-a-lakehouse?WT.mc_id=data-114676-jndemenge)
 
 
 ## Azure Setup
