@@ -69,7 +69,7 @@ By leveraging the RAG (Retrieval-Augmented Generation) framework, you can create
 
 The architecture of such an application is as shown below:
 
-![schema](assets/schema.png)
+![Architecture diagram connecting Azure OpenAI with Azure AI search and Document Intelligence](assets/schema.png)
 
 To get an in-depth understanding of the RAG framework, refer to [this workshop](https://moaw.dev/workshop/gh:azure-samples/azure-openai-rag-workshop/base/docs/)
 
