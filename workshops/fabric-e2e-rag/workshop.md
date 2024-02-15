@@ -135,7 +135,7 @@ Next we'll need to create new model deployments. To do this navigate to the [Azu
 
 # Loading and Preprocessing PDF Documents 
 
-Now that we have all the necessary resources deployed we can now begin building the RAG application. This section covers the process of loading and preprocessing PDF documents using Document Intelligence in Azure AI Services. 
+Now that we have all the necessary resources deployed, we can begin building the RAG application. This section covers the process of loading and preprocessing PDF documents using Document Intelligence in Azure AI Services. 
 
 To do this, we'll perform the following steps:
 
