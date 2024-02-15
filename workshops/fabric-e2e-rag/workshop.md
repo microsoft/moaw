@@ -82,7 +82,7 @@ To continue with this workshop, you'll need to create a Lakehouse in your Micros
 ## Create a Lakehouse
 To create a new Lakehouse in your Microsoft Fabric workspace, open the `Data Engineering workload` on the bottom left of the workspace and click on `Lakehouse`. Provide the name `rag_workshop` and click `Create`
 
-![lakehouse](assets/lakehouse.png)
+![Screenshot of New Lakehouse dialog in Synapse Data Engineering tab](assets/lakehouse.png)
 
 To learn more about Lakehouses in Microsoft Fabric, refer to [this resource](https://learn.microsoft.com/en-us/fabric/data-engineering/tutorial-build-lakehouse#create-a-lakehouse?WT.mc_id=data-114676-jndemenge)
 
