@@ -48,7 +48,7 @@ In this workshop, we'll demonstrate how to develop a context-aware question answ
 | A workspace in Microsoft Fabric | [Create a Microsoft Fabric workspace](https://learn.microsoft.com/en-gb/fabric/data-warehouse/tutorial-create-workspace?WT.mc_id=data-114676-jndemenge) |
 | Access to Azure OpenAI API *(optional)* | [Request access to Azure OpenAI](https://aka.ms/oaiapply) |
 | A Web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
-| Python knowledge | [Python for beginners](https://learn.microsoft.com/en-us/training/paths/beginner-python/) |
+| Python knowledge | [Python for beginners](https://learn.microsoft.com/training/paths/beginner-python/) |
 
 
 <div class="warning" data-title="Note">
