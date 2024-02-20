@@ -68,7 +68,7 @@ By leveraging the RAG (Retrieval-Augmented Generation) framework, you can create
 
 The architecture of such an application is as shown below:
 
-![Architecture diagram connecting Azure OpenAI with Azure AI search and Document Intelligence](assets/schema.png)
+![Architecture diagram connecting Azure OpenAI with Azure AI Search and Document Intelligence](assets/schema.png)
 
 To get an in-depth understanding of the RAG framework, refer to [this workshop](https://moaw.dev/workshop/gh:azure-samples/azure-openai-rag-workshop/base/docs/)
 
@@ -206,7 +206,7 @@ document_path = "Files/support.pdf"  # Path to the PDF document
 df = spark.read.format("binaryFile").load(document_path).limit(10).cache()
 ```
 
-This code will read the PDF document and create a Spark DataFrame named `df` with the contents of the PDFs. The DataFrame will have a schema that represents the structure of the PDF document, including its textual content.
+This code will read the PDF document and create a Spark DataFrame named `df` with the contents of the PDF. The DataFrame will have a schema that represents the structure of the PDF document, including its textual content.
 
 Next, we'll use the Azure AI Document Intelligence to read the PDF documents and extract the text from them.
 
@@ -220,8 +220,8 @@ from pyspark.sql.functions import col
 
 analyze_document = (
     AnalyzeDocument()
-    .setSubscriptionKey(ai_services_key)
     .setPrebuiltModelId("prebuilt-layout")
+    .setSubscriptionKey(ai_services_key)
     .setLocation(ai_services_location)
     .setImageBytesCol("content")
     .setOutputCol("result")
@@ -249,7 +249,7 @@ Now that we have the text content of the PDF documents, we can generate embeddin
 
 ![Diagram of flow from entire PDF file to chunks to embeddings](assets/chunking-vector.svg)
 
-This process begins by splitting the text into chunks, then for each of the chunks we generate embeddings using Azure OpenAI. These embeddings are then stored in Azure AI search.
+This process begins by splitting the text into chunks, then for each of the chunks we generate embeddings using Azure OpenAI. These embeddings are then stored in Azure AI Search.
 
 ## Text Chunking
 
@@ -324,7 +324,7 @@ For more detailed information on generating embeddings with Azure OpenAI, see: [
 
 [Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search?WT.mc_id=data-114676-jndemenge) is a powerful search engine that includes the ability to perform full text search, vector search, and hybrid search. For more examples of its vector search capabilities, see the [azure-search-vector-samples repository](https://github.com/Azure/azure-search-vector-samples/).
 
-Storing data in the Azure AI search involves two main steps:
+Storing data in Azure AI Search involves two main steps:
 
 1. **Creating the index:** The first step is to define the schema of the search index, which includes the properties of each field as well as any vector search strategies that will be used.
 
@@ -389,9 +389,9 @@ else:
 ```
 
 
-The next step is to upload the chunks to the newly created Azure AI search index. The [Azure AI Search REST API](https://learn.microsoft.com/rest/api/searchservice/addupdate-or-delete-documents) supports up to 1000 "documents" per request. Note that in this case, each of our "documents" is in fact a chunk of the original file.
+The next step is to upload the chunks to the newly created Azure AI Search index. The [Azure AI Search REST API](https://learn.microsoft.com/rest/api/searchservice/addupdate-or-delete-documents) supports up to 1000 "documents" per request. Note that in this case, each of our "documents" is in fact a chunk of the original file.
 
-In order to efficiently upload the chunks to the Azure AI search index, we'll use the `mapPartitions` function to process each partition of the dataframe. For each partition, the `upload_rows` function will collect 1000 rows at a time and upload them to the Azure AI search index. The function will then return the start and end index of the rows that were uploaded, as well as the status of the insertion, so that we know if the upload was successful or not.
+In order to efficiently upload the chunks to the Azure AI Search index, we'll use the `mapPartitions` function to process each partition of the dataframe. For each partition, the `upload_rows` function will collect 1000 rows at a time and upload them to the index. The function will then return the start and end index of the rows that were uploaded, as well as the status of the insertion, so that we know if the upload was successful or not.
 
 ```python
 from azure.search.documents import SearchClient
@@ -401,7 +401,7 @@ from pyspark.sql.functions import monotonically_increasing_id
 
 
 def insert_into_index(documents):
-    """Uploads a list of 'documents' to Azure AI search index."""
+    """Uploads a list of 'documents' to Azure AI Search index."""
 
     url = f"https://{aisearch_name}.search.windows.net/indexes/{aisearch_index_name}/docs/index?api-version=2023-11-01"
 
@@ -420,8 +420,8 @@ def insert_into_index(documents):
 
 
 def upload_rows(rows):
-    """Uploads the rows in a Spark dataframe to Azure AI search.
-    Limits uploads to 1000 rows at a time due to Azure AI search limits.
+    """Uploads the rows in a Spark dataframe to Azure AI Search.
+    Limits uploads to 1000 rows at a time due to Azure AI Search API limits.
     """
     BATCH_SIZE = 1000
     rows = list(rows)
@@ -453,7 +453,7 @@ display(res.toDF(["start_idx", "end_idx", "insertion_status"]))
 
 <div class="tip" data-title="Tip">
 
-> You can also use the [azure-search-documents Python package](https://pypi.org/project/azure-search-documents/) for Azure AI search operations.
+> You can also use the [azure-search-documents Python package](https://pypi.org/project/azure-search-documents/) for Azure AI Search operations.
 > You would first need to install that package into the Spark environment. See [Library management in Fabric environments](https://learn.microsoft.com/fabric/data-engineering/environment-manage-library)
 
 </div>
@@ -523,7 +523,7 @@ import json
 import requests
 
 def retrieve_top_chunks(k, question, question_embedding):
-    """Retrieve the top K entries from Azure AI search using hybrid search."""
+    """Retrieve the top K entries from Azure AI Search using hybrid search."""
     url = f"https://{aisearch_name}.search.windows.net/indexes/{aisearch_index_name}/docs/search?api-version=2023-11-01"
 
     payload = json.dumps({
