@@ -309,7 +309,7 @@ This integration enables the SynapseML embedding client to generate embeddings i
 
 For more detailed information on generating embeddings with Azure OpenAI, see: [Learn how to generate embeddings with Azure OpenAI](https://learn.microsoft.com/azure/cognitive-services/openai/how-to/embeddings?tabs=console&WT.mc_id=data-114676-jndemenge).
 
-<div class="info" data-title="Note">
+<div class="warning" data-title="Note">
 
 > If you're using the Azure OpenAI resource deployed on Microsoft Azure, you will need to provide the key as well as the deployment name for the Azure OpenAI resource, using `setDeploymentName` and `setSubscriptionKey`:
 >
