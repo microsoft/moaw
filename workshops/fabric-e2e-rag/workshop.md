@@ -309,6 +309,17 @@ This integration enables the SynapseML embedding client to generate embeddings i
 
 For more detailed information on generating embeddings with Azure OpenAI, see: [Learn how to generate embeddings with Azure OpenAI](https://learn.microsoft.com/azure/cognitive-services/openai/how-to/embeddings?tabs=console&WT.mc_id=data-114676-jndemenge).
 
+<div class="info" data-title="Note">
+
+> If you're using the Azure OpenAI resource deployed on Microsoft Azure, you will need to provide the key as well as the deployment name for the Azure OpenAI resource, using `setDeploymentName` and `setSubscriptionKey`:
+>
+> ```python
+>     .setDeploymentName('YOUR-DEPLOYMENT_NAME')
+>     .setSubscriptionKey('YOUR-AZURE-OPENAI-KEY')
+> ```
+
+</div>
+
 ## Storing Embeddings
 
 [Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search?WT.mc_id=data-114676-jndemenge) is a powerful search engine that includes the ability to perform full text search, vector search, and hybrid search. For more examples of its vector search capabilities, see the [azure-search-vector-samples repository](https://github.com/Azure/azure-search-vector-samples/).
