@@ -48,7 +48,7 @@ In this workshop, we'll demonstrate how to develop a context-aware question answ
 | A Web browser        | [Get Microsoft Edge](https://www.microsoft.com/edge) |
 | Python knowledge | [Python for beginners](https://learn.microsoft.com/training/paths/beginner-python/) |
 
-> [!WARNING]  
+> [!IMPORTANT]  
 > Since we are using the Pre-Built Open AI Models in Microsoft Fabric you do not need to request or have access to the Azure OpenAI API. However, if you are using the trial version of Microsoft Fabric or do not have an F64+ capacity, you will need to request access to the Azure OpenAI API.
 
 ---
@@ -165,17 +165,17 @@ To download the document paste the following code in a new cell and run it.
 import requests
 import os
 
-url = 'https://github.com/Azure-Samples/azure-openai-rag-workshop/raw/main/data/support.pdf'
+url = "https://github.com/Azure-Samples/azure-openai-rag-workshop/raw/main/data/support.pdf"
 response = requests.get(url)
 
 # Specify your path here
-path = '/lakehouse/default/Files/'
+path = "/lakehouse/default/Files/"
 
 # Ensure the directory exists
 os.makedirs(path, exist_ok=True)
 
 # Write the content to a file in the specified path
-with open(os.path.join(path, 'support.pdf'), 'wb') as f:
+with open(os.path.join(path, "support.pdf"), "wb") as f:
     f.write(response.content)
 ```
 
@@ -184,19 +184,12 @@ This downloads and stores the document in the `Files` directory in the Lakehouse
 Next, load the PDF document into a Spark DataFrame using the `spark.read.format("binaryFile")` method provided by Apache Spark:
 
 ```python
-# Import required pyspark libraries
-
 from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
 
-document_path = 'Files/support.pdf' # Path to the PDF document 
+document_path = "Files/support.pdf"  # Path to the PDF document
 
-df = (
-    spark.read.format('binaryFile')
-    .load(document_path)
-    .limit(10)
-    .cache()
-)
+df = spark.read.format("binaryFile").load(document_path).limit(10).cache()
 ```
 
 This code will read the PDF document and create a Spark DataFrame named `df` with the contents of the PDFs. The DataFrame will have a schema that represents the structure of the PDF document, including its textual content.
@@ -213,8 +206,8 @@ from pyspark.sql.functions import col
 
 analyze_document = (
     AnalyzeDocument()
-    .setPrebuiltModelId("prebuilt-layout")
     .setSubscriptionKey(ai_services_key)
+    .setPrebuiltModelId("prebuilt-layout")
     .setLocation(ai_services_location)
     .setImageBytesCol("content")
     .setOutputCol("result")
@@ -287,7 +280,7 @@ from synapse.ml.services import OpenAIEmbedding
 
 embedding = (
     OpenAIEmbedding()
-    .setDeploymentName('text-embedding-ada-002')
+    .setDeploymentName("text-embedding-ada-002")
     .setTextCol("chunk")
     .setErrorCol("error")
     .setOutputCol("embeddings")
@@ -300,95 +293,94 @@ display(df_embeddings)
 
 This integration enables the SynapseML embedding client to generate embeddings in a distributed manner, enabling efficient processing of large volumes of data. If you're interested in applying large language models at a distributed scale using Azure OpenAI and Azure Synapse Analytics, you can refer to [this approach](https://microsoft.github.io/SynapseML/docs/Explore%20Algorithms/OpenAI/).
 
-For more detailed information on generating embeddings with Azure OpenAI, you can look [here](https://learn.microsoft.com/azure/cognitive-services/openai/how-to/embeddings?tabs=console&WT.mc_id=data-114676-jndemenge).
+For more detailed information on generating embeddings with Azure OpenAI, see: [Learn how to generate embeddings with Azure OpenAI](https://learn.microsoft.com/azure/cognitive-services/openai/how-to/embeddings?tabs=console&WT.mc_id=data-114676-jndemenge).
 
 ### Storing Embeddings in a Vector Store
 
-[Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search?WT.mc_id=data-114676-jndemenge) offers a user-friendly interface for creating a vector database, as well as storing and retrieving data using vector search. If you're interested in learning more about vector search, you can look [here](https://github.com/Azure/cognitive-search-vector-pr/tree/main).
+[Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search?WT.mc_id=data-114676-jndemenge) is a powerful search engine that includes the ability to perform full text search, vector search, and hybrid search. For more examples of its vector search capabilities, see the [azure-search-vector-samples repository](https://github.com/Azure/azure-search-vector-samples/).
 
 Storing data in the Azure AI search involves two main steps:
 
-1. **Creating the Index:** The first step is to establish the index or schema of the vector database. This entails defining the structure and properties of the data that will be stored and indexed in the vector database.
+1. **Creating the index:** The first step is to define the schema of the search index, which includes the properties of each field as well as any vector search strategies that will be used.
 
-2. **Adding Chunked Documents and Embeddings:** The second step involves adding the chunked documents, along with their corresponding embeddings, to the vector datastore. This allows for efficient storage and retrieval of the data using vector search capabilities.
+2. **Adding chunked documents and embeddings:** The second step is to upload the chunked documents, along with their corresponding embeddings, to the index. This allows for efficient storage and retrieval of the data using hybrid and vector search.
 
-By following these steps, we will effectively store the chunked documents and their associated embeddings in the AzureCogSearch vector database, enabling seamless retrieval of relevant information through vector search functionality.
+The following code snippet demonstrates how to create an index in Azure AI Search using the [Azure AI Search REST API](https://learn.microsoft.com/rest/api/searchservice/indexes/create-or-update). This code creates an index with fields for the unique identifier of each document, the text content of the document, and the vector embedding of the text content. 
 
 ```python
-# Import necessary packages
 import requests
 import json
 
-EMBEDDING_LENGTH = (
-    1536  # length of the embedding vector (ada-002 generates embeddings of length 1536)
-)
+# Length of the embedding vector (OpenAI ada-002 generates embeddings of length 1536)
+EMBEDDING_LENGTH = 1536
 
-# Create Index for Cog Search with fields as id, content, and contentVector
+# Create index for AI Search with fields id, content, and contentVector
 # Note the datatypes for each field below
-
-# Create Index for Cog Search with fields as id, content, and contentVector
-# Note the datatypes for each field below
-
-url = f"https://{aisearch_name}.search.windows.net/indexes/{aisearch_index_name}?api-version=2023-07-01-Preview"
+url = f"https://{aisearch_name}.search.windows.net/indexes/{aisearch_index_name}?api-version=2023-11-01"
 payload = json.dumps(
-  {
-    "name": aisearch_index_name,
-    "fields": [
-      {"name": "id", "type": "Edm.String", "key": True, "filterable": True},  # Unique identifier for each document
-      {
-        "name": "content",
-        "type": "Edm.String",
-        "searchable": True,
-        "retrievable": True,
-      },  # Text content of the document
-      {
-        "name": "contentVector",
-        "type": "Collection(Edm.Single)",
-        "searchable": True,
-        "retrievable": True,
-        "dimensions": EMBEDDING_LENGTH,  # Length of the embedding vector
-        "vectorSearchConfiguration": "vectorConfig",  # Configuration for vector search
-      },  # Embedding vector representation of the document content
-    ],
-    "vectorSearch": {
-      "algorithmConfigurations": [
-        {
-          "name": "vectorConfig",
-          "kind": "hnsw",  # Algorithm used for vector search
-        }
-      ]
-    },
-  }
+    {
+        "name": aisearch_index_name,
+        "fields": [
+            # Unique identifier for each document
+            {
+                "name": "id",
+                "type": "Edm.String",
+                "key": True,
+                "filterable": True,
+            },
+            # Text content of the document
+            {
+                "name": "content",
+                "type": "Edm.String",
+                "searchable": True,
+                "retrievable": True,
+            },
+            # Vector embedding of the text content
+            {
+                "name": "contentVector",
+                "type": "Collection(Edm.Single)",
+                "searchable": True,
+                "retrievable": True,
+                "dimensions": EMBEDDING_LENGTH,
+                "vectorSearchProfile": "vectorConfig",
+            },
+        ],
+        "vectorSearch": {
+            "algorithms": [{"name": "hnswConfig", "kind": "hnsw", "hnswParameters": {"metric": "cosine"}}],
+            "profiles": [{"name": "vectorConfig", "algorithm": "hnswConfig"}],
+        },
+    }
 )
 headers = {"Content-Type": "application/json", "api-key": aisearch_api_key}
 
 response = requests.request("PUT", url, headers=headers, data=payload)
-print(response.status_code)
+if response.status_code == 201:
+    print("Index created!")
+elif response.status_code == 204:
+    print("Index updated!")
+else:
+    print(f"HTTP request failed with status code {response.status_code}")
+    print(f"HTTP response body: {response.text}")
 ```
 
-Next we can use a Spark User Defined Function (UDF) to apply functions directly to the DataFrame. This allows us to run the code in a distributed fashion.
+
+The next step is to upload the chunks to the newly created Azure AI search index. The [Azure AI Search REST API](https://learn.microsoft.com/rest/api/searchservice/addupdate-or-delete-documents) supports up to 1000 "documents" per request. Note that in this case, each of our "documents" is in fact a chunk of the original file.
+
+In order to efficiently upload the chunks to the Azure AI search index, we'll use the `mapPartitions` function to process each partition of the dataframe. For each partition, the `upload_rows` function will collect 1000 rows at a time and upload them to the Azure AI search index. The function will then return the start and end index of the rows that were uploaded, as well as the status of the insertion, so that we know if the upload was successful or not.
 
 ```python
+from azure.search.documents import SearchClient
 from pyspark.sql.functions import udf
-from pyspark.sql.types import StringType 
+from pyspark.sql.types import StringType
+from pyspark.sql.functions import monotonically_increasing_id
 
-# Define a UDF using the @udf decorator
-@udf(returnType=StringType())
-def insert_into_ai_search(idx, content, content_vector):
-    url = f"https://{aisearch_name}.search.windows.net/indexes/{aisearch_index_name}/docs/index?api-version=2023-07-01-Preview"
 
-    payload = json.dumps(
-        {
-            "value": [
-                {
-                    "id": str(idx),
-                    "content": content,
-                    "contentVector": content_vector.tolist(),
-                    "@search.action": "upload",
-                },
-            ]
-        }
-    )
+def insert_into_index(documents):
+    """Uploads a list of 'documents' to Azure AI search index."""
+
+    url = f"https://{aisearch_name}.search.windows.net/indexes/{aisearch_index_name}/docs/index?api-version=2023-11-01"
+
+    payload = json.dumps({"value": documents})
     headers = {
         "Content-Type": "application/json",
         "api-key": aisearch_api_key,
@@ -400,29 +392,43 @@ def insert_into_ai_search(idx, content, content_vector):
         return "Success"
     else:
         return "Failure"
-```
 
-Now we can use the UDF to insert the chunked documents and their embeddings into the search index by applying the UDF to the Spark DataFrame.
 
-```python
-from pyspark.sql.functions import monotonically_increasing_id
+def upload_rows(rows):
+    """Uploads the rows in a Spark dataframe to Azure AI search.
+    Limits uploads to 1000 rows at a time due to Azure AI search limits.
+    """
+    BATCH_SIZE = 1000
+    rows = list(rows)
+    for i in range(0, len(rows), BATCH_SIZE):
+        row_batch = rows[i : i + BATCH_SIZE]
+        documents = []
+        for row in rows:
+            documents.append(
+                {
+                    "id": str(row["idx"]),
+                    "content": row["chunk"],
+                    "contentVector": row["embeddings"].tolist(),
+                    "@search.action": "upload",
+                },
+            )
+        try:
+            insert_into_index(documents)
+            yield [row_batch[0]["idx"], row_batch[-1]["idx"], "success"]
+        except Exception as exc:
+            yield [row_batch[0]["idx"], row_batch[-1]["idx"], "failure"]
+
 
 # Add a column with an id
-df_embeddings = df_embeddings.withColumn(
-    "idx", monotonically_increasing_id()
-)
-
-# Run UDF and store results in new column
-df_embeddings = df_embeddings.withColumn(
-    "insertion_status",
-    insert_into_ai_search(
-        df_embeddings["idx"], df_embeddings["chunk"], df_embeddings["embeddings"]
-    ),
-)
-
-# Show the transformed DataFrame
-display(df_embeddings)
+df_embeddings = df_embeddings.withColumn("idx", monotonically_increasing_id())
+# Run upload_batch on partitions of the dataframe
+res = df_embeddings.rdd.mapPartitions(upload_rows)
+display(res.toDF(["start_idx", "end_idx", "insertion_status"]))
 ```
+
+> [!TIP]
+> You can also use the [azure-search-documents Python package](https://pypi.org/project/azure-search-documents/) for Azure AI search operations.
+> You would first need to install that package into the Spark environment. See [Library management in Fabric environments](https://learn.microsoft.com/fabric/data-engineering/environment-manage-library)
 
 ---
 
@@ -445,14 +451,13 @@ aisearch_api_key = ''
 
 ### Generate embeddings for the user question
 
-We'll begin the retrieval process by generating embeddings for the user's question.
+The first step of the retrieval process is to generate embeddings for the user's question.
 
-To do this, define a function that takes the user's question as input and converts it into an embedding. For this we'll be leveraging the  **Pre-built AI Models** in Microsoft Fabric. For this section we'll use the `text-embedding-ada-002` model to generate the embeddings.
+The following function takes a user's question as input and converts it into an embedding using the `text-embedding-ada-002` model. This code assumes you're using the [Pre-built AI Services in Microsoft Fabric](https://learn.microsoft.com/fabric/data-science/ai-services/ai-services-overview?WT.mc_id=data-114676-jndemenge).
 
 ```python
-# Ask a question and convert to embeddings
 def gen_question_embedding(user_question):
-    # Convert question to embedding using synapseML
+    """Generates embedding for user_question using SynapseML."""
     from synapse.ml.services import OpenAIEmbedding
 
     df_ques = spark.createDataFrame([(user_question, 1)], ["questions", "dummy"])
@@ -469,34 +474,42 @@ def gen_question_embedding(user_question):
     return question_embedding
 ```
 
-Learn more: [Pre-built AI Services in Microsoft Fabric](https://learn.microsoft.com/fabric/data-science/ai-services/ai-services-overview?WT.mc_id=data-114676-jndemenge)
-
-<div class="warning" data-title="Note">
-
-> If you are using the Azure OpenAI resource deployed on Microsoft Azure you will need to provide the Key as well as the Deployment Name for the Azure OpenAI resource. To do this replace the `deploymentName` with the name of the deployment you created in the Azure OpenAI Studio and add the key as follows:
-
-```python
-    .setDeploymentName('text-embedding-ada-002')
-    .setSubscriptionKey(azure_openai_key)
-```
+> [!NOTE]
+> If you're using the Azure OpenAI resource deployed on Microsoft Azure, you will need to provide the key as well as the deployment name for the Azure OpenAI resource, using `setDeploymentName` and `setSubscriptionKey`:
+>
+> ```python
+>     .setDeploymentName('YOUR-DEPLOYMENT_NAME')
+>     .setSubscriptionKey('YOUR-AZURE-OPENAI-KEY')
+> ```
 
 </div>
 
 ### Retrieve Relevant Documents
 
-To provide a response to the user's question, we'll need to retrieve the top K document chunks that closely match the user's question from the vector database. To retrieve the top K document chunks, we'll use the following function.
+The next step is to use the user question and its embedding to retrieve the top K most relevant document chunks from the search index.
+The following function retrieves the top K entries using hybrid search:
 
 ```python
 import json 
 import requests
 
-def retrieve_top_chunks(k, question_embedding):
-    # Retrieve the top K entries
-    url = f"https://{aisearch_name}.search.windows.net/indexes/{aisearch_index_name}/docs/search?api-version=2023-07-01-Preview"
+def retrieve_top_chunks(k, question, question_embedding):
+    """Retrieve the top K entries from Azure AI search using hybrid search."""
+    url = f"https://{aisearch_name}.search.windows.net/indexes/{aisearch_index_name}/docs/search?api-version=2023-11-01"
 
-    payload = json.dumps(
-        {"vector": {"value": question_embedding, "fields": "contentVector", "k": 2}}
-    )
+    payload = json.dumps({
+        "search": question,
+        "top": k,
+        "vectorQueries": [
+            {
+                "vector": question_embedding,
+                "k": k,
+                "fields": "contentVector",
+                "kind": "vector"
+            }
+        ]
+    })
+
     headers = {
         "Content-Type": "application/json",
         "api-key": aisearch_api_key,
@@ -507,7 +520,7 @@ def retrieve_top_chunks(k, question_embedding):
     return output
 ```
 
-Now that we have the top K document chunks, we can concatenate the content of the retrieved documents to form the context for the user's question.
+With those functions defined, we can define a function that takes a user's question, generates an embedding for the question, retrieves the top K document chunks, and concatenates the content of the retrieved documents to form the context for the user's question.
 
 ```python
 def get_context(user_question, retrieved_k = 5):
@@ -525,9 +538,7 @@ def get_context(user_question, retrieved_k = 5):
 
 ### Answering the User's Question
 
-Finally we'll use the context generated from the retrieved documents to answer the user's question. To do this we'll use the pre-built AI Model in Microsoft Fabric. For this demo, we'll use the `gpt-35-turbo-16k`. This model is optimized for conversation.
-
-Begin by bring in the necessary libraries and then define a function to create a message.
+Finally, we can define a function that takes a user's question, retrieves the context for the question, and sends both the context and the question to a large language model to generate a response. For this demo, we'll use the `gpt-35-turbo-16k`, a model that is optimized for conversation. The code below assumes you're using the [Pre-built AI Services in Microsoft Fabric](https://learn.microsoft.com/fabric/data-science/ai-services/ai-services-overview?WT.mc_id=data-114676-jndemenge).
 
 ```python
 from pyspark.sql import Row
@@ -537,13 +548,7 @@ from synapse.ml.services.openai import *
 
 def make_message(role, content):
     return Row(role=role, content=content, name=role)
-```
 
-The function above creates a message with the role and content. The role can be either `system`, `user`, or `assistant`.
-
-Next, we will define another function that gets the response from the model, based on the context and the user's question.
-
-```python
 def get_response(user_question):
     context = get_context(user_question)
 
@@ -588,19 +593,17 @@ def get_response(user_question):
     return result
 ```
 
-This function first gets a context for the user's question, which is basically a list of document chunks that are relevant to the user's question. It then uses the context to create a prompt and then uses the prompt to get a response from the model.
-
-> [!WARNING]  
-> If you are using the Azure OpenAI resource deployed on Microsoft Azure you will need to provide the Key as well as the Deployment Name for the Azure OpenAI resource. To do this replace the `deploymentName` with the name of the deployment you created in the Azure OpenAI Studio and add the key as follows:
+> [!NOTE]
+> If you're using the Azure OpenAI resource deployed on Microsoft Azure, you will need to provide the key as well as the deployment name for the Azure OpenAI resource, using `setDeploymentName` and `setSubscriptionKey`:
 >
 > ```python
->   .setDeploymentName('gpt-35-turbo-16k')
->   .setSubscriptionKey(azure_openai_key)
+>     .setDeploymentName('YOUR-DEPLOYMENT_NAME')
+>     .setSubscriptionKey('YOUR-AZURE-OPENAI-KEY')
 > ```
 
 </div>
 
-Finally, we can call that function to get a response to a user's question:
+Finally, we can call that function with an example question to see the response:
 
 ```python
 user_question = "how do i make a booking?"
