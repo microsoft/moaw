@@ -486,7 +486,7 @@ After processing the document, we can proceed to pose a question. We will use [S
 
 Create a new notebook in the Lakehouse and save it as `rag_application`. We'll use this notebook to build the RAG application.
 
-Next we'll need to provide the keys for Azure AI Services to access the services. You can copy the values from the previous notebook or from Azure Portal.
+Next we'll need to provide the credentials for access to Azure AI Search. You can copy the values from the previous notebook or from Azure Portal.
 
 ```python
 # Azure AI Search
@@ -494,6 +494,23 @@ AI_SEARCH_NAME = ''
 AI_SEARCH_INDEX_NAME = 'rag-demo-index'
 AI_SEARCH_API_KEY = ''
 ```
+
+
+<div class="tip" data-title="Tip">
+
+> In a production scenario, it is recommended to store the credentials securely in Azure Key Vault. To access secrets stored in Azure Key Vault, [use the `mssparkutils` library](https://learn.microsoft.com/fabric/data-engineering/microsoft-spark-utilities#credentials-utilities) as shown below:
+>
+>    ```python
+>    from notebookutils.mssparkutils.credentials import getSecret
+>
+>    KEYVAULT_ENDPOINT = "https://YOUR-KEY-VAULT-NAME.vault.azure.net/"
+>    # Azure AI Search
+>    AI_SEARCH_NAME = ""
+>    AI_SEARCH_INDEX_NAME = "rag-demo-index"
+>    AI_SEARCH_API_KEY = getSecret(KEYVAULT_ENDPOINT, "SEARCH-SECRET-NAME")
+>    ```
+
+</div>
 
 ## Generate Embeddings for the User Question
 
@@ -575,7 +592,7 @@ def get_context(user_question, retrieved_k = 5):
     question_embedding = gen_question_embedding(user_question)
 
     # Retrieve the top K entries
-    output = retrieve_top_chunks(retrieved_k, question_embedding)
+    output = retrieve_top_chunks(retrieved_k, user_question, question_embedding)
 
     # concatenate the content of the retrieved documents
     context = [chunk["content"] for chunk in output["value"]]
@@ -601,9 +618,9 @@ def get_response(user_question):
 
     # Write a prompt with context and user_question as variables 
     prompt = f"""
-    context :{context}
-    Answer the question based on the context above. If the
-    information to answer the question is not present in the given context then reply "I don't know".
+    context: {context}
+    Answer the question based on the context above.
+    If the information to answer the question is not present in the given context then reply "I don't know".
     """
 
     chat_df = spark.createDataFrame(
