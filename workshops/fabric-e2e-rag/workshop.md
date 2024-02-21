@@ -153,18 +153,31 @@ Next you'll need to provide the keys for Azure AI Services to access the service
 
 ```python
 # Azure AI Search
-aisearch_name = ''
-aisearch_index_name = 'rag-demo-index'
-aisearch_api_key = ''
+AI_SEARCH_NAME = ""
+AI_SEARCH_INDEX_NAME = "rag-demo-index"
+AI_SEARCH_KEY = ""
 
-# Azure AI Service
-ai_services_key = ''
-ai_services_location = ''
+# Azure AI Services
+AI_SERVICES_KEY = ""
+AI_SERVICES_LOCATION = ""
 ```
 
 <div class="tip" data-title="Tip">
 
-> In a production scenario, it is recommended to store the credentials securely in Azure Key Vault. To access the credentials stored in Azure Key Vault, use the `mssparkutils` library.
+> In a production scenario, it is recommended to store the credentials securely in Azure Key Vault. To access secrets stored in Azure Key Vault, [use the `mssparkutils` library](https://learn.microsoft.com/fabric/data-engineering/microsoft-spark-utilities#credentials-utilities) as shown below:
+>
+>    ```python
+>    from notebookutils.mssparkutils.credentials import getSecret
+>
+>    KEYVAULT_ENDPOINT = "https://YOUR-KEY-VAULT-NAME.vault.azure.net/"
+>    # Azure AI Search
+>    AI_SEARCH_NAME = ""
+>    AI_SEARCH_INDEX_NAME = "rag-demo-index"
+>    AI_SEARCH_API_KEY = getSecret(KEYVAULT_ENDPOINT, "SEARCH-SECRET-NAME")
+>    # Azure AI Services
+>    AI_SERVICES_KEY = getSecret(KEYVAULT_ENDPOINT, "AI-SERVICES-SECRET-NAME")
+>    AI_SERVICES_LOCATION = ""
+>    ```
 
 </div>
 
@@ -201,9 +214,11 @@ Next, load the PDF document into a Spark DataFrame using the `spark.read.format(
 from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
 
-document_path = "Files/support.pdf"  # Path to the PDF document
+document_path = "Files/support.pdf"
 
-df = spark.read.format("binaryFile").load(document_path).limit(10).cache()
+df = spark.read.format("binaryFile").load(document_path).select("_metadata.file_name", "content").limit(10).cache()
+
+display(df)
 ```
 
 This code will read the PDF document and create a Spark DataFrame named `df` with the contents of the PDF. The DataFrame will have a schema that represents the structure of the PDF document, including its textual content.
@@ -221,8 +236,8 @@ from pyspark.sql.functions import col
 analyze_document = (
     AnalyzeDocument()
     .setPrebuiltModelId("prebuilt-layout")
-    .setSubscriptionKey(ai_services_key)
-    .setLocation(ai_services_location)
+    .setSubscriptionKey(AI_SERVICES_KEY)
+    .setLocation(AI_SERVICES_LOCATION)
     .setImageBytesCol("content")
     .setOutputCol("result")
 )
@@ -273,13 +288,15 @@ display(splitted_df)
 Note that the chunks for each document are presented in a single row inside an array. In order to embed all the chunks in the following cells, we need to have each chunk in a separate row.
 
 ```python
-# Each column contains many chunks for the same document as a vector.
-# Explode will distribute and replicate the content of a vector across multiple rows
-from pyspark.sql.functions import explode, col
+from pyspark.sql.functions import posexplode, col, concat
 
-exploded_df = splitted_df.select("path", explode(col("chunks")).alias("chunk")).select(
-    "path", "chunk"
-)
+# Each "chunks" column contains the chunks for a single document in an array
+# The posexplode function will separate each chunk into its own row
+exploded_df = splitted_df.select("file_name", posexplode(col("chunks")).alias("chunk_idx", "chunk"))
+
+# Add a unique identifier for each chunk
+exploded_df = exploded_df.withColumn("idx", concat(exploded_df.file_name, exploded_df.chunk_idx))
+
 display(exploded_df)
 ```
 
@@ -341,10 +358,10 @@ EMBEDDING_LENGTH = 1536
 
 # Create index for AI Search with fields id, content, and contentVector
 # Note the datatypes for each field below
-url = f"https://{aisearch_name}.search.windows.net/indexes/{aisearch_index_name}?api-version=2023-11-01"
+url = f"https://{AI_SEARCH_NAME}.search.windows.net/indexes/{AI_SEARCH_INDEX_NAME}?api-version=2023-11-01"
 payload = json.dumps(
     {
-        "name": aisearch_index_name,
+        "name": AI_SEARCH_INDEX_NAME,
         "fields": [
             # Unique identifier for each document
             {
@@ -376,7 +393,7 @@ payload = json.dumps(
         },
     }
 )
-headers = {"Content-Type": "application/json", "api-key": aisearch_api_key}
+headers = {"Content-Type": "application/json", "api-key": AI_SEARCH_API_KEY}
 
 response = requests.request("PUT", url, headers=headers, data=payload)
 if response.status_code == 201:
@@ -387,7 +404,6 @@ else:
     print(f"HTTP request failed with status code {response.status_code}")
     print(f"HTTP response body: {response.text}")
 ```
-
 
 The next step is to upload the chunks to the newly created Azure AI Search index. The [Azure AI Search REST API](https://learn.microsoft.com/rest/api/searchservice/addupdate-or-delete-documents) supports up to 1000 "documents" per request. Note that in this case, each of our "documents" is in fact a chunk of the original file.
 
@@ -403,12 +419,12 @@ from pyspark.sql.functions import monotonically_increasing_id
 def insert_into_index(documents):
     """Uploads a list of 'documents' to Azure AI Search index."""
 
-    url = f"https://{aisearch_name}.search.windows.net/indexes/{aisearch_index_name}/docs/index?api-version=2023-11-01"
+    url = f"https://{AI_SEARCH_NAME}.search.windows.net/indexes/{AI_SEARCH_INDEX_NAME}/docs/index?api-version=2023-11-01"
 
     payload = json.dumps({"value": documents})
     headers = {
         "Content-Type": "application/json",
-        "api-key": aisearch_api_key,
+        "api-key": AI_SEARCH_API_KEY,
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -472,9 +488,9 @@ Next we'll need to provide the keys for Azure AI Services to access the services
 
 ```python
 # Azure AI Search
-aisearch_name = ''
-aisearch_index_name = 'rag-demo-index'
-aisearch_api_key = ''
+AI_SEARCH_NAME = ''
+AI_SEARCH_INDEX_NAME = 'rag-demo-index'
+AI_SEARCH_API_KEY = ''
 ```
 
 ## Generate Embeddings for the User Question
@@ -524,7 +540,7 @@ import requests
 
 def retrieve_top_chunks(k, question, question_embedding):
     """Retrieve the top K entries from Azure AI Search using hybrid search."""
-    url = f"https://{aisearch_name}.search.windows.net/indexes/{aisearch_index_name}/docs/search?api-version=2023-11-01"
+    url = f"https://{AI_SEARCH_NAME}.search.windows.net/indexes/{AI_SEARCH_INDEX_NAME}/docs/search?api-version=2023-11-01"
 
     payload = json.dumps({
         "search": question,
@@ -541,7 +557,7 @@ def retrieve_top_chunks(k, question, question_embedding):
 
     headers = {
         "Content-Type": "application/json",
-        "api-key": aisearch_api_key,
+        "api-key": AI_SEARCH_API_KEY,
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
