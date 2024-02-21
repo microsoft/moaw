@@ -202,7 +202,8 @@ path = "/lakehouse/default/Files/"
 os.makedirs(path, exist_ok=True)
 
 # Write the content to a file in the specified path
-with open(os.path.join(path, "support.pdf"), "wb") as f:
+filename = url.rsplit("/")[-1]
+with open(os.path.join(path, filename), "wb") as f:
     f.write(response.content)
 ```
 
@@ -214,7 +215,7 @@ Next, load the PDF document into a Spark DataFrame using the `spark.read.format(
 from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
 
-document_path = "Files/support.pdf"
+document_path = f"Files/{filename}"
 
 df = spark.read.format("binaryFile").load(document_path).select("_metadata.file_name", "content").limit(10).cache()
 
@@ -410,6 +411,8 @@ The next step is to upload the chunks to the newly created Azure AI Search index
 In order to efficiently upload the chunks to the Azure AI Search index, we'll use the `mapPartitions` function to process each partition of the dataframe. For each partition, the `upload_rows` function will collect 1000 rows at a time and upload them to the index. The function will then return the start and end index of the rows that were uploaded, as well as the status of the insertion, so that we know if the upload was successful or not.
 
 ```python
+import re
+
 from azure.search.documents import SearchClient
 from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
@@ -432,7 +435,11 @@ def insert_into_index(documents):
     if response.status_code == 200 or response.status_code == 201:
         return "Success"
     else:
-        return "Failure"
+        return f"Failure: {response.text}"
+
+def make_safe_id(row_id: str):
+    """Strips disallowed characters from row id for use as Azure AI search document ID."""
+    return re.sub("[^0-9a-zA-Z_-]", "_", row_id)
 
 
 def upload_rows(rows):
@@ -447,21 +454,16 @@ def upload_rows(rows):
         for row in rows:
             documents.append(
                 {
-                    "id": str(row["idx"]),
+                    "id": make_safe_id(row["idx"]),
                     "content": row["chunk"],
                     "contentVector": row["embeddings"].tolist(),
                     "@search.action": "upload",
                 },
             )
-        try:
-            insert_into_index(documents)
-            yield [row_batch[0]["idx"], row_batch[-1]["idx"], "success"]
-        except Exception as exc:
-            yield [row_batch[0]["idx"], row_batch[-1]["idx"], "failure"]
+        status = insert_into_index(documents)
+        yield [row_batch[0]["idx"], row_batch[-1]["idx"], status]
 
 
-# Add a column with an id
-df_embeddings = df_embeddings.withColumn("idx", monotonically_increasing_id())
 # Run upload_batch on partitions of the dataframe
 res = df_embeddings.rdd.mapPartitions(upload_rows)
 display(res.toDF(["start_idx", "end_idx", "insertion_status"]))
