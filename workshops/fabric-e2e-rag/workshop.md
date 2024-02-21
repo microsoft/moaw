@@ -80,11 +80,11 @@ To continue with this workshop, you'll need to create a Lakehouse in your Micros
 
 ## Create a Lakehouse
 
-To create a new Lakehouse in your Microsoft Fabric workspace, open the `Data Engineering workload` on the bottom left of the workspace and click on `Lakehouse`. Provide the name `rag_workshop` and click `Create`
+To create a new Lakehouse in your Microsoft Fabric workspace, open the `New` dropdown and select `Lakehouse` from the options. Provide a name of `rag_workshop` and select `Create`.
 
 ![Screenshot of New Lakehouse dialog in Synapse Data Engineering tab](assets/lakehouse.png)
 
-To learn more about Lakehouses in Microsoft Fabric, refer to [this resource](https://learn.microsoft.com/fabric/data-engineering/tutorial-build-lakehouse#create-a-lakehouse?WT.mc_id=data-114676-jndemenge)
+To learn more about Lakehouses in Microsoft Fabric, refer to [this Lakehouse tutorial](https://learn.microsoft.com/fabric/data-engineering/tutorial-build-lakehouse#create-a-lakehouse?WT.mc_id=data-114676-jndemenge).
 
 ## Azure Setup
 
@@ -100,19 +100,19 @@ Navigate to the [Azure Portal](https://portal.azure.com) and click on `Create a 
 
 ![Screenshot of Azure AI Search creation wizard in Azure Portal](assets/aisearch.png)
 
-Fill out all the required fields and click `Review + Create` and once the validation is successful, click `Create`.
+In the creation wizard, create a new resource group or select an existing one. To minimize costs, change the pricing tier from Standard to Free. Click `Review + Create` and once the validation is successful, click `Create`.
 
 Similarly, create another resource for the `Azure AI Services` by clicking on `Create a resource` and searching for `Azure AI Services`. Click on the `Azure AI Services` resource and then click on `Create`.
 
 ![Screenshot of Azure AI Services creation wizard in Azure Portal](assets/aiservice.png)
 
-Fill out all the required fields, accept the Responsible AI Notice and then click `Review + Create` and once the validation is successful, click `Create`. Ensure that you select the same ***Resource Group*** as the ***Azure AI Search resource***.
+In the creation wizard, select the same resource group that you used for the Azure AI Search resource. The only available pricing tier is Standard, but you can apply free credits if you have any. Accept the Responsible AI Notice. With all fields filled out, click `Review + Create`. Once the validation is successful, click `Create`.
 
 ## Azure OpenAI Set Up
 
-If your Microsoft Fabric SKU of F64 or higher, you can skip this step.
+If your Microsoft Fabric has a SKU of F64 or higher, you can skip this step.
 
-However, if you using the trial version of Microsoft Fabric or it does not have an F64+ SKU, you will need to request access to the Azure OpenAI API from [here](https://aka.ms/oaiapply). Once you have access to the Azure OpenAI API, you'll need to create the Azure OpenAI resource in the Azure Portal.
+However, if you're using the trial version of Microsoft Fabric or it does not have an F64+ SKU, you will need to request access to the Azure OpenAI API  [using this form](https://aka.ms/oaiapply). Once you have access to the Azure OpenAI API, you'll need to create the Azure OpenAI resource in the Azure Portal.
 
 To do this navigate to the [Azure Portal] and click on `Create a resource` and search for `Azure OpenAI`. Click on the `Azure OpenAI` resource and then click on `Create`.
 
@@ -145,9 +145,9 @@ To do this, we'll perform the following steps:
 
 ## Configure Azure API keys
 
-To begin, navigate back to your workspace and create a new notebook by selecting ```Open Notebook``` from the top menu and selecting ```New Notebook``` from the dropdown.
+To begin, navigate back to the `rag_workshop` lakehouse in your workspace and create a new notebook by selecting `Open Notebook` from the top menu and selecting `New Notebook` from the dropdown.
 
-This will open a new Notebook. On the top right corner of the workspace, select the `Save as` icon and rename it to ```analyze_and_create_embeddings```.
+This will open a new notebook. Select the `Save as` icon and rename the notebook to `analyze_and_create_embeddings`.
 
 Next you'll need to provide the keys for Azure AI Services to access the services. Copy the values from the Azure Portal and paste them into the following code cell.
 
@@ -173,7 +173,7 @@ ai_services_location = ''
 
 In this workshop, we will be using a specific document named [support.pdf](https://github.com/Azure-Samples/azure-openai-rag-workshop/blob/main/data/support.pdf) which will be the source of our data.
 
-To download the document paste the following code in a new cell and run it.
+To download the document, paste the following code in a new cell and run it.
 
 ```python
 import requests
