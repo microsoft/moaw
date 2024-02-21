@@ -78,13 +78,6 @@ To get an in-depth understanding of the RAG framework, refer to [this workshop](
 
 To continue with this workshop, you'll need to create a Lakehouse in your Microsoft Fabric workspace and deploy the necessary resources in your Azure account. We'll detail the steps to do this below.
 
-## Create a Lakehouse
-
-To create a new Lakehouse in your Microsoft Fabric workspace, open the `New` dropdown and select `Lakehouse` from the options. Provide a name of `rag_workshop` and select `Create`.
-
-![Screenshot of New Lakehouse dialog in Synapse Data Engineering tab](assets/lakehouse.png)
-
-To learn more about Lakehouses in Microsoft Fabric, refer to [this Lakehouse tutorial](https://learn.microsoft.com/fabric/data-engineering/tutorial-build-lakehouse#create-a-lakehouse?WT.mc_id=data-114676-jndemenge).
 
 ## Azure Setup
 
@@ -129,6 +122,15 @@ Next you'll need to create new model deployments. To do this navigate to the [Az
 > You will have to provide the keys and deployment names for the Azure OpenAI resource in sections that are using the Azure OpenAI models.
 
 </div>
+
+## Create a Lakehouse
+
+To create a new Lakehouse in your Microsoft Fabric workspace, open the `New` dropdown and select `Lakehouse` from the options. Provide a name of `rag_workshop` and select `Create`.
+
+![Screenshot of New Lakehouse dialog in Synapse Data Engineering tab](assets/lakehouse.png)
+
+To learn more about Lakehouses in Microsoft Fabric, refer to [this Lakehouse tutorial](https://learn.microsoft.com/fabric/data-engineering/tutorial-build-lakehouse#create-a-lakehouse?WT.mc_id=data-114676-jndemenge).
+
 
 ---
 
