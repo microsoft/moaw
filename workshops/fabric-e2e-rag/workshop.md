@@ -607,9 +607,8 @@ Finally, we can define a function that takes a user's question, retrieves the co
 
 ```python
 from pyspark.sql import Row
-from pyspark.sql.types import *
-import synapse.ml.core
-from synapse.ml.services.openai import *
+from synapse.ml.services.openai import OpenAIChatCompletion
+
 
 def make_message(role, content):
     return Row(role=role, content=content, name=role)
