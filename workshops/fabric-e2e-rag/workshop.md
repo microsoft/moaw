@@ -125,7 +125,7 @@ Next you'll need to create new model deployments. To do this navigate to the [Az
 
 ## Create a Lakehouse
 
-To create a new Lakehouse in your Microsoft Fabric workspace, open the `New` dropdown and select `Lakehouse` from the options. Provide a name of `rag_workshop` and select `Create`.
+To create a new Lakehouse in your Microsoft Fabric workspace, open the Synapse Data Engineering experience and select the `Lakehouse` button. Provide a name of `rag_workshop` and select `Create`.
 
 ![Screenshot of New Lakehouse dialog in Synapse Data Engineering tab](assets/lakehouse.png)
 
@@ -147,7 +147,7 @@ To do this, we'll perform the following steps:
 
 ## Configure Azure API keys
 
-To begin, navigate back to the `rag_workshop` lakehouse in your workspace and create a new notebook by selecting `Open Notebook` from the top menu and selecting `New Notebook` from the dropdown.
+To begin, navigate back to the `rag_workshop` Lakehouse in your workspace and create a new notebook by selecting `Open Notebook` and selecting `New Notebook` from the options.
 
 This will open a new notebook. Select the `Save as` icon and rename the notebook to `analyze_and_create_embeddings`.
 
@@ -295,10 +295,10 @@ from pyspark.sql.functions import posexplode, col, concat
 
 # Each "chunks" column contains the chunks for a single document in an array
 # The posexplode function will separate each chunk into its own row
-exploded_df = splitted_df.select("file_name", posexplode(col("chunks")).alias("chunk_idx", "chunk"))
+exploded_df = splitted_df.select("file_name", posexplode(col("chunks")).alias("chunk_index", "chunk"))
 
 # Add a unique identifier for each chunk
-exploded_df = exploded_df.withColumn("idx", concat(exploded_df.file_name, exploded_df.chunk_idx))
+exploded_df = exploded_df.withColumn("unique_id", concat(exploded_df.file_name, exploded_df.chunk_index))
 
 display(exploded_df)
 ```
@@ -415,9 +415,6 @@ In order to efficiently upload the chunks to the Azure AI Search index, we'll us
 ```python
 import re
 
-from azure.search.documents import SearchClient
-from pyspark.sql.functions import udf
-from pyspark.sql.types import StringType
 from pyspark.sql.functions import monotonically_increasing_id
 
 
@@ -456,19 +453,21 @@ def upload_rows(rows):
         for row in rows:
             documents.append(
                 {
-                    "id": make_safe_id(row["idx"]),
+                    "id": make_safe_id(row["unique_id"]),
                     "content": row["chunk"],
                     "contentVector": row["embeddings"].tolist(),
                     "@search.action": "upload",
                 },
             )
         status = insert_into_index(documents)
-        yield [row_batch[0]["idx"], row_batch[-1]["idx"], status]
+        yield [row_batch[0]["row_index"], row_batch[-1]["row_index"], status]
 
+# Add ID to help track what rows were successfully uploaded
+df_embeddings = df_embeddings.withColumn("row_index", monotonically_increasing_id())
 
 # Run upload_batch on partitions of the dataframe
 res = df_embeddings.rdd.mapPartitions(upload_rows)
-display(res.toDF(["start_idx", "end_idx", "insertion_status"]))
+display(res.toDF(["start_index", "end_index", "insertion_status"]))
 ```
 
 <div class="tip" data-title="Tip">
