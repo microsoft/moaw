@@ -711,5 +711,5 @@ To learn more about Retrieval Augmented Generation (RAG) using Azure Search an A
 ## References
 
 - This workshop URL: [aka.ms/ws/fabric-rag](https://aka.ms/ws/fabric-rag)
-- If something does not work: [Report an issue](https://github.com/Azure-Samples/azure-openai-rag-workshop/issues)
+- If something does not work: [Report an issue](https://github.com/microsoft/moaw/issues)
 - Live Workshop on [YouTube](https://www.youtube.com/watch?v=BfNiaaBOcM8)
