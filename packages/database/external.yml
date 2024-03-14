@@ -371,4 +371,19 @@
   audience: students, devs
   level: intermediate
   tags: chatgpt, openai, langchain, retrieval-augmented-generation, azure, containers, docker, static web apps, javascript, typescript, node.js, azure cognitive search, fastify, azure container apps
-  
+
+- title: Azure Container Apps - Hands on Lab  
+  url: https://markharrison.io/lab-azure-container-apps/      
+  description: Hands on Lab and demo script for Azure Container Apps
+  language: en                           
+  last_updated: 2024-03-14
+  type: workshop                        
+  level: beginner                        
+  github_url: https://github.com/markharrison/lab-azure-container-apps
+  authors:                                
+    - Mark Harrison                          
+  contacts:                               
+    - '@markharrison'
+  duration_minutes: 60                    
+  audience: students, pro devs             
+  tags: azure, ACA, Dapr, container, .net, app, container apps 
