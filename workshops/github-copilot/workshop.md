@@ -47,7 +47,7 @@ GitHub Copilot is an AI-powered code assistant that helps developers write bette
 | GitHub account | [Create free GitHub account](https://github.com/join) |
 | GitHub Copilot Access | A 60 day trial can be [requested here](https://github.com/github-copilot/signup) |
 | A code editor  | [Download VS Code](https://code.visualstudio.com/Download) |
-| some VSCode extensions |  The first one [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot), the second one ([GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs)) will allow you to send custom commands (a.k.a. `brushes` which are in fact `prompts` - this extension may soon be deprecated by GitHub) and the last one allows you to have [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat).|
+| some VSCode extensions |  The first one [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot), and the other one allows you to have [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat).|
 | A browser      | [Download Microsoft Edge](https://www.microsoft.com/edge) or any other one ;-)|
 
 <div class="warning" data-title="Important">
@@ -69,9 +69,8 @@ You can also choose to work locally on your computer.
 1. Install [Visual Studio Code](https://code.visualstudio.com/)
 2. Install the [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) extension
 3. Install the [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extension
-4. Install the [GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs) extension. it contains beta features
-5. Install [Node and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-6. Install mocha
+4. Install [Node and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+5. Install mocha
 
     ``` bash
     npm install --global mocha
@@ -850,96 +849,6 @@ You must now develop and add new features to your server. The requests that the 
 |**/CalculateMemoryConsumption**|Return the memory consumption of the process in GB, rounded to 2 decimals|
 |**/MakeZipFile**|Using zlib create a zip file called `sample.gz` that contains `sample.txt`|
 |**/RandomEuropeanCountry**|Make an array of european countries and its ISO codes<br/>Return a random country from the array<br/>Return the country and its ISO code|
-
-## GitHub Copilot Labs exercises
-
-These tasks can be performed with the [GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs) add-in, currently PREVIEW functionality, expect some bugs or weird behavior (you've been warned <:o)).
-
-<div class="warning" data-title="warning">
-
-> GitHub Copilot Labs extension may be deprecated any time soon. When GitHub removes it, you won't be able to do this part of the lab.
-
-</div>
-
-Open the GitHub Copilot Labs extension to see all the available functionality.
-
-![GitHub Copilot Labs extension](assets/github-copilot-labs.png)
-
-- **Explain**
-
-Select the line that has the regex in the validatePhoneNumber method, in EXPLAIN section click "Ask Copilot". You will see an explanation detailing what each different notation does in the regular expression.
-
-- **Language translation**
-
-Select some source code, like this line:
-
-``` js
-var randomCountry = countries[Math.floor(Math.random() * countries.length)];
-```
-
-In "**LANGUAGE TRANSLATION**" section select **python** and click "Ask Copilot" button, you should see new code generated in **python**
-
-- **Readable**
-
-Select the content of MakeZipFile
-
-In the BRUSHES section, click the "Readable" button. See how comments are added and also variables that have short names are renamed to more understandable names.
-
--- **Fix Bug**
-
-In the exercise, there should be no bugs, since most of the code will be done by GitHub Copilot. We can force some errors and then test the debug functionality.
-
-Force some errors like:
-
-In a for loop change the beginning to (change the 0 for a 1):
-
-``` js
-    for (var i = 1
-```
-
-select the text and in the "BRUSHES" section press the "Fix Bug" button.
-
--- **Debug**
-
-Select some lines of text that contain variables, like:
-
-``` js
-    var queryData = url.parse(req.url, true).query;
-    var color = queryData.color;
-    var colorFound = "not found";
-```
-
-select the text and in the "BRUSHES" section press the "Debug" button.
-
--- **Clean**
-
-TBD
-
--- **List steps**
-
-Select some lines of code that do not have comments and in the  "BRUSHES" section press the "List steps" button.
-
--- **Make robust**
-
-Select some text that comes from input, for example, variables that come from query string:
-
-``` js
-        var queryData = url.parse(req.url, true).query;
-        var date1 = queryData.date1;
-        var date2 = queryData.date2;
-```
-
-In the "BRUSHES" section press the "Make robust" button and you will see that additional validation is added.
-
--- **Document**
-
-Select some line (e.g. a method or the beginning of the if clause)
-
-``` js
-    else if (req.url.startsWith('/GetFullTextFile')) 
-```
-
-In the  "BRUSHES" section press the "Document" button, you will see that comments explaining what the code does are added before the line.
 
 ---
 
