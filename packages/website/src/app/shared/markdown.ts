@@ -29,6 +29,13 @@ export function markedOptionsFactory() {
   };
 
   return {
+    hooks: {
+      preprocess: (markdown: string) => {
+        slugger.reset();
+        return markdown;
+      },
+      postprocess: (html: string) => html
+    },
     renderer: renderer
   };
 }
