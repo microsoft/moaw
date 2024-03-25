@@ -387,3 +387,20 @@
   duration_minutes: 60                    
   audience: students, pro devs             
   tags: azure, ACA, Dapr, container, .net, app, container apps 
+
+- title: Create self-study Flashcards using RAG (Retrieval Augmented Generation) with Microsoft Fabric and Azure OpenAI  
+  url: https://moaw.dev/workshop/?src=gh:microsoft/flashcards-workshop/main/workshop.md      
+  description: Learn how to use Microsoft Fabric and Azure OpenAI to generate a set of study flashcards. Connect Fabric to Azure Blob Storage to store the flashcards and QR codes. Generate a PDF with the flashcards.
+  language: en                           
+  last_updated: 2024-03-25
+  type: workshop                        
+  level: beginner                        
+  github_url: https://github.com/microsoft/flashcards-workshop
+  authors:                                
+    - Alvaro Videla                        
+  contacts:                               
+    - '@old_sound'
+  duration_minutes: 30                    
+  audience: students, pro devs             
+  tags: openai, fabric, python, flashcards, Microsoft Fabric, Azure OpenAI 
+  
