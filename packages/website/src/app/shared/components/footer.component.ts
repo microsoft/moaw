@@ -132,7 +132,7 @@ import { updateTrackingCodes } from '../loader';
       .version {
         text-align: center;
         font-size: var(--text-size-sm);
-        opacity: 0.5;
+        opacity: 0.8;
       }
 
       @media (max-width: $breakpoint-md-max) {
