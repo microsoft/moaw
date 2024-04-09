@@ -11,11 +11,6 @@ contacts:
   - '@tectonia'
 duration_minutes: 120
 tags: FHIR, Azure, Postman, Azure Health Data Services
-section_titles:
-  - Introduction
-  - Deploy Azure Health Data Services workspace using Azure portal
-  - Generate FHIR resources with Synthea and load them up to the server
-  - Query & update a FHIR resource using Postman
 ---
 
 # FHIR on Azure Health Data Services
