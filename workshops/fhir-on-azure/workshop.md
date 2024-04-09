@@ -25,13 +25,15 @@ In this workshop, you will learn how to:
 - query the FHIR server using Postman,
 - update the FHIR resources using Postman.
 
+**Duration:** 2 hours
+
 ### What is FHIR?
 
-Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standard describing data formats and elements (known as "resources") and an application programming interface (API) for exchanging electronic health records (EHR). The standard was created by the Health Level Seven International (HL7) healthcare standards organization. More information can be found [on the HL7 website](https://www.hl7.org/fhir/summary.html).
+Fast Healthcare Interoperability Resources (FHIR, pronounced "fire" 🔥) is a standard describing data formats and elements (known as "resources") and an application programming interface (API) for exchanging electronic health records (EHR). The standard was created by the Health Level Seven International (HL7) healthcare standards organization. More information can be found [on the HL7 website](https://www.hl7.org/fhir/summary.html).
 
 ## Prerequisites
 
-1. **Azure Subscription**: You will need an [Azure subscription](https://azure.microsoft.com/en-gb/free/). Ensure that you have the necessary permissions to create resources, app registrations and assign roles within this subscription.
+1. **Azure Subscription**: You will need an Azure subscription - you can create one for free [here](https://azure.microsoft.com/en-gb/free/). Ensure that you have the necessary permissions to create resources, app registrations and assign roles within this subscription.
 2. **Postman**: You will need to have Postman installed on your machine. You can download it [here](https://www.postman.com/downloads/).
 
 ---
@@ -315,7 +317,7 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
 
     ![alt text](assets/retrieve-patient.png)
 
-Congratulations! You have successfully created a patient and retrieved it from the FHIR server.
+Congratulations! 🎉 You have successfully created a patient and retrieved it from the FHIR server.
 
 > Alternative instructions on how to interact with the FHIR server through Postman can be found [here](https://learn.microsoft.com/en-us/azure/healthcare-apis/fhir/use-postman).
 
@@ -323,8 +325,12 @@ Congratulations! You have successfully created a patient and retrieved it from t
 
 You can now also browse the resources that have been created in the Azure portal. Create some more requests to interact with the FHIR server and explore the different resources you have uploaded.
 
-For example, search for a practitioner, an observation, or a patient by address or birthdate. Here's how to search for a practitioner based in Fitchburg:
+For example, search for a practitioner, an observation, or a patient by address or birth date. Here's how to search for a practitioner based in Fitchburg:
 
 ![alt text](assets/practitioner-search.png)
 
-Use the [FHIR Search](https://www.hl7.org/fhir/search.html) documentation to help you construct your queries. You can also use the [FHIR Postman collection](https://github.com/Azure-Samples/azure-health-data-and-ai-samples/tree/main/samples/sample-postman-queries) to help you get started.
+<div class="tip" data-title="Tip">
+
+> Use the [FHIR Search](https://www.hl7.org/fhir/search.html) documentation to help you construct your queries. You can also use the [FHIR Postman collection](https://github.com/Azure-Samples/azure-health-data-and-ai-samples/tree/main/samples/sample-postman-queries) to help you get started.
+
+</div>
