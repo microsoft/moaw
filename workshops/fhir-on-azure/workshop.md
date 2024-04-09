@@ -95,7 +95,11 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
 
     ![alt text](assets/upload-button.png)
 
-    > Note: If you generated the data using Synthea in a different format, follow the guidance [here](https://github.com/microsoft/fhir-loader?tab=readme-ov-file#importing-fhir-data) on the correct container to upload the data to.
+    <div class="info" data-title="Note">
+
+    > If you generated the data using Synthea in a different format, follow the guidance [here](https://github.com/microsoft/fhir-loader?tab=readme-ov-file#importing-fhir-data) on the correct container to upload the data to.
+
+    </div>
 
     You should see the zip folder moved to 'zipprocessed' container after a few minutes and as the bundles are processed, they will appear in 'bundles' before being moved to the 'bundlesprocessed' container.
 
@@ -125,7 +129,11 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
 
     ![alt text](assets/client-secret.png)
 
-    > Note: This value will only be shown once, so make sure to copy it and store it securely.
+    <div class="important" data-title="Important">
+
+    > This value will only be shown once, so make sure to copy it and store it securely.
+
+    </div>
 
 4. Navigate to the FHIR service you created earlier and make note of the 'Subscription ID' and 'FHIR endpoint'.
 
@@ -306,7 +314,7 @@ Congratulations! You have successfully created a patient and retrieved it from t
 
 > Alternative instructions on how to interact with the FHIR server through Postman can be found [here](https://learn.microsoft.com/en-us/azure/healthcare-apis/fhir/use-postman).
 
-### Optional
+### Optional: search capability exploration
 
 You can now also browse the resources that have been created in the Azure portal. Create some more requests to interact with the FHIR server and explore the different resources you have uploaded.
 
