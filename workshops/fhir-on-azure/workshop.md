@@ -29,14 +29,6 @@ In this workshop, you will learn how to:
 
 Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standard describing data formats and elements (known as "resources") and an application programming interface (API) for exchanging electronic health records (EHR). The standard was created by the Health Level Seven International (HL7) healthcare standards organization. More information can be found [on the HL7 website](https://www.hl7.org/fhir/summary.html).
 
-## Overview
-
-**Duration:** 2 hours
-
-1. [Deploy Azure Health Data Services workspace using Azure portal](#deploy-azure-health-data-services-workspace-using-azure-portal)
-2. [Generate FHIR resources with Synthea and load them up to the server](#generate-fhir-resources-with-synthea-and-load-them-up-to-the-server)
-3. [Query & update a FHIR resource using Postman](#query--update-a-fhir-resource-using-postman)
-
 ## Prerequisites
 
 1. **Azure Subscription**: You will need an [Azure subscription](https://azure.microsoft.com/en-gb/free/). Ensure that you have the necessary permissions to create resources, app registrations and assign roles within this subscription.
