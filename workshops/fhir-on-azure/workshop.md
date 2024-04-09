@@ -33,9 +33,9 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
 
 **Duration:** 2 hours
 
-1. [Deploy Azure Health Data Services workspace using Azure portal](#exercise-1-deploy-azure-health-data-services-workspace-using-azure-portal)
-2. [Generate FHIR resources with Synthea and load them up to the server](#exercise-2-generate-fhir-resources-with-synthea-and-load-them-up-to-the-server)
-3. [Query & update a FHIR resource using Postman](#exercise-3-query--update-a-fhir-resource-using-postman)
+1. [Deploy Azure Health Data Services workspace using Azure portal](#deploy-azure-health-data-services-workspace-using-azure-portal)
+2. [Generate FHIR resources with Synthea and load them up to the server](#generate-fhir-resources-with-synthea-and-load-them-up-to-the-server)
+3. [Query & update a FHIR resource using Postman](#query--update-a-fhir-resource-using-postman)
 
 ## Prerequisites
 
@@ -44,7 +44,7 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
 
 ---
 
-## Exercise 1: Deploy Azure Health Data Services workspace using Azure portal
+## Deploy Azure Health Data Services workspace using Azure portal
 
 **Duration:** 15 minutes
 
@@ -70,7 +70,7 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
 
 ---
 
-## Exercise 2: Generate FHIR resources with Synthea and load them up to the server
+## Generate FHIR resources with Synthea and load them up to the server
 
 **Duration:** 45 minutes
 
@@ -82,8 +82,8 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
 
     - Fill in the required fields:
         - resource group (create a new one or use an existing one),
-        - region (closest to you), 
-        - and the name of your previously created FHIR service. 
+        - region (closest to you),
+        - and the name of your previously created FHIR service.
     Click on "Review + create" and then "Create".
 
         ![alt text](assets/fhir-loader-deploy.png)
@@ -103,7 +103,7 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
 
     ![alt text](assets/upload-button.png)
 
-    > Note: if you generated the data using Synthea in a different format, follow the guidance [here](https://github.com/microsoft/fhir-loader?tab=readme-ov-file#importing-fhir-data) on the correct container to upload the data to.
+    > Note: If you generated the data using Synthea in a different format, follow the guidance [here](https://github.com/microsoft/fhir-loader?tab=readme-ov-file#importing-fhir-data) on the correct container to upload the data to.
 
     You should see the zip folder moved to 'zipprocessed' container after a few minutes and as the bundles are processed, they will appear in 'bundles' before being moved to the 'bundlesprocessed' container.
 
@@ -111,7 +111,7 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
 
 ---
 
-## Exercise 3: Query & update a FHIR resource using Postman
+## Query & update a FHIR resource using Postman
 
 **Duration:** 60 minutes
 
@@ -133,9 +133,7 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
 
     ![alt text](assets/client-secret.png)
 
-    <div class="info" data-title="Note">
-    > This value will only be shown once, so make sure to copy it and store it securely.
-    </div>
+    > Note: This value will only be shown once, so make sure to copy it and store it securely.
 
 4. Navigate to the FHIR service you created earlier and make note of the 'Subscription ID' and 'FHIR endpoint'.
 
