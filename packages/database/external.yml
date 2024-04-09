@@ -420,5 +420,5 @@
   duration_minutes: 180
   audience: students, pro devs
   level: beginner
-  tags: azure, azure functions, azure durable functions, event grid, key vault, cosmos db, web pubsub, static web app, csu
+  tags: azure, azure functions, azure durable functions, event grid, key vault, cosmos db, web pubsub, static web app, csu, codespace, devcontainer
   navigation_levels: 3
