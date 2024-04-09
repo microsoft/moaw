@@ -76,14 +76,19 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
         - resource group (create a new one or use an existing one),
         - region (closest to you),
         - and the name of your previously created FHIR service.
-    Click on "Review + create" and then "Create".
+
+        Click on "Review + create" and then "Create".
 
         ![alt text](assets/fhir-loader-deploy.png)
         ![alt text](assets/fhir-loader-deploy-2.png)
 
 2. Navigate to the [Synthea](https://github.com/synthetichealth/synthea) GitHub repo and familiarise yourself with the tool. Synthea is a Synthetic Patient Population Simulator. It is used to generate realistic (but not real) patient data and associated health records in FHIR format or CSV.
 
+    <div class="tip" data-title="Tip">
+
     You can either download sample data from the [Synthea website](https://synthea.mitre.org/downloads) or generate your own data following the instructions [here](https://github.com/synthetichealth/synthea/wiki/Basic-Setup-and-Running).
+
+    </div>
 
 3. To download sample data, navigate to the [downloads page](https://synthea.mitre.org/downloads) and download the data in FHIR format.
 
