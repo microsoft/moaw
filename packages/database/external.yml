@@ -264,7 +264,7 @@
   duration_minutes: 300
   audience: students, pro devs
   level: beginner
-  tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email, app service, web pubsub, static web app, csu
+  tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, web pubsub, static web app, csu
   navigation_levels: 3
 
 - title: Product Hands-on Lab - Redis Cache in the Azure world
@@ -404,3 +404,21 @@
   audience: students, pro devs             
   tags: openai, fabric, python, flashcards, Microsoft Fabric, Azure OpenAI 
   
+- title: Product Hands-on Lab - Functions
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-functions/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-functions
+  language: en
+  last_updated: 2024-04-09
+  type: workshop
+  description:  This workshop will cover Azure Functions service that you will use to build a complete real world scenario.
+  authors:
+    - Damien Aicheh
+    - Iheb Khemissi
+  contacts:
+    - "@damienaicheh"
+    - "@ikhemissi"
+  duration_minutes: 180
+  audience: students, pro devs
+  level: beginner
+  tags: azure, azure functions, azure durable functions, event grid, key vault, cosmos db, web pubsub, static web app, csu
+  navigation_levels: 3
