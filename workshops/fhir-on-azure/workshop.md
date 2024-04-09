@@ -86,7 +86,7 @@ Fast Healthcare Interoperability Resources (FHIR, pronounced "fire") is a standa
 
     <div class="tip" data-title="Tip">
 
-    You can either download sample data from the [Synthea website](https://synthea.mitre.org/downloads) or generate your own data following the instructions [here](https://github.com/synthetichealth/synthea/wiki/Basic-Setup-and-Running).
+    > You can either download sample data from the [Synthea website](https://synthea.mitre.org/downloads) or generate your own data following the instructions [here](https://github.com/synthetichealth/synthea/wiki/Basic-Setup-and-Running).
 
     </div>
 
