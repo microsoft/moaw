@@ -850,6 +850,66 @@ You must now develop and add new features to your server. The requests that the 
 |**/MakeZipFile**|Using zlib create a zip file called `sample.gz` that contains `sample.txt`|
 |**/RandomEuropeanCountry**|Make an array of european countries and its ISO codes<br/>Return a random country from the array<br/>Return the country and its ISO code|
 
+## GitHub Copilot Chat exercises
+
+These tasks can be performed with the [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) add-in.
+
+- **Explain**
+
+Select the line that has the regex in the validatePhoneNumber method, and use `/explain` comamand. You will see an explanation detailing what each different notation does in the regular expression.
+
+- **Language translation**
+
+Select some source code, like this line:
+
+``` js
+var randomCountry = countries[Math.floor(Math.random() * countries.length)];
+```
+
+Ask to the chat to translate it to another language, for example Python. You should see new code generated in **python**
+
+- **Readable**
+
+Select the content of MakeZipFile
+
+Ask to the chat to make it more readable. See how comments are added and also variables that have short names are renamed to more understandable names.
+
+-- **Fix Bug**
+
+In the exercise, there should be no bugs, since most of the code will be done by GitHub Copilot. We can force some errors and then test the debug functionality.
+
+Force some errors like:
+
+In a for loop change the beginning to (change the 0 for a 1):
+
+``` js
+    for (var i = 1
+```
+
+select the text and ask to the chat to fix the bug.
+
+-- **Make robust**
+
+Select some text that comes from input, for example, variables that come from query string:
+
+``` js
+        var queryData = url.parse(req.url, true).query;
+        var date1 = queryData.date1;
+        var date2 = queryData.date2;
+```
+
+Ask to the chat to make it robust, and you will see that additional validation is added.
+
+-- **Document**
+
+Select some line (e.g. a method or the beginning of the if clause)
+
+``` js
+    else if (req.url.startsWith('/GetFullTextFile')) 
+```
+
+Ask to the chat to document it. You will see that Copilot chat will explain what the code does and add comments to the code.
+
 ---
 
 # .Net Core
