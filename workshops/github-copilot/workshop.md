@@ -214,7 +214,7 @@ Copilot will probably will always more effective with prompt to generate small b
 - Back in the `albums-viewer/utils` add a new file `viz.ts` to create a function that generates a graphe. Here is a sample of prompt to do that:
 
 ```ts
-// generate a plot with d3js of the selling price of the album by year
+// generate a plot with D3.js of the selling price of the album by year
 // x-axis are the month series and y-axis show the numbers of album selled
 // data from the sales of album are loaded in from an external source and are in json format
 ```
@@ -269,13 +269,13 @@ From there you can just ask to copilot to complete the chart
 
 <div class="tip" data-title="tip">
 
-You will **always** get better results by cutting big task into small chunks with copilot autocomplete. It's also a good way to show that copilot is not magic and you have to use it with your other IDE feature and your developer logic.
+>You will **always** get better results by cutting big task into small chunks with copilot autocomplete. It's also a good way to show that copilot is not magic and you have to use it with your other IDE feature and your developer logic.
 
 </div>
 
 ## Tests
 
-Copilot can help generate all kind of tests that are written with code. It Includes `unit tests, integration tests, end to end tests, and load testing` tests with jmeters scripts for example.
+Copilot can help generate all kind of tests that are written with code. It Includes `unit tests, integration tests, end to end tests, and load testing` tests with JMeter scripts for example.
 
 - Add a new file `validators.test.ts` in the `albums-viewer/tests` folder
 
@@ -347,7 +347,7 @@ describe('validateDate', () => {
 
 ### Step 1: generate from scratch
 
-- Create a new file `pipeline.yml` in the `.github/workflow` folder of the project and start typing the following prompt:
+- Create a new file `pipeline.yml` in the `.github/workflows` folder of the project and start typing the following prompt:
 
 ```yml
 # Github Action pipeline that runs on push to main branch
@@ -608,7 +608,7 @@ In case of dealing with Legacy code like COBOL for example it can be very useful
 
 ## Tests generation
 
-Copilot can also help you generate tests for your code. It can generate `unit tests, integration tests, end to end tests, and load testing` tests with jmeters scripts for example.
+Copilot can also help you generate tests for your code. It can generate `unit tests, integration tests, end to end tests, and load testing` tests with JMeter scripts for example.
 
 Open the `album-api/Controllers/UnsecuredController.cs` file and type questions like these to the chat:
 
@@ -650,7 +650,7 @@ It should create a structured project and even a new button to create the file. 
 
 ## Tips
 
-GitHub Copilot Chat is very handful but for a developer, leaving the keyboard and having to take the mouse to open the right Chat tab can be boring. You can directly call the Chat inside the code editor.
+GitHub Copilot Chat is very handful but for a developer, leaving the keyboard and having to take the mouse to open the Chat tab can be boring. You can directly call the Chat inside the code editor.
 
 1- Open any file containing code
 
@@ -659,10 +659,6 @@ GitHub Copilot Chat is very handful but for a developer, leaving the keyboard an
 ![GitHub Copilot Quick Chat](assets/quickchat.png)
 
 3- Type any command to generate some code (i.e. "Create a C# class named Toto). The generated code is injected inside the current file which may be what you want
-
-4- Instead of accepting the solution, click on the Discard button and select *Discard to new file*. It will move the generated content to a new empty file
-
-![Discard to new file](assets/quickchat2.png)
 
 ---
 
@@ -788,7 +784,7 @@ In this first exercise, you are going to develop a real project following functi
 ## Instructions
 
 - Download to local the [exercicefile](assets/src/exercisefiles.zip) folder
-- Open `NodeServer.js` and begin by writing a Nodejs server, check the first suggestions based on the initial text
+- Open `nodeserver.js` and begin by writing a Nodejs server, check the first suggestions based on the initial text
 - Open `test.js` file and analyze the current test
 - Open a command prompt and run the test (`mocha test.js`)
 - See the result, it should display something like:
@@ -805,11 +801,11 @@ server is listening on port 3000
 
 ```
 
-- In the `NodeServer.js` develop the rest of the methods described in the Exercise described in the section below
+- In the `nodeserver.js` develop the rest of the methods described in the Exercise described in the section below
   
 > Do not forget to open `color.json` file in Visual Studio Code, so GitHub Copilot get all the context to make better recommendations
 
-- In the Test.js file add the methods to test the functionality
+- In the test.js file add the methods to test the functionality
 - Run the tests to verify that all is working
 - Open the `dockerfile` file, and fill it, to create a docker container with a node image that can run the web server
 - Create a command to run docker in port 4000
@@ -823,7 +819,7 @@ You must now develop and add new features to your server. The requests that the 
 
 <div class="tip" data-title="tip">
 
-> As you type GitHub Copilot will make suggestions, you can accept them by pressing Tab. If nothing shows up after GitHub Copilot write some lines, press enter and wait a couple of seconds. On Windows or Linux, press Ctrl + Enter, then click Open GitHub Copilot.
+> As you type GitHub Copilot will make suggestions, you can accept them by pressing Tab. If nothing shows up after GitHub Copilot write some lines, press enter and wait a couple of seconds. On Windows or Linux, press Ctrl + Enter.
 
 </div>
 
@@ -938,7 +934,7 @@ dotnet new webapi
 
 - Add a new file `IUserService` in the Abstractions folder, and instruct Copilot to generate an interface for you.
 
-- Run the app using (if you are working with GitHub Codespaces you may need to remove HTTPS redirection from `Startup.cs` )
+- Run the app using (if you are working with GitHub Codespaces you may need to remove HTTPS redirection from `Program.cs` )
 
 ```  powershell
 dotnet run
@@ -1000,7 +996,7 @@ For this exercise, you want to deploy your previously developed Web application 
 
 <div class="tip" data-title="tip">
 
-> There are several ways of using GitHub Copilot for that. For instance, you can write several consecutive lines of comments before letting GitHub Copilot giving recommandations. Furthermore, is the result is not conclusive, you can open a side panel to generate 10 alternatives suggestions. To do so, click `ctrl` + `Enter`
+> There are several ways of using GitHub Copilot for that. For instance, you can write several consecutive lines of comments before letting GitHub Copilot giving recommandations. Furthermore, if the result is not conclusive, you can open a side panel to generate 10 alternatives suggestions. To do so, click `ctrl` + `Enter`
 
 </div>
 
