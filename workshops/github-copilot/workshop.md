@@ -871,7 +871,7 @@ Select the content of MakeZipFile
 
 Ask to the chat to make it more readable. See how comments are added and also variables that have short names are renamed to more understandable names.
 
--- **Fix Bug**
+- **Fix Bug**
 
 In the exercise, there should be no bugs, since most of the code will be done by GitHub Copilot. We can force some errors and then test the debug functionality.
 
@@ -885,7 +885,7 @@ In a for loop change the beginning to (change the 0 for a 1):
 
 select the text and ask to the chat to fix the bug.
 
--- **Make robust**
+- **Make robust**
 
 Select some text that comes from input, for example, variables that come from query string:
 
@@ -897,7 +897,7 @@ Select some text that comes from input, for example, variables that come from qu
 
 Ask to the chat to make it robust, and you will see that additional validation is added.
 
--- **Document**
+- **Document**
 
 Select some line (e.g. a method or the beginning of the if clause)
 
