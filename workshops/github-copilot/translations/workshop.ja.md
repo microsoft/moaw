@@ -844,6 +844,66 @@ server is listening on port 3000
 |**/MakeZipFile**|zlib を利用して、`sample.txt` を含む `sample.gz` ファイルを作成します|
 |**/RandomEuropeanCountry**|ヨーロッパの国とその ISO コードの配列を作成します<br/>配列からランダムな国を返します<br/>国とその ISO コードを返します|
 
+## GitHub Copilot Chat 演習
+
+以下のタスクは、[GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) 拡張機能で実行できます。
+
+- **説明**
+
+validatePhoneNumber メソッドで正規表現の書かれている行を選択し、`/explain` コマンドを使用します。正規表現中のそれぞれの異なる表記法が何を意味するかについて詳しく説明してくれます。
+
+- **プログラミング言語変換**
+
+たとえば、次のソースコードを選択します:
+
+``` js
+var randomCountry = countries[Math.floor(Math.random() * countries.length)];
+```
+
+Copilot Chat に別の言語 (Python など) への変換を依頼します。**python** で新しいコードが表示されます。
+
+- **読みやすさ**
+
+MakeZipFile メソッドを選択します
+
+コードを読みやすくするよう Copilot Chat に依頼します。どのようにコメントが追加されるか、また、短い名前の変数の名前がどのようなわかりやすい名前に変更されるかを確認してください。
+
+- **バグの修正**
+
+この演習では、ほとんどのコードが GitHub Copilot によって書かれるため、バグはほとんどありません。いくつかのバグをわざと作りこむことによって、デバッグ機能をテストできます。
+
+次のようなバグを作りこみます:
+
+for ループで、先頭を次のように変更します (0 を 1 に変更します)。
+
+``` js
+    for (var i = 1
+```
+
+当該コードを選択し、Copilot Chat にバグの修正を依頼します。
+
+-- **堅牢にする**
+
+ユーザー入力由来のテキスト (クエリ文字列から取得される変数など) を選択します。
+
+``` js
+        var queryData = url.parse(req.url, true).query;
+        var date1 = queryData.date1;
+        var date2 = queryData.date2;
+```
+
+Copilot Chat にコードを堅牢にするよう依頼すると、検証ロジックが追加されることがわかります。
+
+-- **ドキュメント*
+
+以下のような行を選択します (例: メソッドや if 句の先頭)
+
+``` js
+    else if (req.url.startsWith('/GetFullTextFile'))
+```
+
+Copilot Chat にドキュメントの作成を依頼します。Copilot Chat がコードの動作を説明し、コメントが追加されます。
+
 ---
 
 # .Net Core
