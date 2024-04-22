@@ -408,7 +408,7 @@
   url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-functions/main/docs/
   github_url: https://github.com/microsoft/hands-on-lab-functions
   language: en
-  last_updated: 2024-04-09
+  last_updated: 2024-04-18
   type: workshop
   description:  This workshop will cover Azure Functions service that you will use to build a complete real world scenario.
   authors:
@@ -420,5 +420,5 @@
   duration_minutes: 180
   audience: students, pro devs
   level: beginner
-  tags: azure, azure functions, azure durable functions, event grid, key vault, cosmos db, web pubsub, static web app, csu, codespace, devcontainer
+  tags: azure, azure functions, azure durable functions, cosmos db, web pubsub, static web app, api management, apim, codespace, devcontainer, csu
   navigation_levels: 3
