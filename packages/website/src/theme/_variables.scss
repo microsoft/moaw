@@ -8,3 +8,6 @@ $breakpoint-xs-max: $breakpoint-xs - 1px;
 $breakpoint-md-max: $breakpoint-md - 1px;
 $breakpoint-lg-max: $breakpoint-lg - 1px;
 $breakpoint-xl-max: $breakpoint-xl - 1px;
+
+// Vertical breakpoint (for accessibility)
+$breakpoint-v: 480px;
