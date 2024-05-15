@@ -25,7 +25,7 @@ import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, map, Obser
     <div class="full-viewport">
       <app-header logo="images/moaw-logo-full.png" logoUrl="" [links]="links"></app-header>
       <div class="content bg-light">
-        <div class="scrollable">
+        <main class="scrollable">
           <section class="hero">
             <div class="container no-sidebar">
               <!-- <h1>All Workshops</h1> -->
@@ -61,7 +61,7 @@ import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, map, Obser
           </app-loader>
           <div class="fill"></div>
           <app-footer type="big"></app-footer>
-        </div>
+        </main>
       </div>
     </div>
   `,
