@@ -14,7 +14,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
     <div class="full-viewport">
       <app-header logo="images/moaw-logo-dark.png" logoUrl="" type="landing" [links]="links"></app-header>
       <div class="content bg-light">
-        <div id="${mainScrollableId}" class="scrollable">
+        <main id="${mainScrollableId}" class="scrollable">
           <section class="container no-sidebar">
             <div class="hero split-layout">
               <div class="hero-text">
@@ -114,7 +114,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
           </section>
           <p>&nbsp;</p>
           <app-footer type="big" credits="People illustrations by Storyset"></app-footer>
-        </div>
+        </main>
       </div>
     </div>
   `,
