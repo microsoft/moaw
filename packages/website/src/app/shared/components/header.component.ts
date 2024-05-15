@@ -66,7 +66,7 @@ import { Link } from '../link';
         align-items: center;
         padding: var(--space-xs) var(--space-md);
         flex-wrap: wrap;
-        
+
         .landing & {
           margin: var(--space-lg) auto;
           padding: 0 var(--space-md);

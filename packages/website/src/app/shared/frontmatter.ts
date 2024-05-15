@@ -23,12 +23,12 @@ export type FrontMatterData = Partial<{
   level: string;
 }>;
 
-export interface FrontMatterParseResult {
-  meta: FrontMatterData;
+export interface FrontMatterParseResult<ExtraProperties = {}> {
+  meta: FrontMatterData & Partial<ExtraProperties>;
   markdown: string;
 }
 
-export function parseFrontMatter(text: string): FrontMatterParseResult {
+export function parseFrontMatter<E = {}>(text: string): FrontMatterParseResult<E> {
   const [, yaml, markdown] = text.match(frontMatterRegex) || [];
   if (!yaml) {
     return { meta: {}, markdown: text };

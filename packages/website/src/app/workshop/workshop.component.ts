@@ -31,7 +31,11 @@ import { getRepoPath } from '../shared/loader';
     <div (click)="sidebar.toggleOpen(false)" class="full-viewport">
       <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
       <main class="content">
-        <app-sidebar #sidebar="sidebar" [links]="menuLinks"></app-sidebar>
+        <app-sidebar
+          #sidebar="sidebar"
+          [links]="menuLinks"
+          [numbering]="workshop?.meta?.navigation_numbering"
+        ></app-sidebar>
         <app-loader
           id="workshop"
           [loading]="loading"

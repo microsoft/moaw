@@ -12,7 +12,7 @@ import { navigate, getCurrentUrlWithoutHash } from '../../router';
       <ul class="links">
         <li *ngFor="let link of links; let index = index">
           <a [href]="makeUrl(link.url)" (click)="openLink($event, link.url)" [class.active]="link.active"
-            >{{ index + 1 }}. {{ link.text }}</a
+            >{{ getNumber(index) }} {{ link.text }}</a
           >
           <ul *ngIf="link.active && link.children" class="sub-links">
             <li *ngFor="let sublink of link.children" [ngClass]="'level-' + sublink.level">
@@ -121,6 +121,7 @@ export class SidebarComponent {
   open: boolean = false;
 
   @Input() links: MenuLink[] = [];
+  @Input() numbering: boolean | undefined = true;
 
   toggleOpen(open?: boolean) {
     this.open = open ?? !this.open;
@@ -137,5 +138,9 @@ export class SidebarComponent {
       navigate(url);
     }
     this.toggleOpen(false);
+  }
+
+  getNumber(index: number) {
+    return this.numbering === false ? '' : `${index + 1}.`;
   }
 }

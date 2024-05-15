@@ -116,6 +116,8 @@ tags: javascript, api, node.js          # Required. Tags for filtering and searc
 #audience: students                      # Optional. Audience of the workshop (students, pro devs, etc.)
 #wt_id: <cxa_tracking_id>                # Optional. Set advocacy tracking code for supported links
 #oc_id: <marketing_tracking_id>          # Optional. Set marketing tracking code for supported links
+#navigation_levels: 2                    # Optional. Number of levels displayed in the side menu (default: 2)
+#navigation_numbering: true              # Optional. Enable numbering in the side menu (default: true)
 #sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
 #  - Section 1 title
 #  - Section 2 title
