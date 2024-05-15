@@ -244,7 +244,6 @@
   audience: students, pro devs
   level: beginner
   tags: azure, Azure Dev Center, Microsoft Dev Box, Azure Deployment Environment, Az Dev CLI, csu
-  navigation_levels: 3
 
 - title: Product Hands-on Lab - Serverless
   url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-serverless/main/docs/
@@ -265,7 +264,6 @@
   audience: students, pro devs
   level: beginner
   tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, web pubsub, static web app, csu
-  navigation_levels: 3
 
 - title: Product Hands-on Lab - Redis Cache in the Azure world
   url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-redis/main/docs/
@@ -286,7 +284,6 @@
   audience: students, pro devs
   level: beginner
   tags: azure, azure cache for redis, database, serverless, apim, cache, csu
-  navigation_levels: 3
 
 - title: Using Copilot with Node.js and Azure
   url: https://microsoft.github.io/moaw/workshop/gh:azure-samples/copilot-nodejs-todo/main/docs/
@@ -421,4 +418,3 @@
   audience: students, pro devs
   level: beginner
   tags: azure, azure functions, azure durable functions, cosmos db, web pubsub, static web app, api management, apim, codespace, devcontainer, csu
-  navigation_levels: 3
