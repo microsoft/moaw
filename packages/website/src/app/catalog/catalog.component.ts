@@ -4,7 +4,7 @@ import { HeaderComponent } from '../shared/components/header.component';
 import { FooterComponent } from '../shared/components/footer.component';
 import { LoaderComponent } from '../shared/components/loader.component';
 import { ChipComponent } from '../shared/components/chip.component';
-import { defaultLanguage, githubRepositoryUrl } from '../shared/constants';
+import { defaultLanguage, githubRepositoryUrl, mainScrollableId } from '../shared/constants';
 import {
   addRouteChangeListener,
   getQueryParams,
@@ -25,7 +25,7 @@ import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, map, Obser
     <div class="full-viewport">
       <app-header logo="images/moaw-logo-full.png" logoUrl="" [links]="links"></app-header>
       <div class="content bg-light">
-        <main class="scrollable">
+        <main id="${mainScrollableId}" class="scrollable">
           <section class="hero">
             <div class="container no-sidebar">
               <!-- <h1>All Workshops</h1> -->

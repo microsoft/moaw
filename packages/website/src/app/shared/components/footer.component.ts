@@ -163,5 +163,6 @@ export class FooterComponent {
 
   backToTop() {
     scrollToTop(mainScrollableId, true);
+    scrollToTop(undefined, true);
   }
 }
