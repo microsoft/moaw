@@ -20,7 +20,7 @@ import { Link } from '../link';
         </div>
         <div class="title text-ellipsis">{{ title }}</div>
         <div class="fill"></div>
-        <div class="links text-ellipsis show-gt-md">
+        <div class="links">
           <a *ngFor="let link of links" [href]="link.url" [target]="isExternalLink(link) ? '_blank' : '_self'">
             <app-icon *ngIf="link.icon" [name]="link.icon" size="20" class="link-icon"></app-icon>{{ link.text
             }}<app-icon *ngIf="isExternalLink(link)" name="link-external" size="14" class="external-link"></app-icon>
@@ -38,9 +38,10 @@ import { Link } from '../link';
         z-index: 10;
         top: 0;
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         background: var(--primary);
-        height: var(--navbar-height);
+        min-height: var(--navbar-height);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 
         button {
@@ -65,7 +66,8 @@ import { Link } from '../link';
         flex: 1;
         align-items: center;
         padding: var(--space-xs) var(--space-md);
-
+        flex-wrap: wrap;
+        
         .landing & {
           margin: var(--space-lg) auto;
           padding: 0 var(--space-md);
@@ -96,23 +98,27 @@ import { Link } from '../link';
       }
 
       .links {
+        display: flex;
+        flex: 1 1 max-content;
         margin-left: var(--space-md);
         color: var(--text-light);
+        flex-wrap: wrap;
+        gap: 0 var(--space-lg);
+        justify-content: flex-end;
+        align-items: center;
 
         .landing & {
           color: var(--text);
         }
 
         a {
+          white-space: nowrap;
           color: var(--text-light);
+          margin: var(--space-xs) 0;
 
           &:hover {
             text-decoration: none;
             opacity: 0.7;
-          }
-
-          + a {
-            margin-left: var(--space-lg);
           }
 
           .landing & {
