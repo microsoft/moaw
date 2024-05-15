@@ -15,8 +15,8 @@ import { Link } from '../link';
           <app-icon name="three-bars" size="24"></app-icon>
         </button>
         <div class="logo" *ngIf="logo">
-          <a *ngIf="logoUrl !== undefined; else logoOnly" [href]="logoUrl"><img [src]="logo" alt="logo" /></a>
-          <ng-template #logoOnly><img [src]="logo" alt="logo" /></ng-template>
+          <a *ngIf="logoUrl !== undefined; else logoOnly" [href]="logoUrl"><img [src]="logo" alt="Moaw" /></a>
+          <ng-template #logoOnly><img [src]="logo" alt="Moaw" /></ng-template>
         </div>
         <div class="title text-ellipsis">{{ title }}</div>
         <div class="fill"></div>
