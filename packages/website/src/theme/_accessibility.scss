@@ -1,0 +1,12 @@
+@import 'variables';
+
+// Accessibility helpers -----------------------------------------------------
+
+.visually-hidden {
+  display: block;
+  height: 0;
+  overflow: hidden;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}

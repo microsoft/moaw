@@ -14,6 +14,7 @@ import { updateTrackingCodes } from '../loader';
   template: `
     <footer [class]="type">
       <ng-container *ngIf="type === 'big'; else defaultFooter">
+        <h2 class="visually-hidden">Footer</h2>
         <div class="container no-sidebar split-layout">
           <div class="image">
             <img src="images/bit/student.png" alt="students" />
