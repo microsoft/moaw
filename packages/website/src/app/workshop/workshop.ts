@@ -27,6 +27,12 @@ export async function loadWorkshop(repoPath: string, options?: LoaderOptions): P
   const sections = fileContents.markdown.split(sectionSeparator).map((markdown, index) => {
     const headings = getHeadings(markdown);
     const title = fileContents.meta.sections_title?.[index] ?? headings[0]?.text ?? '';
+
+    if (headings.length && headings[0].level !== 1) {
+      // If we're missing the top-level heading, then add one using the title
+      markdown = `<h1 class="visually-hidden">${fileContents.meta.title}</h1>\n\n${markdown}`;
+    }
+
     return { title, headings, markdown };
   });
   return {
