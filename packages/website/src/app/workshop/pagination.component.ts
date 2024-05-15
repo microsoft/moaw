@@ -10,12 +10,12 @@ import { resetFocus } from '../shared/focus';
   imports: [CommonModule],
   template: `
     <nav class="pagination" aria-label="Page navigation">
-      <button [hidden]="!hasPrevious()" (click)="previous()" class="previous" aria-label="Go to previous page">
-        <div class="label">Previous</div>
+      <button [hidden]="!hasPrevious()" (click)="previous()" class="previous">
+        <div class="label" aria-label="Go to previous page:">Previous</div>
         <div class="title">{{ getTitle(-1) }}</div>
       </button>
-      <button [hidden]="!hasNext()" (click)="next()" class="next" aria-label="Go to next page">
-        <div class="label">Next</div>
+      <button [hidden]="!hasNext()" (click)="next()" class="next">
+        <div class="label" aria-label="Go to next page:">Next</div>
         <div class="title">{{ getTitle(1) }}</div>
       </button>
     </nav>
@@ -37,7 +37,7 @@ import { resetFocus } from '../shared/focus';
         text-align: left;
 
         > .title::before {
-          content: '←';
+          content: '←' / '';
           margin-right: var(--space-xxs);
         }
       }
@@ -47,7 +47,7 @@ import { resetFocus } from '../shared/focus';
         text-align: right;
 
         > .title::after {
-          content: '→';
+          content: '→' / '';
           margin-left: var(--space-xxs);
         }
       }
