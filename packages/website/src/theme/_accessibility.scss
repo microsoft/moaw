@@ -6,11 +6,12 @@
   outline: 2px solid var(--primary);
 }
 
-.visually-hidden {
-  display: block;
-  height: 0;
+.visually-hidden:not(:focus):not(:active) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
   overflow: hidden;
-  margin: 0;
-  border: 0;
-  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
