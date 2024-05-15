@@ -17,6 +17,8 @@ import { ContentFilter, matchEntry } from './content-filter';
 import { CardComponent } from './card.component';
 import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, map, Observable, take } from 'rxjs';
 
+const pageTitle = 'MOAW - All Workshops';
+
 @Component({
   selector: 'app-catalog',
   standalone: true,
@@ -50,7 +52,12 @@ import { BehaviorSubject, concat, debounceTime, distinctUntilChanged, map, Obser
             </div>
           </section>
           <app-loader class="container no-sidebar" [loading]="loading">
-            <div *ngIf="(filteredWorkshops$ | async)?.length === 0">No workshops match your search criteria.</div>
+            <div role="status" class="results" role="status">
+              <span *ngIf="(filteredWorkshops$ | async)?.length; let workshopCount; else: noResults"
+                >{{ workshopCount }} workshop{{ workshopCount === 1 ? '' : 's' }}</span
+              >
+              <ng-template #noResults>No workshops match your search criteria.</ng-template>
+            </div>
             <div class="cards">
               <app-card
                 *ngFor="let workshop of filteredWorkshops$ | async; trackBy: trackById"
@@ -117,7 +124,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
   routeChangeListener!: RouteChangeListener;
 
   async ngOnInit() {
-    document.title = 'MOAW - All Workshops';
+    document.title = pageTitle;
     this.loading = true;
     try {
       this.workshops = await loadCatalog();
@@ -142,6 +149,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
     this.language = lang ?? defaultLanguage;
     this.search = search ?? '';
     this.filter$.next({ search: this.search, tags: [...this.tags, ...this.sub], language: this.language });
+    this.updateTitle(this.search);
   }
 
   filterWorkshops() {
@@ -160,6 +168,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
     const hasSearchQuery = getQueryParams()['search']?.length > 0;
     const addToHistory = (text.length > 0 && !hasSearchQuery) || (text.length === 0 && hasSearchQuery);
     setQueryParams({ search: text.length > 0 ? text : undefined }, false, addToHistory);
+    this.updateTitle(text);
   }
 
   addTagFilter(tag: string) {
@@ -176,5 +185,9 @@ export class CatalogComponent implements OnInit, OnDestroy {
 
   trackById(_index: number, workshop: ContentEntry) {
     return workshop.id;
+  }
+
+  private updateTitle(search: string) {
+    document.title = pageTitle + (search.length > 0 ? ` - Search: ${search}` : '');
   }
 }
