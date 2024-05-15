@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Workshop } from './workshop';
 import { setHash, setQueryParams } from '../router';
+import { resetFocus } from '../shared/focus';
 
 @Component({
   selector: 'app-pagination',
@@ -98,6 +99,7 @@ export class PaginationComponent {
     if (this.hasPrevious()) {
       setQueryParams({ step: this.workshop!.step - 1 });
       setHash();
+      resetFocus();
     }
   }
 
@@ -105,6 +107,7 @@ export class PaginationComponent {
     if (this.hasNext()) {
       setQueryParams({ step: this.workshop!.step + 1 });
       setHash();
+      resetFocus();
     }
   }
 }
