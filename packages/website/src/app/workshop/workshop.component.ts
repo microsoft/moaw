@@ -30,7 +30,7 @@ import { getRepoPath } from '../shared/loader';
   template: `
     <div (click)="sidebar.toggleOpen(false)" class="full-viewport">
       <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
-      <div class="content">
+      <main class="content">
         <app-sidebar #sidebar="sidebar" [links]="menuLinks"></app-sidebar>
         <app-loader
           id="workshop"
@@ -54,7 +54,7 @@ import { getRepoPath } from '../shared/loader';
           </div>
           <app-footer></app-footer>
         </app-loader>
-      </div>
+      </main>
       <ng-template #noWorkshop>
         <p class="container" *ngIf="!loading">Could not load workshop :(</p>
       </ng-template>
