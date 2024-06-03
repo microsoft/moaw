@@ -1,0 +1,6 @@
+// Accessibility overrides for improved contrast
+
+:not(pre) > code[class*='language-'],
+pre[class*='language-'] {
+  background: #1b1c16;
+}

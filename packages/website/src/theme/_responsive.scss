@@ -53,3 +53,10 @@
     display: none;
   }
 }
+
+@media screen and (min-height: $breakpoint-v) {
+  // Only support fixed vertical layout when there's enough vertical space
+  .full-viewport {
+    display: flex;
+  }
+}

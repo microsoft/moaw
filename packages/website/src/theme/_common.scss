@@ -190,6 +190,8 @@ code:not(pre > code) {
 }
 
 pre {
+  outline-offset: 1px;
+
   &::-webkit-scrollbar {
     -webkit-appearance: none;
     height: 8px;
@@ -207,7 +209,7 @@ pre {
 
 a {
   font-weight: 500;
-  color: var(--primary);
+  color: var(--primary-dark);
   text-decoration: none;
 
   &:hover {
@@ -232,7 +234,9 @@ hr {
   opacity: 0;
   transition: opacity var(--transition-duration);
 
-  .heading:hover & {
+  .heading:hover &,
+  &:focus,
+  &:active {
     opacity: 1;
   }
 }

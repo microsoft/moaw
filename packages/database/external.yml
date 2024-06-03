@@ -244,7 +244,6 @@
   audience: students, pro devs
   level: beginner
   tags: azure, Azure Dev Center, Microsoft Dev Box, Azure Deployment Environment, Az Dev CLI, csu
-  navigation_levels: 3
 
 - title: Product Hands-on Lab - Serverless
   url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-serverless/main/docs/
@@ -264,8 +263,7 @@
   duration_minutes: 300
   audience: students, pro devs
   level: beginner
-  tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, email, app service, web pubsub, static web app, csu
-  navigation_levels: 3
+  tags: azure, azure functions, logic apps, event grid, key vault, cosmos db, web pubsub, static web app, csu
 
 - title: Product Hands-on Lab - Redis Cache in the Azure world
   url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-redis/main/docs/
@@ -286,7 +284,6 @@
   audience: students, pro devs
   level: beginner
   tags: azure, azure cache for redis, database, serverless, apim, cache, csu
-  navigation_levels: 3
 
 - title: Using Copilot with Node.js and Azure
   url: https://microsoft.github.io/moaw/workshop/gh:azure-samples/copilot-nodejs-todo/main/docs/
@@ -371,4 +368,53 @@
   audience: students, devs
   level: intermediate
   tags: chatgpt, openai, langchain, retrieval-augmented-generation, azure, containers, docker, static web apps, javascript, typescript, node.js, azure cognitive search, fastify, azure container apps
+
+- title: Azure Container Apps - Hands on Lab  
+  url: https://markharrison.io/lab-azure-container-apps/      
+  description: Hands on Lab and demo script for Azure Container Apps
+  language: en                           
+  last_updated: 2024-03-14
+  type: workshop                        
+  level: beginner                        
+  github_url: https://github.com/markharrison/lab-azure-container-apps
+  authors:                                
+    - Mark Harrison                          
+  contacts:                               
+    - '@markharrison'
+  duration_minutes: 60                    
+  audience: students, pro devs             
+  tags: azure, ACA, Dapr, container, .net, app, container apps 
+
+- title: Create self-study Flashcards using RAG (Retrieval Augmented Generation) with Microsoft Fabric and Azure OpenAI  
+  url: https://moaw.dev/workshop/?src=gh:microsoft/flashcards-workshop/main/workshop.md      
+  description: Learn how to use Microsoft Fabric and Azure OpenAI to generate a set of study flashcards. Connect Fabric to Azure Blob Storage to store the flashcards and QR codes. Generate a PDF with the flashcards.
+  language: en                           
+  last_updated: 2024-03-25
+  type: workshop                        
+  level: beginner                        
+  github_url: https://github.com/microsoft/flashcards-workshop
+  authors:                                
+    - Alvaro Videla                        
+  contacts:                               
+    - '@old_sound'
+  duration_minutes: 30                    
+  audience: students, pro devs             
+  tags: openai, fabric, python, flashcards, Microsoft Fabric, Azure OpenAI 
   
+- title: Product Hands-on Lab - Functions
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-functions/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-functions
+  language: en
+  last_updated: 2024-04-18
+  type: workshop
+  description:  This workshop will cover Azure Functions service that you will use to build a complete real world scenario.
+  authors:
+    - Damien Aicheh
+    - Iheb Khemissi
+  contacts:
+    - "@damienaicheh"
+    - "@ikhemissi"
+  duration_minutes: 180
+  audience: students, pro devs
+  level: beginner
+  tags: azure, azure functions, azure durable functions, cosmos db, web pubsub, static web app, api management, apim, codespace, devcontainer, csu

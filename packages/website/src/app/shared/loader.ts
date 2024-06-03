@@ -14,15 +14,15 @@ export interface LoaderOptions {
   vars?: string;
 }
 
-export interface FileContents extends FrontMatterParseResult {
+export interface FileContents<E = {}> extends FrontMatterParseResult<E> {
   githubUrl: string;
 }
 
-export async function loadFile(
+export async function loadFile<E = {}>(
   repoPath: string,
   options?: LoaderOptions,
   redirectWrongType = true
-): Promise<FileContents> {
+): Promise<FileContents<E>> {
   const gitHubFileUrl = getFileUrl(repoPath);
   const response = await fetch(gitHubFileUrl);
 
@@ -34,7 +34,7 @@ export async function loadFile(
 
   let text = await response.text();
   text = replaceVariables(text, options?.vars);
-  let { meta, markdown } = parseFrontMatter(text);
+  let { meta, markdown, ...extraProperties } = parseFrontMatter<E>(text);
 
   const currentRoute = getCurrentRoute();
   if (redirectWrongType && meta.type && meta.type !== currentRoute?.id) {
@@ -51,7 +51,8 @@ export async function loadFile(
   return {
     meta,
     markdown,
-    githubUrl: gitHubFileUrl
+    githubUrl: gitHubFileUrl,
+    ...extraProperties
   };
 }
 

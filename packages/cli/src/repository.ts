@@ -1,4 +1,4 @@
-import { join, dirname } from 'node:path';
+import { join, dirname, sep, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import createDebug from 'debug';
 import { pathExists, readJson, runCommand } from './util.js';
@@ -33,7 +33,7 @@ export async function getRepositoryInfo(options: RepositoryOptions = {}): Promis
 
   const root = await getGitRoot();
   if (!root) {
-    throw new Error('Not a got repository');
+    throw new Error('Not a git repository');
   }
 
   const branch = options.branch?.trim() ?? (await getCurrentBranchFromGit());
@@ -103,7 +103,8 @@ export async function getCurrentBranchFromGit(): Promise<string | undefined> {
 export async function getGitRoot(): Promise<string | undefined> {
   try {
     const stdout = await runCommand('git rev-parse --show-toplevel');
-    return stdout.trim();
+    // Git may use posix path on windows, so we normalize if needed
+    return stdout.trim().split(posix.sep).join(sep);
   } catch {
     return undefined;
   }

@@ -47,7 +47,7 @@ GitHub Copilot is an AI-powered code assistant that helps developers write bette
 | GitHub account | [Create free GitHub account](https://github.com/join) |
 | GitHub Copilot Access | A 60 day trial can be [requested here](https://github.com/github-copilot/signup) |
 | A code editor  | [Download VS Code](https://code.visualstudio.com/Download) |
-| some VSCode extensions |  The first one [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot), the second one ([GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs)) will allow you to send custom commands (a.k.a. `brushes` which are in fact `prompts` - this extension may soon be deprecated by GitHub) and the last one allows you to have [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat).|
+| some VSCode extensions |  The first one [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot), and the other one allows you to have [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat).|
 | A browser      | [Download Microsoft Edge](https://www.microsoft.com/edge) or any other one ;-)|
 
 <div class="warning" data-title="Important">
@@ -69,9 +69,8 @@ You can also choose to work locally on your computer.
 1. Install [Visual Studio Code](https://code.visualstudio.com/)
 2. Install the [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) extension
 3. Install the [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extension
-4. Install the [GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs) extension. it contains beta features
-5. Install [Node and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-6. Install mocha
+4. Install [Node and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+5. Install mocha
 
     ``` bash
     npm install --global mocha
@@ -118,7 +117,7 @@ Once you start typing a prompt and copilot generate proposals, you can use the f
 
 ## Natural Language Translations
 
-**Automate text translation**
+**Automate text completion**
 
 Open file `album-viewer/lang/translations.json`
 
@@ -215,14 +214,14 @@ Copilot will probably will always more effective with prompt to generate small b
 - Back in the `albums-viewer/utils` add a new file `viz.ts` to create a function that generates a graphe. Here is a sample of prompt to do that:
 
 ```ts
-// generate a plot with d3js of the selling price of the album by year
+// generate a plot with D3.js of the selling price of the album by year
 // x-axis are the month series and y-axis show the numbers of album selled
 // data from the sales of album are loaded in from an external source and are in json format
 ```
 
 <div class="info" data-title="info">
 
->Copilot will probably try to complete the prompt by adding more details. You can try to add more details yourself or follow copilot's suggestions. When you want it to stop and start generating the code just jump on another line and let him work.
+>Copilot will probably try to complete the prompt by adding more details. You can try to add more details yourself or follow copilot's suggestions. When you want it to stop and start generating the code just jump on another line and let the copilot do its work.
 
 </div>
 
@@ -270,50 +269,13 @@ From there you can just ask to copilot to complete the chart
 
 <div class="tip" data-title="tip">
 
-You will **always** get better results by cutting big task into small chunks with copilot autocomplete. It's also a good way to show that copilot is not magic and you have to use it with your other IDE feature and your developer logic.
+>You will **always** get better results by cutting big task into small chunks with copilot autocomplete. It's also a good way to show that copilot is not magic and you have to use it with your other IDE feature and your developer logic.
 
 </div>
 
-## Code Documentation
-
-Copilot can understand a natural language prompt and generate code and because it's just language to it, it can also `understand code and explain it in natural language` to help you document your code.
-
-### Simple documentation comment
-
-To see that just put you pointer on top of a Class, a method or any line of code and start typing the comment handler for the selected language to trigger copilot. In language like Java, C# or TS for example, just type `// `and let the magic happen.
-
-Here is an example in the `albums-viewer/routes/index.js` file. Insert a line and start typing on line 13 inside the `try block`
-
-```js
-router.get("/", async function (req, res, next) {
-  try {
-    // Invoke the album-api via Dapr
-    const url = `http://127.0.0.1:${DaprHttpPort}/v1.0/invoke/${AlbumService}/method/albums`;
-
-```
-
-Continue to play with it and see what happens on other pieces of code.
-
-### Standardized documentation comment (JavaDoc, JsDoc, etc...)
-
-For this one, to trigger the documentation comment generation, you need to respect the specific comment format:
-
-- `/**` (for JS/TS) in the `index.js` file for example
-- `///` for C# in the `AlbumController.cs` of the AlbumApi file for example
-
-```cs
-/// <summary>
-/// function that returns a single album by id
-/// </summary>
-/// <param name="id"></param>
-/// <returns></returns>
-[HttpGet("{id}")]
-public IActionResult Get(int id)
-```
-
 ## Tests
 
-Copilot can help generate all kind of tests that are written with code. It Includes `unit tests, integration tests, end to end tests, and load testing` tests with jmeters scripts for example.
+Copilot can help generate all kind of tests that are written with code. It Includes `unit tests, integration tests, end to end tests, and load testing` tests with JMeter scripts for example.
 
 - Add a new file `validators.test.ts` in the `albums-viewer/tests` folder
 
@@ -385,7 +347,7 @@ describe('validateDate', () => {
 
 ### Step 1: generate from scratch
 
-- Create a new file `pipeline.yml` in the `.github/workflow` folder of the project and start typing the following prompt:
+- Create a new file `pipeline.yml` in the `.github/workflows` folder of the project and start typing the following prompt:
 
 ```yml
 # Github Action pipeline that runs on push to main branch
@@ -460,7 +422,8 @@ Yes, writing a comment should be mandatory and developers tend to be lazy. GitHu
 
 ## Writing documentation
 
-Copilot can help you in all your documentation tasks. It can generate simple documentation comment or standardized documentation comment like JavaDoc, JsDoc, etc... it can also help you translate your documentation in different languages. Let's see how it works.
+Copilot can understand a natural language prompt and generate code and because it's just language to it, it can also `understand code and explain it in natural language` to help you document your code.
+So it can help you in all your documentation tasks. It can generate simple documentation comment or standardized documentation comment like JavaDoc, JsDoc, etc... it can also help you translate your documentation in different languages. Let's see how it works.
 
 ### simple documentation comment
 
@@ -645,7 +608,7 @@ In case of dealing with Legacy code like COBOL for example it can be very useful
 
 ## Tests generation
 
-Copilot can also help you generate tests for your code. It can generate `unit tests, integration tests, end to end tests, and load testing` tests with jmeters scripts for example.
+Copilot can also help you generate tests for your code. It can generate `unit tests, integration tests, end to end tests, and load testing` tests with JMeter scripts for example.
 
 Open the `album-api/Controllers/UnsecuredController.cs` file and type questions like these to the chat:
 
@@ -687,7 +650,7 @@ It should create a structured project and even a new button to create the file. 
 
 ## Tips
 
-GitHub Copilot Chat is very handful but for a developer, leaving the keyboard and having to take the mouse to open the right Chat tab can be boring. You can directly call the Chat inside the code editor.
+GitHub Copilot Chat is very handful but for a developer, leaving the keyboard and having to take the mouse to open the Chat tab can be boring. You can directly call the Chat inside the code editor.
 
 1- Open any file containing code
 
@@ -696,10 +659,6 @@ GitHub Copilot Chat is very handful but for a developer, leaving the keyboard an
 ![GitHub Copilot Quick Chat](assets/quickchat.png)
 
 3- Type any command to generate some code (i.e. "Create a C# class named Toto). The generated code is injected inside the current file which may be what you want
-
-4- Instead of accepting the solution, click on the Discard button and select *Discard to new file*. It will move the generated content to a new empty file
-
-![Discard to new file](assets/quickchat2.png)
 
 ---
 
@@ -825,7 +784,7 @@ In this first exercise, you are going to develop a real project following functi
 ## Instructions
 
 - Download to local the [exercicefile](assets/src/exercisefiles.zip) folder
-- Open `NodeServer.js` and begin by writing a Nodejs server, check the first suggestions based on the initial text
+- Open `nodeserver.js` and begin by writing a Nodejs server, check the first suggestions based on the initial text
 - Open `test.js` file and analyze the current test
 - Open a command prompt and run the test (`mocha test.js`)
 - See the result, it should display something like:
@@ -842,11 +801,11 @@ server is listening on port 3000
 
 ```
 
-- In the `NodeServer.js` develop the rest of the methods described in the Exercise described in the section below
+- In the `nodeserver.js` develop the rest of the methods described in the Exercise described in the section below
   
 > Do not forget to open `color.json` file in Visual Studio Code, so GitHub Copilot get all the context to make better recommendations
 
-- In the Test.js file add the methods to test the functionality
+- In the test.js file add the methods to test the functionality
 - Run the tests to verify that all is working
 - Open the `dockerfile` file, and fill it, to create a docker container with a node image that can run the web server
 - Create a command to run docker in port 4000
@@ -860,7 +819,7 @@ You must now develop and add new features to your server. The requests that the 
 
 <div class="tip" data-title="tip">
 
-> As you type GitHub Copilot will make suggestions, you can accept them by pressing Tab. If nothing shows up after GitHub Copilot write some lines, press enter and wait a couple of seconds. On Windows or Linux, press Ctrl + Enter, then click Open GitHub Copilot.
+> As you type GitHub Copilot will make suggestions, you can accept them by pressing Tab. If nothing shows up after GitHub Copilot write some lines, press enter and wait a couple of seconds. On Windows or Linux, press Ctrl + Enter.
 
 </div>
 
@@ -887,23 +846,13 @@ You must now develop and add new features to your server. The requests that the 
 |**/MakeZipFile**|Using zlib create a zip file called `sample.gz` that contains `sample.txt`|
 |**/RandomEuropeanCountry**|Make an array of european countries and its ISO codes<br/>Return a random country from the array<br/>Return the country and its ISO code|
 
-## GitHub Copilot Labs exercises
+## GitHub Copilot Chat exercises
 
-These tasks can be performed with the [GitHub Copilot Labs](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-labs) add-in, currently PREVIEW functionality, expect some bugs or weird behavior (you've been warned <:o)).
-
-<div class="warning" data-title="warning">
-
-> GitHub Copilot Labs extension may be deprecated any time soon. When GitHub removes it, you won't be able to do this part of the lab.
-
-</div>
-
-Open the GitHub Copilot Labs extension to see all the available functionality.
-
-![GitHub Copilot Labs extension](assets/github-copilot-labs.png)
+These tasks can be performed with the [GitHub Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) add-in.
 
 - **Explain**
 
-Select the line that has the regex in the validatePhoneNumber method, in EXPLAIN section click "Ask Copilot". You will see an explanation detailing what each different notation does in the regular expression.
+Select the line that has the regex in the validatePhoneNumber method, and use `/explain` comamand. You will see an explanation detailing what each different notation does in the regular expression.
 
 - **Language translation**
 
@@ -913,13 +862,13 @@ Select some source code, like this line:
 var randomCountry = countries[Math.floor(Math.random() * countries.length)];
 ```
 
-In "**LANGUAGE TRANSLATION**" section select **python** and click "Ask Copilot" button, you should see new code generated in **python**
+Ask to the chat to translate it to another language, for example Python. You should see new code generated in **python**
 
 - **Readable**
 
 Select the content of MakeZipFile
 
-In the BRUSHES section, click the "Readable" button. See how comments are added and also variables that have short names are renamed to more understandable names.
+Ask to the chat to make it more readable. See how comments are added and also variables that have short names are renamed to more understandable names.
 
 -- **Fix Bug**
 
@@ -933,27 +882,7 @@ In a for loop change the beginning to (change the 0 for a 1):
     for (var i = 1
 ```
 
-select the text and in the "BRUSHES" section press the "Fix Bug" button.
-
--- **Debug**
-
-Select some lines of text that contain variables, like:
-
-``` js
-    var queryData = url.parse(req.url, true).query;
-    var color = queryData.color;
-    var colorFound = "not found";
-```
-
-select the text and in the "BRUSHES" section press the "Debug" button.
-
--- **Clean**
-
-TBD
-
--- **List steps**
-
-Select some lines of code that do not have comments and in the  "BRUSHES" section press the "List steps" button.
+select the text and ask to the chat to fix the bug.
 
 -- **Make robust**
 
@@ -965,7 +894,7 @@ Select some text that comes from input, for example, variables that come from qu
         var date2 = queryData.date2;
 ```
 
-In the "BRUSHES" section press the "Make robust" button and you will see that additional validation is added.
+Ask to the chat to make it robust, and you will see that additional validation is added.
 
 -- **Document**
 
@@ -975,7 +904,7 @@ Select some line (e.g. a method or the beginning of the if clause)
     else if (req.url.startsWith('/GetFullTextFile')) 
 ```
 
-In the  "BRUSHES" section press the "Document" button, you will see that comments explaining what the code does are added before the line.
+Ask to the chat to document it. You will see that Copilot chat will explain what the code does and add comments to the code.
 
 ---
 
@@ -1005,7 +934,7 @@ dotnet new webapi
 
 - Add a new file `IUserService` in the Abstractions folder, and instruct Copilot to generate an interface for you.
 
-- Run the app using (if you are working with GitHub Codespaces you may need to remove HTTPS redirection from `Startup.cs` )
+- Run the app using (if you are working with GitHub Codespaces you may need to remove HTTPS redirection from `Program.cs` )
 
 ```  powershell
 dotnet run
@@ -1067,7 +996,7 @@ For this exercise, you want to deploy your previously developed Web application 
 
 <div class="tip" data-title="tip">
 
-> There are several ways of using GitHub Copilot for that. For instance, you can write several consecutive lines of comments before letting GitHub Copilot giving recommandations. Furthermore, is the result is not conclusive, you can open a side panel to generate 10 alternatives suggestions. To do so, click `ctrl` + `Enter`
+> There are several ways of using GitHub Copilot for that. For instance, you can write several consecutive lines of comments before letting GitHub Copilot giving recommandations. Furthermore, if the result is not conclusive, you can open a side panel to generate 10 alternatives suggestions. To do so, click `ctrl` + `Enter`
 
 </div>
 
@@ -1120,7 +1049,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 
 ## DevSecOps
 
-GitHub Copilot may not be able to fix and refactor all the code by himself (for instance using the `fix bug` prompt) but it is pretty good to recognize code smells and bad practices if you ask him through the chat.
+GitHub Copilot may not be able to fix and refactor all the code (for instance using the `fix bug` prompt) but it is pretty good to recognize code smells and bad practices if you ask through the chat.
 
 Several security flaws are present in this short piece of code. You should have at least found 4 major bad practices:
 

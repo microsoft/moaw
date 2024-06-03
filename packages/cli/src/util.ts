@@ -109,3 +109,14 @@ export async function runCommand(command: string): Promise<string> {
   const result = await promisify(exec)(command);
   return result.stdout.toString();
 }
+
+export async function replaceAllAsync(input: string, pattern: RegExp, replacer: (...args: any[]) => Promise<string>) {
+  const promises: Array<Promise<string>> = [];
+  input.replace(pattern, (match, ...args) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    promises.push(replacer(match, ...args));
+    return match;
+  });
+  const replacements = await Promise.all(promises);
+  return input.replace(pattern, () => replacements.shift()!);
+}

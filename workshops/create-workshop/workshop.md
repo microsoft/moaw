@@ -40,7 +40,7 @@ You should see the installed tools version in the terminal.
 
 ---
 
-## Initial setup
+# Initial setup
 
 1. Open https://github.com/microsoft/moaw in your browser, and select the **Fork** button in the top-right corner of the page.
    ![Fork button](assets/fork.png)
@@ -73,7 +73,7 @@ You're now ready to create a new workshop!
 
 ---
 
-## Create a new workshop
+# Create a new workshop
 
 Open a terminal, and copy the workshop folder `template/workshop` to the `workshops/` folder, and give it a name (you can also do it from your file explorer if you don't have a bash terminal):
 
@@ -93,7 +93,7 @@ cp -r template/workshop workshops/<your-workshop-name>/
 
 </div>
 
-### Edit the workshop metadata
+## Edit the workshop metadata
 
 Open the file `workshops/<your-workshop-name>/workshop.md` in your code editor, and edit the front matter at the top of the file:
 
@@ -116,6 +116,8 @@ tags: javascript, api, node.js          # Required. Tags for filtering and searc
 #audience: students                      # Optional. Audience of the workshop (students, pro devs, etc.)
 #wt_id: <cxa_tracking_id>                # Optional. Set advocacy tracking code for supported links
 #oc_id: <marketing_tracking_id>          # Optional. Set marketing tracking code for supported links
+#navigation_levels: 2                    # Optional. Number of levels displayed in the side menu (default: 2)
+#navigation_numbering: true              # Optional. Enable numbering in the side menu (default: true)
 #sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
 #  - Section 1 title
 #  - Section 2 title
@@ -130,7 +132,7 @@ Make sure to fill in all the required fields, and remove or comment the optional
 
 </div>
 
-### Write your workshop
+## Write your workshop
 
 After the front matter, you can start writing your workshop. You can use the [Markdown syntax](http://commonmark.org/help/) to format your text, and add images, code snippets, etc.
 
@@ -140,7 +142,7 @@ After the front matter, you can start writing your workshop. You can use the [Ma
 
 </div>
 
-### Add sections
+## Add sections
 
 You can add sections to your workshop by inserting a line with `---`, preceded and followed by an empty line:
 
@@ -156,7 +158,7 @@ You can add sections to your workshop by inserting a line with `---`, preceded a
 
 Sections will be split in different pages, and displayed in the side bar of the workshop page.
 
-### Add admonitions
+## Add admonitions
 
 Sometimes, you want to draw attention to specific statements. You can do so by using admonitions, which are special blocks of text that can be used to highlight important information.
 
@@ -187,7 +189,7 @@ This will render as:
 
 The `data-title` attribute is optional, and can be used to add a title to the admonition.
 
-### Add images and resources
+## Add images and resources
 
 Any images or resources you want to use in your workshop should be placed under the `workshops/<your-workshop-name>/\assets/` subfolder. If this folder doesn't exist, you can create it.
 
@@ -209,7 +211,7 @@ You can also add links to any external resources you may need in your workshop:
 
 </div>
 
-### Embed videos
+## Embed videos
 
 You can embed videos from YouTube in your workshop by copying the embed code from YouTube, and pasting it in your workshop file inside a `div` with the `video-embed` class:
 
@@ -231,7 +233,7 @@ This will render as:
 
 </div>
 
-### Embed audio
+## Embed audio
 
 You can embed audio files in your workshop by simply using the `<audio>` HTML tag:
 
@@ -243,7 +245,7 @@ This will render as:
 
 <audio controls src="assets/audio.mp3"></audio>
 
-### Add foldable sections
+## Add foldable sections
 
 You can add foldable sections to your workshop by using the following syntax:
 
@@ -267,7 +269,7 @@ You can user *any* **Markdown** syntax as  usual here.
 
 </details>
 
-### Variables
+## Variables
 
 You can use variables to make some parts of your workshop dynamic. This can be useful to display content that may change depending of the event, for example the name of the event or a link to get specific credits.
 
@@ -277,7 +279,7 @@ To define a variable, add a query parameter to the URL of your workshop with thi
 ?vars=<name>:<value>
 ```
 
-#### Multiple variables
+### Multiple variables
 
 Multiple variables can be defined by separating them with a comma:
 
@@ -285,7 +287,7 @@ Multiple variables can be defined by separating them with a comma:
 ?vars=<name1>:<value1>,<name2>:<value2>
 ```
 
-#### Variable substitution
+### Variable substitution
 
 To substitute a variable in your workshop, use the following syntax:
 
@@ -295,7 +297,9 @@ Hello \$$name$$!
 
 This will render as: Hello $$name$$!
 
-Try adding `?vars=name:John%20Doe` to the URL of your workshop to see the variable substitution in action.
+Try clicking on the button below to set the query param `vars=name:John%20Doe` in the URL. You should now see the variable substitution in action.
+
+<button onclick="const url = new window.URL(window.location.href); url.searchParams.set('vars', 'name:John%20Doe'); window.location.href = url">Set variable name</button>
 
 <div class="info" data-title="info">
 
@@ -313,7 +317,7 @@ Try adding `?vars=name:John%20Doe` to the URL of your workshop to see the variab
 
 </div>
 
-#### Default values
+### Default values
 
 You can define a default value for a variable by adding a `:` after the variable name:
 
@@ -325,14 +329,20 @@ If the variable is not defined in the URL, the default value will be used, other
 
 This will render as: Hello $$name:world$$!
 
-### Conditional content
+## Conditional content
 
 You can add sections in your workshop that will only be visible when a specific variable is set in the URL. This can be useful to add content that is only relevant to a specific audience or event.
 
 ```md
 <div data-visible="\$$myconf$$">
 
-> This content will only be visible if the variable `myconf` is defined in the URL.
+> This content is *visible* if the variable `myconf` is defined in the URL.
+
+</div>
+
+<div data-hidden="\$$myconf$$">
+
+> This content is **hidden** if the variable `myconf` is defined in the URL.
 
 </div>
 ```
@@ -341,11 +351,20 @@ This will render as:
 
 <div data-visible="$$myconf$$">
 
-> This content will only be visible if the variable `myconf` is defined in the URL.
+> This content is *visible* if the variable `myconf` is defined in the URL.
 
 </div>
 
-Try adding `?vars=myconf:1` to the URL of your workshop to see the conditional content in action.
+<div data-hidden="$$myconf$$">
+
+> This content is **hidden** if the variable `myconf` is defined in the URL.
+
+</div>
+
+Try clicking on the button below to set the query param `vars=myconf:1` in the URL. The first section should now be visible.
+
+<button onclick="const url = new window.URL(window.location.href); url.searchParams.set('vars', 'myconf:1'); window.location.href = url">Set variable myconf</button>
+
 
 <div class="info" data-title="info">
 
@@ -355,11 +374,11 @@ Try adding `?vars=myconf:1` to the URL of your workshop to see the conditional c
 
 ---
 
-## Preview your workshop
+# Preview your workshop
 
 Once your workshop is ready, you can preview it in your browser to make sure everything looks as intended.
 
-### Test your workshop locally
+## Test your workshop locally
 
 To preview your workshop locally, you can to start the local development server:
 
@@ -372,7 +391,7 @@ This will start a local development server on port 4200.
 You can then open [`http://localhost:4200/workshop/<your-workshop-name>/`](http://localhost:4200/workshop/<your-workshop-name>/) in your browser to preview your workshop.
 
 
-#### Use MOAW CLI
+### Use MOAW CLI
 
 You can also use the MOAW cli to preview your workshop locally, even if you are **writing your workshop in another repository**. First, you need to install the MOAW CLI with npm.
 
@@ -387,7 +406,7 @@ moaw s docs/workshop.md
 ```
 
 
-### Host workshop from your fork
+## Host workshop from your fork
 
 You can also host your workshop directly from your GitHub fork, so that you can share it with your colleagues or friends.
 
@@ -413,7 +432,7 @@ This is also a convenient way to quickly host your workshop without having to wa
 
 ---
 
-## Publish your workshop
+# Publish your workshop
 
 When you are ready to publish your workshop, you can submit a pull request to the main repository.
 
@@ -437,7 +456,7 @@ git push
 
 </div>
 
-### Creating a pull request
+## Creating a pull request
 
 Finally, submit a pull request to the main repository:
 

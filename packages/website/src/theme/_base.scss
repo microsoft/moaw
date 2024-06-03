@@ -25,16 +25,17 @@ table {
   margin: var(--space-md) 0;
 }
 
+// Hide header row if all cells are empty
+tr:has(> th:empty):not(:has(> th:not(:empty))) {
+  display: none;
+}
+
 th,
 td {
   text-align: left;
   vertical-align: top;
   padding: var(--space-xxs) var(--space-md);
   border: 2px solid var(--border-color);
-
-  &:empty {
-    padding: 0;
-  }
 }
 
 img,
@@ -92,6 +93,12 @@ details {
   }
 }
 
-div[data-visible^='$$'] {
+div[data-visible^='$$'],
+div[data-hidden]:not([data-hidden^='$$']) {
   display: none;
+}
+
+// Override ngx-markdown inline-style for a11y
+div:has(app-copy button:focus) {
+  opacity: 1 !important;
 }

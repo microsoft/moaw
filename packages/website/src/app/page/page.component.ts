@@ -16,7 +16,7 @@ import { getQueryParams } from '../router';
   template: `
     <div class="full-viewport">
       <app-header [title]="page?.shortTitle || page?.title"></app-header>
-      <div class="content">
+      <main class="content">
         <app-loader [loading]="loading" id="page" class="scrollable" [class.container]="loading">
           <div *ngIf="page; else noPage" class="container no-sidebar">
             <markdown
@@ -28,7 +28,7 @@ import { getQueryParams } from '../router';
           </div>
           <app-footer></app-footer>
         </app-loader>
-      </div>
+      </main>
       <ng-template #noPage>
         <p class="container" *ngIf="!loading">Could not load page :(</p>
       </ng-template>

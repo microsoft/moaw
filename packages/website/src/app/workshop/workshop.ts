@@ -10,7 +10,12 @@ export interface WorkshopSection {
   markdown: string;
 }
 
-export interface Workshop extends FileContents {
+export interface WorkshopExtraMetadata {
+  navigation_levels: number;
+  navigation_numbering: boolean;
+}
+
+export interface Workshop extends FileContents<WorkshopExtraMetadata> {
   title: string;
   shortTitle?: string;
   sections: WorkshopSection[];
@@ -18,10 +23,16 @@ export interface Workshop extends FileContents {
 }
 
 export async function loadWorkshop(repoPath: string, options?: LoaderOptions): Promise<Workshop> {
-  const fileContents = await loadFile(repoPath, options);
+  const fileContents = await loadFile<WorkshopExtraMetadata>(repoPath, options);
   const sections = fileContents.markdown.split(sectionSeparator).map((markdown, index) => {
     const headings = getHeadings(markdown);
     const title = fileContents.meta.sections_title?.[index] ?? headings[0]?.text ?? '';
+
+    if (headings.length && headings[0].level !== 1) {
+      // If we're missing the top-level heading, then add one using the title
+      markdown = `<h1 class="visually-hidden">${fileContents.meta.title}</h1>\n\n${markdown}`;
+    }
+
     return { title, headings, markdown };
   });
   return {
@@ -34,7 +45,7 @@ export async function loadWorkshop(repoPath: string, options?: LoaderOptions): P
 }
 
 export function createMenuLinks(workshop: Workshop): MenuLink[] {
-  const navigationLevels = (workshop.meta as any)?.navigation_levels ?? 2;
+  const navigationLevels = workshop.meta?.navigation_levels ?? 2;
   return workshop.sections.map((section, index) => {
     const active = index === workshop.step;
     const baseLevel = section.headings[0].level;

@@ -4,17 +4,19 @@
 :root {
   --primary: #0078d4;
   --primary-light: #{color.scale(#0078d4, $lightness: 90%, $saturation: -40%)};
+  --primary-dark: #{color.scale(#0078d4, $lightness: -20%, $saturation: +20%)};
   --accent: #c90040;
   --accent-light: #{color.scale(#c90040, $lightness: 90%, $saturation: -40%)};
-  --medium: #{color.mix(#0078d4, #00a1a1)};
+  --accent-dark: #{color.scale(#c90040, $lightness: -20%, $saturation: +20%)};
+  --medium: #{color.scale(color.mix(#0078d4, #00a1a1), $lightness: -10%)};
   --medium-light: #{color.scale(color.mix(#0078d4, #00a1a1), $lightness: 90%, $saturation: -40%)};
   --accent-2: #006680;
   --accent-2-light: #{color.scale(#006680, $lightness: 90%, $saturation: -40%)};
-  --accent-3: #00a1a1;
+  --accent-3: #007a7a;
   --accent-3-light: #{color.scale(#00a1a1, $lightness: 90%, $saturation: -40%)};
   --neutral: #b0b0c0;
   --neutral-light: #f4f4f6;
-  --neutral-dark: #889;
+  --neutral-dark: #737382;
   --dark: #334;
   --warning: #d71;
   --warning-light: #{color.scale(#d71, $lightness: 90%, $saturation: -40%)};
@@ -67,3 +69,5 @@
 @import 'theme/button';
 @import 'theme/layout';
 @import 'theme/responsive';
+@import 'theme/code';
+@import 'theme/accessibility';

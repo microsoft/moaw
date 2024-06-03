@@ -1,0 +1,79 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.25.3.34343",
+      "templateHash": "6968767025245883167"
+    }
+  },
+  "parameters": {
+    "openailocation": {
+      "type": "string",
+      "defaultValue": "canadaeast"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "cognitiveSearchName": {
+      "type": "string",
+      "defaultValue": "[substring(format('rag-cogsearch{0}', uniqueString(resourceGroup().id)), 0, 24)]"
+    },
+    "azureOpenAiServiceName": {
+      "type": "string",
+      "defaultValue": "[substring(format('rag-azureoai{0}', uniqueString(resourceGroup().id)), 0, 24)]"
+    },
+    "azureAiServiceName": {
+      "type": "string",
+      "defaultValue": "[substring(format('rag-aiservices{0}', uniqueString(resourceGroup().id)), 0, 24)]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Search/searchServices",
+      "apiVersion": "2023-11-01",
+      "name": "[parameters('cognitiveSearchName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "free"
+      },
+      "properties": {
+        "replicaCount": 1,
+        "partitionCount": 1,
+        "hostingMode": "default",
+        "publicNetworkAccess": "enabled",
+        "networkRuleSet": {
+          "ipRules": []
+        },
+        "encryptionWithCmk": {
+          "enforcement": "Unspecified"
+        },
+        "disableLocalAuth": false,
+        "authOptions": {
+          "apiKeyOnly": {}
+        }
+      }
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2023-10-01-preview",
+      "name": "[parameters('azureAiServiceName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "S0"
+      },
+      "kind": "CognitiveServices",
+      "properties": {
+        "customSubDomainName": "[parameters('azureAiServiceName')]",
+        "networkAcls": {
+          "defaultAction": "Allow",
+          "virtualNetworkRules": [],
+          "ipRules": []
+        },
+        "publicNetworkAccess": "Enabled"
+      }
+    }
+  ]
+}
