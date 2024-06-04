@@ -94,13 +94,10 @@ export async function serve(options: ServeOptions = {}) {
         }
 
         const codespace = process.env.CODESPACE_NAME;
-        let url;
-
-        if (host === 'localhost' && codespace) {
-          url = `https://${codespace}-${port}.app.github.dev${startPath}`;
-        } else {
-          url = `http://${host}:${port}${startPath}`;
-        }
+        const url =
+          host === 'localhost' && codespace
+            ? `https://${codespace}-${port}.app.github.dev${startPath}`
+            : `http://${host}:${port}${startPath}`;
 
         console.info(`Preview workshop at ${url}`);
         console.info(`Watching for changes...`);

@@ -83,7 +83,8 @@
       "jest"
     ],
     "rules": {
-      "@typescript-eslint/prefer-nullish-coalescing": "off"
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "unicorn/prevent-abbreviations": "off"
     }
   },
   "engines": {
