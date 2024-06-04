@@ -45,7 +45,9 @@ You should see the installed tools version in the terminal.
 1. Open https://github.com/sinedied/moaw-workshop-basic/ in your browser, select **Use this template** button in the top-right corner of the page, then select **Create a new repository**.
     ![Create new repository button](assets/create-repo-from-template.png)
 
-2. When the repository is created, you can either clone it locally, or select the **Code** button, then the **Codespaces** tab, and **Create codespace on main** to open the repository in a browser-based development environment.
+2. Enter a name for your repository, make sure it's set to **Public** visibility and select **Create repository**.
+
+3. When the repository is created, you can either clone it locally, or select the **Code** button, then the **Codespaces** tab, and **Create codespace on main** to open the repository in a browser-based development environment.
     ![Create codespace button](assets/create-codespace.png)
 
 You're now ready to work on your workshop!
