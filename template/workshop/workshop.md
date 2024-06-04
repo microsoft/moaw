@@ -29,6 +29,6 @@ Content for first section
 
 ---
 
-## Second section
+# Second section
 
 Content for second section

@@ -117,7 +117,7 @@ You can add sections to your workshop by inserting a line with `---`, preceded a
 
   ---
 
-  ## Section 2
+  # Section 2
   This is the second section of my workshop.
   ```
 
