@@ -1,3 +1,10 @@
+# [cli-1.5.1](https://github.com/microsoft/moaw/compare/cli-1.5.0...cli-1.5.1) (2024-06-04)
+
+
+### Bug Fixes
+
+* **cli:** incorrect repo parsing ([85f2b3d](https://github.com/microsoft/moaw/commit/85f2b3d1f31f62da2f7f265127596b98073fed95))
+
 # [cli-1.5.0](https://github.com/microsoft/moaw/compare/cli-1.4.0...cli-1.5.0) (2024-06-04)
 
 
