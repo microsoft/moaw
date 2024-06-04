@@ -1,3 +1,15 @@
+# [cli-1.5.0](https://github.com/microsoft/moaw/compare/cli-1.4.0...cli-1.5.0) (2024-06-04)
+
+
+### Bug Fixes
+
+* **cli:** https git repo not being detected ([040e72f](https://github.com/microsoft/moaw/commit/040e72fcdf600dd95b9e53f8866ac9a79a36f202))
+
+
+### Features
+
+* **cli:** update preview URL when using Codespaces ([124a9eb](https://github.com/microsoft/moaw/commit/124a9ebd3ace12c8751534aaa65241609b677c98))
+
 # [cli-1.4.0](https://github.com/microsoft/moaw/compare/cli-1.3.1...cli-1.4.0) (2024-01-23)
 
 
