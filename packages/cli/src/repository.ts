@@ -6,7 +6,7 @@ import { pathExists, readJson, runCommand } from './util.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const debug = createDebug('repo');
-const repositoryRegex = /.*[/:](.*)\/(.*)\.git|^([^/]*)\/([^/]*)$/;
+const repositoryRegex = /.*[/:](.*)\/(.*?)(?:\.git)?$|^([^/]*)\/([^/]*)$/;
 
 export type RepositoryOptions = {
   repository?: string;
