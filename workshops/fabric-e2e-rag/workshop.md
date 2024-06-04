@@ -157,7 +157,7 @@ Next you'll need to provide the keys for Azure AI Services to access the service
 # Azure AI Search
 AI_SEARCH_NAME = ""
 AI_SEARCH_INDEX_NAME = "rag-demo-index"
-AI_SEARCH_KEY = ""
+AI_SEARCH_API_KEY = ""
 
 # Azure AI Services
 AI_SERVICES_KEY = ""
