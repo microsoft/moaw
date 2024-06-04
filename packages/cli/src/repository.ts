@@ -63,7 +63,7 @@ export function parseRepository(string?: string): GitHubRepository | undefined {
     return undefined;
   }
 
-  const match = repositoryRegex.exec(string);
+  const match = repositoryRegex.exec(string.trim());
   if (!match) {
     return undefined;
   }
