@@ -349,7 +349,7 @@ To preview your workshop locally, you can use the MOAW CLI. First, you need to i
 npm install -g @moaw/cli
 ```
 
-You can then launch the CLI with the `s` command (as in _serve_) and passing the path to your workshop file.
+You can then launch the CLI with the `serve` command and passing the path to your workshop file.
 
 ```sh
 moaw serve docs/workshop.md
