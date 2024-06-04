@@ -35,7 +35,7 @@
     "semantic-release": "^22.0.12",
     "semantic-release-npm-github": "^5.0.0",
     "typescript": "^5.1.6",
-    "xo": "^0.56.0"
+    "xo": "^0.58.0"
   },
   "dependencies": {
     "asciidoctor": "^3.0.2",
