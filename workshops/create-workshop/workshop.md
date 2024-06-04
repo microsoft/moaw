@@ -22,12 +22,12 @@ In this short tutorial, you'll learn how to create 🌟 a new workshop 🌟 and 
 ## Prerequisites
 
 | | |
-|------------------------------------------------|-------------------------------------|
-| Git                                            | [Download Git](https://git-scm.com) |
-| Node.js v20+ *(only needed if using MOAW CLI)* | [Download Node.js](https://nodejs.org) |
-| GitHub account                                 | [Create free GitHub account](https://github.com/join) |
-| A code editor                                  | [Download VS Code](https://code.visualstudio.com/Download) |
-| A browser                                      | [Download Microsoft Edge](https://www.microsoft.com/edge) |
+|----------------|-------------------------------------|
+| Git            | [Download Git](https://git-scm.com) |
+| Node.js v20+   | [Download Node.js](https://nodejs.org) |
+| GitHub account | [Create free GitHub account](https://github.com/join) |
+| A code editor  | [Download VS Code](https://code.visualstudio.com/Download) |
+| A browser      | [Download Microsoft Edge](https://www.microsoft.com/edge) |
 
 You can test your setup by opening a terminal and typing:
 
