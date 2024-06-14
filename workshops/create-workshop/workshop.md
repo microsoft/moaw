@@ -22,9 +22,9 @@ In this short tutorial, you'll learn how to create 🌟 a new workshop 🌟 and 
 ## Prerequisites
 
 | | |
-|----------------|-----------------|
+|----------------|-------------------------------------|
 | Git            | [Download Git](https://git-scm.com) |
-| Node.js v16+   | [Download Node.js](https://nodejs.org) |
+| Node.js v20+   | [Download Node.js](https://nodejs.org) |
 | GitHub account | [Create free GitHub account](https://github.com/join) |
 | A code editor  | [Download VS Code](https://code.visualstudio.com/Download) |
 | A browser      | [Download Microsoft Edge](https://www.microsoft.com/edge) |
@@ -40,62 +40,27 @@ You should see the installed tools version in the terminal.
 
 ---
 
-## Initial setup
+# Create a new workshop
 
-1. Open https://github.com/microsoft/moaw in your browser, and select the **Fork** button in the top-right corner of the page.
-   ![Fork button](assets/fork.png)
+1. Open https://github.com/sinedied/moaw-workshop-basic/ in your browser, select **Use this template** button in the top-right corner of the page, then select **Create a new repository**.
+    ![Create new repository button](assets/create-repo-from-template.png)
 
-2. Select the owner of the fork, and click **Fork**.
+2. Enter a name for your repository, make sure it's set to **Public** visibility and select **Create repository**.
 
-3. Select the **Code** button, and copy the URL of the forked repository.
-   ![Copy URL](assets/copy-url.png)
+3. When the repository is created, you can either clone it locally, or select the **Code** button, then the **Codespaces** tab, and **Create codespace on main** to open the repository in a browser-based development environment.
+    ![Create codespace button](assets/create-codespace.png)
 
-4. Open a terminal and clone the forked repository:
-
-   ```sh
-    git clone <forked-repo-url>
-    ```
-
-5. Navigate to the cloned repository and install the dependencies:
-
-   ```sh
-   cd moaw
-   npm install
-   ```
-
-You're now ready to create a new workshop!
+You're now ready to work on your workshop!
 
 <div class="tip" data-title="tip">
 
-> You only need to do the initial setup once. You can skip it next time you want to create a new workshop.
+> There's also a more [advanced starter template](https://github.com/sinedied/moaw-workshop-advanced) that you can use instead of the basic one, that includes scripts to create one or more packages and setup the initial project structure.
 
 </div>
 
----
+## Edit the workshop metadata
 
-## Create a new workshop
-
-Open a terminal, and copy the workshop folder `template/workshop` to the `workshops/` folder, and give it a name (you can also do it from your file explorer if you don't have a bash terminal):
-
-```sh
-cp -r template/workshop workshops/<your-workshop-name>/
-```
-
-<div class="tip" data-title="tip">
-
-> Pick a short but meaninful name for the folder, using the **kebab-case** convention (e.g. `create-workshop`).
-
-</div>
-
-<div class="warning" data-title="warning">
-
-> Make sure sure to add a trailing `/` in the URL, otherwise you might end up with a 404 error.
-
-</div>
-
-### Edit the workshop metadata
-
-Open the file `workshops/<your-workshop-name>/workshop.md` in your code editor, and edit the front matter at the top of the file:
+Open the file `docs/workshop.md` in your code editor, and edit the front matter at the top of the file:
 
 ```yaml
 ---
@@ -116,6 +81,8 @@ tags: javascript, api, node.js          # Required. Tags for filtering and searc
 #audience: students                      # Optional. Audience of the workshop (students, pro devs, etc.)
 #wt_id: <cxa_tracking_id>                # Optional. Set advocacy tracking code for supported links
 #oc_id: <marketing_tracking_id>          # Optional. Set marketing tracking code for supported links
+#navigation_levels: 2                    # Optional. Number of levels displayed in the side menu (default: 2)
+#navigation_numbering: true              # Optional. Enable numbering in the side menu (default: true)
 #sections_title:                         # Optional. Override titles for each section to be displayed in the side bar
 #  - Section 1 title
 #  - Section 2 title
@@ -130,7 +97,7 @@ Make sure to fill in all the required fields, and remove or comment the optional
 
 </div>
 
-### Write your workshop
+## Write your workshop
 
 After the front matter, you can start writing your workshop. You can use the [Markdown syntax](http://commonmark.org/help/) to format your text, and add images, code snippets, etc.
 
@@ -140,7 +107,7 @@ After the front matter, you can start writing your workshop. You can use the [Ma
 
 </div>
 
-### Add sections
+## Add sections
 
 You can add sections to your workshop by inserting a line with `---`, preceded and followed by an empty line:
 
@@ -150,13 +117,13 @@ You can add sections to your workshop by inserting a line with `---`, preceded a
 
   ---
 
-  ## Section 2
+  # Section 2
   This is the second section of my workshop.
   ```
 
 Sections will be split in different pages, and displayed in the side bar of the workshop page.
 
-### Add admonitions
+## Add admonitions
 
 Sometimes, you want to draw attention to specific statements. You can do so by using admonitions, which are special blocks of text that can be used to highlight important information.
 
@@ -187,7 +154,7 @@ This will render as:
 
 The `data-title` attribute is optional, and can be used to add a title to the admonition.
 
-### Add images and resources
+## Add images and resources
 
 Any images or resources you want to use in your workshop should be placed under the `workshops/<your-workshop-name>/\assets/` subfolder. If this folder doesn't exist, you can create it.
 
@@ -209,7 +176,7 @@ You can also add links to any external resources you may need in your workshop:
 
 </div>
 
-### Embed videos
+## Embed videos
 
 You can embed videos from YouTube in your workshop by copying the embed code from YouTube, and pasting it in your workshop file inside a `div` with the `video-embed` class:
 
@@ -231,7 +198,7 @@ This will render as:
 
 </div>
 
-### Embed audio
+## Embed audio
 
 You can embed audio files in your workshop by simply using the `<audio>` HTML tag:
 
@@ -243,7 +210,7 @@ This will render as:
 
 <audio controls src="assets/audio.mp3"></audio>
 
-### Add foldable sections
+## Add foldable sections
 
 You can add foldable sections to your workshop by using the following syntax:
 
@@ -267,7 +234,7 @@ You can user *any* **Markdown** syntax as  usual here.
 
 </details>
 
-### Variables
+## Variables
 
 You can use variables to make some parts of your workshop dynamic. This can be useful to display content that may change depending of the event, for example the name of the event or a link to get specific credits.
 
@@ -277,7 +244,7 @@ To define a variable, add a query parameter to the URL of your workshop with thi
 ?vars=<name>:<value>
 ```
 
-#### Multiple variables
+### Multiple variables
 
 Multiple variables can be defined by separating them with a comma:
 
@@ -285,7 +252,7 @@ Multiple variables can be defined by separating them with a comma:
 ?vars=<name1>:<value1>,<name2>:<value2>
 ```
 
-#### Variable substitution
+### Variable substitution
 
 To substitute a variable in your workshop, use the following syntax:
 
@@ -315,7 +282,7 @@ Try clicking on the button below to set the query param `vars=name:John%20Doe` i
 
 </div>
 
-#### Default values
+### Default values
 
 You can define a default value for a variable by adding a `:` after the variable name:
 
@@ -327,7 +294,7 @@ If the variable is not defined in the URL, the default value will be used, other
 
 This will render as: Hello $$name:world$$!
 
-### Conditional content
+## Conditional content
 
 You can add sections in your workshop that will only be visible when a specific variable is set in the URL. This can be useful to add content that is only relevant to a specific audience or event.
 
@@ -372,75 +339,67 @@ Try clicking on the button below to set the query param `vars=myconf:1` in the U
 
 ---
 
-## Preview your workshop
+# Preview your workshop
 
 Once your workshop is ready, you can preview it in your browser to make sure everything looks as intended.
 
-### Test your workshop locally
+## Test your workshop locally
 
-To preview your workshop locally, you can to start the local development server:
-
-```sh
-npm start
-```
-
-This will start a local development server on port 4200.
-
-You can then open [`http://localhost:4200/workshop/<your-workshop-name>/`](http://localhost:4200/workshop/<your-workshop-name>/) in your browser to preview your workshop.
-
-
-#### Use MOAW CLI
-
-You can also use the MOAW cli to preview your workshop locally, even if you are **writing your workshop in another repository**. First, you need to install the MOAW CLI with npm.
+To preview your workshop locally, you can use the MOAW CLI. First, you need to install it with NPM:
 
 ```sh
 npm install -g @moaw/cli
 ```
 
-You can then launch the CLI with the `s` command (as in _serve_) and passing the path to your workshop file.
+You can then launch the CLI with the `serve` command and passing the path to your workshop file.
 
 ```sh
-moaw s docs/workshop.md
+moaw serve docs/workshop.md
 ```
 
+## Host workshop from your repository
 
-### Host workshop from your fork
+You can also host your workshop directly from your GitHub repository, so that you can share it with other folks.
 
-You can also host your workshop directly from your GitHub fork, so that you can share it with your colleagues or friends.
-
-First, commit and push your changes to your fork:
+First, commit and push your changes to your repository:
 
 ```sh
 git add .
-git commit -m "Add <my-workshop>"
+git commit -m "Update <my-workshop>"
 git push
 ```
 
 You should now be able to access your workshop using this url:
 
-`https://aka.ms/ws?src=gh:<your-github-username>/moaw/main/workshops/<your-workshop-name>/`.
+`https://aka.ms/ws?src=gh:<your-github-username>/moaw/main/docs/`.
 
-This is also a convenient way to quickly host your workshop without having to wait for it to be published on the main website.
+You can also use the MOAW CLI to generate the URL for you:
+
+```sh
+moaw link docs/workshop.md
+```
 
 <div class="info" data-title="Note">
 
-> If you make changes to your workshop, it may take a few minutes after the changes have been pushed to your fork before they are visible on the hosted version, as GitHub caches the content.
+> If you make changes to your workshop, it may take some time after the changes have been pushed to your repository before they are visible on the hosted version, as GitHub caches the content.
 
 </div>
 
 ---
 
-## Publish your workshop
+# Publish your workshop
 
-When you are ready to publish your workshop, you can submit a pull request to the main repository.
+When you are ready to publish your workshop, you can submit a pull request to the main MOAW repository to get your workshop listed on the MOAW website.
 
-First, update your workshop metadata to set the `published` field to `true`:
+## Update workshop metadata
+
+First, you have to update your workshop metadata to set the `published` field to `true`:
 
 ```yaml
 published: true
 ```
 
-Then, make sure you have committed and pushed all your changes to your fork:
+Then, make sure you have committed and pushed all your changes to your repository:
 
 ```sh
 git add .
@@ -454,16 +413,45 @@ git push
 
 </div>
 
-### Creating a pull request
+## Creating a pull request on the MOAW repository
 
-Finally, submit a pull request to the main repository:
+Next, we'll create an entry for your workshop to get it listed on the MOAW website.
 
-1. Open your fork on GitHub, select the **Contribute** button then click on the **Open pull request** button:
+1. Edit the `external.yml` file by opening [this link](https://github.com/microsoft/moaw/edit/main/packages/database/external.yml) in your browser.
 
-   ![Open a pull request on GitHub](assets/open-pr.png)
+2. Select the **Fork this repository** button to create a fork of the MOAW repository, which will allow you to make changes to the file.
 
-2. Enter a title and description for your pull request, and select the **Create pull request** button:
+3. Add an entry for your workshop at the end of the file, following the existing format (most of these fields are identical to your workshop metadata):
+    ```yaml
+    - title: Full workshop title              # Required. Title of the workshop
+      description: This is a workshop for...  # Required. Short description of the workshop
+      url: https://workshop.url               # Required. URL of the workshop
+      language: en                            # Required. Language of the workshop, using 2-letter ISO code
+      last_updated: 2019-10-21                # Required. Date of the last update of the workshop
+      type: workshop                          # Required. Only 'workshop' is supported for now
+      level: beginner                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
+      github_url: https://github.url          # Optional. URL of the workshop's GitHub repository
+      authors:                                # Required. You can add as many authors as needed
+        - Name                          
+      contacts:                               # Required. Must match the number of authors
+        - Author's email, Twitter...
+      banner_url: https://banner.url          # Optional. URL of a banner image for the workshop (1280x640px)
+      video_url: https://youtube.com/link     # Optional. Link to a video of the workshop
+      duration_minutes: 120                   # Required. Estimated duration in minutes
+      audience: students, pro devs            # Optional. Audience of the workshop (students, pro devs, etc.)
+      tags: javascript, api, node.js          # Required. Tags for filtering and searching
+    ```
 
-   ![Create a pull request on GitHub](assets/create-pr.png)
+    <div class="important" data-title="important">
+
+    > Make sure to keep the indentation consistent with the rest of the file, otherwise the YAML file will be invalid.
+
+    </div>
+
+4. Once you've completed the entry for your workshop, scroll up and select the **Commit changes...** button to save your changes to the file.
+
+5. Enter a commit message, and select the **Propose changes** button to move to the next step.
+
+6. Select the **Create pull request** button to create a pull request with your changes.
 
 That's it! Your workshop will be published on the main website once the pull request has been reviewed and merged. 🚀

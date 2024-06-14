@@ -190,6 +190,8 @@ code:not(pre > code) {
 }
 
 pre {
+  outline-offset: 1px;
+
   &::-webkit-scrollbar {
     -webkit-appearance: none;
     height: 8px;

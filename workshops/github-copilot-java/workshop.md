@@ -148,12 +148,13 @@ In this section, we will create a sample Java project for testing GitHub Copilot
 > mkdir sample; cd sample
 > curl https://start.spring.io/starter.zip \
            -d dependencies=web,devtools \
-           -d bootVersion=3.1.5 \
+           -d bootVersion=3.3.0 \
            -d type=maven-project \
            -d applicationName=CopilotSample \
            -d packageName=com.microsoft.sample \
            -d groupId=com.microsoft.sample \
            -d artifactId=CopilotSample \
+           -d javaVersion=21 (or 17) \ 
            -o my-project.zip
 > unzip my-project.zip
 ```
@@ -201,7 +202,7 @@ After unzipping the file, you will see the following directory structure:
 ## Opening the Project in VS Code
 
 Now that the project has been created, it's time to open it in VS Code.  
-Enter the command 'code .'   
+Enter the command 'code .'
 
 ```bash
 code .

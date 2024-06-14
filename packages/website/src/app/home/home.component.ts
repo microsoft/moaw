@@ -14,7 +14,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
     <div class="full-viewport">
       <app-header logo="images/moaw-logo-dark.png" logoUrl="" type="landing" [links]="links"></app-header>
       <div class="content bg-light">
-        <div id="${mainScrollableId}" class="scrollable">
+        <main id="${mainScrollableId}" class="scrollable">
           <section class="container no-sidebar">
             <div class="hero split-layout">
               <div class="hero-text">
@@ -36,7 +36,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
             </div>
           </section>
           <section class="container no-sidebar">
-            <h1>What's <i>MOAW</i>?</h1>
+            <h2>What's <i>MOAW</i>?</h2>
             <!-- <p class="video-embed">
               <iframe width="560" height="315" src="https://www.youtube.com/embed/w-tLZjO6XMc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </p> -->
@@ -44,7 +44,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
             <section class="panel">
               <div class="split-layout">
                 <div class="item">
-                  <h2>Catalog <app-icon name="search" size="28"></app-icon></h2>
+                  <h3>Catalog <app-icon name="search" size="28"></app-icon></h3>
                   <p>
                     It's a collection of all workshops and practical learning content created by developers from
                     Microsoft and its community, aggregated in one place.
@@ -54,7 +54,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
                   </p>
                 </div>
                 <div class="item">
-                  <h2>Platform <app-icon name="tools" size="28"></app-icon></h2>
+                  <h3>Platform <app-icon name="tools" size="28"></app-icon></h3>
                   <p>Use it to create and host workshops and associated sample code, slides, and resources.</p>
                   <p>
                     <a href="https://microsoft.github.io/moaw/workshop/create-workshop/"
@@ -63,7 +63,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
                   </p>
                 </div>
                 <div class="item">
-                  <h2>Community <app-icon name="code-of-conduct" size="28"></app-icon></h2>
+                  <h3>Community <app-icon name="code-of-conduct" size="28"></app-icon></h3>
                   <p>
                     This is a community-driven project, where everyone can use, adapt and share the content using the
                     permissive Creative Commons License.
@@ -77,11 +77,11 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
               </div>
             </section>
             <section>
-              <h1>Want your workshop here?</h1>
+              <h2>Want your workshop here?</h2>
               <p>You already have a workshop? ✨<b>Awesome!</b>✨ There are two options to add it to the catalog:</p>
               <div class="split-layout">
                 <div class="item">
-                  <h2>Reference it <app-icon name="link-external" size="28"></app-icon></h2>
+                  <h3>Reference it <app-icon name="link-external" size="28"></app-icon></h3>
                   <p>
                     If you already have a workshop hosted somewhere else, you can reference it in the catalog. This is
                     the easiest way to get started, and the process takes only a few minutes.
@@ -95,7 +95,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
                   </p>
                 </div>
                 <div class="item">
-                  <h2>Convert it <app-icon name="sync" size="28"></app-icon></h2>
+                  <h3>Convert it <app-icon name="sync" size="28"></app-icon></h3>
                   <p>
                     If you want get the full benefits of our platform, such as <b>translations</b>, <b>extra pages</b>,
                     <b>analytics</b> and more, you can convert it to our workshop format. If you're already using
@@ -114,7 +114,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
           </section>
           <p>&nbsp;</p>
           <app-footer type="big" credits="People illustrations by Storyset"></app-footer>
-        </div>
+        </main>
       </div>
     </div>
   `,
@@ -148,6 +148,13 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
         flex: 1.5;
       }
 
+      h2 {
+        font-size: var(--text-size-xxxl);
+        margin: var(--space-lg) 0;
+        border: none;
+        padding: 0;
+      }
+
       .panel {
         margin: var(--space-lg) 0;
         background: var(--neutral-light);
@@ -155,11 +162,12 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
         border-radius: var(--border-radius);
         overflow: hidden;
 
-        h2 {
-          border: none;
+        h3 {
+          font-size: var(--text-size-xxl);
+          margin-top: var(--space-lg);
         }
 
-        h2 > app-icon {
+        h3 > app-icon {
           width: 48px;
           height: 48px;
           border-radius: 50%;
@@ -176,7 +184,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
             color: var(--accent-2);
           }
 
-          h2 > app-icon {
+          h3 > app-icon {
             background: var(--accent-2);
             color: var(--text-light);
           }
@@ -189,7 +197,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
             color: var(--accent-3);
           }
 
-          h2 > app-icon {
+          h3 > app-icon {
             background: var(--accent-3);
             color: var(--text-light);
           }
@@ -202,7 +210,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
             color: var(--accent);
           }
 
-          h2 > app-icon {
+          h3 > app-icon {
             background: var(--accent);
             color: var(--text-light);
           }
@@ -214,7 +222,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
         margin-right: var(--space-xxs);
       }
 
-      h2 > app-icon {
+      h3 > app-icon {
         float: left;
         margin-right: var(--space-md);
         color: var(--primary);

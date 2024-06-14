@@ -6,7 +6,7 @@ import { pathExists, readJson, runCommand } from './util.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const debug = createDebug('repo');
-const repositoryRegex = /.*[/:](.*)\/(.*)\.git|^([^/]*)\/([^/]*)$/;
+const repositoryRegex = /.*[/:](.*)\/(.*?)(?:\.git)?$|^([^/]*)\/([^/]*)$/;
 
 export type RepositoryOptions = {
   repository?: string;
@@ -63,7 +63,7 @@ export function parseRepository(string?: string): GitHubRepository | undefined {
     return undefined;
   }
 
-  const match = repositoryRegex.exec(string);
+  const match = repositoryRegex.exec(string.trim());
   if (!match) {
     return undefined;
   }

@@ -21,8 +21,7 @@ You can follow the same rule if you need to localize any asset, for example `ass
 
 ## Create a new workshop
 
-All workshops should be located under the `/workshops` folder, that's where you should create a new folder for your workshop.
-Try to be descriptive with the folder name, and use only lowercase letters, numbers and dashes.
+New workshops should be created in their own repository, so you can more easily manage and update them.
 
 You can use the [workshop template](template/workshop/) as a starting point, and look at existing [workshops](workshops) for examples.
 
@@ -140,7 +139,7 @@ You can special syntax around blockquotes to create admonitions, to highlight im
 
 ## Reference an existing workshop
 
-If you already have a workshop hosted somewhere else, you can reference it in this repository by adding an entry to the [`packages/database/external.yml`](packages/database/external.yml) file.
+If you already have a workshop hosted somewhere, you can reference it in this repository by adding an entry to the [`packages/database/external.yml`](packages/database/external.yml) file.
 
 ```yaml
 - title: Full workshop title              # Required. Title of the workshop
@@ -174,5 +173,5 @@ This would allow you to benefit from the full features of the MOAW platform, suc
 - Ability to localize your workshop
 - Additional pages (proctor instructions, prerequisites, etc.)
 - Allows other people to update, fork and improve your workshop
-- Detailed analytics (coming soon!)
+- Detailed analytics
 - Companion slides in markdown (coming soon!)

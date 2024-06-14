@@ -14,12 +14,13 @@ import { updateTrackingCodes } from '../loader';
   template: `
     <footer [class]="type">
       <ng-container *ngIf="type === 'big'; else defaultFooter">
+        <h2 class="visually-hidden">Footer</h2>
         <div class="container no-sidebar split-layout">
           <div class="image">
             <img src="images/bit/student.png" alt="students" />
           </div>
-          <div>
-            <h3>Learn more</h3>
+          <nav aria-labelledby="learn">
+            <h3 id="learn">Learn more</h3>
             <ul class="list">
               <li>
                 <a [href]="trackUrl('https://learn.microsoft.com/training/')" target="_blank">Microsoft Training</a>
@@ -29,25 +30,25 @@ import { updateTrackingCodes } from '../loader';
               </li>
               <li><a [href]="trackUrl('https://learn.microsoft.com/samples/')" target="_blank">Code Samples</a></li>
             </ul>
-          </div>
-          <div>
-            <h3>Follow</h3>
+          </nav>
+          <nav aria-labelledby="follow">
+            <h3 id="follow">Follow</h3>
             <ul class="list">
               <li><a href="https://www.youtube.com/c/MicrosoftDeveloper/" target="_blank">YouTube</a></li>
               <li><a href="https://twitter.com/msdev" target="_blank">Twitter</a></li>
               <li><a href="https://www.linkedin.com/company/microsoft/" target="_blank">LinkedIn</a></li>
               <li><a href="https://www.facebook.com/Developpeurs.net/" target="_blank">Facebook</a></li>
             </ul>
-          </div>
-          <div>
-            <h3>Community</h3>
+          </nav>
+          <nav aria-labelledby="community">
+            <h3 id="community">Community</h3>
             <ul class="list">
               <li><a href="${githubRepositoryUrl}" target="_blank">GitHub</a></li>
               <li><a href="${githubRepositoryUrl}/blob/main/CONTRIBUTING.md" target="_blank">Contribute</a></li>
               <li><a href="${githubRepositoryUrl}/blob/main/CODE_OF_CONDUCT.md" target="_blank">Code Of Conduct</a></li>
               <li>&nbsp;</li>
             </ul>
-          </div>
+          </nav>
         </div>
         <div class="container no-sidebar">
           <div class="version">
@@ -162,5 +163,6 @@ export class FooterComponent {
 
   backToTop() {
     scrollToTop(mainScrollableId, true);
+    scrollToTop(undefined, true);
   }
 }

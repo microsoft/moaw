@@ -10,9 +10,9 @@ import { getRepoPath } from '../shared/loader';
   standalone: true,
   imports: [CommonModule, RevealComponent],
   template: `
-    <div *ngIf="deck; else noDeck" class="deck">
+    <main *ngIf="deck; else noDeck" class="deck">
       <app-reveal [deck]="deck"></app-reveal>
-    </div>
+    </main>
     <ng-template #noDeck>
       <p *ngIf="!loading">Could not load slide deck :(</p>
     </ng-template>
