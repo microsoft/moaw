@@ -438,3 +438,25 @@
   level: beginner
   tags: azure policies, azure deployment environment, github advanced security, microsoft dev box, dev center, azure, github, ops, csu
   navigation_levels: 3
+
+  
+- title: Product Hands-on Lab - Platform engineering for Devs
+  url: https://microsoft.github.io/moaw/workshop/gh:ikhemissi/hands-on-lab-platform-engineering-for-devs/main/docs/
+  github_url: https://github.com/ikhemissi/hands-on-lab-platform-engineering-for-devs
+  language: en
+  last_updated: 2024-06-20
+  type: workshop
+  description:  This workshop will guide you on how to fast start your dev experience, how to deploy to Azure, and how to detect potential issues with your code during run time.
+  authors:
+    - Iheb Khemissi
+    - François-Xavier Kim
+    - Louis-Guillaume Morand
+  contacts:
+    - "@ikhemissi"
+    - "@frkim"
+    - "@lgmorand"
+  duration_minutes: 180
+  audience: pro devs, architects
+  level: beginner
+  tags: azure, devbox, ade, deployment environment, azd, azure developer cli, azure functions, azure load testing, application insights, csu
+  navigation_levels: 3
