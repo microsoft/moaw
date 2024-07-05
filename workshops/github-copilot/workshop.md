@@ -629,12 +629,13 @@ You can also use copilot to help you generate Stubs and Mocks for your tests.
 
 </div>
 
-## Use Agents
+## Use Chat participants
 
-Agents are like specialized experts who can assist you with specific tasks. You can mention them in the chat using the @ symbol. Currently, there are two agents available:
+Chat participants are like specialized experts who can assist you with specific tasks. You can mention them in the chat using the @ symbol. Currently, there are three Chat participants available for Visual Studio Code:
 
-- **@workspace**: This agent has knowledge about the code in your workspace and can help you navigate it by finding relevant files or classes. The @workspace agent uses a meta prompt to determine what information to collect from the workspace to help answer your question.
-- **@vscode**: This agent is knowledgeable about commands and features in the VS Code editor itself, and can assist you in using them.
+- **@workspace**: This chat participant has knowledge about the code in your workspace and can help you navigate it by finding relevant files or classes. The @workspace chat participant uses a meta prompt to determine what information to collect from the workspace to help answer your question.
+- **@vscode**: This chat participant is knowledgeable about commands and features in the VS Code editor itself, and can assist you in using them.
+- **@terminal**: This chat participant has context about the Visual Studio Code terminal shell and its contents.
 
 They may not be super rich for the moment but their features will continue to grow over the time. Here are some example
 
@@ -646,7 +647,7 @@ Open the side Chat panel and type **@workspace /New* to specify that you want to
 
 It should create a structured project and even a new button to create the file. Click on "Create workspace" to see files being created.
 
-![GitHub Copilot Agents](assets/agents.png)
+![GitHub Copilot Chat Participants](assets/agents.png)
 
 ## Tips
 
