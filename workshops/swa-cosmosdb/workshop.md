@@ -9,7 +9,7 @@ authors:
 contacts:
   - '@olivierleplus'
   - '@sinedied'
-  - '@rturambekar_microsoft'
+  - '@rohit2git'
 banner_url: assets/todo-banner.jpg
 duration_minutes: 180
 audience: students, pro devs
@@ -194,7 +194,7 @@ git add .
 git commit -m "changed the checkout action version"
 git push
 ```
-This will trigger the GitHUb Action to deploy the changes.
+This will trigger the GitHub Action to deploy the changes.
 
 Now, go to your GitHub repository in a web browser and click on the `Actions` tab. Here, you will see the list of all the GitHub Actions that have been triggered so far. Click on the last one to see your application being deployed.
 
@@ -281,7 +281,7 @@ You can download the extension either directly from the `Extension panel (Ctrl +
 
 Install the [Azure Functions extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions&WT.mc_id=javascript-76678-cxa) v1.10.4 or above for Visual Studio Code. This extension installs [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local) for you the first time you locally run your functions. 
 
-> Node.js v4 requires version 4.0.5382, or a later version of Core Tools.
+> Functions runtime v4 requires version 4.0.5382, or a later version of Core Tools.
 
 Go to VSCode terminal or windows cmd and check the version of Core tools as 
 
