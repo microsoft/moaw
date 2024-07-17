@@ -13,7 +13,7 @@ contacts:
   - '@lgmorand'
 duration_minutes: 240
 tags: javascript, .net, GitHub, IA, copilot, AI, csu
-banner_url: assets/banner.jpg 
+banner_url: ../assets/banner.jpg 
 sections_title:
   - はじめに
   - Github Copilot
@@ -51,7 +51,7 @@ GitHub Copilot は、開発者がより良いコードをより早く書くの�
 
 <div class="warning" data-title="Important">
 
-> また、いくつかのアセットをダウンロードする必要があります。[ここからダウンロード](assets/src/exercisefiles.zip)できます。
+> また、いくつかのアセットをダウンロードする必要があります。[ここからダウンロード](../assets/src/exercisefiles.zip)できます。
 
 </div>
 
@@ -412,11 +412,11 @@ Copilot は、インフラをコードとして記述するのにも役立ちま
 
 2. Git コミットパネルで、右側にある小さな魔法のボタンをクリックします
 
-    ![Github Copilot Git コメントジェネレーター](assets/git-commit.png)
+    ![Github Copilot Git コメントジェネレーター](../assets/git-commit.png)
 
 3. あなたに代わってコメントを生成しくれた Copilot を褒めてあげましょう
 
-    ![生成されたコメント](assets/git-commit2.png)
+    ![生成されたコメント](../assets/git-commit2.png)
 
 ## ドキュメントの記述
 
@@ -645,7 +645,7 @@ Chat participants は、特定のタスクを支援できる専門の専門家�
 
 構造化されたプロジェクトと、ファイルを作成するための新しいボタンが表示されるはずです。`Create workspace` をクリックして、作成中のファイルを確認します。
 
-![GitHub Copilot Chat Participants](assets/agents.png)
+![GitHub Copilot Chat Participants](../assets/agents.png)
 
 ## Tips
 
@@ -655,7 +655,7 @@ GitHub Copilot Chat は非常に便利ですが、開発者にとっては、キ
 
 2- ショートカット **Ctrl + i** を使用します。クイックチャットのポップアップ、即ちカーソルを移動させることができる小さなチャットウィンドウが開きます。
 
-![GitHub Copilot クイックチャット](assets/quickchat.png)
+![GitHub Copilot クイックチャット](../assets/quickchat.png)
 
 3- コードを生成するコマンドを入力します (たとえば、`Toto という名前の C# クラスを作成して`)。生成されたコードは、現在のファイル内に挿入されます。これはあなたが望むものかもしれません。
 
@@ -782,7 +782,7 @@ React Native で実装されたアプリのアクセシビリティを向上さ�
 
 ## 手順
 
-- [exercicefile](assets/src/exercisefiles.zip) フォルダーをローカルにダウンロードします
+- [exercicefile](../assets/src/exercisefiles.zip) フォルダーをローカルにダウンロードします
 - `nodeserver.js` を開き、Nodejs サーバーを作成することから始め、テキストに初めから書いてある指示を基にした Copilot の提案を確認します
 - `test.js` ファイルを開き、現在のテストを分析します
 - コマンドプロンプトを開き、テストを実行します (`mocha test.js`)
@@ -1008,7 +1008,7 @@ docker run -d -p 8080:80 --name dotnetapp dotnetapp
 
 ## コーディング
 
-コーディング演習の解答は [ここからダウンロード](assets/src/completesolution.zip) できます。
+コーディング演習の解答は [ここからダウンロード](../assets/src/completesolution.zip) できます。
 
 ## Infrastructure As Code
 
