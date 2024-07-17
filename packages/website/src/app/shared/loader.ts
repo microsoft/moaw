@@ -62,11 +62,11 @@ export function updateAssetsBasePath(markdown: string, baseUrl: string): string 
   }
 
   // Match all occurrences of unescaped "assets/"
-  const assetsRegex = new RegExp(`(?<!\\\\|\\\\\.\/)(\.\.\/)?${assetsFolder}`, 'gm');
+  const assetsRegex = new RegExp(`(?<!\\\\|\\\\\.\/)([.]?[.]\/)?${assetsFolder}`, 'gm');
   markdown = markdown.replace(assetsRegex, (_match, root) => `${baseUrl}/${root === '../' ? root : ''}${assetsFolder}`);
 
   // Match all occurrences of escaped "assets/"
-  const escapedAssetsRegex = new RegExp(`\\\\(?:\.\/)?${assetsFolder}`, 'gm');
+  const escapedAssetsRegex = new RegExp(`\\\\(?:[.]?[.]\/)?${assetsFolder}`, 'gm');
   markdown = markdown.replace(escapedAssetsRegex, (match) => match.slice(1));
 
   return markdown;
