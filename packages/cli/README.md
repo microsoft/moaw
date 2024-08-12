@@ -5,7 +5,7 @@
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> Command line tool to create, preview and export workshops using [MOAW](https://aka.ms/moaw) platform.
+> Command line tool to create, preview and export workshops using [MOAW](https://aka.ms/aks-labs) platform.
 
 ## Installation
 

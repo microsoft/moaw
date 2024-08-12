@@ -57,7 +57,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
                   <h3>Platform <app-icon name="tools" size="28"></app-icon></h3>
                   <p>Use it to create and host workshops and associated sample code, slides, and resources.</p>
                   <p>
-                    <a href="https://microsoft.github.io/moaw/workshop/create-workshop/"
+                    <a href="https://azure-samples.github.io/aks-labs/workshop/create-workshop/"
                       ><app-icon name="arrow-right"></app-icon>How to create and host your workshop</a
                     >
                   </p>

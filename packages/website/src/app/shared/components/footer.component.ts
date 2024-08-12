@@ -52,7 +52,7 @@ import { updateTrackingCodes } from '../loader';
         </div>
         <div class="container no-sidebar">
           <div class="version">
-            <span>moaw build: ${environment.version}</span>
+            <span>aks-labs build: ${environment.version}</span>
             <span *ngIf="credits"> - {{ credits }}</span>
           </div>
           <button class="button-round back-to-top" (click)="backToTop()" title="Back to top">
@@ -62,7 +62,7 @@ import { updateTrackingCodes } from '../loader';
       </ng-container>
       <ng-template #defaultFooter>
         <app-icon class="with-margin" name="mark-github" size="12"></app-icon>
-        <a href="${githubRepositoryUrl}" target="_blank">moaw</a> (build: ${environment.version})
+        <a href="${githubRepositoryUrl}" target="_blank">aks-labs</a> (build: ${environment.version})
       </ng-template>
     </footer>
   `,

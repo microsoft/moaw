@@ -8,7 +8,7 @@ Below is a list of the planned workshops we're building for AKS.
 4. AI Apps on AKS
 
 ### Getting Started with Azure Kubernetes Service (AKS)
-Example: https://moaw.dev/workshop/getting-started-with-aks 
+Example: https://azure-samples.github.io/aks-labs/workshop/getting-started-with-aks/ 
 
 1. Getting started
     * Objectives

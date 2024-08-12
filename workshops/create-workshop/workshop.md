@@ -17,7 +17,7 @@ sections_title:
 
 # How to create a new workshop
 
-In this short tutorial, you'll learn how to create 🌟 a new workshop 🌟 and publish it on the [MOAW website](https://microsoft.github.io/moaw/).
+In this short tutorial, you'll learn how to create 🌟 a new workshop 🌟 and publish it on the [MOAW website](https://azure-samples.github.io/aks-labs/).
 
 ## Prerequisites
 
@@ -417,7 +417,7 @@ git push
 
 Next, we'll create an entry for your workshop to get it listed on the MOAW website.
 
-1. Edit the `external.yml` file by opening [this link](https://github.com/microsoft/moaw/edit/main/packages/database/external.yml) in your browser.
+1. Edit the `external.yml` file by opening [this link](https://github.com/Azure-Samples/aks-labs/edit/main/packages/database/external.yml) in your browser.
 
 2. Select the **Fork this repository** button to create a fork of the MOAW repository, which will allow you to make changes to the file.
 

@@ -77,7 +77,7 @@ export async function serve(options: ServeOptions = {}) {
           }
         },
         logLevel: options.verbose ? 'info' : 'silent',
-        logPrefix: 'moaw',
+        logPrefix: 'aks-labs',
         middleware: [
           (request, _response, next) => {
             if (request.url && /(^\/workshop\/.*)/.test(request.url)) {

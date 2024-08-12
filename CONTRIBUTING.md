@@ -5,7 +5,7 @@ We welcome all contributions, including translations, new workshops, bug fixes, 
 As a contributor, help us keep this project open and inclusive.
 Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
-- If you find something not working as expected, please [open an issue](https://github.com/microsoft/moaw/issues) and explain what you did and what you expected to happen.
+- If you find something not working as expected, please [open an issue](https://github.com/Azure-Samples/aks-labs/issues) and explain what you did and what you expected to happen.
 
 - If you would like to contribute some changes, fork the repository and open a [Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
   Make sure to follow the guidelines below, and briefly explain the motivation behind your changes.
@@ -25,7 +25,7 @@ New workshops should be created in their own repository, so you can more easily 
 
 You can use the [workshop template](template/workshop/) as a starting point, and look at existing [workshops](workshops) for examples.
 
-The easier way to get started is to follow this step-by-step tutorial: [Create a workshop](https://microsoft.github.io/moaw/workshop/create-workshop/).
+The easier way to get started is to follow this step-by-step tutorial: [Create a workshop](https://azure-samples.github.io/aks-labs/workshop/create-workshop/).
 
 ### Workshop format
 

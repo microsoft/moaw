@@ -1,12 +1,12 @@
 # 🌳 The Mother Of All Workshops (MOAW)
 
-[![Open in Visual Studio Code](https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20VS%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc)](https://github.dev/microsoft/moaw)
-[![Deploy website to GitHub Pages](https://github.com/microsoft/moaw/actions/workflows/deploy.yml/badge.svg)](https://github.com/microsoft/moaw/actions/workflows/deploy.yml)
+[![Open in Visual Studio Code](https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20VS%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc)](https://github.dev/azure-samples/aks-labs)
+[![Deploy website to GitHub Pages](https://github.com/Azure-Samples/aks-labs/actions/workflows/deploy.yml/badge.svg)](https://github.com/Azure-Samples/aks-labs/actions/workflows/deploy.yml)
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA-222.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 
 Grab-and-go resources to help you learn new skills, with all the tools you need to create, host and share your own workshop.
 
-👉 https://aka.ms/moaw
+👉 https://aka.ms/aks-labs
 
 <div align="center">
   <img src="https://user-images.githubusercontent.com/593151/185623023-1175ab1f-9f55-461c-884f-9ed9723edaf3.jpg" alt="logo" />
@@ -16,7 +16,7 @@ Grab-and-go resources to help you learn new skills, with all the tools you need 
 
 ### 📚 Want to learn something new?
 
-Browse the available content on the [website](https://aka.ms/moaw/catalog).
+Browse the available content on the [website](https://aka.ms/aks-labs/catalog).
 
 ### 👩‍🏫 Want to conduct a workshop?
 
@@ -29,7 +29,7 @@ For more details, see the [how to use](HOW_TO_USE.md#-conduct-a-workshop) guide.
 
 ### 🚀 Want to create a new workshop?
 
-Follow this step-by-step tutorial for detailed instructions: [Create a workshop](https://microsoft.github.io/moaw/workshop/create-workshop/).
+Follow this step-by-step tutorial for detailed instructions: [Create a workshop](https://azure-samples.github.io/aks-labs/workshop/create-workshop/).
 
 ## Contributing
 

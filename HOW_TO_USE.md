@@ -2,7 +2,7 @@
 
 ## 📚 Browse the content
 
-The easiest way to browse the available content on the [website](https://aka.ms/moaw/catalog).
+The easiest way to browse the available content on the [website](https://aka.ms/aks-labs/catalog).
 
 ## 👩‍🏫 Conduct a workshop
 

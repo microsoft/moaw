@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/microsoft/moaw.git"
+    "url": "git+https://github.com/Azure-Samples/aks-labs.git"
   },
   "keywords": [],
   "author": {
@@ -19,9 +19,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/microsoft/moaw/issues"
+    "url": "https://github.com/Azure-Samples/aks-labs/issues"
   },
-  "homepage": "https://github.com/microsoft/moaw#readme",
+  "homepage": "https://github.com/Azure-Samples/aks-labs#readme",
   "workspaces": [
     "packages/*"
   ]

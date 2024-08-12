@@ -5,7 +5,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/microsoft/moaw.git"
+    "url": "git+https://github.com/Azure-Samples/aks-labs.git"
   },
   "exports": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -56,12 +56,12 @@
     "authoring"
   ],
   "author": {
-    "name": "Yohan Lasorsa",
-    "url": "https://twitter.com/sinedied"
+    "name": "Brian Redmond",
+    "url": "https://twitter.com/chzbrgr71"
   },
-  "homepage": "https://github.com/microsoft/moaw",
+  "homepage": "https://github.com/Azure-Samples/aks-labs",
   "bugs": {
-    "url": "https://github.com/microsoft/moaw/issues"
+    "url": "https://github.com/Azure-Samples/aks-labs/issues"
   },
   "license": "MIT",
   "release": {

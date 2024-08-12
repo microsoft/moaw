@@ -2242,6 +2242,6 @@ In this workshop, you learned how to:
 - Expose the frontend application to the internet using Istio's Ingress gateway
 - Scale the app using KEDA and load test the application to ensure it scales as expected
 
-To learn more about Kubernetes, check out the [Kubernetes Learning Path](https://azure.microsoft.com/resources/kubernetes-learning-path/) and be sure to check out the [AKS docs](https://docs.microsoft.com/azure/aks/). For additional workshop content, be sure to check out https://moaw.dev/catalog/ and https://aka.ms/oss-labs/
+To learn more about Kubernetes, check out the [Kubernetes Learning Path](https://azure.microsoft.com/resources/kubernetes-learning-path/) and be sure to check out the [AKS docs](https://docs.microsoft.com/azure/aks/). For additional workshop content, be sure to check out https://azure-samples.github.io/aks-labs/catalog/ and https://aka.ms/oss-labs/
 
 If you have any questions or feedback, please let me know in the comments below or reach out to me on Twitter [@pauldotyu](https://twitter.com/pauldotyu) or LinkedIn [/in/yupaul](https://www.linkedin.com/in/yupaul/)
