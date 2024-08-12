@@ -23,13 +23,16 @@ const dbPath = path.join(__dirname, '../../website/src/public/workshops.json');
   // TODO: find localized versions
 
   try {
-    const externalEntries = await getExternalEntries(externalEntriesFiles);
-    console.log(`Found ${externalEntries.length} external workshop(s)`);
+    // aks-labs: commenting out to exclude external workshops
+    // const externalEntries = await getExternalEntries(externalEntriesFiles);
+    // console.log(`Found ${externalEntries.length} external workshop(s)`);
 
-    const externalSourcesEntries = await getEntriesFromExternalSources();
-    console.log(`Found ${externalSourcesEntries.length} workshop(s) from external sources`);
+    // const externalSourcesEntries = await getEntriesFromExternalSources();
+    // console.log(`Found ${externalSourcesEntries.length} workshop(s) from external sources`);
 
-    entries = [...entries, ...externalEntries, ...externalSourcesEntries];
+    //entries = [...entries, ...externalEntries, ...externalSourcesEntries];
+
+    entries = [...entries];
 
     entries.sort((a, b) => (a.lastUpdated > b.lastUpdated ? -1 : 1));
     console.log(`Total workshops: ${entries.length}`);
