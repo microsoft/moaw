@@ -12,7 +12,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
   imports: [CommonModule, HeaderComponent, FooterComponent, TypewriterComponent, IconComponent],
   template: `
     <div class="full-viewport">
-      <app-header logo="images/moaw-logo-dark.png" logoUrl="" type="landing" [links]="links"></app-header>
+      <app-header logo="images/aks-logo-dark.png" logoUrl="" type="landing" [links]="links"></app-header>
       <div class="content bg-light">
         <main id="${mainScrollableId}" class="scrollable">
           <section class="container no-sidebar">
