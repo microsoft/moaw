@@ -79,45 +79,111 @@ When you see these blocks of text, you should follow the instructions below.
 
 # Deploy your AKS Cluster
 
+There are many ways to deploy an AKS cluster. You can use the Azure Portal, Azure CLI, ARM templates, Azure Bicep, Terraform, Pulumi. The list goes on. While there are no shortages of ways to deploy an AKS cluster, we will focus on the Azure Portal and Azure CLI in this workshop.
+
 ## Familiarize with AKS Presets in portal
 
-Browse to https://portal.azure.com and login with your Azure account.
+Open a browser and navigate to the [Azure Portal](https://portal.azure.com). Login with your Azure credentials.
 
-Search for `Kubernetes services` and click on **+ Create** drop down to expand the menu
+In the search bar at the top of the portal, start typing **kubernetes** and you will start to see a list of services, marketplace items, and resources that match your search. Under **Services** click on **Kubernetes services**.
 
-Click on **Kubernetes Cluster** to create a new AKS cluster.
+In the **Kubernetes services** blade, click on the **Create** drop down then click on **Kubernetes cluster**.
 
-Note all the tabs and options.
+You should now see the **Create Kubernetes cluster** blade. This is where you can create a new AKS cluster. Across the top of the blade, you'll notice a series of tabs. Click on the **Basics** tab. Under **Cluster details**, you'll see the **Cluster preset configuration**. This is where you can choose from a series of presets that will automatically configure your AKS cluster based on your workload requirements.
 
-Under Cluster details see the Cluster preset configuration.
+Click the **Compare presets** link to see the differences between the presets.
 
-You can click the link to **Compare presets** to see the differences between the presets.
+You should see a table that lists all the presets and the differences between them. By default, the **Production Standard** preset is selected. 
 
+Click **Cancel** to back out of the cluster preset comparison window.
 
-Back out of the create cluster window.
+You will also notice that the cluster preset can be selected from the drop down menu. Toggle between **Dev/Test** and **Production Enterprise** to see the differences between the presets.
 
-Click on **Create** to create a new AKS cluster then click on **Automatic AKS Cluster** to create a new AKS cluster.
+Going back to the tabs at the top of the blade, click through the **Node pools**, **Networking**, **Integrations**, **Monitoring**, and **Advanced** tabs to see additional configuration options available to you.
 
+That's a lot of options! But what if you just want to create an AKS cluster without all the fuss? That's where **Automatic AKS Cluster** comes in.
 
-Note how much simpler the configuration is.
+Click the **X** icon in the upper right corner to back out of the create cluster window.
 
 ## Deploy AKS Automatic Cluster
 
-Cluster Details:
-Cluster Name: Enter a unique name for your cluster.
-Region: Select the desired region where you want to deploy your cluster.
-Node Size: Choose the appropriate node size based on your workload requirements.
-Node Count: Specify the number of nodes you want in your cluster.
-Configuration Settings:
-Networking: Configure the networking options such as Virtual Network and Subnet.
-Authentication: Set up authentication methods for accessing the cluster.
-Monitoring: Enable or disable monitoring options as per your needs.
+Click on the **Create** drop down again but this time, click **Automatic Kubernetes cluster (preview)**.
 
-Click Next
+You can see that the configuration options are much simpler. There's only a **Basics** and **Monitoring** tab.
 
-Leave all defaults for monitoring and click review and create.
+Let's go ahead and create an AKS automatic cluster.
 
-After validation passes click create.
+### Basics
+
+In the **Basics** tab, fill out the following fields:
+
+#### Project details
+
+**Subscription:** Select your Azure subscription. 
+
+<div class="info" data-title="Note">
+
+> You may see a message that the subscription does not have the flags: EnableAPIServerVnetIntegrationPreview, NRGLockdownPreview, NodeAutoProvisioningPreview, DisableSSHPreview, SafeguardsPreview, AutomaticSKUPreview registered. Preview features must be registered in order to create a cluster so go ahead and click the "Register preview features" link to register the the required flags in your subscription.
+
+</div>
+
+**Resource group:** Create a new resource group or use an existing one.
+
+#### Cluster details
+
+**Kubernetes cluster name:** Enter a name for your cluster.
+
+**Region:** Select the desired region where you want to deploy your cluster.
+
+<div class="info" data-title="Note">
+
+> You need to ensure you have 24 vCPU quota for Standard_DSv3 available in the region you are deploying the cluster to. If you don't have enough quota, you can request a quota increase.
+
+</div>
+
+**Automatic upgrade scheduler:** Leave the default setting.
+
+**Access control:**: AKS Automatic uses Microsoft Entra ID authentication with Azure RBAC for cluster access. You can add additional users or groups to the cluster after it's created but that is outside the scope of this workshop.
+
+Click **Next**
+
+### Monitoring
+
+In the **Monitoring** tab, you have the option to either link existing monitoring resources or create new ones. We'll go ahead and create new monitoring resources.
+
+#### Container Insights
+
+**Enable Container Logs:** Check the box to enable container logs.
+
+**Log Analytics Workspace:** Create the "Create new" link and create a new Log Analytics workspace.
+
+**Cost Preset:** Leave the default setting.
+
+#### Managed Prometheus
+
+**Enable Prometheus metrics:** Check the box to enable Prometheus metrics.
+
+**Azure Monitor workspace:** Create the "Create new" link and create a new Azure Monitor workspace.
+
+#### Managed Grafana
+
+**Enable Grafana:** Check the box to enable Grafana.
+
+**Grafana workspace:** Create the "Create new" link and create a new Grafana workspace.
+
+#### Alerts
+
+**Enable recommended alerts:** Check the box to enable recommended alerts.
+
+Click the **Review + create** button.
+
+After validation passes, click the **Create** button.
+
+<div class="info" data-title="Note">
+
+> The cluster creation process will take about 10-15 minutes to complete.
+
+</div>
 
 ## Connect to AKS 
 
