@@ -191,14 +191,20 @@ Typically, you would use the kubectl command line tool to interact with a Kubern
 
 Open the Azure Cloud Shell and run the following command to set up local variables.
 
+<div class="info" data-title="Note">
+
+> If this is your first time opening Azure Cloud Shell, be sure to click the **Bash** button when asked presented with the environment selector as all command line instructions in this workshop are intended to be run in a POSIX shell. You may also be asked to create a storage account for your Cloud Shell. Go ahead and select **No storage account required**, then select your subscription and click **Apply**. 
+
+</div>
+
 ```bash
 RG_NAME=<resource-group-name>
-AKS_NAME=<aks-name>
+AKS_NAME=$(az aks list -g $RG_NAME --query "[0].name" -o tsv)
 ```
 
 <div class="info" data-title="Note">
 
-> Note: Replace `<resource-group-name>` and `<aks-name>` with your resource group and AKS cluster name.
+> Be sure to replace `<resource-group-name>` and `<aks-name>` with your resource group and AKS cluster name.
 
 </div>
 
@@ -214,42 +220,52 @@ Now you should be able to run kubectl commands against your AKS cluster.
 kubectl cluster-info
 ```
 
-The cluster is almost ready to go... but not quite yet.
+AKS Automatic clusters are secured by default. It uses Microsoft Enter ID authentication with Azure RBAC for cluster access, so simply downloading the kubeconfig file is not enough to access the cluster. You also need to authenticate with Microsoft Enter ID and have the necessary permissions to access the cluster. When you created the AKS Automatic cluster, you were automatically granted the **Azure Kubernetes Service RBAC Cluster Admin** role assignment to access the cluster. Therefore when running a kubectl command for the first time, you will be presented with a login prompt. Follow the instructions on the screen and proceed with the authorization process and the kubectl command will be executed. As your authentication token expires, you will be prompted to re-authenticate.
+
+The cluster is almost ready to go... but not quite yet. Next up, we need to prepare the cluster for our application containers.
 
 ## Azure Container Registry 
 
-Kubernetes is a container orchestrator. It will run whatever container image you tell it to run. Containers can be pulled from public container registries like Docker Hub or GitHub Container Registry (GHCR), or they can be pulled from private container registries like Azure Container Registry (ACR). Pulling images from a public registry is fine for development and testing but for production workloads, you'll want to use a private registry.
+Kubernetes is a container orchestrator. It will run whatever container image you tell it to run. Containers can be pulled from public container registries like Docker Hub or GitHub Container Registry (GHCR), or they can be pulled from private container registries like Azure Container Registry (ACR). Pulling images from a public registry is fine for development and testing but for production workloads, you'll want to use a private registry and only deploy images that have been scanned and approved.
+
+Azure Container Registry is a managed, private Docker registry service based on the open-source Docker Registry 2.0. It is highly available and scalable across Azure regions across the globe. It also integrates with Microsoft Entra ID for authentication and authorization so it makes it easy to secure your container images.
 
 ### Deploy Azure Container Registry (ACR)
 
-In the Azure Cloud Shell, run the following command to create an Azure Container Registry.
+In the Azure Cloud Shell, run the following command to create a variable for your new Azure Container Registry name.
 
 ```bash
 ACR_NAME=<acr-name>
-az acr create --resource-group $RG_NAME --name <acr-name> --sku Basic
 ```
 
 <div class="info" data-title="Note">
 
-> Note: Replace `<acr-name>` with a unique name for your Azure Container Registry.
+> Be sure to replace `<acr-name>` with a new unique name for your Azure Container Registry.
 
 </div>
 
-### Attach ACR to AKS cluster
-
-With the Azure Container Registry created, you need to attach it to your AKS cluster. This will allow your AKS cluster to pull images from the Azure Container Registry by granting the AKS resource's managed identity the **AcrPull** role on the Azure Container Registry.
+Run the following command to create a new Azure Container Registry.
 
 ```bash
+az acr create --resource-group $RG_NAME --name $ACR_NAME --sku Basic
+```
+
+### Attach ACR to AKS cluster
+
+With the Azure Container Registry created, you need to "attach" it to your AKS cluster. This will allow your AKS cluster to pull images from the Azure Container Registry by granting the AKS resource's managed identity the **AcrPull** role on the Azure Container Registry.
+
+```bash
+az aks upgrade -n $AKS_NAME -g $RG_NAME --kubernetes-version 1.30.1
 az aks update --name $AKS_NAME --resource-group $RG_NAME --attach-acr $ACR_NAME
 ```
 
 ## Import aks-store images to ACR
 
-We will be using a sample application called aks-store-demo. This application is a simple e-commerce store that consists of three services: store-front, order-service, and product-service. The store-front service is a web application that allows users to browse products, add products to a cart, and checkout. The order-service is a RESTful API that handles order processing and saves order to a RabbitMQ message queue. The product-service is a RESTful API that provides product information to the store-front service.
+We will be using a sample application called [aks-store-demo](https://github.com/Azure-Samples/aks-store-demo). This application is a simple e-commerce store that consists of three services: store-front, order-service, and product-service. The store-front service is a web application that allows users to browse products, add products to a cart, and checkout. The order-service is a RESTful API that handles order processing and saves order to a RabbitMQ message queue. The product-service is a RESTful API that provides product information to the store-front service.
 
 The application containers are hosted on GitHub Container Registry (GHCR). Rather than building the containers from source, we will import the containers from GHCR to ACR.
 
-In the Azure Cloud Shell, run the following commands to import the aks-store-demo images to ACR.
+In the Azure Cloud Shell, run the following commands to import the application container images to ACR.
 
 ```bash
 # store-front
@@ -267,15 +283,26 @@ az acr import --name $ACR_NAME --source ghcr.io/azure-samples/aks-store-demo/pro
 
 <div class="info" data-title="Note">
 
-> If you are wondering why we are importing two versions of each image, it's because we will be updating the store-front service later in the workshop.
+> If you are wondering why we are importing two versions of each image, it's because we will be rolling out application updates later in the workshop.
 
 </div>
+
+Run the following command to ensure the import operations have completed.
+
+```bash
+for repo in $(az acr repository list -n $ACR_NAME -o tsv); do
+    echo "${repo} tags:"
+   az acr repository show-tags -n $ACR_NAME --repository $repo
+done
+```
+
+If you see two tags for each repository, the import operations have completed.
 
 ---
 
 # Deploy Store App to AKS
 
-Let's use kubectl to deploy the aks-store-demo application to AKS. There is a YAML file that contains the deployment and service resources for the store-front, order-service, and product-service, and RabbitMQ.
+Let's use kubectl to deploy the aks-store-demo application to AKS. There is a [YAML manifest](https://github.com/Azure-Samples/aks-store-demo/blob/main/aks-store-quickstart.yaml) in the repo that contains the deployment and service resources for the store-front, order-service, and product-service, and RabbitMQ.
 
 We can't use the YAML file as is because it references the images on GHCR. We need to replace the image references with the images we imported to ACR.
 
@@ -288,7 +315,19 @@ curl -o aks-store-quickstart.yaml https://raw.githubusercontent.com/Azure-Sample
 Next, run the following command to replace the image references in the YAML file with the images you imported to ACR.
 
 ```bash
-sed -i 's/ghcr.io\/azure-samples/$ACR_NAME.azurecr.io/g' aks-store-quickstart.yaml
+sed -i -e "s|ghcr.io/azure-samples/\(.*\):latest|${ACR_NAME}.azurecr.io/\1:1.2.0|g" aks-store-quickstart.yaml
+```
+
+<div class="info" data-title="Note">
+
+> The **sed** command will replace all instances of `ghcr.io/azure-samples` with `${ACR_NAME}.azurecr.io` and the tag `latest` with `1.2.0`.
+
+</div>
+
+Verify the image references have been updated.
+
+```bash
+cat aks-store-quickstart.yaml
 ```
 
 Apply the manifest
@@ -297,7 +336,22 @@ Apply the manifest
 kubectl apply -f aks-store-quickstart.yaml
 ```
 
+<div class="info" data-title="Note">
+
+> The deployment can take up to 7 minutes to schedule pods onto a new node.
+
+</div>
+
+Run the following command to check the status of the pods.
+
+```bash
+kubectl get po -w
+```
+
+
 ## Deployment Safeguards
+
+TODO: I did not notice any warnings in the terminal when I applied the manifest. I will need to investigate this further.
 
 Did you notice the warnings in the terminal when you applied the manifest? These warning messages are emitted by AKS Deployment Safeguards. Deployment Safeguards is a feature of AKS that helps you avoid common deployment pitfalls. It checks your deployment manifest for common issues and provides warnings if it detects any. The checks are based on best practices and are designed to help you avoid common deployment issues an implemented using Azure Policy.
 
