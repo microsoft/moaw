@@ -137,7 +137,7 @@ In the **Basics** tab, fill out the following fields:
 
 <div class="info" data-title="Note">
 
-> You need to ensure you have 24 vCPU quota for Standard_DSv2 available in the region you are deploying the cluster to. If you don't have enough quota, you can request a quota increase.
+> You need to ensure you have 32 vCPU quota for Standard_DSv2 available in the region you are deploying the cluster to. If you don't have enough quota, you can request a quota increase.
 
 </div>
 
@@ -194,6 +194,8 @@ Open the Azure Cloud Shell and run the following command to set up local variabl
 <div class="info" data-title="Note">
 
 > If this is your first time opening Azure Cloud Shell, be sure to click the **Bash** button when asked presented with the environment selector as all command line instructions in this workshop are intended to be run in a POSIX shell. You may also be asked to create a storage account for your Cloud Shell. Go ahead and select **No storage account required**, then select your subscription and click **Apply**. 
+
+> If you do not use a storage account for your Cloud Shell, you will have to pull down the kubeconfig file when the shell is closed and re-opened or when the session times out.
 
 </div>
 
@@ -348,52 +350,75 @@ Run the following command to check the status of the pods.
 kubectl get po -w
 ```
 
-
 ## Deployment Safeguards
 
-TODO: I did not notice any warnings in the terminal when I applied the manifest. I will need to investigate this further.
+When you deployed the manifest, did you notice the warnings in the terminal when you applied the manifest? These warning messages are emitted by AKS Deployment Safeguards. Deployment Safeguards is a feature of AKS that helps you avoid common deployment pitfalls. It checks your deployment manifest for common issues and provides warnings if it detects any. The checks are based on best practices and are designed to help you avoid common deployment issues an implemented using Azure Policy.
 
-Did you notice the warnings in the terminal when you applied the manifest? These warning messages are emitted by AKS Deployment Safeguards. Deployment Safeguards is a feature of AKS that helps you avoid common deployment pitfalls. It checks your deployment manifest for common issues and provides warnings if it detects any. The checks are based on best practices and are designed to help you avoid common deployment issues an implemented using Azure Policy.
+TODO: View Azure Policy....
 
-Note the warnings in the portal. Here is where in the portal where you can see the policies that drive this.
+## Getting familiar with AKS Store app
 
-View Azure Policy....
+Now, let's explore the store app. Run the following command to get the public IP address of the **store-front** service.
 
-## Getting familiar with AKS Store app 
+```bash
+echo "http://$(kubectl get svc/store-front -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
+```
 
-Get the public ip of the store-front service:
+Click the link in the terminal and you should be taken to the product page of the AKS pet store. Here a user can browse products, add items to a shopping cart, and checkout. The checkout process is intentional simple and does not require any payment information. The order is saved to a RabbitMQ message queue.
+
+## Deployments and Services
+
+Now that we've seen the store app in action, let's take a closer look at the resources that were created when we deployed the manifest.
+
+Run the following command to view the contents of the YAML file.
+
+```bash
+cat aks-store-quickstart.yaml
+```
+
+It's a fairly big file, so let's break it down.
+
+The YAML file contains a deployment and service resource for each of the three services: store-front, order-service, and product-service. It also contains a deployment and service resource for RabbitMQ.
+
+If we look at the YAML file, we can see that it contains a deployment and service resource for each of the three services: store-front, order-service, and product-service. It also contains a statefulset, service, and configmap resource for RabbitMQ. Each deployment resource specifies the container image to use, the ports to expose, environment variables, and resource requests and limits. The service resources expose the deployments to the cluster and the outside world. A statefulset is a resource that manages a set of identical pods with persistent storage and commonly used for stateful applications like databases.
+
+The manifest is the desired state of the resources in the cluster. When you apply the manifest, the Kubernetes API server will create the resources in the cluster to match the desired state.
+
+We can use the `kubectl get` command to view the resources that were created when we applied the manifest.
+
+Let's start with the deployments.
+
+```bash
+kubectl get deployments
+```
+
+You can see there are three deployments: order-service, product-service, and store-front. Each deployment has one replica. A deployment is a resource that manages a set of identical pods. The pods are created from the container image specified in the deployment resource.
+
+If you want to see individual pods, you can run the following command.
+
+```bash
+kubectl get pods
+```
+
+This is where your application code runs. A pod is the smallest deployable unit in Kubernetes. It represents a single instance of a running process in your cluster. If you need to troubleshoot an application, you can view the logs of the pod.
+
+```bash
+kubectl logs <pod-name>
+```
+
+The next resource we'll look at is services. A service is a resource that exposes an application running in a set of pods as a network service. It provides a stable endpoint for the application that can be accessed by other applications in the cluster or outside the cluster.
 
 ```bash
 kubectl get svc store-front
 ```
 
-Open a browser and navigate to the public IP address of the store-front service.
-
-Explore the store app.
-
-Browse products, add to cart, and checkout.
-
-## Deployments and Services
-
-Explain deployments
-
-```bash
-kubectl get deployments store-front -o yaml
-```
-
-Note the resources section. There are requests and limits set for CPU and memory. This is a best practice to ensure your pods have the resources they need to run.
-
-Explain services
-
-```bash
-kubectl get svc store-front -o yaml
-```
+As you can see, the store-front service is of type LoadBalancer. This means that the service is exposed to the internet. The service has an external IP address that you can use to access the store-front application.
 
 ## Ingress and App Routing Add-on
 
-Explain app routing add-on for AKS
+We saw that the service type for the store-front service is LoadBalancer. This is one way to expose a service to the internet. A better way is to use an Ingress Controller. An Ingress Controller is a Kubernetes resource that manages external access to services in a cluster. It provides HTTP and HTTPS routing to services based on hostnames and paths. The Ingress Controller is responsible for reading the Ingress resource and processing the rules to configure the load balancer. With AKS Automatic, the App Routing Add-on, a managed NGINX Ingress Controller, is enabled by default. All you need to do is create an Ingress resource and the App Routing Add-on will take care of the rest.
 
-We'll be using ingress to expose the store-front service to the internet rather than using a public IP on the service.
+Let's convert our app to use ingress to expose the store-front service to the internet rather than using a public IP on the service. Run the following command to patch the store-front service to change the service type to ClusterIP.
 
 ```bash
 kubectl patch service store-front -p '{"spec": {"type": "ClusterIP"}}'
@@ -422,13 +447,21 @@ spec:
 EOF
 ```
 
-Get the public ip of the ingress:
+<div class="info" data-title="Note">
+
+> This ingress resource is very similar to a typical nginx ingress resource. The only difference is the `ingressClassName` field. The `ingressClassName` field is set to `webapprouting.kubernetes.azure.com` which enables the App Routing Add-on to manage this ingress resource.
+
+</div>
+
+Wait a minute or two for the ingress to be created, then run the following command to get the public IP address of the ingress.
 
 ```bash
-kubectl get ingress store-front
+echo "http://$(kubectl get ingress store-front -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
 ```
 
-Open a browser and navigate to the public IP address of the ingress.
+Click the link in the terminal and you should be taken to the product page of the AKS pet store, this time using the ingress to access the store-front service!
+
+It is also worth mentioning that the App Routing Add-on does a little more than just manage the NGINX Ingress Controller. It also provides integration with Azure DNS for automatic DNS registration and management and Azure Key Vault for automatic TLS certificate management. Check out the [App Routing Add-on documentation](https://learn.microsoft.com/azure/aks/app-routing?tabs=default%2Cdeploy-app-default) for more information.
 
 ---
 
