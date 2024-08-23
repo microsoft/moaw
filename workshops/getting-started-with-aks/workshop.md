@@ -87,37 +87,53 @@ Open a browser and navigate to the [Azure Portal](https://portal.azure.com). Log
 
 In the search bar at the top of the portal, start typing **kubernetes** and you will start to see a list of services, marketplace items, and resources that match your search. Under **Services** click on **Kubernetes services**.
 
+![](https://placehold.co/800x400)
+
 In the **Kubernetes services** blade, click on the **Create** drop down then click on **Kubernetes cluster**.
+
+![](https://placehold.co/800x400)
 
 You should now see the **Create Kubernetes cluster** blade. This is where you can create a new AKS cluster. Across the top of the blade, you'll notice a series of tabs. Click on the **Basics** tab. Under **Cluster details**, you'll see the **Cluster preset configuration**. This is where you can choose from a series of presets that will automatically configure your AKS cluster based on your workload requirements.
 
+![](https://placehold.co/800x400)
+
 Click the **Compare presets** link to see the differences between the presets.
 
-You should see a table that lists all the presets and the differences between them. By default, the **Production Standard** preset is selected. 
+![](https://placehold.co/800x400)
+
+You should see a table that lists all the presets and the differences between them. By default, the **Production Standard** preset is selected.
 
 Click **Cancel** to back out of the cluster preset comparison window.
 
+![](https://placehold.co/800x400)
+
 You will also notice that the cluster preset can be selected from the drop down menu. Toggle between **Dev/Test** and **Production Enterprise** to see the differences between the presets.
 
+![](https://placehold.co/800x400)
+
 Going back to the tabs at the top of the blade, click through the **Node pools**, **Networking**, **Integrations**, **Monitoring**, and **Advanced** tabs to see additional configuration options available to you.
+
+![](https://placehold.co/800x400)
 
 That's a lot of options! But what if you just want to create an AKS cluster without all the fuss? That's where **Automatic AKS Cluster** comes in.
 
 Click the **X** icon in the upper right corner to back out of the create cluster window.
 
+![](https://placehold.co/800x400)
+
 ## Deploy AKS Automatic Cluster
 
 Click on the **Create** drop down again but this time, click **Automatic Kubernetes cluster (preview)**.
 
+![](https://placehold.co/800x400)
+
 You can see that the configuration options are much simpler. There's only a **Basics** and **Monitoring** tab.
+
+![](https://placehold.co/800x400)
 
 Let's go ahead and create an AKS automatic cluster.
 
-### Basics
-
 In the **Basics** tab, fill out the following fields:
-
-#### Project details
 
 **Subscription:** Select your Azure subscription. 
 
@@ -128,8 +144,6 @@ In the **Basics** tab, fill out the following fields:
 </div>
 
 **Resource group:** Create a new resource group or use an existing one.
-
-#### Cluster details
 
 **Kubernetes cluster name:** Enter a name for your cluster.
 
@@ -145,13 +159,11 @@ In the **Basics** tab, fill out the following fields:
 
 **Access control:**: AKS Automatic uses Microsoft Entra ID authentication with Azure RBAC for cluster access. You can add additional users or groups to the cluster after it's created but that is outside the scope of this workshop.
 
+![](https://placehold.co/800x400)
+
 Click **Next**
 
-### Monitoring
-
 In the **Monitoring** tab, you have the option to either link existing monitoring resources or create new ones. We'll go ahead and create new monitoring resources.
-
-#### Container Insights
 
 **Enable Container Logs:** Check the box to enable container logs.
 
@@ -159,21 +171,17 @@ In the **Monitoring** tab, you have the option to either link existing monitorin
 
 **Cost Preset:** Leave the default setting.
 
-#### Managed Prometheus
-
 **Enable Prometheus metrics:** Check the box to enable Prometheus metrics.
 
 **Azure Monitor workspace:** Create the "Create new" link and create a new Azure Monitor workspace.
-
-#### Managed Grafana
 
 **Enable Grafana:** Check the box to enable Grafana.
 
 **Grafana workspace:** Create the "Create new" link and create a new Grafana workspace.
 
-#### Alerts
-
 **Enable recommended alerts:** Check the box to enable recommended alerts.
+
+![](https://placehold.co/800x400)
 
 Click the **Review + create** button.
 
@@ -194,6 +202,8 @@ Open the Azure Cloud Shell and run the following command to set up local variabl
 <div class="info" data-title="Note">
 
 > If this is your first time opening Azure Cloud Shell, be sure to click the **Bash** button when asked presented with the environment selector as all command line instructions in this workshop are intended to be run in a POSIX shell. You may also be asked to create a storage account for your Cloud Shell. Go ahead and select **No storage account required**, then select your subscription and click **Apply**. 
+
+![](https://placehold.co/800x400)
 
 > If you do not use a storage account for your Cloud Shell, you will have to pull down the kubeconfig file when the shell is closed and re-opened or when the session times out.
 
@@ -261,9 +271,13 @@ az aks upgrade -n $AKS_NAME -g $RG_NAME --kubernetes-version 1.30.1
 az aks update --name $AKS_NAME --resource-group $RG_NAME --attach-acr $ACR_NAME
 ```
 
-## Import aks-store images to ACR
+## Import container images
 
 We will be using a sample application called [aks-store-demo](https://github.com/Azure-Samples/aks-store-demo). This application is a simple e-commerce store that consists of three services: store-front, order-service, and product-service. The store-front service is a web application that allows users to browse products, add products to a cart, and checkout. The order-service is a RESTful API that handles order processing and saves order to a RabbitMQ message queue. The product-service is a RESTful API that provides product information to the store-front service.
+
+Here is a high-level application architecture diagram:
+
+![](https://placehold.co/800x400)
 
 The application containers are hosted on GitHub Container Registry (GHCR). Rather than building the containers from source, we will import the containers from GHCR to ACR.
 
@@ -356,7 +370,7 @@ When you deployed the manifest, did you notice the warnings in the terminal when
 
 TODO: View Azure Policy....
 
-## Getting familiar with AKS Store app
+## Getting familiar with the demo app
 
 Now, let's explore the store app. Run the following command to get the public IP address of the **store-front** service.
 
@@ -365,6 +379,10 @@ echo "http://$(kubectl get svc/store-front -o jsonpath='{.status.loadBalancer.in
 ```
 
 Click the link in the terminal and you should be taken to the product page of the AKS pet store. Here a user can browse products, add items to a shopping cart, and checkout. The checkout process is intentional simple and does not require any payment information. The order is saved to a RabbitMQ message queue.
+
+Add an item to the cart and checkout. You should see a confirmation message that the order was successfully placed.
+
+![](https://placehold.co/800x400)
 
 ## Deployments and Services
 
