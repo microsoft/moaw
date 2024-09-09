@@ -17,13 +17,13 @@ import { updateTrackingCodes } from '../loader';
         <h2 class="visually-hidden">Footer</h2>
         <div class="container no-sidebar split-layout">
           <div class="image">
-            <img src="images/bit/student.png" alt="students" />
+            <img src="images/bit/cat-learning.jpg" alt="students" />
           </div>
           <nav aria-labelledby="learn">
             <h3 id="learn">Learn more</h3>
             <ul class="list">
               <li>
-                <a [href]="trackUrl('https://learn.microsoft.com/training/')" target="_blank">Microsoft Training</a>
+                <a [href]="trackUrl('https://learn.microsoft.com/training/')" target="_blank">Training</a>
               </li>
               <li>
                 <a [href]="trackUrl('https://learn.microsoft.com/certifications/')" target="_blank">Certifications</a>
