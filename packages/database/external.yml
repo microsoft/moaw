@@ -461,13 +461,13 @@
   tags: azure, devbox, ade, deployment environment, azd, azure developer cli, azure functions, azure load testing, application insights, csu
   navigation_levels: 3
 
-- title: Product Hands-on Lab - Azure Functions
+- title: Product Hands-on Lab - Azure Functions deep dive
   url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-azure-functions/main/docs/
   github_url: https://github.com/microsoft/hands-on-lab-azure-functions
   language: en
   last_updated: 2024-09-09
   type: workshop
-  description:  This workshop will cover the integration of Azure FunctionsFlex Consumption service with other Azure service. You will use it to build a complete real world scenario.
+  description:  This workshop will cover the integration of Azure Functions Flex Consumption service with other Azure service. You will use it to build a complete real world scenario.
   authors:
   - Iheb Khemissi
   - Julien Strebler
@@ -479,5 +479,5 @@
   duration_minutes: 360
   audience: students, pro devs
   level: beginner
-  tags: azure, azure functions, azure durable functions, flex, apim, monitoring, cosmos db, github actions, csu, codespace, devcontainer
+  tags: azure, azure functions, azure durable functions, flex, open ai, apim, monitoring, cosmos db, csu, codespace, devcontainer
   navigation_levels: 3
