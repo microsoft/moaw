@@ -46,8 +46,7 @@ import { githubRepositoryUrl, mainScrollableId } from '../shared/constants';
                 <div class="item">
                   <h3>Catalog <app-icon name="search" size="28"></app-icon></h3>
                   <p>
-                    It's a collection of all workshops and practical learning content created by developers from
-                    Microsoft and its community, aggregated in one place.
+                    It's a collection of all workshops and practical learning content created by developers and experts, aggregated in one place.
                   </p>
                   <p>
                     <a href="catalog/"><app-icon name="arrow-right"></app-icon>See all workshops</a>
