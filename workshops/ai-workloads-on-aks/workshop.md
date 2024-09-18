@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 type: workshop
 title: Containerizing and Deploying AI Workloads on AKS
 short_title: Containerizing and Deploying AI Workloads on AKS
