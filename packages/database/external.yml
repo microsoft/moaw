@@ -483,7 +483,7 @@
   navigation_levels: 3
 
 - title: Build A Fabric Real-Time Intelligence Solution in One Day
-  url: https://github.com/microsoft/FabConRTITutorial
+  url: https://moaw.dev/workshop/?src=gh:microsoft/fabconrtitutorial/main/docs/
   github_url: https://github.com/microsoft/FabConRTITutorial
   language: en
   last_updated: 2024-09-22
