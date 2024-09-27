@@ -19,6 +19,7 @@ contacts: # Required. Must match the number of authors
   - "@kenkilty"
 duration_minutes: 180 # Required. Estimated duration in minutes
 tags: kubernetes, azure, aks # Required. Tags for filtering and searching
+wt_id: WT.mc_id=containers-147656-pauyu
 ---
 
 # Getting started
@@ -89,11 +90,13 @@ In the search bar at the top of the portal, start typing **kubernetes** and you 
 
 ![](https://placehold.co/800x400)
 
-In the **Kubernetes services** blade, click on the **Create** drop down then click on **Kubernetes cluster**.
+In the **Kubernetes services** screen, click on the **Create** drop down then click on **Kubernetes cluster**.
 
 ![](https://placehold.co/800x400)
 
-You should now see the **Create Kubernetes cluster** blade. This is where you can create a new AKS cluster. Across the top of the blade, you'll notice a series of tabs. Click on the **Basics** tab. Under **Cluster details**, you'll see the **Cluster preset configuration**. This is where you can choose from a series of presets that will automatically configure your AKS cluster based on your workload requirements.
+You should now see the **Create Kubernetes cluster** screen. This is where you can create a new AKS cluster.
+
+Across the top of the screen, you'll notice a series of tabs. Under **Cluster details** in the **Basics** tab, you'll see the **Cluster preset configuration**. This is where you can choose from a series of presets that will automatically configure your AKS cluster based on your workload requirements.
 
 ![](https://placehold.co/800x400)
 
@@ -111,7 +114,7 @@ You will also notice that the cluster preset can be selected from the drop down 
 
 ![](https://placehold.co/800x400)
 
-Going back to the tabs at the top of the blade, click through the **Node pools**, **Networking**, **Integrations**, **Monitoring**, and **Advanced** tabs to see additional configuration options available to you.
+Going back to the tabs at the top of the screen, click through the **Node pools**, **Networking**, **Integrations**, **Monitoring**, and **Advanced** tabs to see additional configuration options available to you.
 
 ![](https://placehold.co/800x400)
 
@@ -135,57 +138,39 @@ Let's go ahead and create an AKS automatic cluster.
 
 In the **Basics** tab, fill out the following fields:
 
-**Subscription:** Select your Azure subscription. 
+- **Subscription:** Select your Azure subscription. 
 
-<div class="info" data-title="Note">
+  <div class="info" data-title="Note">
 
-> You may see a message that the subscription does not have the flags: EnableAPIServerVnetIntegrationPreview, NRGLockdownPreview, NodeAutoProvisioningPreview, DisableSSHPreview, SafeguardsPreview, AutomaticSKUPreview registered. Preview features must be registered in order to create a cluster so go ahead and click the "Register preview features" link to register the the required flags in your subscription.
+  > You may see a message that the subscription does not have the flags: EnableAPIServerVnetIntegrationPreview, NRGLockdownPreview, NodeAutoProvisioningPreview, DisableSSHPreview, SafeguardsPreview, AutomaticSKUPreview registered. Preview features must be registered in order to create a cluster so go ahead and click the **Register preview features** link to register the the required flags in your subscription.
 
-</div>
+  </div>
 
-**Resource group:** Create a new resource group or use an existing one.
+- **Resource group:** Create a new resource group or use an existing one.
+- **Kubernetes cluster name:** Enter a name for your cluster.
+- **Region:** Select the desired region where you want to deploy your cluster.
 
-**Kubernetes cluster name:** Enter a name for your cluster.
+  <div class="info" data-title="Note">
 
-**Region:** Select the desired region where you want to deploy your cluster.
+  > You need to ensure you have 32 vCPU quota for Standard_DSv2 available in the region you are deploying the cluster to. If you don't have enough quota, you can request a quota increase.
 
-<div class="info" data-title="Note">
+  </div>
 
-> You need to ensure you have 32 vCPU quota for Standard_DSv2 available in the region you are deploying the cluster to. If you don't have enough quota, you can request a quota increase.
-
-</div>
-
-**Automatic upgrade scheduler:** Leave the default setting.
-
-**Access control:**: AKS Automatic uses Microsoft Entra ID authentication with Azure RBAC for cluster access. You can add additional users or groups to the cluster after it's created but that is outside the scope of this workshop.
-
-![](https://placehold.co/800x400)
-
-Click **Next**
+- **Automatic upgrade scheduler:** Leave the default setting.
+- **Access control:**: AKS Automatic uses Microsoft Entra ID authentication with Azure RBAC for cluster access. You can add additional users or groups to the cluster after it's created but that is outside the scope of this workshop.
 
 In the **Monitoring** tab, you have the option to either link existing monitoring resources or create new ones. We'll go ahead and create new monitoring resources.
 
-**Enable Container Logs:** Check the box to enable container logs.
+- **Enable Container Logs:** Make sure the check box is checked to enable Container Insights.
+- **Log Analytics Workspace:** Create the **Create new** link and create a new Log Analytics workspace.
+- **Cost Preset:** Leave the default setting of **Standard**.
+- **Enable Prometheus metrics:** Make sure the check box is checked to enable Prometheus metrics.
+- **Azure Monitor workspace:** Create the **Create new** link and create a new Azure Monitor workspace.
+- **Enable Grafana:** Make sure the check box is checked to enable Grafana.
+- **Grafana workspace:** Create the **Create new** link and create a new Grafana workspace.
+- **Enable recommended alerts:** Make sure the check box is checked to enable recommended alerts.
 
-**Log Analytics Workspace:** Create the "Create new" link and create a new Log Analytics workspace.
-
-**Cost Preset:** Leave the default setting.
-
-**Enable Prometheus metrics:** Check the box to enable Prometheus metrics.
-
-**Azure Monitor workspace:** Create the "Create new" link and create a new Azure Monitor workspace.
-
-**Enable Grafana:** Check the box to enable Grafana.
-
-**Grafana workspace:** Create the "Create new" link and create a new Grafana workspace.
-
-**Enable recommended alerts:** Check the box to enable recommended alerts.
-
-![](https://placehold.co/800x400)
-
-Click the **Review + create** button.
-
-After validation passes, click the **Create** button.
+Click the **Review + create** button then after validation passes, click the **Create** button.
 
 <div class="info" data-title="Note">
 
@@ -193,7 +178,7 @@ After validation passes, click the **Create** button.
 
 </div>
 
-## Connect to AKS 
+## Connect to AKS cluster
 
 Typically, you would use the kubectl command line tool to interact with a Kubernetes cluster. The kubectl tool is your direct line of communication with the kube-apiserver. Access to the kube-apiserver is controlled by the kubeconfig file. The kubeconfig file contains the necessary information to authenticate and the Azure CLI for AKS has a handy command to get the kubeconfig file for your AKS cluster.
 
@@ -211,16 +196,21 @@ Open the Azure Cloud Shell and run the following command to set up local variabl
 
 ```bash
 RG_NAME=<resource-group-name>
-AKS_NAME=$(az aks list -g $RG_NAME --query "[0].name" -o tsv)
 ```
 
 <div class="info" data-title="Note">
 
-> Be sure to replace `<resource-group-name>` and `<aks-name>` with your resource group and AKS cluster name.
+> Be sure to replace `<resource-group-name>` with your resource group name.
 
 </div>
 
-Run the following command to connect to your AKS cluster.
+Run the following command to get the name of your AKS cluster.
+
+```bash
+AKS_NAME=$(az aks list -g $RG_NAME --query "[0].name" -o tsv)
+```
+
+Run the following command to download the kubeconfig file for your AKS cluster.
 
 ```bash
 az aks get-credentials --resource-group $RG_NAME --name $AKS_NAME
@@ -236,7 +226,7 @@ AKS Automatic clusters are secured by default. It uses Microsoft Enter ID authen
 
 The cluster is almost ready to go... but not quite yet. Next up, we need to prepare the cluster for our application containers.
 
-## Azure Container Registry 
+## Container Registries
 
 Kubernetes is a container orchestrator. It will run whatever container image you tell it to run. Containers can be pulled from public container registries like Docker Hub or GitHub Container Registry (GHCR), or they can be pulled from private container registries like Azure Container Registry (ACR). Pulling images from a public registry is fine for development and testing but for production workloads, you'll want to use a private registry and only deploy images that have been scanned and approved.
 
@@ -267,7 +257,6 @@ az acr create --resource-group $RG_NAME --name $ACR_NAME --sku Basic
 With the Azure Container Registry created, you need to "attach" it to your AKS cluster. This will allow your AKS cluster to pull images from the Azure Container Registry by granting the AKS resource's managed identity the **AcrPull** role on the Azure Container Registry.
 
 ```bash
-az aks upgrade -n $AKS_NAME -g $RG_NAME --kubernetes-version 1.30.1
 az aks update --name $AKS_NAME --resource-group $RG_NAME --attach-acr $ACR_NAME
 ```
 
@@ -307,8 +296,8 @@ Run the following command to ensure the import operations have completed.
 
 ```bash
 for repo in $(az acr repository list -n $ACR_NAME -o tsv); do
-    echo "${repo} tags:"
-   az acr repository show-tags -n $ACR_NAME --repository $repo
+  echo "${repo} tags:"
+  az acr repository show-tags -n $ACR_NAME --repository $repo
 done
 ```
 
@@ -320,7 +309,9 @@ If you see two tags for each repository, the import operations have completed.
 
 Let's use kubectl to deploy the aks-store-demo application to AKS. There is a [YAML manifest](https://github.com/Azure-Samples/aks-store-demo/blob/main/aks-store-quickstart.yaml) in the repo that contains the deployment and service resources for the store-front, order-service, and product-service, and RabbitMQ.
 
-We can't use the YAML file as is because it references the images on GHCR. We need to replace the image references with the images we imported to ACR.
+## Updating Deployment manifests
+
+Before we deploy the manifest, we need to make a few changes. The manifest in the repo references the images on GHCR. We need to replace the image references with the images we imported to ACR.
 
 In the Azure Cloud Shell, run the following command to download the YAML file.
 
@@ -340,12 +331,6 @@ sed -i -e "s|ghcr.io/azure-samples/\(.*\):latest|${ACR_NAME}.azurecr.io/\1:1.2.0
 
 </div>
 
-Verify the image references have been updated.
-
-```bash
-cat aks-store-quickstart.yaml
-```
-
 Apply the manifest
 
 ```bash
@@ -361,14 +346,10 @@ kubectl apply -f aks-store-quickstart.yaml
 Run the following command to check the status of the pods.
 
 ```bash
-kubectl get po -w
+kubectl get pods
 ```
 
-## Deployment Safeguards
-
-When you deployed the manifest, did you notice the warnings in the terminal when you applied the manifest? These warning messages are emitted by AKS Deployment Safeguards. Deployment Safeguards is a feature of AKS that helps you avoid common deployment pitfalls. It checks your deployment manifest for common issues and provides warnings if it detects any. The checks are based on best practices and are designed to help you avoid common deployment issues an implemented using Azure Policy.
-
-TODO: View Azure Policy....
+When all the pods are in the **Running** state, you can proceed to the next step.
 
 ## Getting familiar with the demo app
 
@@ -386,19 +367,23 @@ Add an item to the cart and checkout. You should see a confirmation message that
 
 ## Deployments and Services
 
-Now that we've seen the store app in action, let's take a closer look at the resources that were created when we deployed the manifest.
+Now that we've seen the store app in action, let's take a closer look at the resources that were created when we applied the manifest to the Kubernetes cluster.
 
 Run the following command to view the contents of the YAML file.
 
 ```bash
-cat aks-store-quickstart.yaml
+less aks-store-quickstart.yaml
 ```
 
-It's a fairly big file, so let's break it down.
+<div class="info" data-title="Note">
 
-The YAML file contains a deployment and service resource for each of the three services: store-front, order-service, and product-service. It also contains a deployment and service resource for RabbitMQ.
+> You can click the **up** or **down** arrow keys to scroll through the file. Press **q** to exit the **less** command.
 
-If we look at the YAML file, we can see that it contains a deployment and service resource for each of the three services: store-front, order-service, and product-service. It also contains a statefulset, service, and configmap resource for RabbitMQ. Each deployment resource specifies the container image to use, the ports to expose, environment variables, and resource requests and limits. The service resources expose the deployments to the cluster and the outside world. A statefulset is a resource that manages a set of identical pods with persistent storage and commonly used for stateful applications like databases.
+</div>
+
+If we look at the YAML file, we can see that it contains a Deployment and Service resource for each of the three services: store-front, order-service, and product-service. It also contains a StatefulSet, service, and ConfigMap resource for RabbitMQ. 
+
+Each Deployment resource specifies the container image to use, the ports to expose, environment variables, and resource requests and limits. The Service resources expose the deployments to the cluster and the outside world. A StatefulSet is a resource that manages a set of identical pods with persistent storage and commonly used for stateful applications like databases.
 
 The manifest is the desired state of the resources in the cluster. When you apply the manifest, the Kubernetes API server will create the resources in the cluster to match the desired state.
 
@@ -427,7 +412,7 @@ kubectl logs <pod-name>
 The next resource we'll look at is services. A service is a resource that exposes an application running in a set of pods as a network service. It provides a stable endpoint for the application that can be accessed by other applications in the cluster or outside the cluster.
 
 ```bash
-kubectl get svc store-front
+kubectl get service store-front
 ```
 
 As you can see, the store-front service is of type LoadBalancer. This means that the service is exposed to the internet. The service has an external IP address that you can use to access the store-front application.
@@ -467,7 +452,7 @@ EOF
 
 <div class="info" data-title="Note">
 
-> This ingress resource is very similar to a typical nginx ingress resource. The only difference is the `ingressClassName` field. The `ingressClassName` field is set to `webapprouting.kubernetes.azure.com` which enables the App Routing Add-on to manage this ingress resource.
+> This Ingress resource is very similar to a typical NGINX Ingress resource. The only difference is the `ingressClassName` field. The `ingressClassName` field is set to `webapprouting.kubernetes.azure.com` which enables the AKS App Routing Add-on to manage this resource.
 
 </div>
 
@@ -477,7 +462,7 @@ Wait a minute or two for the ingress to be created, then run the following comma
 echo "http://$(kubectl get ingress store-front -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
 ```
 
-Click the link in the terminal and you should be taken to the product page of the AKS pet store, this time using the ingress to access the store-front service!
+Click the link in the terminal and you should be taken to the product page of the AKS pet store, this time using the Ingress to access the store-front service!
 
 It is also worth mentioning that the App Routing Add-on does a little more than just manage the NGINX Ingress Controller. It also provides integration with Azure DNS for automatic DNS registration and management and Azure Key Vault for automatic TLS certificate management. Check out the [App Routing Add-on documentation](https://learn.microsoft.com/azure/aks/app-routing?tabs=default%2Cdeploy-app-default) for more information.
 
