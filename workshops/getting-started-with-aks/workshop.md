@@ -383,7 +383,9 @@ less aks-store-quickstart.yaml
 
 If we look at the YAML file, we can see that it contains a Deployment and Service resource for each of the three services: store-front, order-service, and product-service. It also contains a StatefulSet, service, and ConfigMap resource for RabbitMQ. 
 
-Each Deployment resource specifies the container image to use, the ports to expose, environment variables, and resource requests and limits. The Service resources expose the deployments to the cluster and the outside world. A StatefulSet is a resource that manages a set of identical pods with persistent storage and commonly used for stateful applications like databases.
+Each Deployment resource specifies the container image to use, the ports to expose, environment variables, and resource requests and limits. The Deployment resource was not originally part of Kubernetes but was introduced to make it easier to manage ReplicaSets. A ReplicaSet is a resource that ensures a specified number of pod replicas are running at any given time and no longer commonly used in favor of Deployments.
+
+The Service resources expose the deployments to the cluster and the outside world. A StatefulSet is a resource that manages a set of identical pods with persistent storage and commonly used for stateful applications like databases.
 
 The manifest is the desired state of the resources in the cluster. When you apply the manifest, the Kubernetes API server will create the resources in the cluster to match the desired state.
 
@@ -468,46 +470,132 @@ It is also worth mentioning that the App Routing Add-on does a little more than 
 
 ---
 
-# App Updates and Rollbacks
+# Application Resiliency
+
+As mentioned above Kubernetes Deployments is a resource that manages ReplicaSets and it has a way to manage application updates and rollbacks. This greatly improves the resiliency of your application.
+
+## Deployment Update Strategy
+
+There is a link between Deployment and ReplicaSet resources. When you create a Deployment, Kubernetes creates a ReplicaSet for you and the link can be seen by running the following command:
 
 ```bash
-kubectl set image deployment/store-front store-front=$ACR_NAME.azurecr.io/store-front:1.5.0
+# get the name of the store-front ReplicaSet
+STORE_FRONT_RS_NAME=$(kubectl get rs --sort-by=.metadata.creationTimestamp | grep store-front | tail -n 1 | awk '{print $1}')
+
+# get the details of the store-front ReplicaSet
+kubectl get rs $STORE_FRONT_RS_NAME -o json | jq .metadata.ownerReferences
 ```
 
-Check the rollout status:
+As you can see, the ReplicaSet resource is owned by the store-front Deployment resource. Also, note the `uid` field in the output. This is the unique identifier of the Deployment resource.
+
+If we look at the Deployment resource, we can see the same `uid` field in the output.
+
+```bash
+kubectl get deployment store-front -o json | jq .metadata.uid
+```
+
+Additionally, when a Deployment is created, it creates a rollout history. You can view the rollout history by running the following command:
+
+```bash
+kubectl rollout history deployment store-front
+```
+
+Here you can see the revision number. We should only have a single revision since we only deployed the application once. Let's update the store-front service to use a new image and then roll back to the previous version.
+
+### Update a Deployment
+
+The default deployment strategy is RollingUpdate. You can see that by running the following command:
+
+```bash
+kubectl get deployments store-front -o jsonpath='{.spec.strategy.type}'
+```
+
+The RollingUpdate strategy means that Kubernetes will create a new ReplicaSet and scale it up while scaling down the old ReplicaSet. If the new ReplicaSet fails to start, Kubernetes will automatically roll back to the previous ReplicaSet.
+
+Run the following command to update the store-front container image to use the 1.5.0 version.
+
+```bash
+kubectl set image deployment/store-front store-front=$ACR_NAME.azurecr.io/aks-store-demo/store-front:1.5.0
+```
+
+Run the following command to check the rollout status.
 
 ```bash
 kubectl rollout status deployment/store-front
 ```
 
-Check the store-front service to see the new image:
+Wait until you see the message `deployment "store-front" successfully rolled out`.
+
+Now if you run the following command, you should see two different versions of the ReplicaSet.
 
 ```bash
-kubectl get svc store-front
+kubectl get rs --selector app=store-front
 ```
 
-Open a browser and navigate to the public IP address of the store-front service.
+You should see the older ReplicaSet with 0 for the DESIRED, CURRENT, and READY columns and the newer ReplicaSet with 1s across the board.
 
+If you browse to the store-front application, you should see the new version of the application.
 
-## Deployment rollbacks
+### Rollback a Deployment
+
+With Deployment rollouts, you can easily roll back to a previous version of the application. As mentioned earlier, the rollout history is stored and you can run the following command to roll back to the previous version.
 
 ```bash
 kubectl rollout undo deployment/store-front
 ```
 
-Open a browser and navigate to the public IP address of the store-front service.
+<div class="info" data-title="Note">
 
-## PodDisruptionBudgets
+> You can also roll back to a specific revision by specifying the revision number. For example, `kubectl rollout undo deployment/store-front --to-revision=1`.
 
-Cordon the user node:
+</div>
+
+## Dealing with Disruptions
+
+As you can see, Kubernetes is responsible for managing the lifecycle of your application. It can handle application updates and rollbacks. But application updates are not the only disruptions that can occur. Nodes can fail or be marked for maintenance. You need to be prepared for both voluntary and involuntary disruptions.
+
+### Voluntary Disruptions
+
+A voluntary disruption is a disruption that is initiated by the user. For example, you may want to scale down the number of replicas in a deployment or you may want to evict a pod from a node to free up resources. Kubernetes has built-in mechanisms to handle these disruptions. During a voluntary disruption, Kubernetes will not evict Pods from a node. 
+
+An eviction can be harmful to your application if you are not prepared for it. When a node cordoned, no new Pods will be scheduled on the node and any existing Pod will be evicted using the Eviction API. When this happens, it doesn't matter if how many replicas you have running on a node or how many replicas will be remaining after the eviction. The Pod will be evicted and rescheduled on another node. This means you can incur downtime if you are not prepared for it.
+
+Good news is that Kubernetes has a built-in mechanism to handle these disruptions. The PodDisruptionBudget resource allows you to specify the minimum number of Pods that must be available during a voluntary disruption. When a PodDisruptionBudget is created, Kubernetes will not evict Pods that violate the budget. 
+
+Let's see this in action. But first, we should scale our store-front deployment to have more than one replica.
 
 ```bash
-kubectl cordon aks-nodepool1-12345678-vmss000000
+kubectl scale deployment store-front --replicas=3
 ```
 
-Notice the pods are evicted.
+With the deployment scaled to 3 replicas, we can see which nodes the Pods are running on.
 
-Create a PodDisruptionBudget:
+```bash
+kubectl get pod --selector app=store-front -o wide 
+```
+
+You can see that the Pods are running on a single node.
+
+<div class="info" data-title="Note">
+
+> More on this below.
+
+</div>
+
+Let's grab the name of the node and cordon it.
+
+```bash
+NODE_NAME=$(kubectl get pod -l app=store-front -o jsonpath='{.items[0].spec.nodeName}')
+kubectl drain $NODE_NAME --ignore-daemonsets
+```
+
+You should see a list of all the Pods that have been evicted. It doesn't matter that all 3 replicas of the store-front application were running on the node. Kubernetes will evict all the Pods with no regard.
+
+This is where the PodDisruptionBudget comes in. A PodDisruptionBudget is a resource that specifies the minimum number of Pods that must be available during a voluntary disruption. When a PodDisruptionBudget is created, Kubernetes will not evict Pods that violate the budget
+
+Let's create a PodDisruptionBudget for the store-front application that specifies that at least 1 Pod must be available during a voluntary disruption. This will ensure that the next time we drain a node, at least 1 Pod will remain running. Once new Pods are scheduled on other nodes, the PodDisruptionBudget will be satisfied and the remaining Pods on the node will be evicted. This is a great way to ensure that your application remains available during a voluntary disruption.
+
+Run the following command to create a PodDisruptionBudget for the store-front application.
 
 ```bash
 kubectl apply -f - <<EOF
@@ -523,17 +611,107 @@ spec:
 EOF
 ```
 
-Uncordon the node:
+If you run the following command, you should see that the Pods were scheduled on a different node.
 
 ```bash
-kubectl uncordon aks-nodepool1-12345678-vmss000000
+kubectl get pod --selector app=store-front -o wide
 ```
 
-Notice the pods are rescheduled.
+<div class="info" data-title="Note">
 
-Cordon the user node again:
+> You may have noticed the drained Node is no longer available in your cluster. This is because the node was unused and the AKS Node Autoprovisioning feature (aka Karpenter) automatically removed it from the cluster. More on that later.
 
-Notice the pods are protected by the PodDisruptionBudget.
+</div>
+
+Let's drain the node again and see what happens.
+
+```bash
+NODE_NAME=$(kubectl get pod -l app=store-front -o jsonpath='{.items[0].spec.nodeName}')
+kubectl drain $NODE_NAME --ignore-daemonsets
+kubectl get pod --selector app=store-front -o wide -w
+```
+
+Notice this time a warning message is displayed that the PodDisruptionBudget is preventing the eviction of the a store-front Pod on the node due to the PodDisruptionBudget violation.
+
+Once the new node is up and running, the PodDisruptionBudget will be satisfied and the remaining Pods on the node will be evicted.
+
+### Involuntary Disruptions
+
+An involuntary disruption is a disruption that is not initiated by the user. For example, a node may fail and if we had all the replicas of the store-front application running on that node, we would have downtime. When running more than one replica of an application, it is important to spread the replicas across multiple nodes to ensure high availability. This is where PodAntiAffinity or PodTopologySpreadConstraints comes in.
+
+[PodAntiAffinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) is a feature that allows you to specify that a Pod should not be scheduled on the same node as another Pod. PodAntiAffinity can be hard or soft. Hard PodAntiAffinity means that the Pods must be scheduled on different nodes. Soft PodAntiAffinity means that the Pods should be scheduled on different nodes if possible.
+
+[PodTopologySpreadConstraints](https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/) is a feature that allows you to specify that a Pod should be spread across different zones, regions, or nodes. This is useful for ensuring high availability of your application.
+
+Either of these Pod scheduling features can be used to ensure that your application remains available during an involuntary disruption with the difference being that PodAntiAffinity is used to spread Pods across nodes and PodTopologySpreadConstraints can provide more granular control by spreading Pods across zones and/or regions.
+
+Let's ensure the store-front application is spread across multiple nodes. Run the following command to create a PodAntiAffinity rule for the store-front application.
+
+Run the following command to get the YAML manifest for the store-front deployment.
+
+```bash
+kubectl get deployment store-front -o yaml > store-front-deployment.yaml
+```
+
+Open the `store-front-deployment.yaml` file using the nano text editor.
+
+```bash
+nano store-front-deployment.yaml
+```
+
+In the `store-front-deployment.yaml` file, add the following PodAntiAffinity rule to the `spec` section of the `store-front` deployment. This rule tells the Kubernetes scheduler to spread the store-front Pods using `topologyKey: kubernetes.io/hostname` which essentially means to spread the Pods across different nodes.
+
+```yaml
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - store-front
+            topologyKey: "kubernetes.io/hostname"
+```
+
+<div class="info" data-title="Note">
+
+> There are many `spec` items in the manifest, you want to add the code snippet above in the `spec` section that includes the `containers` field. Once you locate the correct `spec` section, add a new line after the `spec` field and just before the `containers` field and paste the code snippet.
+
+</div>
+
+<div class="tip" data-title="Tip">
+
+> When done editing, press the **Ctrl + O** keys to save the file then press the Enter key. Press the **Ctrl + X** keys to exit the nano text editor.
+
+</div>
+
+Now let's replace the store-front deployment with the updated manifest.
+
+```bash
+kubectl replace -f store-front-deployment.yaml
+```
+
+This command will force Kubernetes to reschedule Pods onto new nodes. Run the following command to get the nodes that the store-front Pods are running on.
+
+```bash
+kubectl get pod --selector app=store-front -o wide -w
+```
+
+<div class="info" data-title="Note">
+
+> It can take a few minutes for the Pods to be rescheduled onto new nodes because AKS Node Autoprovisioning (Karpenter) will need to create new nodes to satisfy the PodAntiAffinity rule.
+
+</div>
+
+
+Also note that the replacement of the Pods are considered to be an update to the Deployment resource. So the RollingUpdate strategy will be used to rollout new Pods before terminating the old Pods. So we're safe from downtime during this process!
+
+Once the Pods are rescheduled onto new nodes, you should see that the Pods are spread across multiple nodes.
+
+```bash
+kubectl get pod --selector app=store-front -o wide
+```
 
 ---
 
