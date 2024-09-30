@@ -1,11 +1,6 @@
 # Default owners of the repository
-*   @sinedied @cmaneu
+*   @chzbrgr71 @pauldotyu @russd2357 @kenkilty @phillipgibson
 
 # Workshop owners
-workshops/aks-openai-embeddings/                @mosabami 
-workshops/deploying-to-azure-container-apps/    @duffney @SophCarp
-workshops/fabric-e2e-serengeti/                 @Jcardif @BethanyJep
-workshops/getting-started-with-aks/             @ypauldotyu
-workshops/semantic-kernel-ws/                   @Philess
-workshops/github-copilot/                       @Philess
-workshops/github-copilot-java/                  @yoshioterada
+workshops/getting-started-with-k8s-on-aks/      @pauldotyu
+workshops/getting-started-with-aks/             @pauldotyu
