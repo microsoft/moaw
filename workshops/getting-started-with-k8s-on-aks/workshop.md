@@ -11,6 +11,7 @@ contacts: # Required. Must match the number of authors
   - "@pauldotyu"
 duration_minutes: 90 # Required. Estimated duration in minutes
 tags: kubernetes, azure, aks # Required. Tags for filtering and searching
+wt_id: WT.mc_id=containers-147656-pauyu
 ---
 
 # Getting started

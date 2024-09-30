@@ -21,7 +21,5 @@ jobs:
         GITHUB_REPO_URL: ${{ github.event.repository.html_url }}
     - name: Build website
       run: npm run build:website
-    - name: Build CLI
-      run: npm run build:cli
     - name: Run linters & tests
       run: npm test --if-present --workspaces
