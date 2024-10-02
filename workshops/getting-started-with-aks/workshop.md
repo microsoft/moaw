@@ -80,9 +80,9 @@ When you see these blocks of text, you should follow the instructions below.
 
 # Deploy your AKS Cluster
 
-There are many ways to deploy an AKS cluster. You can use the Azure Portal, Azure CLI, ARM templates, Azure Bicep, Terraform, Pulumi. The list goes on. While there are no shortages of ways to deploy an AKS cluster, we will focus on the Azure Portal and Azure CLI in this workshop.
+There are several ways to deploy an AKS cluster, including the Azure Portal, Azure CLI, ARM templates, Azure Bicep, Terraform, and Pulumi, among others. While there are no shortages of ways to deploy an AKS cluster, we will focus on the Azure Portal and Azure CLI in this workshop.
 
-## Familiarize with AKS Presets in portal
+## Familiarize yourself with AKS Presets in portal
 
 Open a browser and navigate to the [Azure Portal](https://portal.azure.com). Login with your Azure credentials.
 
@@ -90,7 +90,7 @@ In the search bar at the top of the portal, start typing **kubernetes** and you 
 
 ![](https://placehold.co/800x400)
 
-In the **Kubernetes services** screen, click on the **Create** drop down then click on **Kubernetes cluster**.
+In the **Kubernetes services** screen, click on the **Create** drop down and then click on **Kubernetes cluster**.
 
 ![](https://placehold.co/800x400)
 
@@ -142,7 +142,7 @@ In the **Basics** tab, fill out the following fields:
 
   <div class="info" data-title="Note">
 
-  > You may see a message that the subscription does not have the flags: EnableAPIServerVnetIntegrationPreview, NRGLockdownPreview, NodeAutoProvisioningPreview, DisableSSHPreview, SafeguardsPreview, AutomaticSKUPreview registered. Preview features must be registered in order to create a cluster so go ahead and click the **Register preview features** link to register the the required flags in your subscription.
+  > You may see a message that the subscription does not have the flags: EnableAPIServerVnetIntegrationPreview, NRGLockdownPreview, NodeAutoProvisioningPreview, DisableSSHPreview, SafeguardsPreview, AutomaticSKUPreview registered. Preview features must be registered in order to create a cluster so go ahead and click the **Register preview features** link to register the required flags in your subscription.
 
   </div>
 
@@ -157,18 +157,18 @@ In the **Basics** tab, fill out the following fields:
   </div>
 
 - **Automatic upgrade scheduler:** Leave the default setting.
-- **Access control:**: AKS Automatic uses Microsoft Entra ID authentication with Azure RBAC for cluster access. You can add additional users or groups to the cluster after it's created but that is outside the scope of this workshop.
+- **Access control:**: AKS Automatic uses Microsoft Entra ID authentication with Azure RBAC for cluster access. You can add additional users or groups to the cluster after it's created, but that is outside the scope of this workshop.
 
 In the **Monitoring** tab, you have the option to either link existing monitoring resources or create new ones. We'll go ahead and create new monitoring resources.
 
-- **Enable Container Logs:** Make sure the check box is checked to enable Container Insights.
+- **Enable Container Logs:** Make sure the checkbox is checked to enable Container Insights.
 - **Log Analytics Workspace:** Create the **Create new** link and create a new Log Analytics workspace.
 - **Cost Preset:** Leave the default setting of **Standard**.
-- **Enable Prometheus metrics:** Make sure the check box is checked to enable Prometheus metrics.
+- **Enable Prometheus metrics:** Make sure the checkbox is checked to enable Prometheus metrics.
 - **Azure Monitor workspace:** Create the **Create new** link and create a new Azure Monitor workspace.
-- **Enable Grafana:** Make sure the check box is checked to enable Grafana.
+- **Enable Grafana:** Make sure the checkbox is checked to enable Grafana.
 - **Grafana workspace:** Create the **Create new** link and create a new Grafana workspace.
-- **Enable recommended alerts:** Make sure the check box is checked to enable recommended alerts.
+- **Enable recommended alerts:** Make sure the checkbox is checked to enable recommended alerts.
 
 Click the **Review + create** button then after validation passes, click the **Create** button.
 
@@ -186,13 +186,15 @@ Open the Azure Cloud Shell and run the following command to set up local variabl
 
 <div class="info" data-title="Note">
 
-> If this is your first time opening Azure Cloud Shell, be sure to click the **Bash** button when asked presented with the environment selector as all command line instructions in this workshop are intended to be run in a POSIX shell. You may also be asked to create a storage account for your Cloud Shell. Go ahead and select **No storage account required**, then select your subscription and click **Apply**. 
+> If this is your first time opening Azure Cloud Shell, be sure to click the **Bash** button when asked presented with the environment selector as all command line instructions in this workshop are intended to be run in a POSIX shell. You may also be asked to create a storage account for your Cloud Shell. Go ahead and select **No storage account required**, then select your subscription and click **Apply**.
 
 ![](https://placehold.co/800x400)
 
 > If you do not use a storage account for your Cloud Shell, you will have to pull down the kubeconfig file when the shell is closed and re-opened or when the session times out.
 
 </div>
+
+Set an environment variable to store the name of your resource group.
 
 ```bash
 RG_NAME=<resource-group-name>
@@ -222,19 +224,19 @@ Now you should be able to run kubectl commands against your AKS cluster.
 kubectl cluster-info
 ```
 
-AKS Automatic clusters are secured by default. It uses Microsoft Enter ID authentication with Azure RBAC for cluster access, so simply downloading the kubeconfig file is not enough to access the cluster. You also need to authenticate with Microsoft Enter ID and have the necessary permissions to access the cluster. When you created the AKS Automatic cluster, you were automatically granted the **Azure Kubernetes Service RBAC Cluster Admin** role assignment to access the cluster. Therefore when running a kubectl command for the first time, you will be presented with a login prompt. Follow the instructions on the screen and proceed with the authorization process and the kubectl command will be executed. As your authentication token expires, you will be prompted to re-authenticate.
+AKS Automatic clusters are secured by default. It uses Microsoft Enter ID authentication with Azure RBAC for cluster access, so simply downloading the kubeconfig file is not enough to access the cluster. You also need to authenticate with Microsoft Entra ID and have the necessary permissions to access the cluster. When you created the AKS Automatic cluster, you were automatically granted the **Azure Kubernetes Service RBAC Cluster Admin** role assignment to access the cluster. Therefore, when running a kubectl command for the first time, you will be presented with a login prompt. Follow the instructions on the screen and proceed with the authorization process and the kubectl command will be executed. As your authentication token expires, you will be prompted to re-authenticate.
 
-The cluster is almost ready to go... but not quite yet. Next up, we need to prepare the cluster for our application containers.
+Your cluster is almost ready to go... but not quite yet. Next up, we need to prepare the cluster for our application containers.
 
 ## Container Registries
 
-Kubernetes is a container orchestrator. It will run whatever container image you tell it to run. Containers can be pulled from public container registries like Docker Hub or GitHub Container Registry (GHCR), or they can be pulled from private container registries like Azure Container Registry (ACR). Pulling images from a public registry is fine for development and testing but for production workloads, you'll want to use a private registry and only deploy images that have been scanned and approved.
+Kubernetes is a container orchestrator. It will run whatever container image you tell it to run. Containers can be pulled from public container registries like Docker Hub or GitHub Container Registry (GHCR), or they can be pulled from private container registries like Azure Container Registry (ACR). Pulling images from a public registry is fine for development and testing but for production workloads, you'll want to use a private registry and only deploy images that have been scanned for vulnerabilities and approved.
 
 Azure Container Registry is a managed, private Docker registry service based on the open-source Docker Registry 2.0. It is highly available and scalable across Azure regions across the globe. It also integrates with Microsoft Entra ID for authentication and authorization so it makes it easy to secure your container images.
 
 ### Deploy Azure Container Registry (ACR)
 
-In the Azure Cloud Shell, run the following command to create a variable for your new Azure Container Registry name.
+In the Azure Cloud Shell, run the following command to create an environment variable for your new Azure Container Registry name.
 
 ```bash
 ACR_NAME=<acr-name>
@@ -242,7 +244,7 @@ ACR_NAME=<acr-name>
 
 <div class="info" data-title="Note">
 
-> Be sure to replace `<acr-name>` with a new unique name for your Azure Container Registry.
+> Be sure to replace `<acr-name>` with a new unique name for your Azure Container Registry. The name for an ACR resource may contain alphanumeric characters only and must be between 5 and 50 characters long.
 
 </div>
 
@@ -359,9 +361,9 @@ Now, let's explore the store app. Run the following command to get the public IP
 echo "http://$(kubectl get svc/store-front -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
 ```
 
-Click the link in the terminal and you should be taken to the product page of the AKS pet store. Here a user can browse products, add items to a shopping cart, and checkout. The checkout process is intentional simple and does not require any payment information. The order is saved to a RabbitMQ message queue.
+Click the link in the terminal, and you should be taken to the product page of the AKS pet store. Here a user can browse products, add items to a shopping cart, and checkout. The checkout process is intentionally simple and does not require any payment information. The order is saved to a RabbitMQ message queue.
 
-Add an item to the cart and checkout. You should see a confirmation message that the order was successfully placed.
+Add an item to the cart and checkout by clicking on the cart link in the upper right corner. You should see a confirmation message that the order was successfully placed.
 
 ![](https://placehold.co/800x400)
 
@@ -546,7 +548,7 @@ kubectl rollout undo deployment/store-front
 
 <div class="info" data-title="Note">
 
-> You can also roll back to a specific revision by specifying the revision number. For example, `kubectl rollout undo deployment/store-front --to-revision=1`.
+> You can also roll back to a specific revision by specifying the revision number. For example, `kubectl rollout undo deployment/store-front --to-revision=1` to select the first revision.
 
 </div>
 
@@ -556,11 +558,11 @@ As you can see, Kubernetes is responsible for managing the lifecycle of your app
 
 ### Voluntary Disruptions
 
-A voluntary disruption is a disruption that is initiated by the user. For example, you may want to scale down the number of replicas in a deployment or you may want to evict a pod from a node to free up resources. Kubernetes has built-in mechanisms to handle these disruptions. During a voluntary disruption, Kubernetes will not evict Pods from a node. 
+A voluntary disruption is a disruption that is initiated by the user. For example, you may want to scale down the number of replicas in a deployment, or you may want to evict a pod from a node to free up resources. Kubernetes has built-in mechanisms to handle these disruptions. During a voluntary disruption, Kubernetes will not evict Pods from a node.
 
 An eviction can be harmful to your application if you are not prepared for it. When a node cordoned, no new Pods will be scheduled on the node and any existing Pod will be evicted using the Eviction API. When this happens, it doesn't matter if how many replicas you have running on a node or how many replicas will be remaining after the eviction. The Pod will be evicted and rescheduled on another node. This means you can incur downtime if you are not prepared for it.
 
-Good news is that Kubernetes has a built-in mechanism to handle these disruptions. The PodDisruptionBudget resource allows you to specify the minimum number of Pods that must be available during a voluntary disruption. When a PodDisruptionBudget is created, Kubernetes will not evict Pods that violate the budget. 
+Good news is that Kubernetes has a built-in mechanism to handle these disruptions. The PodDisruptionBudget resource allows you to specify the minimum number of Pods that must be available during a voluntary disruption. When a PodDisruptionBudget is created, Kubernetes will not evict Pods that violate the budget.
 
 Let's see this in action. But first, we should scale our store-front deployment to have more than one replica.
 
@@ -611,7 +613,7 @@ spec:
 EOF
 ```
 
-If you run the following command, you should see that the Pods were scheduled on a different node.
+If you run the following command, you should see that the Pods were scheduled on a different node. If you see a status of 'Pending' wait a short while and re-run the command until all three replicas are in the 'Running' state.
 
 ```bash
 kubectl get pod --selector app=store-front -o wide
@@ -717,7 +719,9 @@ kubectl get pod --selector app=store-front -o wide
 
 # Application and Cluster Scaling
 
-talk about scaling cluster and application
+AKS Node Autoprovisioning (NAP via Karpenter) simplifies application scaling on Kubernetes by automatically adjusting the number of nodes based on workload demands. When resource needs increase, AKS NAP provisions new nodes to ensure consistent application performance, reducing the need for manual intervention and optimizing resource utilization.
+
+Similarly, NAP efficiently scales down by removing underutilized nodes when demand decreases, cutting costs and preventing resource waste.
 
 ## Manual application scaling (deployment)
 
