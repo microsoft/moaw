@@ -505,7 +505,7 @@
 
 - title: Running LLM models in AKS              # Required. Title of the workshop
   description: This is a workshop for learning ow to deploy Ollama AI model deployment on Azure Kubernetes Service (AKS)  # Required. Short description of the workshop
-  url: https://github.com/HoussemDellai/running-llms-on-aks               # Required. URL of the workshop
+  url: https://microsoft.github.io/moaw/workshop/gh:HoussemDellai/running-llms-on-aks/main/docs/ # Required. URL of the workshop
   language: en                            # Required. Language of the workshop, using 2-letter ISO code
   last_updated: 2024-10-09                # Required. Date of the last update of the workshop
   type: workshop                          # Required. Only 'workshop' is supported for now
