@@ -501,3 +501,22 @@
   audience: students, pro devs, data engineers, data architects, analysts
   level: intermediate
   tags: fabric, kql, realtime, intelligence, event, stream, sql, data, analytics, kusto, medallion, dashboard, reflex, activator
+
+
+- title: Running LLM models in AKS              # Required. Title of the workshop
+  description: This is a workshop for learning ow to deploy Ollama AI model deployment on Azure Kubernetes Service (AKS)  # Required. Short description of the workshop
+  url: https://github.com/HoussemDellai/running-llms-on-aks               # Required. URL of the workshop
+  language: en                            # Required. Language of the workshop, using 2-letter ISO code
+  last_updated: 2024-10-09                # Required. Date of the last update of the workshop
+  type: workshop                          # Required. Only 'workshop' is supported for now
+  level: beginner                         # Required. Can be 'beginner', 'intermediate' or 'advanced'
+  github_url: https://github.com/HoussemDellai/running-llms-on-aks          # Optional. URL of the workshop's GitHub repository
+  authors:                                # Required. You can add as many authors as needed
+    - Houssem Dellai                          
+  contacts:                               # Required. Must match the number of authors
+    - houssem.dellai@microsoft.com
+  banner_url: https://banner.url          # Optional. URL of a banner image for the workshop (1280x640px)
+  video_url: https://www.youtube.com/watch?v=INOeJg4ECh4     # Optional. Link to a video of the workshop
+  duration_minutes: 19                   # Required. Estimated duration in minutes
+  audience: students, pro devs            # Optional. Audience of the workshop (students, pro devs, etc.)
+  tags: llm, ai, aks, containers, ollama, chat, phi, llama          # Required. Tags for filtering and searching
