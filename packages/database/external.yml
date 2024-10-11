@@ -501,3 +501,20 @@
   audience: students, pro devs, data engineers, data architects, analysts
   level: intermediate
   tags: fabric, kql, realtime, intelligence, event, stream, sql, data, analytics, kusto, medallion, dashboard, reflex, activator
+
+- title: Running LLM models in AKS
+  description: This is a workshop for learning ow to deploy Ollama AI model deployment on Azure Kubernetes Service (AKS)
+  url: https://microsoft.github.io/moaw/workshop/gh:HoussemDellai/running-llms-on-aks/main/docs/
+  language: en
+  last_updated: 2024-10-09
+  type: workshop
+  level: beginner
+  github_url: https://github.com/HoussemDellai/running-llms-on-aks
+  authors:
+    - Houssem Dellai                          
+  contacts:
+    - houssem.dellai@microsoft.com
+  video_url: https://www.youtube.com/watch?v=INOeJg4ECh4
+  duration_minutes: 19
+  audience: students, pro devs
+  tags: llm, ai, aks, containers, ollama, chat, phi, llama
