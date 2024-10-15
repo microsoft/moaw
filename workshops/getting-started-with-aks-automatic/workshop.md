@@ -325,24 +325,38 @@ az acr import \
   --image aks-store-demo/store-front:1.5.0 \
   --no-wait
 
-# order-service
+# order-service version 1.2.0
 az acr import \
   --name $ACR_NAME \
   --source ghcr.io/azure-samples/aks-store-demo/order-service:1.2.0 \
   --image aks-store-demo/order-service:1.2.0 \
   --no-wait
 
-# product-service
+# order-service version 1.5.0
+az acr import \
+  --name $ACR_NAME \
+  --source ghcr.io/azure-samples/aks-store-demo/order-service:1.5.0 \
+  --image aks-store-demo/order-service:1.5.0 \
+  --no-wait
+
+# product-service version 1.2.0
 az acr import \
   --name $ACR_NAME \
   --source ghcr.io/azure-samples/aks-store-demo/product-service:1.2.0 \
   --image aks-store-demo/product-service:1.2.0 \
   --no-wait
+
+# product-service version 1.5.0
+az acr import \
+  --name $ACR_NAME \
+  --source ghcr.io/azure-samples/aks-store-demo/product-service:1.5.0 \
+  --image aks-store-demo/product-service:1.5.0 \
+  --no-wait
 ```
 
 <div class="info" data-title="Note">
 
-> If you are wondering why we are importing two versions of the store-front application, it's because we will be rolling out application updates later in the workshop.
+> If you are wondering why we are importing two versions of each application, it's because we will be rolling out application updates later in the workshop.
 
 </div>
 
@@ -941,6 +955,18 @@ After a few seconds, Kubernetes will do what it does best and recreate the Rabbi
 ## Replace RabbitMQ with Azure Service Bus
 
 As you can see, Kubernetes is great for stateless applications especially with Azure storage backing it. But running stateful applications like RabbitMQ in a highly available and durable way can be challenging and might not be something you would want to manage yourself. This is where integrating with a managed service like [Azure Service Bus](https://learn.microsoft.com/azure/service-bus-messaging/service-bus-messaging-overview) can help. Azure Service Bus is a fully managed enterprise message broker with message queues and publish-subscribe topics very similar to RabbitMQ. The sample application has been written to use the AMQP protocol which is supported by both RabbitMQ and Azure Service Bus, so we can easily switch between the two.
+
+Before we switch to Azure Service Bus, let's make sure to update all the container images to use the latest version.
+
+In the terminal, run the following command.
+
+```bash
+kubectl set image deployment/product-service product-service=$ACR_NAME.azurecr.io/aks-store-demo/product-service:1.5.0
+
+kubectl set image deployment/order-service order-service=$ACR_NAME.azurecr.io/aks-store-demo/order-service:1.5.0
+
+kubectl set image deployment/store-front store-front=$ACR_NAME.azurecr.io/aks-store-demo/store-front:1.5.0
+```
 
 ### Create Azure Service Bus namespace and queue
 
