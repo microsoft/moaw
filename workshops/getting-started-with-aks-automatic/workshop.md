@@ -226,6 +226,12 @@ source .env
 
 </div>
 
+Run the following command to install the AKS preview extension for the Azure CLI.
+
+```bash
+az extension add --name aks-preview
+```
+
 Run the following command to download the kubeconfig file for your AKS cluster.
 
 ```bash
