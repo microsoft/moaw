@@ -1,60 +1,54 @@
 ---
 published: true # Optional. Set to true to publish the workshop (default: false)
 type: workshop # Required.
-title: Getting Started with Azure Kubernetes Service (AKS) # Required. Full title of the workshop
-short_title: Getting Started with AKS # Optional. Short title displayed in the header
-description: This is a workshop for getting started AKS which was originally delivered at Microsoft Build 2023 Pre-day Workshop (PRE03) # Required.
+title: Getting Started with Azure Kubernetes Service (AKS) Automatic # Required. Full title of the workshop
+short_title: Getting Started with AKS Automatic # Optional. Short title displayed in the header
+description: This is a workshop for getting started with AKS Automatic # Required.
 level: beginner # Required. Can be 'beginner', 'intermediate' or 'advanced'
 authors: # Required. You can add as many authors as needed
   - "Paul Yu"
+  - "Brian Redmond"
+  - "Phil Gibson"
+  - "Russell de Pina"
+  - "Ken Kilty"
 contacts: # Required. Must match the number of authors
   - "@pauldotyu"
-duration_minutes: 90 # Required. Estimated duration in minutes
+  - "@chzbrgr71"
+  - "@phillipgibson"
+  - "@russd2357"
+  - "@kenkilty"
+duration_minutes: 180 # Required. Estimated duration in minutes
 tags: kubernetes, azure, aks # Required. Tags for filtering and searching
+wt_id: WT.mc_id=containers-147656-pauyu
 ---
 
-# Getting started
+# Overview
 
-In this workshop, you will learn the basics of Kubernetes and how to package applications for delivery to Azure Kubernetes Service (AKS). The goal of this workshop is to cover as many application implementation details as possible to get you comfortable with hosting your apps on AKS. We will start with a simple application deployment and then progress to more complex scenarios by introducing integrations with other Azure services and open source tooling commonly used within cloud native apps.
+This workshop will guide you up to speed with working with Azure Kubernetes Service (AKS) Automatic. AKS Automatic is a new way to deploy and manage Kubernetes clusters on Azure. It is a fully managed Kubernetes service that simplifies the deployment, management, and operations of Kubernetes clusters. With AKS Automatic, you can deploy a Kubernetes cluster with just a few clicks in the Azure Portal. AKS Automatic is designed to be simple and easy to use, so you can focus on building and running your applications.
 
 ## Objectives
 
-The objectives of this workshop are to:
+After completing this workshop, you will be able to:
 
-- Introduce you to the basics of Kubernetes and `kubectl`
-- Deploy an application to Azure Kubernetes Service
-- Securing application secrets using Azure Key Vault
-- Persisting application data using Azure Disk Storage
-- Exposing applications using the Istio Ingress Gateway
-- Monitoring applications using Azure Monitor and the Prometheus/Grafana stack
-- Scaling applications using KEDA
+- Deploy an AKS Automatic cluster
+- Connect to the AKS cluster and deploy applications
+- Implement resiliency in your application using Kubernetes Deployments
+- Scale your cluster and application
+- Monitor your cluster and application
 
 ## Prerequisites
 
-<div class="info" data-title="Info">
-
-> This workshop was originally delivered in-person at Microsoft Build 2023 and a pre-configured lab environment was available for all attendees.
-
-</div> 
-
-The lab environment was pre-configured with the following:
-
-- [Azure Subscription](https://azure.microsoft.com/free)
-- [Azure CLI](https://learn.microsoft.com/cli/azure/what-is-azure-cli?WT.mc_id=containers-105184-pauyu)
-- [Visual Studio Code](https://code.visualstudio.com/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [Git](https://git-scm.com/)
-- Bash shell (e.g. [Windows Terminal](https://www.microsoft.com/p/windows-terminal/9n0dx20hk701) with [WSL](https://docs.microsoft.com/windows/wsl/install-win10) or [Azure Cloud Shell](https://shell.azure.com))
+All you need to complete this workshop is an [Azure subscription](https://azure.microsoft.com/) with permissions to create resources and a [GitHub account](https://github.com/signup). You will also need to ensure you have enough vCPU quota in the region you are deploying the AKS cluster to. If you don't have enough quota, you can request a quota increase. See [here](https://docs.microsoft.com/azure/azure-portal/supportability/per-vm-quota-requests) for more information.
 
 ## Workshop instructions
 
 When you see these blocks of text, you should follow the instructions below.
 
-<div class="task" data-title="Task">
+<!-- <div class="task" data-title="Task">
 
 > This means you need to perform a task.
 
-</div>
+</div> -->
 
 <div class="info" data-title="Info">
 
@@ -80,2168 +74,1462 @@ When you see these blocks of text, you should follow the instructions below.
 
 </div>
 
-## Setting up your environment
+---
 
-To setup your own lab environment, you will need to run a Terraform script to provision the necessary resources in your Azure subscription. The steps below will walk you through the process.
+# Deploy your AKS Cluster
+
+There are several ways to deploy an AKS cluster, including the Azure Portal, Azure CLI, ARM templates, Azure Bicep, Terraform, and Pulumi, among others. While there are no shortages of ways to deploy an AKS cluster, we will focus on the Azure Portal and Azure CLI in this workshop.
+
+## Familiarize yourself with AKS Presets in portal
+
+Open a browser and navigate to the [Azure Portal](https://portal.azure.com). Login with your Azure credentials.
+
+In the search bar at the top of the portal, start typing **kubernetes** and you will start to see a list of services, marketplace items, and resources that match your search. Under **Services** click on **Kubernetes services**.
+
+![Azure Portal Kubernetes Services](./assets/azure-portal-kubernetes-services.png)
+
+In the **Kubernetes services** screen, click on the **Create** drop down and then click on **Kubernetes cluster**.
+
+![Azure Portal Create Kubernetes Cluster](./assets/azure-portal-create-kubernetes-cluster.png)
+
+You should now see the **Create Kubernetes cluster** screen. This is where you can create a new AKS cluster.
+
+Across the top of the screen, you'll notice a series of tabs. Under **Cluster details** in the **Basics** tab, you'll see the **Cluster preset configuration**. This is where you can choose from a series of presets that will automatically configure your AKS cluster based on your workload requirements.
+
+![Azure Portal Create Kubernetes Cluster Basics](./assets/azure-portal-create-kubernetes-cluster-basics.png)
+
+Click the **Compare presets** link to see the differences between the presets.
+
+![Azure Portal Kubernetes Preset Configurations](./assets/azure-portal-kubernetes-preset-configurations.png)
+
+You should see a table that lists all the presets and the differences between them. By default, the **Production Standard** preset is selected.
+
+Click **Cancel** to back out of the cluster preset comparison window.
+
+You will also notice that the cluster preset can be selected from the drop down menu. Toggle between **Dev/Test** and **Production Enterprise** to see the differences between the presets.
+
+![Azure Portal Kubernetes Preset Configurations](./assets/azure-portal-kubernetes-preset-configuration-selection.png)
+
+Going back to the tabs at the top of the screen, click through the **Node pools**, **Networking**, **Integrations**, **Monitoring**, and **Advanced** tabs to see additional configuration options available to you.
+
+That's a lot of options! But what if you just want to create an AKS cluster without all the fuss? That's where **Automatic AKS Cluster** comes in.
+
+Click the **X** icon in the upper right corner to back out of the create cluster window.
+
+## Deploy AKS Automatic Cluster
+
+Click on the **Create** drop down again but this time, click **Automatic Kubernetes cluster (preview)**.
+
+![Azure Portal Create Automatic Kubernetes Cluster](./assets/azure-portal-create-aks-automatic-cluster.png)
+
+You can see that the configuration options are much simpler. There's only a **Basics** and **Monitoring** tab.
+
+![Azure Portal Create Automatic Kubernetes Cluster](./assets/azure-portal-create-aks-automatic-cluster-options.png)
+
+Let's go ahead and create an AKS automatic cluster.
+
+In the **Basics** tab, fill out the following fields:
+
+- **Subscription:** Select your Azure subscription.
+
+  <div class="info" data-title="Note">
+
+  > You may see a message that the subscription does not have the flags: EnableAPIServerVnetIntegrationPreview, NRGLockdownPreview, NodeAutoProvisioningPreview, DisableSSHPreview, SafeguardsPreview, AutomaticSKUPreview registered. Preview features must be registered in order to create a cluster so go ahead and click the **Register preview features** link to register the required flags in your subscription.
+
+  </div>
+
+- **Resource group:** Create a new resource group or use an existing one.
+- **Kubernetes cluster name:** Enter a name for your cluster.
+- **Region:** Select the desired region where you want to deploy your cluster.
+
+  <div class="info" data-title="Note">
+
+  > You need to ensure you have 32 vCPU quota for Standard_DSv2 available in the region you are deploying the cluster to. If you don't have enough quota, you can request a quota increase by following this [guide](https://learn.microsoft.com/azure/quotas/quickstart-increase-quota-portal).
+
+  </div>
+
+- **Automatic upgrade scheduler:** Leave the default setting.
+- **Access control:**: AKS Automatic uses Microsoft Entra ID authentication with Azure RBAC for cluster access. You can add additional users or groups to the cluster after it's created, but that is outside the scope of this workshop.
+
+In the **Monitoring** tab, you have the option to either link existing monitoring resources or create new ones. We'll go ahead and create new monitoring resources.
+
+- **Enable Container Logs:** Make sure the checkbox is checked to enable Container Insights.
+- **Log Analytics Workspace:** Create the **Create new** link and create a new Log Analytics workspace.
+- **Cost Preset:** Leave the default setting of **Standard**.
+- **Enable Prometheus metrics:** Make sure the checkbox is checked to enable Prometheus metrics.
+- **Azure Monitor workspace:** Create the **Create new** link and create a new Azure Monitor workspace.
+- **Enable Grafana:** Make sure the checkbox is checked to enable Grafana.
+- **Grafana workspace:** Create the **Create new** link and create a new Grafana workspace.
+- **Enable recommended alerts:** Make sure the checkbox is checked to enable recommended alerts.
+
+Click the **Review + create** button then after validation passes, click the **Create** button.
+
+<div class="info" data-title="Note">
+
+> The cluster creation process will take about 10-15 minutes to complete.
+
+</div>
+
+## Connect to AKS cluster
+
+The kubectl tool is your direct line of communication with the kube-apiserver and is most common way to interact with a Kubernetes cluster. Access to the kube-apiserver is controlled by the [kubeconfig file](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/). The kubeconfig file contains the necessary certificate information to authenticate against the Kubernetes API server, and the Azure CLI for AKS has a handy command to get the kubeconfig file for your AKS cluster.
+
+<div class="info" data-title="Note">
+
+> For the rest of this workshop, you will perform tasks using both kubectl and the Azure portal. This will give you a good understanding of how to interact with your AKS cluster using both methods. Any time we need to interact with the AKS cluster, we will use the Azure Cloud Shell. The Azure Cloud Shell is a free interactive shell that you can use to run the Azure CLI, kubectl, and other tools. It is already configured to use your Azure subscription and is a great way to run commands without having to install anything on your local machine.
+
+</div>
+
+In the Azure Portal, click the **Cloud Shell** icon in the top right corner of the portal.
+
+![Azure Portal Cloud Shell](./assets/azure-portal-cloud-shell.png)
+
+<div class="tip" data-title="Tip">
+
+> If this is your first time opening Azure Cloud Shell, be sure to click the **Bash** button when asked presented with the environment selector as all command line instructions in this workshop are intended to be run in a POSIX shell. You may also be asked to create a storage account for your Cloud Shell. Go ahead and select **No storage account required**, then select your subscription and click **Apply**.
+
+</div>
+
+Run the following commands to set a few environment variables in a local .env file.
+
+```bash
+RG_NAME=<resource-group-name>
+```
 
 <div class="important" data-title="Important">
 
-> Before you proceed, please ensure you have access to an Azure subscription with the ability to create resources and users in Azure Active Directory. If you do not have access to an Azure subscription, you can sign up for a [free account](https://azure.microsoft.com/free).
+> Be sure to replace `<resource-group-name>` with the resource group name where the AKS cluster was deployed.
 
 </div>
 
-1. Using a web browser, navigate to the [Azure Cloud Shell](https://shell.azure.com)
-2. Ensure your Cloud Shell is set to Bash. If it is on PowerShell, click the drop down in the top left corner and select Bash.
-3. Run the following commands to ensure you have all the necessary providers registered in your subscription.
-  ```bash
-  az provider register --namespace Microsoft.Quota
-  az provider register --namespace Microsoft.Compute
-  az provider register --namespace Microsoft.ContainerRegistry
-  az provider register --namespace Microsoft.ContainerService
-  az provider register --namespace Microsoft.Network
-  az provider register --namespace Microsoft.ApiManagement
-  az provider register --namespace Microsoft.Monitor
-  az provider register --namespace Microsoft.AlertsManagement
-  az provider register --namespace Microsoft.Dashboard
-  az provider register --namespace Microsoft.App
-  ```
-4. Run the following commands to ensure you have all the necessary features registered in your subscription.
-  ```bash
-  az feature register --namespace "Microsoft.ContainerService" --name "EnableWorkloadIdentityPreview"
-  az feature register --namespace "Microsoft.ContainerService" --name "AKS-GitOps"
-  az feature register --namespace "Microsoft.ContainerService" --name "AzureServiceMeshPreview"
-  az feature register --namespace "Microsoft.ContainerService" --name "AKS-KedaPreview"
-  az feature register --namespace "Microsoft.ContainerService" --name "AKS-PrometheusAddonPreview"
-  ```
-5. Clone this repo: https://github.com/pauldotyu/awesome-aks
-6. Using your terminal, open the repo and navigate to the **2023-05-23-msbuild-preday-aks-workshop** directory
-7. Run the following command to create a **terraform.tfvars** file and populate it with the following content.
-```terraform
-cat <<EOF > terraform.tfvars
-deployment_locations = [
-  {
-    offset   = 0 # adjust this to the number of deployments that have already been created in the previous set
-    count    = 1 # adjust this to the number of deployments you want to create
-    location = "eastus"
-    vm_sku   = "Standard_D4s_v4"
-  }
-]
-EOF
-```
-8. Run the `terraform init` command
-9. Run the `terraform apply` command and confirm the deployment when prompted
-
-In 10-15 minutes, your lab environment should be ready to go.
-
-If you run the `terraform output` command, you should see your username, password, AKS cluster name and resource group name.
-
----
-
-# Kubernetes fundamentals
-
-This section of the workshop will introduce you to the basics of Kubernetes. We'll be using [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/products/kubernetes-service) to deploy and manage an [Azure Voting App](https://github.com/Azure-Samples/azure-voting-app-rust).
-
-## Working with `kubectl`
-
-Kubernetes administrators will commonly interact with the Kubernetes API server using the [`kubectl` command line tool](https://kubernetes.io/docs/reference/kubectl/). As you progress through your cloud native journey, you will find that there are other tools available for deploying, managing, and monitoring Kubernetes clusters. However, basic knowledge of `kubectl` is essential.
-
-### Connecting to your AKS cluster
-
-An AKS cluster has been provisioned for you. Let's use the Azure CLI to download the credentials for the cluster.
-
-<div class="task" data-title="Task">
-
-> Run the following command to set variables for your resource group and AKS cluster name. Don't forget to replace `<user-number>` in the command below with the username you've been assigned.
-
-</div>
+Run the following command to get the name of your AKS cluster.
 
 ```bash
-RG_NAME=rg-user<user-number>
-AKS_NAME=aks-user<user-number>
+AKS_NAME=$(az aks list -g $RG_NAME --query "[0].name" -o tsv)
 ```
 
-<div class="task" data-title="Task">
+Run the following command to write the environment variables to a local .env file.
 
-> Run the following command to download the credentials for your AKS cluster.
+```bash
+echo "RG_NAME=$RG_NAME" > .env
+echo "AKS_NAME=$AKS_NAME" >> .env
+source .env
+```
+
+<div class="warning" data-title="Warning">
+
+> Throughout the workshop, your Azure Cloud Shell session may time out. If this happens, you can simply refresh re-connect to the Azure Cloud Shell and run the `source .env` command to re-load the environment variables.
 
 </div>
+
+Run the following command to download the kubeconfig file for your AKS cluster.
 
 ```bash
 az aks get-credentials --resource-group $RG_NAME --name $AKS_NAME
 ```
 
-The command above will download the credentials for the cluster and store them in `~/.kube/config`. This file includes cluster certificate information and is used by `kubectl` to connect to the cluster. Since it does contain certificate information, it should be treated as a secret.
-
-### `kubectl` basics
-
-<div class="task" data-title="Task">
-
-> To get some basic information about your cluster, run the following command:
-
-</div>
+Now you should be able to run kubectl commands against your AKS cluster.
 
 ```bash
 kubectl cluster-info
 ```
 
-The `kubectl` tool allows to you to interact with a variety of Kubernetes clusters.
+When running a kubectl command for the first time, you will be presented with a login prompt. Follow the instructions on the screen and proceed with the authorization process and the kubectl command will be executed. As your authentication token expires, you will be prompted to re-authenticate.
 
-<div class="tip" data-title="Tip">
+![Azure Cloud Shell kubectl login](./assets/azure-cloud-shell-kubectl-login.png)
 
-> You can see the list of clusters you have access to by running the following command:
+<div class="info" data-title="Note">
+
+> AKS Automatic clusters are secured by default. It uses [Microsoft Entra ID](https://www.microsoft.com/security/business/identity-access/microsoft-entra-id) authentication with Azure RBAC for cluster access, so simply downloading the kubeconfig file is not enough to access the cluster. You also need to authenticate with Microsoft Entra ID and have the necessary permissions to access the cluster. When you created the AKS Automatic cluster, you were automatically granted the **Azure Kubernetes Service RBAC Cluster Admin** role assignment to access the cluster.
 
 </div>
+
+If you can see the cluster information printed in your terminal, your cluster is up and ready to host applications. But there is a little bit more prep work we need to do. We need to prepare the cluster for our application containers.
+
+## Container Registries
+
+Kubernetes is a container orchestrator. It will run whatever container image you tell it to run. Containers can be pulled from public container registries like [Docker Hub](https://hub.docker.com/) or [GitHub Container Registry (GHCR)](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry), or they can be pulled from private container registries like [Azure Container Registry (ACR)](https://azure.microsoft.com/products/container-registry). Pulling images from a public registry is fine for development and testing but for production workloads, you'll want to use a private registry and only deploy images that have been scanned for vulnerabilities and approved.
+
+### Deploy Azure Container Registry (ACR)
+
+ACR is a managed, private Docker registry service based on the open-source Docker Registry 2.0. It is highly available and scalable across Azure regions across the globe. It also integrates with Microsoft Entra ID for authentication and authorization so it makes it easy to secure your container images.
+
+In the Azure Cloud Shell, run the following command to create an environment variable for your new Azure Container Registry name.
 
 ```bash
-kubectl config get-contexts
+ACR_NAME=<acr-name>
+echo "ACR_NAME=$ACR_NAME" >> .env
+source .env
 ```
-
-<div class="tip" data-title="Tip">
-
-> If you have more than one context listed, you can switch between clusters by running the following command:
-
-</div>
-
-```bash
-kubectl config use-context <context-name>
-```
-
-<div class="tip" data-title="Tip">
-
-> Be sure to checkout the [`kubectl` Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) for a list of common commands and instructions on configuring your `kubectl` with and alias and enabling autocomplete.
-
-</div>
-
-## Deploying your first app
-
-The `kubectl` tool allows you to interact with the Kubernetes API server imperatively or declaratively. When you use the imperative approach, you are telling Kubernetes what to do. When you use the declarative approach, you are telling Kubernetes what you want.
-
-<div class="task" data-title="Task">
-
-> Let's deploy our first app to Kubernetes using the imperative approach.
-
-</div>
-
-```bash
-kubectl run nginx --image nginx
-```
-
-Here, we are telling Kubernetes to run a new Pod named `nginx` using the `nginx` image.
-
-A Pod is the smallest unit of deployment in Kubernetes. It is a group of one or more containers that share the same network and storage. In this case, we are running a single container using the `nginx` image.
-
-<div class="info" data-title="Info">
-
-> When you run multiple containers in a Pod, this is known as a [sidecar pattern](https://docs.microsoft.com/azure/architecture/patterns/sidecar).
-
-</div>
-
-<div class="task" data-title="Task">
-
-> Let's see if our Pod is running.
-
-</div>
-
-```bash
-kubectl get pods
-```
-
-<details>
-<summary>Click to expand output</summary>
-
-You should see something like this:
-
-```text
-NAME    READY   STATUS    RESTARTS   AGE
-nginx   1/1     Running   0          7s
-```
-
-</details>
-
-<div class="task" data-title="Task">
-
-> We can also get more information about our Pod by running the following command:
-
-</div>
-
-```bash
-kubectl describe pod nginx
-```
-
-This command will give us a lot of information about our Pod including the events that have occurred.
-
-<div class="task" data-title="Task">
-
-> To view container logs, run the following command:
-
-</div>
-
-```bash
-kubectl logs nginx
-```
-
-Now, let's take a look at how we can deploy our app using a declarative approach.
-
-<div class="task" data-title="Task">
-
-> Let's create a YAML manifest that describes our Pod.
-
-</div>
-
-```bash
-cat <<EOF > nginx2.yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx2
-spec:
-  containers:
-  - name: nginx2
-    image: nginx
-    resources: {}
-EOF
-```
-
-[YAML](https://yaml.org/) is a human-readable data serialization language. It is commonly used for configuration files and in applications where data is being stored or transmitted. YAML is short for "YAML Ain't Markup Language".
-
-<div class="task" data-title="Task">
-
-> Next, let's deploy our Pod using the YAML manifest we just created. Don't worry if you don't understand the YAML file. We'll be covering that in more detail later.
-
-</div>
-
-```bash
-kubectl apply -f nginx2.yaml
-```
-
-<div class="task" data-title="Task">
-
-> Let's see if our Pod is running.
-
-</div>
-
-```bash
-kubectl get pods
-```
-
-<details>
-<summary>Click to expand output</summary>
-
-You should see something like this:
-
-```text
-NAME     READY   STATUS    RESTARTS   AGE
-nginx    1/1     Running   0          7m49s
-nginx2   1/1     Running   0          3s
-```
-
-</details>
-
-Here, we are telling Kubernetes that we want a Pod named `nginx2` using the `nginx` image.
-
-This is different from the imperative approach where we told Kubernetes to run a Pod named `nginx` using the `nginx` image. The declarative approach is preferred because it allows us to check our code into source control and track changes over time.
-
-The `kubectl apply` command is idempotent. This means that if you run the command multiple times, the result will be the same. If the resource already exists, it will be updated. If the resource does not exist, it will be created.
 
 <div class="important" data-title="Important">
 
-> Before we move on, be sure to delete all pods so that we don't waste cluster resources.
+> Be sure to replace `<acr-name>` with a new unique name for your Azure Container Registry. The name for an ACR resource may contain alphanumeric characters only and must be between 5 and 50 characters long.
 
 </div>
 
+Run the following command to create a new Azure Container Registry.
+
 ```bash
-kubectl delete pods --all
+az acr create \
+  --resource-group $RG_NAME \
+  --name $ACR_NAME \
+  --sku Standard
 ```
+
+### Attach ACR to AKS cluster
+
+With the Azure Container Registry created, you need to "attach" it to your AKS cluster. This will allow your AKS cluster to pull images from the Azure Container Registry by granting the AKS resource's managed identity the **AcrPull** role on the Azure Container Registry.
+
+```bash
+az aks update \
+  --name $AKS_NAME \
+  --resource-group $RG_NAME \
+  --attach-acr $ACR_NAME
+```
+
+## Import container images
+
+We will be using a sample application called [aks-store-demo](https://github.com/Azure-Samples/aks-store-demo). This application is a simple e-commerce store that consists of three services: **store-front**, **order-service**, and **product-service**. The [store-front](https://github.com/Azure-Samples/aks-store-demo/tree/main/src/store-front) is a web application that allows users to browse products, add products to a cart, and checkout. The [product-service](https://github.com/Azure-Samples/aks-store-demo/tree/main/src/product-service) is a RESTful API that provides product information to the store-front service. Finally, the [order-service](https://github.com/Azure-Samples/aks-store-demo/tree/main/src/order-service) is a RESTful API that handles order processing and saves order to a [RabbitMQ](https://www.rabbitmq.com/) message queue.
+
+Here is a high-level application architecture diagram:
+
+![AKS Store Demo Application Architecture](https://learn.microsoft.com/azure/aks/learn/media/quick-kubernetes-deploy-portal/aks-store-architecture.png#lightbox)
+
+The application containers are hosted on GitHub Container Registry (GHCR). Rather than building the containers from source, we will import the containers from GHCR to ACR.
+
+In the Azure Cloud Shell, run the following commands to import the application container images from GHCR into ACR.
+
+```bash
+# store-front version 1.2.0
+az acr import \
+  --name $ACR_NAME \
+  --source ghcr.io/azure-samples/aks-store-demo/store-front:1.2.0 \
+  --image aks-store-demo/store-front:1.2.0 \
+  --no-wait
+
+# store-front version 1.5.0
+az acr import \
+  --name $ACR_NAME \
+  --source ghcr.io/azure-samples/aks-store-demo/store-front:1.5.0 \
+  --image aks-store-demo/store-front:1.5.0 \
+  --no-wait
+
+# order-service
+az acr import \
+  --name $ACR_NAME \
+  --source ghcr.io/azure-samples/aks-store-demo/order-service:1.2.0 \
+  --image aks-store-demo/order-service:1.2.0 \
+  --no-wait
+
+# product-service
+az acr import \
+  --name $ACR_NAME \
+  --source ghcr.io/azure-samples/aks-store-demo/product-service:1.2.0 \
+  --image aks-store-demo/product-service:1.2.0 \
+  --no-wait
+```
+
+<div class="info" data-title="Note">
+
+> If you are wondering why we are importing two versions of the store-front application, it's because we will be rolling out application updates later in the workshop.
+
+</div>
+
+Run the following command to ensure the import operations have completed.
+
+```bash
+for repo in $(az acr repository list -n $ACR_NAME -o tsv); do
+  echo "${repo} tags:"
+  az acr repository show-tags -n $ACR_NAME --repository $repo
+done
+```
+
+If you see tags for each repository, the import operations have completed.
 
 ---
 
-# Deploying to AKS
+# Deploy Store App to AKS
 
-We'll be deploying the Azure Voting App to Azure Kubernetes Service (AKS). This is a simple web app that lets you vote for things and displays the vote totals. You may recognize this app from Microsoft Docs which allows you to vote for "Dogs" or "Cats". The example we'll be using is a slightly different in that it's been modified to allow you to vote for any two things you want based on the environment variables you set. 
+Let's continue in the Azure Cloud Shell and use kubectl to deploy the aks-store-demo application to AKS. There is a [YAML manifest](https://github.com/Azure-Samples/aks-store-demo/blob/main/aks-store-quickstart.yaml) in the repo that contains the deployment and service resources for the store-front, order-service, and product-service, and RabbitMQ.
 
-The repo can be found here: [Azure-Samples/azure-voting-app-rust](https://github.com/Azure-Samples/azure-voting-app-rust).
+## Updating Deployment manifests
 
-Also, you may have guessed by the repo name, this version of the app has been re-written in Rust 🦀
+Before we deploy the manifest, we need to make a few changes. The manifest in the repo references the images on GHCR. We need to replace the image references with the images we imported to ACR.
 
-## Getting familiar with Azure Voting App
-
-This app uses PostgreSQL as the backend database. We'll be using Docker to package the app into a container image so that it can be deployed to AKS.
-
-<div class="info" data-title="Info">
-
-> If you have access to GitHub Codespaces, it is recommended that you open the repo in a Codespace and skip the next step of forking/cloning the repo and opening in a VS Code Dev Container.. 
-
-</div>
-
-<div class="task" data-title="Task">
-
-> Start off by forking, then cloning the repo to your local machine. When the repo has been cloned, open it up in VS Code, install the [Dev Container extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers), and click the "Reopen in Container" button. This will take a few minutes to complete.
-
-</div>
-
-![Fork and clone repo](assets/clone-repo.png)
-
-<div class="task" data-title="Task">
-
-> Before we deploy the app to AKS, let's build and run it locally to make sure everything is working as expected.
-
-</div>
+In the Azure Cloud Shell, run the following command to download the YAML file.
 
 ```bash
-cargo run
+curl -o aks-store-quickstart.yaml https://raw.githubusercontent.com/Azure-Samples/aks-store-demo/main/aks-store-quickstart.yaml
+```
+
+Next, run the following **sed** command to replace all instances of `ghcr.io/azure-samples` with `${ACR_NAME}.azurecr.io` and the tag `latest` with `1.2.0` in the aks-store-quickstart.yaml file.
+
+```bash
+sed -i -e "s|ghcr.io/azure-samples/\(.*\):latest|${ACR_NAME}.azurecr.io/\1:1.2.0|g" aks-store-quickstart.yaml
+```
+
+Run the following command to apply the manifest.
+
+```bash
+kubectl apply -f aks-store-quickstart.yaml
+```
+
+<div class="info" data-title="Note">
+
+> The deployment can take up to 10 minutes to schedule pods onto a new node. This is because the AKS Node Autoprovisioning feature (aka Karpenter) automatically provisions new nodes when the existing nodes are at capacity. The new nodes are provisioned with the necessary resources to run the pods. The pods are then scheduled onto the new nodes.
+
+</div>
+
+Run the following command to check the status of the pods.
+
+```bash
+kubectl get pods -w
+```
+
+When all the pods are in the **Running** state, you can press **Ctrl+C** to exit the watch and proceed to the next step.
+
+## Getting familiar with the demo app
+
+Now, let's explore the store app. Run the following command to get the public IP address of the **store-front** service.
+
+```bash
+echo "http://$(kubectl get svc/store-front -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
+```
+
+Click the link in the terminal, and you should be taken to the product page of the AKS pet store. Here a user can browse products, add items to a shopping cart, and checkout. The checkout process is intentionally simple and does not require any payment information. The order is saved to a RabbitMQ message queue.
+
+Add an item to the cart and checkout by clicking on the cart link in the upper right corner. You should see a confirmation message that the order was successfully placed.
+
+![Store front order submitted](./assets/store-front-order-submitted.png)
+
+## Getting familiar with the Kubernetes resources
+
+Now that we've seen the store app in action, let's take a closer look at the resources that were created when we applied the manifest to the Kubernetes cluster.
+
+Back in the terminal, run the following command to view the contents of the YAML file.
+
+```bash
+less aks-store-quickstart.yaml
+```
+
+<div class="tip" data-title="Tip">
+
+> Press **up** or **down** arrow keys to scroll through the file. Press **q** to exit the file.
+
+</div>
+
+If you look at the YAML file, you'll see that it contains a [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) and [Service](https://kubernetes.io/docs/concepts/services-networking/service/) resource for each of the three services: **store-front**, **product-service**, and **order-service**. It also contains a [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/), Service, and [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) resource for RabbitMQ.
+
+The manifest is the desired state of the resources in the cluster. When you apply the manifest, the Kubernetes API server will create the resources in the cluster to match the desired state.
+
+### Deployments
+
+Each Deployment resource specifies the container image to use, the ports to expose, environment variables, and resource requests and limits. The Deployment resource was not originally part of Kubernetes but was introduced to make it easier to manage [ReplicaSets](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/). A ReplicaSet is a resource that ensures a specified number of pod replicas are running at any given time and no longer commonly used in favor of Deployments.
+
+Run the following command to view the Deployments.
+
+```bash
+kubectl get deployments
+```
+
+You can see there are three Deployments: **order-service**, **product-service**, and **store-front**. Each Deployment has one replica. A Deployment is a resource that manages a set of identical [Pods](https://kubernetes.io/docs/concepts/workloads/pods/). The Pods are created from the container image specified in the Deployment resource.
+
+If you want to see individual Pods, you can run the following command.
+
+```bash
+kubectl get pods
+```
+
+This is where your application code runs. A Pod is the smallest deployable unit in Kubernetes. It represents a single instance of a running process in your cluster. If you need to troubleshoot an application, you can view the logs of the Pod by running the following command.
+
+```bash
+kubectl logs rabbitmq-0
+```
+
+### Services
+
+A Service is a resource that exposes an application running in a set of Pods as a network service. It provides a stable endpoint for the application that can be accessed by other applications in the cluster or outside the cluster.
+
+Run the following command to view the Services.
+
+```bash
+kubectl get service store-front
+```
+
+As you can see, the **store-front** Service is of type [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer). This means that the Service is exposed to the internet and the Service has an public IP address that you can use to access the application.
+
+### StatefulSets
+
+The StatefulSet is a resource that manages a set of identical pods with persistent storage and commonly used for stateful applications like databases and data stores.
+
+Run the following command to view the StatefulSets.
+
+```bash
+kubectl get statefulsets
+```
+
+You can see that there is a StatefulSet for RabbitMQ. The StatefulSet resource is used to manage the RabbitMQ pods and ensure that the pods are created in a specific order.
+
+### ConfigMaps
+
+The ConfigMap resource is used to store configuration data in key-value pairs. The ConfigMap resource is used to store the configuration data for RabbitMQ.
+
+Run the following command to view the ConfigMaps.
+
+```bash
+kubectl get configmaps
+```
+
+You can see that there is a ConfigMap for RabbitMQ. The ConfigMap resource is used to store the configuration data for RabbitMQ to enable AMQP 1.0 protocol.
+
+## Ingress and App Routing Add-on
+
+We saw that the service type for the **store-front** service is _LoadBalancer_. This is one way to expose an application to the internet. A better way is to use an [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/). An [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) is a Kubernetes resource that manages inbound access to services in a cluster. It provides HTTP and HTTPS routing to services based on hostnames and paths. The Ingress Controller is responsible for reading the Ingress resource and processing the rules to configure the load balancer. With AKS Automatic, the App Routing Add-on, a managed NGINX Ingress Controller, is enabled by default. All you need to do is create an Ingress resource and the App Routing Add-on will take care of the rest.
+
+Let's convert our app to use ingress to expose the store-front service to the internet rather than using a public IP on the service.
+
+Run the following command to patch the store-front service to change the service type to _ClusterIP_.
+
+```bash
+kubectl patch service store-front -p '{"spec": {"type": "ClusterIP"}}'
+```
+
+<div class="info" data-title="Note">
+
+> kubectl is a powerful tool that can be used to create, update, and delete resources in a Kubernetes cluster. The `patch` command is used to update a resource in the cluster. The `-p` flag is used to specify the patch to apply to the resource. In this case, we are changing the service type to _ClusterIP_ to remove the public IP address from the service.
+
+</div>
+
+Run the following command to deploy the ingress manifest for the store-front app.
+
+```bash
+kubectl apply -f - <<EOF
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: store-front
+spec:
+  ingressClassName: webapprouting.kubernetes.azure.com
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: store-front
+            port:
+              number: 80
+EOF
+```
+
+This Ingress resource is very similar to a typical [NGINX Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource) resource. The only difference is the `ingressClassName` field. The `ingressClassName` field is set to `webapprouting.kubernetes.azure.com` which enables the AKS App Routing Add-on to manage this resource.
+
+Wait a minute or two for the ingress to be created, then run the following command to get the public IP address of the ingress.
+
+```bash
+echo "http://$(kubectl get ingress store-front -o jsonpath='{.status.loadBalancer.ingress[0].ip}')"
+```
+
+Click the URL in the terminal and you should be taken to the product page of the AKS pet store, this time using the Ingress to access the store-front service!
+
+<div class="important" data-title="Important">
+
+> It is also worth mentioning that the App Routing Add-on does a little more than just manage the NGINX Ingress Controller. It also provides integration with Azure DNS for automatic DNS registration and management and Azure Key Vault for automatic TLS certificate management. Check out the [App Routing Add-on documentation](https://learn.microsoft.com/azure/aks/app-routing?tabs=default%2Cdeploy-app-default) for more information.
+
+</div>
+
+---
+
+# Application Resiliency
+
+As mentioned above Kubernetes Deployments is a resource that manages [ReplicaSets](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/) and it enables you to manage application updates and rollbacks. This greatly improves the resiliency of your application.
+
+## Deployments and ReplicaSets
+
+There is a link between Deployment and ReplicaSet resources. When you create a Deployment, Kubernetes creates a ReplicaSet for you.
+
+To view the link beetween the two resources, run the following command to get the owner reference of the store-front ReplicaSet.
+
+```bash
+# get the name of the store-front ReplicaSet
+STORE_FRONT_RS_NAME=$(kubectl get rs --sort-by=.metadata.creationTimestamp | grep store-front | tail -n 1 | awk '{print $1}')
+
+# get the details of the store-front ReplicaSet
+kubectl get rs $STORE_FRONT_RS_NAME -o json | jq .metadata.ownerReferences
+```
+
+In the output, you can see the ReplicaSet resource is owned by the store-front Deployment resource. Also, note the `uid` field in the output. This is the unique identifier (`uid`) of the Deployment resource.
+
+```json
+[
+  {
+    "apiVersion": "apps/v1",
+    "blockOwnerDeletion": true,
+    "controller": true,
+    "kind": "Deployment",
+    "name": "store-front",
+    "uid": "65aeeba4-5202-4fb7-9d70-ad5db0ffe1df"
+  }
+]
+```
+
+If we inspect at the Deployment resource, we can see the same `uid` field in the output.
+
+```bash
+kubectl get deployment store-front -o json | jq .metadata.uid
+```
+
+Additionally, when a Deployment is created, it creates a rollout history. You can view the rollout history by running the following command.
+
+```bash
+kubectl rollout history deployment store-front
+```
+
+Here you can see the revision number and you should only have a single revision since we only deployed the application once. Let's update the store-front app to use a new container image version and then roll back to the previous version.
+
+## Deployment Update Strategy
+
+The default deployment strategy of a Deployment resource is _RollingUpdate_. You can see that by running the following command.
+
+```bash
+kubectl get deployments store-front -o jsonpath='{.spec.strategy.type}'
+```
+
+The [RollingUpdate](https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/) strategy means that Kubernetes will create a new ReplicaSet and scale it up while scaling down the old ReplicaSet. If the new ReplicaSet fails to start, Kubernetes will automatically roll back to the previous ReplicaSet.
+
+Run the following command to update the store-front container image to use the 1.5.0 version.
+
+```bash
+kubectl set image deployment/store-front store-front=$ACR_NAME.azurecr.io/aks-store-demo/store-front:1.5.0
+```
+
+Run the following command to check the rollout status.
+
+```bash
+kubectl rollout status deployment/store-front
+```
+
+Wait until you see the message `deployment "store-front" successfully rolled out`.
+
+Now if you run the following command, you should see two different versions of the ReplicaSet.
+
+```bash
+kubectl get rs --selector app=store-front
+```
+
+You should see the older ReplicaSet with 0 for the DESIRED, CURRENT, and READY columns and the newer ReplicaSet with 1s across the board.
+
+If you browse to the store-front application, you should see the new version of the application.
+
+![Store front updated](./assets/store-front-updated.png)
+
+### Rollback a Deployment
+
+With Deployment rollouts, you can easily roll back to a previous version of the application. As mentioned earlier, the rollout history is stored and you can run the following command to roll back to the previous version.
+
+```bash
+kubectl rollout undo deployment/store-front
+```
+
+<div class="info" data-title="Note">
+
+> You can also roll back to a specific revision by specifying the revision number. For example, `kubectl rollout undo deployment/store-front --to-revision=1` to select the first revision.
+
+</div>
+
+If you browse to the store-front application, you should see the previous version of the application.
+
+![Store front original](./assets/store-front-original.png)
+
+## Dealing with Disruptions
+
+As you may be aware, application updates can cause disruptions. However, with Kubernetes Deployments, you can manage application updates and rollbacks. But application updates are not the only disruptions that can occur. Nodes can fail or be marked for maintenance. You need to be prepared for both [voluntary and involuntary disruptions](https://kubernetes.io/docs/concepts/workloads/pods/disruptions/).
+
+### Voluntary Disruptions
+
+A voluntary disruption is a disruption that is initiated by the user. For example, you may want to scale down the number of replicas in a Deployment, or you may want to take a Node down for maintenance. Kubernetes has built-in mechanisms to handle these disruptions. During a voluntary disruption, Kubernetes will gracefully remove Pods from a Node.
+
+In maintenance scenarios, a Node will be [drained and cordoned](https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/) so that no new Pods will be scheduled on the node. Any existing Pod will be evicted using the [Eviction API](https://kubernetes.io/docs/concepts/scheduling-eviction/api-eviction/). It doesn't matter how many replicas you have running on a Node or how many replicas will be remaining after the eviction; the Pod will be evicted and rescheduled on another Node. This means you can incur downtime if you are not prepared for it.
+
+Good news is that Kubernetes has a built-in mechanism to handle these disruptions. The [PodDisruptionBudget](https://kubernetes.io/docs/concepts/workloads/pods/disruptions/) resource allows you to specify the minimum number of Pods that must be available during a voluntary disruption. When a PodDisruptionBudget is created, Kubernetes will not evict Pods if evicting it will result in a violation of the budget. Essentially the PodDisruptionBudget ensures that a minimum number of Pods remains available during a voluntary disruption.
+
+To see this in action we should scale our store-front deployment to have more than one replica. Run the following command to scale the store-front deployment to 3 replicas.
+
+```bash
+kubectl scale deployment store-front --replicas=3
+```
+
+With the deployment scaled to 3 replicas, we can see which nodes the Pods are running on.
+
+```bash
+kubectl get pod --selector app=store-front -o wide
+```
+
+You can see that the Pods are all running on a single Node.
+
+Let's grab the name of the Node and cordon it.
+
+```bash
+# get the name of the Node
+NODE_NAME=$(kubectl get pod -l app=store-front -o jsonpath='{.items[0].spec.nodeName}')
+
+# cordon the node
+kubectl drain $NODE_NAME --ignore-daemonsets
+```
+
+You should see a list of all the Pods that have been evicted. It doesn't matter that all 3 replicas of the store-front application were running on the node. Kubernetes doesn't care and will evict all the Pods with no regard.
+
+This is where the PodDisruptionBudget comes in. A PodDisruptionBudget is a resource that specifies the minimum number of Pods that must be available during a voluntary disruption. When a PodDisruptionBudget is created, Kubernetes will not evict Pods that violate the budget
+
+You will need to create a PodDisruptionBudget for the store-front application that specifies that at least 1 Pod must be available during a voluntary disruption. This will ensure that the next time we drain a node, at least 1 Pod will remain running. Once new Pods are scheduled on other nodes, the PodDisruptionBudget will be satisfied and the remaining Pods on the node will be evicted. This is a great way to ensure that your application remains available during a voluntary disruption.
+
+Run the following command to create a PodDisruptionBudget for the store-front application.
+
+```bash
+kubectl apply -f - <<EOF
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: store-front-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: store-front
+EOF
+```
+
+If you run the following command, you should see that the Pods were scheduled on a different node. If you see a status of 'Pending' wait a short while and re-run the command until all three replicas are in the 'Running' state.
+
+```bash
+kubectl get pod --selector app=store-front -o wide
+```
+
+<div class="info" data-title="Note">
+
+> You may have noticed the drained Node is no longer available in your cluster. This is because the Node was unused and the [AKS Node Autoprovisioning](https://learn.microsoft.com/azure/aks/node-autoprovision?tabs=azure-cli) feature (aka [Karpenter](https://karpenter.sh/)) automatically removed it from the cluster. More on that later.
+
+</div>
+
+Let's drain the node again and see what happens.
+
+```bash
+# get the name of the new node
+NODE_NAME=$(kubectl get pod -l app=store-front -o jsonpath='{.items[0].spec.nodeName}')
+
+# cordon the new node
+kubectl drain $NODE_NAME --ignore-daemonsets
+
+# watch the status of the pods and the nodes they are running on
+kubectl get pod --selector app=store-front -o wide -w
+```
+
+Notice this time a warning message is displayed that the PodDisruptionBudget is preventing the eviction of the a store-front Pod on the node due to the PodDisruptionBudget violation.
+
+Once the new node is up and running, the PodDisruptionBudget will be satisfied and the remaining Pods on the node will be evicted.
+
+### Involuntary Disruptions
+
+An involuntary disruption is a disruption that is not initiated by the user. For example, a node may fail and if we had all the replicas of the store-front application running on that node, we would have downtime. When running more than one replica of an application, it is important to spread the replicas across multiple nodes to ensure high availability. This is where [PodAntiAffinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) or [PodTopologySpreadConstraints](https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/) comes in.
+
+**PodAntiAffinity** is a feature that allows you to specify that a Pod should not be scheduled on the same node as another Pod. PodAntiAffinity can be hard or soft. Hard PodAntiAffinity means that the Pods must be scheduled on different nodes. Soft PodAntiAffinity means that the Pods should be scheduled on different nodes if possible.
+
+**PodTopologySpreadConstraints** is a feature that allows you to specify that a Pod should be spread across different zones, regions, or nodes. This is useful for ensuring high availability of your application.
+
+Either of these Pod scheduling features can be used to ensure that your application remains available during an involuntary disruption with the difference being that PodAntiAffinity is used to spread Pods across nodes and PodTopologySpreadConstraints can provide more granular control by spreading Pods across zones and/or regions.
+
+Let's ensure the store-front application is spread across multiple nodes. Run the following command to create a PodAntiAffinity rule for the store-front application.
+
+Run the following command to get the YAML manifest for the store-front deployment.
+
+```bash
+kubectl get deployment store-front -o yaml > store-front-deployment.yaml
+```
+
+Open the `store-front-deployment.yaml` file using the nano text editor.
+
+```bash
+nano store-front-deployment.yaml
+```
+
+<div class="tip" data-title="Tip">
+
+> When done editing, press the **Ctrl + O** keys to save the file then press the Enter key. Press the **Ctrl + X** keys to exit the nano text editor.
+
+</div>
+
+In the `store-front-deployment.yaml` file, add the following PodAntiAffinity rule to the `spec` section of the **store-front** deployment. This rule tells the Kubernetes scheduler to spread the store-front Pods using `topologyKey: kubernetes.io/hostname` which essentially means to spread the Pods across different nodes.
+
+```yaml
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - store-front
+        topologyKey: "kubernetes.io/hostname"
 ```
 
 <div class="warning" data-title="Warning">
 
-> This command will take a few minutes to complete and subsequent runs will be much faster.
+> There are many `spec` items in the manifest, you want to add the code snippet above in the `spec` section that includes the `containers` field. Once you locate the correct `spec` section, add a new line after the `spec` field and just before the `containers` field and paste the code snippet.
 
 </div>
 
-Once the app is running, you should be able to access it at http://localhost:8080.
-
-![Azure Voting App](assets/azure-voting-app.png)
-
-If you look at the **docker-compose.yml** file that is in the root of the repo, you'll see that the app is made up of two services: `app` and `db`. 
-
-As the names suggest, the `app` service is the web front-end and the `db` service is the database. 
-
-In the `app` service, you'll see that there are two environment variables defined: `FIRST_VALUE` and `SECOND_VALUE`. These are the options that will be displayed on the voting page.
-
-Before we move on, let's stop the app by pressing `Ctrl+C` in the terminal then run the following commands to re-authenticate to Azure from inside this Dev Container's terminal and connect to our AKS cluster.
-
-<div class="important" data-title="Important">
-
-> If you are in a new DevContainer or Codespace, run the following command to login to Azure.
-
-</div>
+Now let's replace the store-front deployment with the updated manifest.
 
 ```bash
-az login
+kubectl replace -f store-front-deployment.yaml
 ```
 
-<div class="task" data-title="Task">
-
-> Run the following command to set variables for your resource group and AKS cluster name and don't forget to replace `<user-number>` in the command below with the username you've been assigned.
-
-</div>
+This command will force Kubernetes to reschedule Pods onto new nodes. Run the following command to get the nodes that the store-front Pods are running on.
 
 ```bash
-RG_NAME=rg-user<user-number>
-AKS_NAME=aks-user<user-number>
+kubectl get pod --selector app=store-front -o wide -w
 ```
 
-<div class="task" data-title="Task">
+<div class="info" data-title="Note">
 
-> Run the following command to download the credentials for your AKS cluster.
+> It can take a few minutes for the Pods to be rescheduled onto new nodes because AKS Node Autoprovisioning (Karpenter) will need to create new nodes to satisfy the PodAntiAffinity rule.
 
 </div>
+
+Also note that the replacement of the Pods are considered to be an update to the Deployment resource. So the RollingUpdate strategy will be used to rollout new Pods before terminating the old Pods. So we're safe from downtime during this process!
+
+Once the Pods are rescheduled onto new nodes, you should see that the Pods are spread across multiple nodes.
 
 ```bash
-az aks get-credentials --resource-group $RG_NAME --name $AKS_NAME
+kubectl get pod --selector app=store-front -o wide
 ```
-
-## Publishing the app to Azure Container Registry
-
-Before you can deploy our app to Kubernetes, you need to package the container image and push it to a container registry. You'll be using [Azure Container Registry (ACR)](https://azure.microsoft.com/products/container-registry) for this.
-
-There are a few different ways to push an image to ACR. We'll be using the `az acr build` command which will use [ACR Tasks](https://learn.microsoft.com/azure/container-registry/container-registry-tasks-overview?WT.mc_id=containers-105184-pauyu) to build the image and push it to ACR.
-
-<div class="task" data-title="Task">
-
-> Let's start by getting the name of your ACR instance.
-
-</div>
-
-```bash
-ACR_NAME=$(az resource list \
-  --resource-group $RG_NAME \
-  --resource-type Microsoft.ContainerRegistry/registries \
-  --query "[0].name" \
-  --output tsv)
-```
-
-<div class="task" data-title="Task">
-
-> Make sure you are at the root of your repository then run the following command to build and push the image to ACR.
-
-</div>
-
-```bash
-az acr build \
-  --registry $ACR_NAME \
-  --image azure-voting-app:latest \
-  --file Dockerfile .
-```
-
-<div class="important" data-title="Important">
-
-> This command will take a few minutes to complete. Let's move on to the next step while it's running.
-
-</div>
-
-## Generating YAML manifests
-
-Earlier, we learned that Kubernetes uses YAML manifests to describe the state of your cluster.
-
-In the previous section, we used `kubectl` to run a pod using both the imperative and declarative approaches.
-
-But, did you know that `kubectl` can also be used to generate YAML manifests for you? Let's take a look at how we can do that to generate a YAML file for our app.
-
-<div class="important" data-title="Important">
-
-> Open a new terminal and make sure you are at the root of the repo then run the following command set variables for your resource group and AKS cluster names. Be sure to replace `<user-number>` with your assigned user number.
-
-</div>
-
-```bash
-RG_NAME=rg-user<user-number>
-AKS_NAME=aks-user<user-number>
-```
-
-<div class="task" data-title="Task">
-
-> Run the following command to generate to get the name of your ACR.
-
-</div>
-
-```bash
-ACR_NAME=$(az resource list \
-  --resource-group $RG_NAME \
-  --resource-type Microsoft.ContainerRegistry/registries \
-  --query "[0].name" \
-  --output tsv)
-```
-
-<div class="task" data-title="Task">
-
-> Run the following command to create a new directory and navigate into it.
-
-</div>
-
-```bash
-mkdir pre03
-cd pre03
-```
-
-<div class="task" data-title="Task">
-
-> Run the following command to generate a YAML manifest using `kubectl`.
-
-</div>
-
-```bash
-kubectl create deploy azure-voting-app \
-  --image $ACR_NAME.azurecr.io/azure-voting-app:latest \
-  --port=8080 \
-  --dry-run=client \
-  --output yaml > azure-voting-app-deployment.yaml
-```
-
-The `--dry-run=client` flag combined with the `--output yaml` flag tells `kubectl` to generate the YAML file but not actually run the command. 
-
-This is useful because it allows us to see what the YAML file will look like before we actually run it. By redirecting the output to a file, we can save the YAML file to disk. 
-
-If you open up the YAML file, you'll see that most of the details have been filled in for you 🥳
-
-<div class="info" data-title="Info">
-
-> Did you notice that we are creating a **Deployment** resource instead of a **Pod** resource? This is because we want to scale our app up and down. If we were to use a **Pod** resource, we can only run a single instance of our app. With a **Deployment** resource, we can run multiple instances of our app and Kubernetes will automatically restart them if they fail.
-
-</div>
-
-## Configuring apps using environment variables
-
-The base YAML file that was generated for us is a good starting point, but we need to make a few changes to it before we can deploy it to AKS. The first thing we need to do is add the environment variables to configure the app.
-
-But wait, we don't know where exactly to put the environment variables in the YAML file. Never fear, `kubectl` is here!
-
-<div class="task" data-title="Task">
-
-> Run the following `kubectl explain` command to get more information about Deployments.
-
-</div>
-
-```bash
-kubectl explain deploy.spec.template.spec.containers
-```
-
-Here, we are using `kubectl explain` to get information about the Deployment resource. We are then drilling down into the `spec.template.spec.containers` section to get information about the `containers` property.
-
-<div class="info" data-title="Info">
-
-> You can traverse the through all the Deployment properties in this way to get more information about them. Additionally, you can also use `kubectl explain` to get more information about other Kubernetes resources.
->
-> To see a list of all resources that can be explained, run the following command:
-
-</div>
-
-```bash
-kubectl api-resources
-```
-
-<div class="task" data-title="Task">
-
-> We can see that the `containers` object has a `env` property which is an array of environment variables. If we dig a little deeper, we can see how to define environment variables.
-
-</div>
-
-```bash
-kubectl explain deploy.spec.template.spec.containers.env
-```
-
-<div class="task" data-title="Task">
-
-> Now that we know where to put the environment variables, let's add them to the YAML file. Open the `azure-voting-app-deployment.yaml` file, place your cursor after the `resource: {}` line, and add the following block of code.
-
-</div>
-
-```yaml
-env:
-  - name: FIRST_VALUE
-    value: "Dogs"
-  - name: SECOND_VALUE
-    value: "Cats"
-```
-
-<div class="important" data-title="Important">
-
-> YAML is very sensitive to indentation. Make sure you indent the environment variables exactly as its shown above. The resulting YAML file should look like this:
-
-</div>
-
-<details>
-<summary>Click to expand output</summary>
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  creationTimestamp: null
-  labels:
-    app: azure-voting-app
-  name: azure-voting-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: azure-voting-app
-  strategy: {}
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        app: azure-voting-app
-    spec:
-      containers:
-        - image: <REPLACE_THIS_WITH_YOUR_ACR_NAME>.azurecr.io/azure-voting-app:latest
-          name: azure-voting-app
-          resources: {}
-          env:
-            - name: FIRST_VALUE
-              value: "Dogs"
-            - name: SECOND_VALUE
-              value: "Cats"
-            - name: DATABASE_SERVER
-              value: azure-voting-db
-            - name: DATABASE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: azure-voting-db-secrets
-                  key: password
-status: {}
-```
-
-</details>
-
-## Securing credentials using "Secrets"
-
-We also need database credentials to be able to connect to the database. We could add them to the YAML file, but that would mean that they would be stored in plain text. This is not a good idea because anyone who has access to the YAML file would be able to see the credentials. Instead, we are going to use a [Kubernetes secret](https://kubernetes.io/docs/concepts/configuration/secret/) to store the credentials in the cluster.
-
-<div class="task" data-title="Task">
-
-> Run the following command to create a secret with two keys to store the database username and password.
-
-</div>
-
-```bash
-kubectl create secret generic azure-voting-db-secrets \
-  --from-literal=username=postgres \
-  --from-literal=password=mypassword
-```
-
-Now that we have created the secret, we need to tell Kubernetes to use it. We can do this by adding a few more environment variables to the `containers` object.
-
-But, instead of directly keying in the value as we did with "Dogs" and "Cats" above, we can use the `valueFrom` property to point to our Kubernetes secret..
-
-<div class="task" data-title="Task">
-
-> In the `azure-voting-app-deployment.yaml` file, add the following YAML to the YAML file directly below the `SECOND_VALUE` environment variable.
-
-</div>
-
-```yaml
-- name: DATABASE_SERVER
-  value: azure-voting-db
-- name: DATABASE_USER
-  valueFrom:
-    secretKeyRef:
-      name: azure-voting-db-secrets
-      key: username
-- name: DATABASE_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: azure-voting-db-secrets
-      key: password
-```
-
-Your `azure-voting-app-deployment.yaml` file should now look like this:
-
-<details>
-<summary>Click to expand output</summary>
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  creationTimestamp: null
-  labels:
-    app: azure-voting-app
-  name: azure-voting-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: azure-voting-app
-  strategy: {}
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        app: azure-voting-app
-    spec:
-      containers:
-        - image: <REPLACE_THIS_WITH_YOUR_ACR_NAME>.azurecr.io/azure-voting-app:latest
-          name: azure-voting-app
-          ports:
-            - containerPort: 8080
-          resources: {}
-          env:
-            - name: FIRST_VALUE
-              value: "Dogs"
-            - name: SECOND_VALUE
-              value: "Cats"
-            - name: DATABASE_SERVER
-              value: "azure-voting-db"
-            - name: DATABASE_USER
-              valueFrom:
-                secretKeyRef:
-                  name: azure-voting-db-secrets
-                  key: username
-            - name: DATABASE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: azure-voting-db-secrets
-                  key: password
-status: {}
-```
-
-</details>
-
-Let's move on to configure the PostgreSQL database deployment. The process of creating the YAML will be very similar to what we did for the Azure Voting App deployment.
-
-<div class="task" data-title="Task">
-
-> Using `kubectl`, create a file called `azure-voting-db-deployment.yaml`.
-
-</div>
-
-```base
-kubectl create deployment azure-voting-db \
-  --image=postgres \
-  --dry-run=client \
-  -o yaml > azure-voting-db-deployment.yaml
-```
-
-<div class="task" data-title="Task">
-
-> Open the `azure-voting-db-deployment.yaml` file and add the following YAML to it (just below the `resources` property).
-
-</div>
-
-```yaml
-env:
-  - name: POSTGRES_USER
-    valueFrom:
-      secretKeyRef:
-        name: azure-voting-db-secrets
-        key: username
-  - name: POSTGRES_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: azure-voting-db-secrets
-        key: password
-```
-
-Your `azure-voting-db-deployment.yaml` file should now look like this:
-
-<details>
-<summary>Click to expand output</summary>
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  creationTimestamp: null
-  labels:
-    app: azure-voting-db
-  name: azure-voting-db
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: azure-voting-db
-  strategy: {}
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        app: azure-voting-db
-    spec:
-      containers:
-        - image: postgres
-          name: postgres
-          resources: {}
-          env:
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: azure-voting-db-secrets
-                  key: username
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: azure-voting-db-secrets
-                  key: password
-status: {}
-```
-
-</details>
-
-<div class="task" data-title="Task">
-
-> Run the following command to create the PostgreSQL database deployment.
-
-</div>
-
-```bash
-kubectl apply -f azure-voting-db-deployment.yaml
-```
-
-## Exposing Deployments with Services
-
-The front end pod will need to be able to connect to the database pod. We could use the database pod's IP address to connect, but that will not be resilient since there is no gurantee the database pod will have the same IP address when it is recreated due to maintenance or failure. Remember, pods are ephemeral and are given random IP addresses as they are created. 
-
-So we'll need to create a [Service](https://kubernetes.io/docs/concepts/services-networking/service/) for the database pod. Think of a service like an internal load balancer. This will give the front end app a single point of entry to connect to the database.
-
-We can use the same technique of creating a YAML manifest for the service using `kubectl`. 
-
-`kubectl` allows you to imperatively create a service using the `kubectl expose` command.
-
-<div class="task" data-title="Task">
-
-> Run the following command to create a service YAML manifest for the PostgreSQL database deployment.
-
-</div>
-
-```bash
-kubectl expose deployment azure-voting-db \
-  --port=5432 \
-  --target-port=5432 \
-  --name=azure-voting-db \
-  --dry-run=client \
-  -o yaml > azure-voting-db-service.yaml
-```
-
-<div class="task" data-title="Task">
-
-> Run the following command to apply the service YAML manifest for the PostgreSQL database deployment.
-
-</div>
-
-```bash
-kubectl apply -f azure-voting-db-service.yaml
-```
-
-<div class="important" data-title="Important">
-
-> Before running the next step below, make sure your container image has completed building and pushing to ACR; otherwise, you will run into a "container image not found" error.
-
-</div>
-
-<div class="task" data-title="Task">
-
-> Run the following command to create a deployment for the Azure Voting App.
-
-</div>
-
-```bash
-kubectl apply -f azure-voting-app-deployment.yaml
-```
-
-<div class="task" data-title="Task">
-
-> Run the following command to create a service YAML manifest for the Azure Voting App deployment.
-
-</div>
-
-```bash
-kubectl expose deployment azure-voting-app \
-  --port=8080 \
-  --target-port=8080 \
-  --name=azure-voting-app \
-  --dry-run=client \
-  -o yaml > azure-voting-app-service.yaml
-```
-
-<div class="task" data-title="Task">
-
-> Run the following command to apply the service YAML manifest for the Azure Voting App deployment.
-
-</div>
-
-```bash
-kubectl apply -f azure-voting-app-service.yaml
-```
-
-Now that we have deployed the Azure Voting App and the PostgreSQL database, we can check to see if they are running. 
-
-<div class="task" data-title="Task">
-
-> Run the following command to get a list of deployments, pods, and services.
-
-</div>
-
-```bash
-kubectl get deployments,pods,services
-```
-
-<details>
-<summary>Click to expand output</summary>
-
-```text
-NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/azure-voting-app   1/1     1            1           27m
-deployment.apps/azure-voting-db    1/1     1            1           27m
-
-NAME                                    READY   STATUS    RESTARTS   AGE
-pod/azure-voting-app-6bc9446ddb-xvdgc   1/1     Running   0          10m
-pod/azure-voting-db-5666f7fc58-nph78    1/1     Running   0          27m
-
-NAME                       TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
-service/azure-voting-app   ClusterIP   10.0.185.0   <none>        8080/TCP   22s
-service/azure-voting-db    ClusterIP   10.0.13.23   <none>        5432/TCP   3m
-service/kubernetes         ClusterIP   10.0.0.1     <none>        443/TCP    171m
-```
-
-</details>
-
-The application and services are now running, but we can't access it yet. If you noticed, there is no way to access the application from outside the cluster. We can temporarily connect to the service by using the `kubectl port-forward` command for now.
-
-<div class="task" data-title="Task">
-
-> Run the following command to expose the application.
-
-</div>
-
-```bash
-kubectl port-forward service/azure-voting-app 8080:8080
-```
-
-<div class="info" data-title="Info">
-
-> Kubernetes will now forward all traffic from port 8080 on your local machine to port 8080 on the `azure-voting-app` service.
-
-</div>
-
-Now that we have exposed the application, we can access it from our local machine. Open a browser and navigate to [http://localhost:8080](http://localhost:8080). 
-
-You should see the Azure Voting App.
-
-![Azure Voting App on AKS](assets/azure-voting-app-on-aks.png)
-
-<div class="task" data-title="Task">
-
-> Press `Ctrl+C` to stop the port forwarding. We'll expose the application in a more permanent way later.
-
-</div>
 
 ---
 
-## Dealing with secrets
+# Handling Stateful Workloads
 
-The dirty secret about Kubernetes secrets is that they are not really secrets. They are just base64 encoded strings. Anyone with access to the cluster can decode them and see the actual value. This is not a problem if you are limiting access to your cluster. 
+Container storage is ephemeral; that is if a pod is deleted, the data is lost because by default, data is saved within the container. In order to persist the data, you need to use [Persistent Volume (PV)](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) and [Persistent Volume Claim (PVC)](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims).
 
-But remember, anyone with access to your cluster can see your secrets!
+## AKS Storage classes and PVC's
 
-<div class="task" data-title="Task">
+Typically for persistent storage in a Kubernetes cluster, you would create a PV to allocate storage and use a PVC to request a slice storage against the PV.
 
-> Run the following command to get the `password` secret we saved in the cluster.
+With AKS, [Azure CSI drivers and storage classes](https://learn.microsoft.com/azure/aks/csi-storage-drivers) are pre-deployed into your cluster. The storage classes allow you to simply create a PVC that references a particular storage class based on your application requirements. This storage class will take care of the task of creating the PV for you, in this case, using Azure Storage. So AKS removes the need to manually create PV's.
 
-</div>
-
-```bash
-kubectl get secrets azure-voting-db-secrets -o jsonpath='{.data.password}'
-```
-
-We can decode the output by using the `base64 --decode` command.
-
-<div class="task" data-title="Task">
-
-> Run the following command to decode the `password` secret.
-
-</div>
-
-```bash
-kubectl get secrets azure-voting-db-secrets -o jsonpath='{.data.password}' | base64 --decode
-```
-
-There it is.. the secret is out. Anyone with access to the cluster can see the secret 😨
-
-<div class="task" data-title="Task">
-
-> Run the following command to delete the `azure-voting-db-secrets` secret. We'll create a new one next.
-
-</div>
-
-```bash
-kubectl delete secret azure-voting-db-secrets
-```
-
-### Securely storing secrets
-
-There are a few ways to store secrets in a more secure manner. One way is to use [Azure Key Vault](https://azure.microsoft.com/services/key-vault/).
-
-Your lab environment already has an Azure Key Vault created for you.
-
-<div class="task" data-title="Task">
-
-> Run the following command to get the name of your Azure Key Vault.
-
-</div>
-
-```bash
-AKV_NAME=$(az resource list \
-  --resource-group $RG_NAME \
-  --resource-type Microsoft.KeyVault/vaults \
-  --query "[0].name" -o tsv)
-```
-
-With the name of your Azure Key Vault, you can now store your secrets in the Azure Key Vault.
-
-<div class="task" data-title="Task">
-
-> Run the following command to add the database username as a secret in the Azure Key Vault.
-
-</div>
-
-```bash
-az keyvault secret set \
-  --vault-name $AKV_NAME \
-  --name database-user \
-  --value postgres
-```
-
-<div class="task" data-title="Task">
-
-> Run the following command to add the database password as a secret in the Azure Key Vault.
-
-</div>
-
-```bash
-az keyvault secret set \
-  --vault-name $AKV_NAME \
-  --name database-password \
-  --value postgres
-```
-
-### Using the Azure Key Vault secrets in Kubernetes
-
-You AKS cluster has also been provisioned with the [Secret Store CSI driver](https://secrets-store-csi-driver.sigs.k8s.io/) addon. This allows you to mount secrets from the Azure Key Vault as [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) in your pods.
-
-<div class="info" data-title="Info">
-
-> To verify that the Secret Store CSI driver addon is installed in your cluster, run the following command:
-
-</div>
-
-```bash
-kubectl get pods \
-  --namespace kube-system \
-  --selector 'app in (secrets-store-csi-driver, secrets-store-provider-azure)'
-```
-
-<details>
-<summary>Click to expand output</summary>
-
-You should see something like this:
-
-```text
-NAME                                     READY   STATUS    RESTARTS   AGE
-aks-secrets-store-csi-driver-dnxf5       3/3     Running   0          3m35s
-aks-secrets-store-csi-driver-nf5h8       3/3     Running   0          3m35s
-aks-secrets-store-csi-driver-v4bql       3/3     Running   0          3m35s
-aks-secrets-store-provider-azure-82nps   1/1     Running   0          3m35s
-aks-secrets-store-provider-azure-s6lbd   1/1     Running   0          3m35s
-aks-secrets-store-provider-azure-tcc7f   1/1     Running   0          3m35s
-```
-
-</details>
-
-### Creating a ServiceAccount
-
-In order to use the Secret Store CSI driver, we need to create a SecretProviderClass. This is a Kubernetes object that tells the Secret Store CSI driver which secrets to mount and where to mount them. 
-
-The authentication to the Azure Key Vault will be implemented using [workload identity](https://learn.microsoft.com/azure/aks/csi-secrets-store-identity-access#access-with-an-azure-ad-workload-identity-preview?WT.mc_id=containers-105184-pauyu). This will allow the pod to use an Azure user-assigned managed identity to authenticate to the Azure Key Vault.
-
-To do this, we need to create a [ServiceAccount](https://kubernetes.io/docs/concepts/security/service-accounts/), link it to the Azure managed identity, and attach it to the pod.
-
-<div class="task" data-title="Task">
-
-> Run the following command to get the the client ID for the user-assigned managed identity.
-
-</div>
-
-```bash
-USER_ASSIGNED_CLIENT_ID=$(az identity show \
-  --resource-group $RG_NAME \
-  --name $AKS_NAME-identity \
-  --query clientId -o tsv)
-```
-
-Next, we need to create a ServiceAccount and annotate it with the Azure managed identity client ID.
-
-<div class="task" data-title="Task">
-
-> Set some variables we will use to create our ServiceAccount manifest. We need the namespace name that your app is deployed into and a service account name. We'll use the default namespace and `azure-voting-app-serviceaccount` for the service account name.
-
-</div>
-
-```bash
-SERVICE_ACCOUNT_NAMESPACE=default
-SERVICE_ACCOUNT_NAME=azure-voting-app-serviceaccount
-```
-
-<div class="task" data-title="Task">
-
-> Now run the following command to create the ServiceAccount manifest using the values we've set above.
-
-</div>
-
-```bash
-cat <<EOF > azure-voting-app-serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  annotations:
-    azure.workload.identity/client-id: ${USER_ASSIGNED_CLIENT_ID}
-  labels:
-    azure.workload.identity/use: "true"
-  name: ${SERVICE_ACCOUNT_NAME}
-  namespace: ${SERVICE_ACCOUNT_NAMESPACE}
-EOF
-```
-
-<div class="task" data-title="Task">
-
-> Run the following command to apply the ServiceAccount manifest.
-
-</div>
-
-```bash
-kubectl apply -f azure-voting-app-serviceaccount.yaml
-```
-
-### Creating a SecretProviderClass
-
-Now, we need to create a SecretProviderClass which will tell the Secret Store CSI driver which secrets to mount and where to retrieve them from. Here we need the `clientID` of the Azure managed identity, the name of the Azure Key Vault, and the tenant ID of the Azure Key Vault. 
-
-We should have the `clientID` and the Azure Key Vault name from steps above. To get the tenant ID, we can use the `az identity show` command again.
-
-<div class="task" data-title="Task">
-
-> Run the following commands to retrieve information the `tenantId`.
-
-</div>
-
-```bash
-TENANT_ID=$(az identity show \
-  --resource-group $RG_NAME \
-  --name $AKS_NAME-identity \
-  --query tenantId -o tsv)
-```
-
-<div class="task" data-title="Task">
-
-> Run the following command to needed to create a YAML manifest for the SecretProviderClass.
-
-</div>
-
-```bash
-cat <<EOF > azure-voting-app-secretproviderclass.yaml
-apiVersion: secrets-store.csi.x-k8s.io/v1
-kind: SecretProviderClass
-metadata:
-  name: azure-keyvault-secrets                 # This needs to be unique per namespace
-spec:
-  provider: azure
-  parameters:
-    usePodIdentity: "false"
-    useVMManagedIdentity: "false"
-    clientID: "${USER_ASSIGNED_CLIENT_ID}"     # Setting this to use workload identity
-    keyvaultName: ${AKV_NAME}                  # Set to the name of your key vault
-    objects:  |
-      array:
-        - |
-          objectName: database-user            # The name of the secret in the key vault
-          objectType: secret                   # The type of the secret in the key vault
-        - |
-          objectName: database-password
-          objectType: secret
-    tenantId: "${TENANT_ID}"                   # The tenant ID of the key vault
-EOF
-```
-
-<div class="info" data-title="Info">
-
-> The `objects` property in the manifest is an array of objects that tells the Secret Store CSI driver which secrets to pull out of the Azure Key Vault. 
-> 
-> The `clientID` property tells the Secret Store CSI driver which managed identity to use to authenticate to the Azure Key Vault.
-
-</div>
-
-<div class="task" data-title="Task">
-
-> Run the following command to apply the SecretProviderClass manifest.
-
-</div>
-
-```bash
-kubectl apply -f azure-voting-app-secretproviderclass.yaml
-```
-
-### Updating the database deployment
-
-Finally, we need to update our database and app deployments to use the ServiceAccount and mount the secrets into each pod as files. 
-
-Our application code is written to read secrets from files, so all we need to do is make these files available to the pod on a path that the application is expecting. 
-
-In this case, secret files are expected to be in the `/mnt/secrets-store` directory.
-
-<div class="task" data-title="Task">
-
-> Open the `azure-voting-db-deployment.yaml` file and replace your entire `env:` block with this.
-
-</div>
-
-```yaml
-env:
-  - name: POSTGRES_USER_FILE
-    value: "/mnt/secrets-store/database-user"
-  - name: POSTGRES_PASSWORD_FILE
-    value: "/mnt/secrets-store/database-password"
-```
-
-<div class="task" data-title="Task">
-
-> Directly underneath the `env:` block add this to mount the secrets into the container.
-
-</div>
-
-```yaml
-volumeMounts:
-  - name: azure-voting-db-secrets
-    mountPath: "/mnt/secrets-store"
-    readOnly: true
-```
-
-<div class="task" data-title="Task">
-
-> Next add a new line after the `volumeMounts:` block and add the code below to enable the pod to use the ServiceAccount and add a volume to mount the secrets into. Make sure both `serviceAccountName:` and `volumes:` are indented to the same level as `containers:`.
-
-</div>
-
-```yaml
-serviceAccountName: azure-voting-app-serviceaccount
-volumes:
-  - name: azure-voting-db-secrets
-    csi:
-      driver: secrets-store.csi.k8s.io
-      readOnly: true
-      volumeAttributes:
-        secretProviderClass: azure-keyvault-secrets
-```
-
-Here, we are telling Kubernetes to use the `azure-voting-app-serviceaccount` ServiceAccount and attach a volume to the pod using the `azure-keyvault-secrets` SecretProviderClass.
-
-The `azure-keyvault-secrets` SecretProviderClass will tell the Secret Store CSI driver to mount the secrets from the Azure Key Vault into the pod.
-
-Your final `azure-voting-db-deployment.yaml` file should look like this.
-
-<details>
-<summary>Click to expand code</summary>
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  creationTimestamp: null
-  labels:
-    app: azure-voting-db
-  name: azure-voting-db
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: azure-voting-db
-  strategy: {}
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        app: azure-voting-db
-    spec:
-      containers:
-        - image: postgres
-          name: postgres
-          resources: {}
-          env:
-            - name: POSTGRES_USER_FILE
-              value: "/mnt/secrets-store/database-user"
-            - name: POSTGRES_PASSWORD_FILE
-              value: "/mnt/secrets-store/database-password"
-          volumeMounts:
-            - name: azure-voting-db-secrets
-              mountPath: "/mnt/secrets-store"
-              readOnly: true
-      serviceAccountName: azure-voting-app-serviceaccount
-      volumes:
-        - name: azure-voting-db-secrets
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: azure-keyvault-secrets
-status: {}
-```
-
-</details>
-
-### Updating the app deployment
-
-Let's do the same for the app deployment.
-
-<div class="task" data-title="Task">
-
-> Open the `azure-voting-app-deployment.yaml` file and do the same thing for the app deployment. Replace your entire `env:` block with this.
-
-</div>
-
-```yaml
-env:
-  - name: FIRST_VALUE
-    value: "Dogs"
-  - name: SECOND_VALUE
-    value: "Cats"
-  - name: DATABASE_SERVER
-    value: "azure-voting-db"
-```
-
-<div class="task" data-title="Task">
-
-> Add this to mount the secrets into the container.
-
-</div>
-
-```yaml
-volumeMounts:
-  - name: azure-voting-db-secrets
-    mountPath: "/mnt/secrets-store"
-    readOnly: true
-```
-
-<div class="task" data-title="Task">
-
-> Finally add this to enable the pod to use the service account and add a volume to mount the secrets into.
-
-</div>
-
-```yaml
-serviceAccountName: azure-voting-app-serviceaccount
-volumes:
-  - name: azure-voting-db-secrets
-    csi:
-      driver: secrets-store.csi.k8s.io
-      readOnly: true
-      volumeAttributes:
-        secretProviderClass: azure-keyvault-secrets
-```
-
-<details>
-<summary>Click to expand code</summary>
-
-The updated YAML to look like the following:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  creationTimestamp: null
-  labels:
-    app: azure-voting-app
-  name: azure-voting-app
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: azure-voting-app
-  strategy: {}
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        app: azure-voting-app
-    spec:
-      containers:
-        - image: <REPLACE_THIS_WITH_YOUR_ACR_NAME>.azurecr.io/azure-voting-app:latest
-          name: azure-voting-app
-          ports:
-            - containerPort: 8080
-          resources: {}
-          env:
-            - name: FIRST_VALUE
-              value: "Dogs"
-            - name: SECOND_VALUE
-              value: "Cats"
-            - name: DATABASE_SERVER
-              value: "azure-voting-db"
-          volumeMounts:
-            - name: azure-voting-db-secrets
-              mountPath: "/mnt/secrets-store"
-              readOnly: true
-      serviceAccountName: azure-voting-app-serviceaccount
-      volumes:
-        - name: azure-voting-db-secrets
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: azure-keyvault-secrets
-status: {}
-```
-
-</details>
-
-### Deploying the updated YAML files
-
-<div class="task" data-title="Task">
-
-> Deploy the updated YAML files to your cluster.
-
-</div>
-
-```bash
-kubectl apply -f azure-voting-db-deployment.yaml
-kubectl apply -f azure-voting-app-deployment.yaml
-```
-
-<div class="task" data-title="Task">
-
-> Check the status of the Deployments, Pods, and Services. You should see the following:
-
-</div>
-
-```bash
-kubectl get deployments,pods,services
-```
-
-<details>
-<summary>Click to expand output</summary>
-
-```text
-NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/azure-voting-app   1/1     1            1           23m
-deployment.apps/azure-voting-db    1/1     1            1           23m
-
-NAME                                    READY   STATUS    RESTARTS   AGE
-pod/azure-voting-app-756dc858f8-b4rkx   2/2     Running   0          22m
-pod/azure-voting-db-59f4d48797-djt4z    2/2     Running   0          23m
-
-NAME                       TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-service/azure-voting-app   ClusterIP   10.0.110.128   <none>        8080/TCP   10h
-service/azure-voting-db    ClusterIP   10.0.58.27     <none>        5432/TCP   10h
-service/kubernetes         ClusterIP   10.0.0.1       <none>        443/TCP    12h
-```
-
-</details>
-
-<div class="info" data-title="Info">
-
-> Now that secrets are pulled from Azure KeyVault using the Secrets Store CSI driver and mounted directly into the pods, the secrets end up as files in the pod which no one else can read. The base container image that we used to host the app does not have shell access; therefore, no one can interactively log into the container and read these secret files 😎🔒
-
-</div>
-
-<div class="task" data-title="Task">
-
-> Run the following command to enable port forwarding to the app service again to see if the app is working.
-
-</div>
-
-```bash
-kubectl port-forward service/azure-voting-app 8080:8080
-```
-
-Open a browser and navigate to http://localhost:8080. You should see the voting app is working again.
-
-After testing stop the app by pressing `Ctrl+C` in the terminal.
-
----
-
-## Persisting data
-
-Databases need to store data, but pods are ephemeral. If the database pod is deleted or restarted, the data will be lost.
-
-To illustrate the problem, let's see what happens when we restart the database and app pods.
-
-<div class="task" data-title="Task">
-
-> Run the following command to delete the database and app pods. Kubernetes will automatically restart them.
-
-</div>
-
-```bash
-kubectl delete pod --all
-```
-
-Wait for the pods to restart and then run the `kubectl port-forward` command again, and refresh the browser. You should see that the votes have been reset to 0 😭
-
-### Creating a PVC for PGDATA
-
-When a PostgreSQL container is created, its data (`PGDATA`) points to a local directory (e.g., `/var/lib/postgresql/data`). When the pod crashes or restarts, the container starts with a clean slate and the data is gone.
-
-This can be solved by leveraging persistent storage; more specifically, by taking advantage of the [Azure CSI drivers and storage classes](https://learn.microsoft.com/azure/aks/csi-storage-drivers?WT.mc_id=containers-105184-pauyu) that have been pre-deployed into your AKS cluster.
-
-<div class="task" data-title="Task">
-
-> Run the following command to see the storage classes that are available in your cluster.
-
-</div>
+Run the following command to get the list of storage classes in your AKS cluster.
 
 ```bash
 kubectl get storageclasses
 ```
 
-<details>
-<summary>Click to expand output</summary>
-
-```text
-NAME                    PROVISIONER          RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-azurefile               file.csi.azure.com   Delete          Immediate              true                   5h22m
-azurefile-csi           file.csi.azure.com   Delete          Immediate              true                   5h22m
-azurefile-csi-premium   file.csi.azure.com   Delete          Immediate              true                   5h22m
-azurefile-premium       file.csi.azure.com   Delete          Immediate              true                   5h22m
-default (default)       disk.csi.azure.com   Delete          WaitForFirstConsumer   true                   5h22m
-managed                 disk.csi.azure.com   Delete          WaitForFirstConsumer   true                   5h22m
-managed-csi             disk.csi.azure.com   Delete          WaitForFirstConsumer   true                   5h22m
-managed-csi-premium     disk.csi.azure.com   Delete          WaitForFirstConsumer   true                   5h22m
-managed-premium         disk.csi.azure.com   Delete          WaitForFirstConsumer   true                   5h22m
-```
-
-</details>
-
-Typically for persistent storage, you would create a [Persistent Volume (PV)](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) and [Persistent Volume Claim (PVC)](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims) to request storage. However, the Azure CSI drivers allow you to create a PVC and have the storage classes create the PV for you using Azure Storage.
-
-We'll create a PVC using the `managed-csi` storage class. This will create a managed disk in Azure.
-
-<div class="task" data-title="Task">
-
-> Create a new `azure-voting-app-pvc.yaml` manifest.
-
-</div>
+We need to update the RabbitMQ StatefulSet to use a PVC. Run the following command to get the YAML manifest for the RabbitMQ StatefulSet.
 
 ```bash
-cat <<EOF > azure-voting-app-pvc.yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-azuredisk
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: managed-csi
-EOF
+kubectl get statefulset rabbitmq -o yaml > rabbitmq-statefulset.yaml
 ```
 
-<div class="task" data-title="Task">
-
-> Apply the manifest to create the PVC.
-
-</div>
+Open the `rabbitmq-statefulset.yaml` file using the nano text editor.
 
 ```bash
-kubectl apply -f azure-voting-app-pvc.yaml
+nano rabbitmq-statefulset.yaml
 ```
 
-### Updating the database manifest to be a StatefulSet and use the PVC
-
-With the PVC created, we can now update the `azure-voting-db-deployment.yaml` manifest to use it.
-
-<div class="info" data-title="Info">
-
-> Now that we are using a PVC, we should update our database manifest to use a [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/) instead of a Deployment. This will ensure that the PVC is not deleted when the pod is deleted.
-
-</div>
-
-<div class="task" data-title="Task">
-
-> Open the `azure-voting-db-deployment.yaml` manifest and change `kind: Deployment` to `kind: StatefulSet`.
-> 
-> Also, since we are using a StatefulSet, we need to remove the ` strategy: {}` section from the manifest.
->
-> Next, add an additional volume to the pod. You should already have a `volumes` section in the YAML, add the following YAML to the end of the `volumes` section.
-
-</div>
+Add the following PVC spec to the `rabbitmq-statefulset.yaml` file. This will create a PVC that requests 1Gi of storage using the `managed-csi` storage class.
 
 ```yaml
-- name: azure-voting-db-data
-  persistentVolumeClaim:
-    claimName: pvc-azuredisk
-```
-
-<div class="task" data-title="Task">
-
-> Also in the `azure-voting-db-deployment.yaml` manifest, add a volume mount to the container definition. You should already have a `volumeMounts` section in the YAML. Add the following YAML to the end of the `volumeMounts` section.
-
-```yaml
-- name: azure-voting-db-data
-  mountPath: "/var/lib/postgresql/data"
-  subPath: "data"
-```
-
-<div class="info" data-title="Info">
-
-> The `subPath` property allows us to mount a subdirectory of the volume into the container.
-
-</div>
-
-Your `azure-voting-db-deployment.yaml` file should now look like this:
-
-<details>
-<summary>Click to expand code</summary>
-
-```yaml
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  creationTimestamp: null
-  labels:
-    app: azure-voting-db
-  name: azure-voting-db
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: azure-voting-db
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        app: azure-voting-db
+volumeClaimTemplates:
+  - metadata:
+      name: rabbitmq-data
     spec:
-      containers:
-        - image: postgres
-          name: postgres
-          resources: {}
-          env:
-            - name: POSTGRES_USER_FILE
-              value: "/mnt/secrets-store/database-user"
-            - name: POSTGRES_PASSWORD_FILE
-              value: "/mnt/secrets-store/database-password"
-          volumeMounts:
-            - name: azure-voting-db-secrets
-              mountPath: "/mnt/secrets-store"
-              readOnly: true
-            - name: azure-voting-db-data
-              mountPath: "/var/lib/postgresql/data"
-              subPath: "data"
-      serviceAccountName: azure-voting-app-serviceaccount
-      volumes:
-        - name: azure-voting-db-secrets
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: azure-keyvault-secrets
-        - name: azure-voting-db-data
-          persistentVolumeClaim:
-            claimName: pvc-azuredisk
-
-status: {}
+      storageClassName: managed-csi
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
 ```
 
-</details>
+<div class="warning" data-title="Warning">
 
-<div class="task" data-title="Task">
-
-> Run the following command to delete the original db deployment and deploy a new statefulset.
+> There are many `spec` items in the manifest, you want to add the code snippet at the top of the first `spec` section
 
 </div>
+
+Keep the file open, navigate to the pod template spec and add an additional volume that references the PVC.
+
+```yaml
+- name: rabbitmq-data
+  persistentVolumeClaim:
+    claimName: rabbitmq-data
+```
+
+Finally in the container spec, add a volume mount that references the volume.
+
+```yaml
+- mountPath: /var/lib/rabbitmq/mnesia
+  name: rabbitmq-data
+```
+
+Save the file and exit the nano text editor.
+
+<div class="info" data-title="Info">
+
+> For more information on RabbitMQ and persistent storage, see the [RabbitMQ documentation](https://www.rabbitmq.com/docs/relocate) and this [blog post](https://www.rabbitmq.com/blog/2020/08/10/deploying-rabbitmq-to-kubernetes-whats-involved).
+
+</div>
+
+Run the following command to replace the RabbitMQ StatefulSet with the updated manifest.
 
 ```bash
-kubectl delete deploy azure-voting-db
+kubectl delete statefulset rabbitmq
+kubectl apply -f rabbitmq-statefulset.yaml
 ```
 
-<div class="task" data-title="Task">
+A `volumeClaimTemplates` section was added to the RabbitMQ StatefulSet manifest. This section defines a PVC that requests 1Gi of storage using the `managed-csi` storage class. The PVC is automatically created by the storage class and is bound to an Azure Disk.
 
-> Now run the following command to apply the updated manifest.
-
-</div>
-
-```bash
-kubectl apply -f azure-voting-db-deployment.yaml
-```
-
-<div class="task" data-title="Task">
-
-> Run the following command to see the status of the PVC.
-
-</div>
+You can check the status of the PVC by running the following command.
 
 ```bash
 kubectl get pvc
 ```
 
-<details>
-<summary>Click to expand output</summary>
-
-You should see the following output with a `STATUS` of `Bound`. This means the PVC has been successfully created and is ready to be used by the pod.
+If you see STATUS as `Bound`, the PVC has been successfully created and is ready to be used by the RabbitMQ pod. You can also see that the Azure Disk has been created in the AKS cluster's managed resource group by running the following command.
 
 ```bash
-NAME            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS          AGE
-pvc-azuredisk   Bound    pvc-e25b6853-21c9-493c-8d19-f4bae2e29be8   10Gi       RWO            managed-csi           2m9s
+az resource list \
+  -g $(az aks show --name $AKS_NAME --resource-group $RG_NAME --query nodeResourceGroup -o tsv) \
+  --resource-type Microsoft.Compute/disks \
+  --query "[?contains(name, 'pvc')]" \
+  -o table
 ```
 
-</details>
+Now, let's test the durability of the RabbitMQ data by creating a queue and then deleting the RabbitMQ pod. Run the following command to port-forward to the RabbitMQ management UI.
 
-<div class="task" data-title="Task">
+```bash
+kubectl port-forward svc/rabbitmq 15672:15672
+```
 
-> Run the following command to check the status of the database pod.
+Open a browser and navigate to `http://localhost:15672`. Log in with the username `username` and password `password`. Click on the **Queues** tab then click on **Add a new queue** and create a new queue called `test`.
+
+<div class="info" data-title="Note">
+
+> Make sure the **Durability** option is set to **Durable**. This will ensure that the queue is persisted to disk.
 
 </div>
 
+Back in the terminal, run the following command to delete the RabbitMQ pod.
+
 ```bash
-kubectl get pod -l app=azure-voting-db
+kubectl delete pod rabbitmq-0
 ```
 
-<div class="task" data-title="Task">
+After a few seconds, Kubernetes will do what it does best and recreate the RabbitMQ pod. At this point the port-forward to the RabbitMQ service will be broken, so run the port-forward command again and reload the RabbitMQ management UI in the browser. Navigate back to the **Queues** tab and you should see the `test` queue you created earlier. This is because the we mounted the Azure Disk to the `/var/lib/rabbitmq/mnesia` path and all RabbitMQ data now persists across pod restarts.
 
-> When the database pod is running, use the `kubectl port-forward` command to access the app again.
-> 
-> Refresh the browser, add some votes, then delete the pods as we did at the beginning of this section.
+## Replace RabbitMQ with Azure Service Bus
+
+As you can see, Kubernetes is great for stateless applications especially with Azure storage backing it. But running stateful applications like RabbitMQ in a highly available and durable way can be challenging and might not be something you would want to manage yourself. This is where integrating with a managed service like [Azure Service Bus](https://learn.microsoft.com/azure/service-bus-messaging/service-bus-messaging-overview) can help. Azure Service Bus is a fully managed enterprise message broker with message queues and publish-subscribe topics very similar to RabbitMQ. The sample application has been written to use the AMQP protocol which is supported by both RabbitMQ and Azure Service Bus, so we can easily switch between the two.
+
+### Create Azure Service Bus namespace and queue
+
+In the Azure portal, search for **Service Bus**, click on **Service Bus** under **Services** then click on the **Create service bus namespace** button.
+
+![Azure portal service bus](./assets/azure-portal-service-bus.png)
+
+Fill in the required fields and click **Create**.
+
+- **Resource group**: Select the resource group where your AKS cluster is deployed.
+- **Namespace name**: Enter a unique name for the namespace (should be globally unique and lower case).
+- **Location**: Select the same location as your AKS cluster.
+- **Pricing tier**: Select **Basic**.
+
+Click on the **Review + create** button then click **Create**.
+
+Once the namespace is created, click on the **Go to resource** button.
+
+![Azure portal service bus namespace created](./assets/azure-portal-service-bus-namespace-created.png)
+
+In the **Overview** section, click on the **+ Queue** button at the top to create a new queue.
+
+![Azure portal service bus queue create](./assets/azure-portal-service-bus-queue-create.png)
+
+In the **Create queue** window, set the name of the queue to `orders` and click **Create**.
+
+![Azure portal service bus queue configuration](./assets/azure-portal-service-bus-queue-configuration.png)
+
+### Create a user-assigned managed identity
+
+In order for the order-service application to authenticate with Azure Service Bus, we need to create a user-assigned managed identity. In the Azure portal, search for **Managed Identities**, click on **Managed Identities** under **Services** then click on the **+ Create** button.
+
+![Azure portal managed identity](./assets/azure-portal-managed-identity.png)
+
+Fill in the required fields
+
+- **Resource group**: Select the resource group where your AKS cluster is deployed.
+- **Name**: You can use the same name as the Service Bus namespace.
+
+Click **Review + create** then click **Create**.
+
+### Integrate Azure Services with AKS using Service Connector
+
+Here is where the authentication magic happens. We will use the [AKS Service Connector](https://learn.microsoft.com/azure/service-connector/overview) to connect the order-service application to Azure Service Bus. The AKS Service Connector is a new feature that greatly simplifies the process of configuring [Workload Identity](https://learn.microsoft.com/azure/aks/workload-identity-overview?tabs=dotnet) for your applications running on AKS. [Workload Identity](https://learn.microsoft.com/entra/workload-id/workload-identities-overview) is a feature that allows you to assign an identity to a Pod and use that identity to authenticate with Microsoft Entra ID to access Azure services.
+
+<div class="info" data-title="Note">
+
+> Workload Identity is the recommended way to authenticate with Azure services from your applications running on AKS. It is more secure than using service principals and does not require you to manage credentials in your application. To read more about the implementation of Workload Identity for Kubernetes, see [this doc](https://azure.github.io/azure-workload-identity/docs/).
 
 </div>
 
-When you refresh the browser, you should see that the vote data has persisted even though the pods were deleted 😎
+In the Azure portal, navigate to the AKS cluster you created earlier. In the left-hand menu, click on **Service Connector (Preview)** under **Settings** then click on the **+ Create** button.
 
----
+![Azure portal AKS service connector](./assets/azure-portal-aks-service-connector.png)
 
-## Sharing your app
+In the **Basics** tab, enter the following details:
 
-Up until now, we've been accessing our app using port forwarding. This is great for testing, but not very useful if you want users to use your app.
+- **Kubernetes namespace**: Enter **default**
+- **Service type**: Select **Service Bus**
 
-To expose your app to users, we can leverage the newly announced [Istio service mesh add-on for AKS](https://learn.microsoft.com/azure/aks/istio-deploy-addon?WT.mc_id=containers-105184-pauyu). Istio is a service mesh that provides a lot of useful features, including [security, observability, traffic management, and more](https://istio.io/latest/docs/concepts/). We won't be using all the features of Istio, We will however, leverage the [Ingress Gateway](https://istio.io/latest/docs/tasks/traffic-management/ingress/ingress-control/) to expose our app outside of the cluster.
+Leave the rest of the fields as their default values and click **Next: Authentication**.
 
-### Setting up Istio
+In the **Authentication** tab, select the **Workload Identity** option and select the user-assigned managed identity you created earlier.
 
-The Istio add-on has already been installed in your AKS cluster with an external ingress gateway enabled.
+Click **Next: Networking** then click **Next: Review + create** and finally click **Create**.
 
-<div class="task" data-title="Task">
-
-> If you run the following command, you should see the Ingress Gateway service has been provisioned using a Load Balancer and it has an external IP address.
-
-</div>
-
-```bash
-kubectl get service -n aks-istio-ingress
-```
-
-<details>
-<summary>Click to expand output</summary>
-
-Note the `NAME` and `EXTERNAL-IP` of the service. The `NAME` will be used when we create our Istio resources to expose our app and the `EXTERNAL-IP` address will be used to access our app.
-
-```text
-NAME                                TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)                                      AGE
-aks-istio-ingressgateway-external   LoadBalancer   10.0.182.197   20.252.61.166   15021:30831/TCP,80:30738/TCP,443:31546/TCP   40m
-```
-
-</details>
-
-Istio works by injecting a sidecar container into each pod. This sidecar container is responsible for handling all the traffic to and from containers in the pod. This sidecar can be manually injected in your deployments or you can tell Istio to automatically inject Istio sidecars.
-
-<div class="task" data-title="Task">
-
-> Label the `default` namespace so that Istio will automatically inject the sidecar into our pods.
-
-</div>
-
-```bash
-kubectl label namespace default istio.io/rev=asm-1-17
-```
-
-Our deployments do not have a sidecar container. Let's redeploy our manifests to trigger Istio to inject sidecar containers into our pods.
-
-<div class="task" data-title="Task">
-
-> Run the following commands to delete the app.
-
-</div>
-
-```bash
-kubectl delete -f azure-voting-db-deployment.yaml
-kubectl delete -f azure-voting-app-deployment.yaml
-```
-
-<div class="task" data-title="Task">
-
-> Now we can run the following commands to re-deploy the app.
-
-</div>
-
-```bash
-kubectl apply -f azure-voting-db-deployment.yaml
-kubectl apply -f azure-voting-app-deployment.yaml
-```
 <div class="info" data-title="Info">
 
-> With our namespace labeled, Istio will automatically inject the sidecar container into our pods.
+> This process will take a few minutes as the Service Connector does some work behind the scenes to configure Workload Identity for the order-service application. Some of the tasks include assigning the proper Azure role permissions to the [managed identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) to access the Service Bus, creating a [Federated Credential](https://learn.microsoft.com/entra/workload-id/workload-identity-federation) to establish trust between the Kubernetes cluster and the managed identity, creating a Kubernetes [ServiceAccount](https://kubernetes.io/docs/concepts/security/service-accounts/) with a link back to the managed identity, and finally creating a Kubernetes [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) with the Service Bus endpoint information.
 
 </div>
 
-<div class="task" data-title="Task">
+Once the Service Connector for Azure Service Bus has been created, you can configure the order-service application to use the Service Bus connection details.
 
-> Run the following command to see the status of the pods. You should now see each pod is running two containers, the app container and the Istio sidecar container.
+In the Service Connector page, select the checkbox next to the Service Bus connection and click the **Yaml snippet** button.
 
-</div>
+![Azure portal AKS service connector yaml snippet](./assets/azure-portal-aks-service-connector-yaml-snippet.png)
+
+In the **YAML snippet** window, select **Kubernetes Workload** for **Resource type**, then select **order-service** for **Kubernetes Workload**.
+
+![Azure portal AKS service connector yaml snippet for order-service](./assets/azure-portal-aks-service-connector-yaml-snippet-order-service.png)
+
+You will see the YAML manifest for the order-service application with the highlighted edits required to connect to Azure Service Bus via Workload Identity.
+
+Click **Apply** to apply the changes to the order-service application. This will redeploy the order-service application with the new connection details. But since the original order-service deployment was created specifically to connect to RabbitMQ, we need to update the deployment to remove some of the RabbitMQ specific information.
+
+The order-service is designed to use multiple authentication methods. We need to add one environment variable to the order-service deployment to tell it to connect to the Azure Service Bus using workload identity.
+
+Run the following command to patch the order-service deployment.
 
 ```bash
-kubectl get pods
+# add the USE_WORKLOAD_IDENTITY_AUTH environment variable
+kubectl patch deployment order-service --type='json' -p='[
+  {
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/env/-",
+    "value": {
+      "name": "USE_WORKLOAD_IDENTITY_AUTH",
+      "value": "true"
+    }
+  }
+]'
+
+# remove the RabbitMQ specific environment variables
+kubectl patch deployment order-service --type='json' -p='[
+  { "op": "remove", "path": "/spec/template/spec/containers/0/env/3" },
+  { "op": "remove", "path": "/spec/template/spec/containers/0/env/2" },
+  { "op": "remove", "path": "/spec/template/spec/containers/0/env/1" },
+  { "op": "remove", "path": "/spec/template/spec/containers/0/env/0" }
+]'
+
+# remove the RabbitMQ init container
+kubectl patch deployment order-service --type='json' -p='[
+  { "op": "remove", "path": "/spec/template/spec/initContainers" }
+]'
 ```
 
-<details>
-<summary>Click to expand output</summary>
+<div class="info" data-title="Info">
 
-```text
-NAME                                READY   STATUS    RESTARTS   AGE
-azure-voting-app-777cbb5494-8tnc7   2/2     Running   0          44s
-azure-voting-db-0                   2/2     Running   0          46s
-azure-voting-db-765c8d56c4-snq96    1/1     Running   0          4m10s
-```
-
-</details>
-
-### Exposing the app using the Istio Ingress Gateway
-
-Now that we have Istio installed and our app is running with the Istio sidecar, we can expose our app to the world using the Ingress Gateway. To do this, we need to implement two custom resources that got installed in the AKS cluster when Istio was installed. We will use the [Gateway](https://istio.io/latest/docs/reference/config/networking/gateway/) and [Virtual Service](https://istio.io/latest/docs/reference/config/networking/virtual-service/) resources to route traffic to our app.
-
-<div class="task" data-title="Task">
-
-> Run the following commands to create the Istio Ingress Gateway resource.
+> The `USE_WORKLOAD_IDENTITY_AUTH` environment variable is used to tell the order-service application to use Workload Identity to authenticate with Azure Service Bus. The other environment variables are removed because they are specific to RabbitMQ.
 
 </div>
+
+With Azure Service Bus in place, RabbitMQ isn't needed anymore, so run the following commands to delete it.
+
+```bash
+kubectl delete statefulset rabbitmq
+kubectl delete service rabbitmq
+```
+
+Browse to the store-front application again, add an item to the cart, and checkout, you should see the order appear in the Azure Service Bus queue. To view the message in the queue, you can use the Azure portal or the Azure CLI.
+
+```bash
+# get the service bus namespace name
+SERVICEBUS_NAME=$(az servicebus namespace list -g $RG_NAME --query "[0].name" -o tsv)
+
+# get the active message count in the orders queue
+az servicebus queue show --resource-group $RG_NAME --namespace-name $SERVICEBUS_NAME --name orders --query "countDetails"
+```
+
+You should see 1 active message count in the queue.
+
+---
+
+# Application and Cluster Scaling
+
+In a enterprise production environment, the demands and resource usage of your workloads running on Azure Kubernetes Service (AKS) can be dynamic and change frequently. If your application requires more resources, it could be impacted due to the lack of clusters resources. One of the easiest ways to ensure your applications have enough resources from the cluster, is to scale your cluster to include more working nodes.
+
+There are several scenarios that would require your application and/or cluster the need to scale. If your application needs to respond to increased demand, we can scale your application across the cluster to meet demand. If your application has used all of the available resources from the cluster, we can scale the number of nodes in the cluster to meet demand as well.
+
+We will walk through the most popular options that allow you to scale your application and cluster to meet your workload demands.
+
+## Manually scaling your cluster
+
+Manually scaling your cluster gives you the ability to add or remove additional nodes to the cluster at any point in time, adding additional hardware resources to your cluster. Using manual scaling is good for dev/test and/or small production environments where reacting to changing workload utilization is not that important. In most production environments, you will want to set policies based on conditions to scale your cluster in a more automated fashion. Manually scaling you cluster gives you the ability to scale your cluster at the exact time you want, but your applications could potentially be in a degraded and/or offline state while the cluster is scaling up.
+
+With AKS Automatic, system pods and other critical components of the cluster are deployed to a system node pool. This node pool is managed by AKS and is not recommended to be scaled manually. Workloads like the AKS store demo app you deployed earlier are deployed to special nodes that are managed by a different feature of AKS and more on that later.
+
+Run the following command to view the current count of the system node pool.
+
+```bash
+az aks show \
+  --resource-group $RG_NAME \
+  --name $AKS_NAME \
+  --query "agentPoolProfiles[].{count: count, name: name}"
+```
+
+<div class="important" data-title="Important">
+
+> You could scale the system node pool by running the following command, but this may not be available in the future for AKS Automatic clusters.
+>
+> ```bash
+> az aks scale  \
+>   --resource-group $RG_NAME \
+>   --name $AKS_NAME \
+>   --node-count 4 \
+>   --nodepool-name systempool
+> ```
+
+</div>
+
+## Manually scaling your application
+
+In addition to you being able to manually scale the number of nodes in your cluster to add additional hardware resources, you can also manually scale your application workloads deployed in the cluster. In the scenario where your application is experiencing a lot of transactions, such as client interactions or internal API processing, you can manually scale the deployment to increase the number of replicas (instances) running to handle additional load.
+
+In the following example, we will view the current number of replicas running for the **store-front** service and then increase the number of replicas to 10.
+
+View the current number of replicas for the **store-front** service
+
+```bash
+kubectl get deployment store-front
+```
+
+Notice that there is currently only 1 replica running of the **store-front** service. Run the following command to scale the number of replicas for the store-front service to 10.
+
+```bash
+kubectl scale deployment store-front --replicas=10
+```
+
+Scaling to 10 replicas may take a moment. You can view the increased number of replicas by watching the **store-front** deployment.
+
+```bash
+kubectl get deployment store-front -w
+```
+
+When you see **READY** and **AVAILABLE** number of replicas as 10, press **Ctrl+C** to stop watching the deployment.
+
+The number of replicas represent the number of Pods running for the **store-front** service. You can view the Pods running for the **store-front** service by running the following command.
+
+```bash
+kubectl get pods --selector app=store-front
+```
+
+Scale the replica count of the **store-front** service back to 1.
+
+```bash
+kubectl scale deployment store-front --replicas=1
+```
+
+## Automatically scaling your application
+
+To automatically scale your deployments, you can use the [Horizontal Pod Autoscaler (HPA)](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) resource. This is a better approach to scale you application, as it allows you to automatically scale a workload based on the resource utilization of the Pods in the Deployment. The resource utilization is based on the CPU and memory requests and limits set in the Pod configuration, so it is important to set these values correctly to ensure the HPA can scale your application correctly.
+
+Let's first take a look and view the current CPU and memory requests and limits for the **store-front** deployment.
+
+```bash
+kubectl describe deployment store-front | grep -A 2 -E "Limits|Requests"
+```
+
+A description of the **store-front** deployment is returned. Under the Pod Template\Containers section, you should see the following limits and requests:
 
 ```yaml
-cat <<EOF > azure-voting-app-servicemesh.yaml
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: azure-voting-app-gateway
-spec:
-  selector:
-    istio: aks-istio-ingressgateway-external
-  servers:
-    - port:
-        number: 80
-        name: http
-        protocol: HTTP
-      hosts:
-        - "*"
+Limits:
+  cpu: 1
+  memory: 512Mi
+Requests:
+  cpu: 1m
+  memory: 200Mi
+```
+
+This configuration tells the Kubernetes scheduler to allocate up to 1 CPU and up to 512Mi of memory to the Pod. The Pod will be allocated at least 1m of CPU and 200Mi of memory. The HPA will use these values to determine when to scale the number of replicas of the **store-front** deployment.
+
+The simplest way to create an HPA is to use the `kubectl autoscale` command. Run the following command to create an HPA for the **store-front** deployment that will allow the HPA controller to increase or decrease the number of Pods from 1 to 10, based on the Pods keeping an average of 50% CPU utilization.
+
+```bash
+kubectl autoscale deployment store-front --cpu-percent=50 --min=1 --max=10
+```
+
+We can then verify that an HPA resource exists for the **store-front** deployment.
+
+```bash
+kubectl get hpa store-front
+```
+
+You may notice that the HPA autoscaler has already added an additional replica (instance) of the **store-front** deployment to meet the HPA configuration.
+
+We will now deploy an application to simulate additional client load to the **store-front** deployment. Run the following command to deploy a Pod that will generate additional load to the **store-front** deployment.
+
+```bash
+kubectl run load-generator --image=busybox:1.28 --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://store-front; done"
+```
+
+Take a look at the HPA resource for the **store-front** deployment to see if we have increased the need for replicas to meet the resource configuration.
+
+```bash
+kubectl get hpa store-front
+```
+
+You should see that the load generating application forced the automatic scaling of the **store-front** deployment to reach the maximum replica limit of 10.
+
+```bash
+NAME          REFERENCE                TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+store-front   Deployment/store-front   225%/50%   1         10        10         6m15s
+```
+
+Terminate the load generating Pod by running the following command.
+
+```bash
+kubectl delete pod load-generator --wait=false
+```
+
+Remove the HPA configuration for the **store-front** deployment by running the following command.
+
+```bash
+kubectl delete hpa store-front
+```
+
+## Automatically scaling your cluster
+
+So far as it relates to scaling, we have seen how to manually scale the cluster nodes, to allow more access to hardware recourses for running workloads, manually scaling your workload deployments to increase the number of instances of your application, and we have also seen how you can create an HPA autoscaler for your application workload deployment that will automatically scale your application depending on the amount of resources it utilizes.
+
+One thing to note, even though an HPA resource will automate the scaling of your application deployment, based on resource utilization, your application can still be affected if your cluster resources are exhausted. At that point, you will need to manually scale the number of nodes in the cluster to meet application demand.
+
+There is a more preferred approach and method for scaling your cluster that takes into account both the resource needs of your application and the cluster nodes utilization known as the Node Autoprovisioning (NAP) component. NAP is based on the Open Source [Karpenter](https://karpenter.sh/) project, and the [AKS provider](https://github.com/Azure/karpenter-provider-azure), which is also Open Source. NAP will automatically scale your cluster node pool to meet the demands of your application workloads, not only with additional nodes, but will find the most efficient VM configuration to host the demands of your workloads.
+
+To show how Node Autoprovisioning work, we will first scale down the node pool to have a single node.
+
+First we will check to see if NAP is configured for the cluster. Run the following command in the terminal.
+
+```bash
+az aks show \
+  --resource-group $RG_NAME \
+  --name $AKS_NAME \
+  --query "nodeProvisioningProfile"
+```
+
+You should see mode is set to **Auto**.
+
+<div class="important" data-title="Important">
+
+> The `nodeProvisioningProfile` property is currently available in preview versions of the Azure resource provider APIs, so you will need to install the `aks-preview` extension within Azure CLI to view the property.
+>
+> ```bash
+> az extension add --name aks-preview
+> ```
+
+</div>
+
+To activate NAP, run the following command to manually scale the **store-front** Deployment again.
+
+```bash
+kubectl scale deployment store-front --replicas=100
+```
+
+This should start to exhaust the currently single node and trigger NAP to auto provision additional nodes in the node pool to support the resource demand.
+
+If you run the following command, you should see some of the Pods for the **store-front** deployment are in a **Running** state and some are in a **Pending** state.
+
+```bash
+kubectl get pod --selector app=store-front -o wide
+```
+
+Note the **NODE** column to see which node the Pods are running on. Notice that the Pods that are in a **Pending** state are waiting for additional nodes to be provisioned by NAP.
+
+Run the following command to check the status of the nodes in the cluster.
+
+```bash
+kubectl get nodes -w
+```
+
+After a few minutes, you should see additional nodes being created to support the resource demand of the **store-front** deployment.
+
+## Using KEDA to manage HPA
+
+In the previous section, we saw how to use the Horizontal Pod Autoscaler (HPA) to automatically scale your application based on resource utilization. The HPA is a great way to scale your application based on CPU and memory utilization, but what if you want to scale your application based on other metrics like the number of messages in a queue, the length of a stream, or the number of messages in a topic?
+
+The [Kubernetes Event-driven Autoscaling (KEDA)](https://keda.sh/) project is a Kubernetes-based Event-Driven Autoscaler. KEDA allows you to scale your application workloads based on the number of events in a queue, the length of a stream, or the number of messages in a topic. KEDA can be installed manually in your AKS cluster but it is also available as an add-on to AKS and is automatically enabled in AKS Automatic clusters. When you use the AKS add-on for KEDA, it will be fully supported by Microsoft.
+
+In order to use KEDA, you can deploy a [ScaledObject](https://keda.sh/docs/2.15/reference/scaledobject-spec/) resource to scale long-running applications or deploy a [ScaledJob](https://keda.sh/docs/2.15/reference/scaledjob-spec/) resource to scale batch jobs. A ScaledObject is a custom resource that defines how to scale a deployment based on an external metric. The ScaledObject will watch the external metric and scale the deployment based on the metric value.
+
+Having to learn and write the ScaledObject resource manifest can be a bit challenging, so AKS provides a simpler way to create a ScaledObject resource using the Azure portal. In the Azure portal, navigate to the AKS cluster you created earlier. In the left-hand menu, click on **Application scaling** under **Settings** then click on the **+ Create** button.
+
+![Azure portal AKS application scaling](./assets/azure-portal-aks-application-scaling.png)
+
+In the **Basics** tab, enter the following details:
+
+- **Name**: Enter **store-front**
+- **Namespace**: Select **default**
+- **Target workload**: Select **store-front**
+- **Minimum replicas**: Enter **1**
+- **Maximum replicas**: Enter **10**
+- **Trigger type**: Select **CPU**
+
+Leave the rest of the fields as their default values and click \*_Next_.
+
+In the **Review + create** tab, click **Customize with YAML** to view the YAML manifest for the ScaledObject resource.
+
+![Azure portal AKS application scaling yaml](./assets/azure-portal-aks-application-scaling-yaml.png)
+
+You can see the YAML manifest the AKS portal generated for the ScaledObject resource. Here you can add additional configuration to the ScaledObject resource if needed.
+
+![Azure portal AKS application scaling yaml manifest](./assets/azure-portal-aks-application-scaling-yaml-manifest.png)
+
+Click **Save and create** to create the ScaledObject resource.
+
+Header over to the **Workloads** section in the left-hand menu and click on **Deployments**. In the **Filter by deployment name** field, enter **store-front** to view the **store-front** Deployment. You should see the **store-front** Deployment is now running 2 replicas.
+
+Also, if you run the following command, you should see a HPA resource named **keda-hpa-store-front** which KEDA created and is managing for the **store-front** Deployment.
+
+```bash
+kubectl get hpa
+```
+
+This was a simple example of using using KEDA. But using KEDA over the HPA for CPU and memory utilization doesn't give you lot to differentiate the experience. The real power of KEDA comes from its ability to scale your application based on external metrics like the number of messages in a queue, the length of a stream, the number of messages in a topic, or based on a custom schedule using CRON expressions. There are many [scalers](https://keda.sh/docs/2.15/scalers/) available for KEDA that you can use to scale your application based on a variety of external metrics.
+
 ---
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: azure-voting-app-virtualservice
-spec:
-  hosts:
-    - "*"
-  gateways:
-    - azure-voting-app-gateway
-  http:
-    - route:
-        - destination:
-            host: azure-voting-app
-            port:
-              number: 8080
-EOF
-```
 
-Here, we are creating a `Gateway` resource that will route traffic to our app using the `aks-istio-ingressgateway-external` service. This service was automatically created for you when the Istio Ingress Gateway was deployed. The gateway will listen on port 80 and route traffic to any host. 
+# Observability
 
-The manifest above also creates a `VirtualService` resource that will route traffic to our backend `Service` resource via the Gateway.
+Monitoring and observability are key components of running applications in production. With AKS Automatic, you get a lot of monitoring and observability features enabled out-of-the-box. If you recall from the beginning of the workshop, we created an [Azure Log Analytics Workspace](https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-overview) with [Container Insights](https://learn.microsoft.com/azure/azure-monitor/containers/container-insights-overview) to collect application logs, [Azure Monitor Managed Workspace](https://learn.microsoft.com/azure/azure-monitor/containers/kubernetes-monitoring-enable?tabs=cli) to with [Prometheus recording rules](https://learn.microsoft.com/azure/azure-monitor/containers/prometheus-metrics-scrape-default) enabled to capture metrics from workloads within the cluster, and [Azure Managed Grafana](https://azure.microsoft.com/products/managed-grafana) to visualize the metrics.
 
-<div class="task" data-title="Task">
+## Cluster observability
 
-> Run the following command to apply the Istio Ingress Gateway resource.
+In the Azure portal, navigate to the AKS cluster you created earlier. In the left-hand menu, scroll down to the **Monitoring** section and click on **Insights**. Here you can see a high-level overview of how the cluster is performing.
 
-</div>
+![Azure portal cluster metrics](./assets/azure-portal-cluster-metrics.png)
 
-```bash
-kubectl apply -f azure-voting-app-servicemesh.yaml
-```
+The AKS Automatic cluster was also pre-configured with basic CPU utilization and memory utilization alerts. You can also create additional alerts based on the metrics collected by the Prometheus workspace.
 
-<div class="task" data-title="Task">
+Click on the **Recommended alerts (Preview)** button to view the recommended alerts for the cluster. Expand the **Prometheus community alert rules (Preview)** section to see the list of Prometheus alert rules that are available. You can enable any of these alerts by clicking on the toggle switch.
 
-> Run the following command to get the IP address of the Istio Ingress Gateway.
+![Azure portal cluster alerts](./assets/azure-portal-cluster-alerts.png)
 
-</div>
+Click save to enable the alerts.
 
-```bash
-INGRESS_IP=$(kubectl get svc -n aks-istio-ingress aks-istio-ingressgateway-external -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-```
+## Workbooks and logs
 
-<div class="task" data-title="Task">
+With Container Insights enabled, you can query the logs using Kusto Query Language (KQL) and create custom workbooks to visualize the data. One nice feature of Container Insights is having pre-configured workbooks that you can use to monitor your cluster and applications without having to write any queries.
 
-> You can run the following command to get the URL of your app.
+In the **Monitoring** section of the AKS cluster left-hand menu, click on **Workbooks**. Here you will see a list of pre-configured workbooks that you can use to monitor your cluster.
 
-</div>
+![Azure portal AKS workbooks](./assets/azure-portal-aks-workbooks.png)
 
-```bash
-echo "http://$INGRESS_IP/"
-```
+One workbook that is particularly useful is the **Cluster Optimization** workbook. This workbook can help you identify anomalies and detect application probe failures in addition to providing guidance on optimizing container resource requests and limits. Click on the **Cluster Optimization** workbook to view the details.
 
-Our app is now accessible to the world! 🌐
+![Azure portal AKS cluster optimization workbook](./assets/azure-portal-aks-cluster-optimization-workbook.png)
 
----
-
-## Observing your app
-
-Now that the app is fully deployed, we need a way to observe what's happening within the cluster. In AKS, we can use [Azure Container Insights](https://learn.microsoft.com/azure/azure-monitor/containers/container-insights-overview?WT.mc_id=containers-105184-pauyu) to get insights into our cluster. Additionally, we can leverage [Azure Monitor managed service for Prometheus](https://learn.microsoft.com/azure/azure-monitor/essentials/prometheus-metrics-overview?WT.mc_id=containers-105184-pauyu) and [Azure Managed Grafana](https://learn.microsoft.com/azure/managed-grafana/overview?WT.mc_id=containers-105184-pauyu) to get insights into our cluster using tooling that is very popular in the Cloud Native ecosystem.
-
-We'll explore both options.
-
-### Azure Container Insights
-
-Your AKS cluster has been provisioned with Azure Container Insights enabled. This means that you can view metrics and logs for your cluster and the applications running in it.
-
-<div class="task" data-title="Task">
-
-> Open the Azure portal and navigate to your AKS cluster. Click on the **Insights** tab and explore the metrics and logs available.
-
-</div>
-
-![Azure Container Insights](assets/container-insights.png)
-
-As you click through the different metrics and logs, you'll notice that you can view metrics and logs for the cluster as a whole, as well as for individual pods. This is very useful for troubleshooting issues.
-
-### Prometheus and Grafana
-
-Azure Container Insights provides a lot of useful information, but it doesn't provide everything. For example, it doesn't provide information about the traffic flowing through Istio sidecar proxies. To get this information, we'll need to use Prometheus and Grafana. In the Insights tab, you'll notice that there is a link to enable Prometheus. Let's enable it.
-
-<div class="task" data-title="Task">
-
-> In the Azure portal, navigate to your AKS cluster. Click on the **Insights** tab and click the **Enable** button next to **Prometheus**. Check the checkboxes next to **Enable Prometheus metrics** and **Enable Grafana** and click **Configure**.
-
-</div>
-
-![Monitor settings](assets/cluster-monitor-settings.png)
-
-![Prometheus and Grafana](assets/enable-prometheus-grafana.png)
-
-It will take a few minutes for your cluster to be onboarded. Once it's onboarded, you'll see a link to Grafana.
-
-<div class="task" data-title="Task">
-
-> Click on the **View Grafana** button then click the **Browse dashboards** link to open Grafana.
-
-</div>
-
-![Grafana](assets/open-grafana.png)
-
-The Azure Managed Grafana instance is pre-configured with Azure Managed Prometheus as a data source and also includes a some dashboards. Let's take a look at some of the Kubernetes dashboards and import the Istio workload dashboard.
-
-<div class="task" data-title="Task">
-
-> In Grafana, click on the Dashboards button, then click Browse. In the list of dashboards, click on the Managed Prometheus folder to expand a list of dashboards. Click on the **Kubernetes / Compute Resources / Cluster** dashboard to open it.
-
-</div>
-
-![Browse Kubernetes dashboards](assets/browse-dashboards.png)
-
-![Kubernetes dashboard](assets/kubernetes-dashboard.png)
-
-You can also browse other dashboards that are available in the [Grafana marketplace](https://grafana.com/grafana/dashboards/).
+Take some time to explore the other workbooks available in the list.
 
 <div class="tip" data-title="Tip">
 
-> Here is a list of all the Grafana dashboards that have been published by the Azure Monitor team: https://grafana.com/orgs/azuremonitorteam/dashboards
+> The workbook visuals will include a query button that you can click to view the KQL query that powers the visual. This is a great way to learn how to write your own queries.
 
 </div>
 
-These should be enough to get you started. Feel free to explore the other dashboards and create your own.
+If you click on the **Logs** section in the left-hand menu, you can view the logs collected by Container Insights. Here, you can write your own KQL queries or run pre-configured queries to logs from your cluster and applications. If you expand the **Logs** menu, click on **Queries**, and scroll down to the **Container Logs** section, you will see a list of pre-configured queries that you can run. Click on a query and click **Run** to view the results.
+
+![Azure portal AKS logs queries](./assets/azure-portal-aks-container-logs.png)
+
+You can also view live streaming logs for a specific container by clicking on the **Workloads** section in the left-hand menu. In the **Deployments** tab, scroll down and locate the **order-service** deployment. Click on the **order-service** deployment to view the details. In the left-hand menu, click on **Live logs**, then select the Pod you want to view logs for.
+
+![Azure portal AKS live logs](./assets/azure-portal-aks-live-logs.png)
+
+This is the equivalent of running `kubectl logs -f <pod-name>` in the terminal.
+
+## Visualizing metrics with Grafana
+
+The Azure Portal provides a great way to view metrics and logs, but if you prefer to visualize the data using Grafana, or execute complex queries using PromQL, you can use the Azure Managed Grafana instance that was created with the AKS Automatic cluster.
+
+In the AKS cluster's left-hand menu, click on **Insights** under the **Monitoring** section and click on the **View Grafana** button at the top of the page. This will open a window with the linked Azure Managed Grafana instance. Click on the **Browse dashboards** link. This will take you to the Azure Managed Grafana instance.
+
+![Azure portal AKS browse dashboards](./assets/azure-portal-aks-browse-dashboards.png)
+
+In the Grafana home page, click on the **Dashboards** link in the left-hand menu. Here you will see a list of pre-configured dashboards that you can use to visualize the metrics collected by the Prometheus workspace.
+
+![Azure portal AKS Grafana dashboards](./assets/grafana-homepage.png)
+
+In the **Dashboards** list, expand the **Azure Managed Prometheus** folder and explore the dashboards available.
+
+![Azure portal AKS Grafana dashboards list](./assets/grafana-dashboards.png)
+
+Each dashboard provides a different view of the metrics collected by the Prometheus workspace with controls to allow you to filter the data.
+
+Click on a **Kubernetes / Compute Resources / Workload** dashboard. Filter the **namespace** to `default` the **type** to `deployment`, and the **workload** to `order-service`. This will show you the metrics for the order-service deployment.
+
+![Azure portal AKS Grafana dashboard](./assets/grafana-dashboard-workload-order-service.png)
+
+## Querying metrics with PromQL
+
+If you prefer to write your own queries to visualize the data, you can use the **Explore** feature in Grafana. In the Grafana home page, click on the **Explore** link in the left-hand menu, and select the **Managed_Prometheus_defaultazuremonitorworkspace** data source.
+
+The query editor supports a graphical query builder and a text-based query editor. The graphical query builder is a great way to get started with PromQL. You can select the metric you want to query, the aggregation function, and any filters you want to apply.
+
+![Azure portal AKS Grafana explore](./assets/grafana-explore.png)
+
+## Importing dashboards
+
+If none of the pre-configured dashboards meet your needs, you can import a dashboard from the [Grafana community](https://grafana.com/grafana/dashboards/?search=azure). In fact, many of the pre-configured Azure dashboards were imported from the Grafana community for you when the Azure Managed Grafana instance was created.
+
+To import a dashboard, navigate to the **Dashboards** page in Grafana, click on the **New** button, then click on **Import**.
+
+![Azure portal AKS Grafana import dashboard](./assets/grafana-import-dashboard.png)
+
+You can import a dashboard by providing the dashboard ID or by uploading a JSON file. To import a dashboard from the Grafana community, you will need to provide the dashboard ID. For example, the dashboard ID for the [Kubernetes / ETCD](https://grafana.com/grafana/dashboards/20330-kubernetes-etcd/) dashboard is `20330`.
+
+<div class="info" data-title="Note">
+
+> The **Kubernetes / ETCD dashboard** allows you to monitor the AKS control plane components. In order to see data in this dashboard, you will need to have the `AzureMonitorMetricsControlPlanePreview` feature enabled in your Azure subscription prior to creating your AKS cluster. See the [documentation](https://learn.microsoft.com/en-us/azure/aks/monitor-aks) for more information.
+
+</div>
+
+![Grafana dashboard](./assets/grafana-dashboard-id.png)
+
+Simply copy the dashboard ID, paste it into the **Grafana.com dashboard URL or ID** field, and click **Load**. This will import the dashboard into your Azure Managed Grafana instance.
+
+![Azure portal AKS Grafana import dashboard ID](./assets/grafana-import-etcd-dashboard.png)
+
+<div class="tip" data-title="Tip">
+
+> To view the full list of dashboards available in the Grafana community written by the Azure team, visit the [Azure Grafana dashboards](https://grafana.com/orgs/azure) page.
+
+</div>
 
 ---
 
-## Scaling your app
+# CI/CD with Automated Deployments
 
-As your app becomes more popular, you'll need to scale it to handle the increased load. In AKS, you can scale your app by increasing the number of replicas in your deployment. The Kubernetes Horizontal Pod Autoscaler (HPA) will automatically scale your app based on CPU and/or memory utilization. But not all workloads rely on these metrics for scaling. If say, you need to scale your workload based on the number of items in a queue, HPA will not be sufficient.
+Up until this point, you've been using either kubectl or the Azure portal to deploy applications to your AKS cluster and/or edit configurations. This is fine for manual deployments, but in a production environment, you would want to automate the deployment process. This is where Continuous Integration and Continuous Deployment (CI/CD) pipelines come in. With CI/CD pipelines, you can automate the process of building, testing, and deploying your applications to your AKS cluster.
 
-This is where we take a different approach and deploy KEDA to scale our app. [KEDA is a Kubernetes-based Event Driven Autoscaler](https://keda.sh/). It allows you to scale your app on basically any metric. If there is a metric that KEDA can can access to, it can scale based on it. Under the covers KEDA, looks at the metrics and your scaling rules and eventually creates a HPA to do the actual scaling.
+With AKS, the [Automated Deployments](https://learn.microsoft.com/azure/aks/automated-deployments) feature allows you to create [GitHub Actions workflows](https://docs.github.com/actions) that allows you to start deploying your applications to your AKS cluster with minimal effort. All you need is a GitHub repository with your application code. If you have Dockerfiles or Kubernetes manifests in your repository, that's great, you can simply point to them in the Automated Deployments setup. But the best part is that you don't even need to have Dockerfiles or Kubernetes manifests in your repository. Automated Deployments can create them for you.
 
-The AKS add-on for KEDA has already been installed in your cluster.
+## Fork a sample repository
 
-### Setting request and limits
+In this section, you will fork a sample repository that contains a simple Node.js application.
 
-When scaling on a performance metric, we need to let Kubernetes know how much compute and memory resources to allocate for each pod. We do this by setting the `requests` and `limits` in our deployment. The `requests` are the minimum amount of resources that Kubernetes will allocate for each pod. The `limits` are the maximum amount of resources that Kubernetes will allocate for each pod. Kubernetes will use these values to determine how many pods to run based on the amount of resources available on the nodes in the cluster.
+In your browser, navigate to the [contoso-air](https://github.com/pauldotyu/contoso-air) repo and click the **Fork** button in the top right corner of the page.
 
-<div class="task" data-title="Task">
+![GitHub fork button](./assets/github-fork.png)
 
-> Open the `azure-voting-app-deployment.yaml` file, find the empty `resources: {}` block and replace it with the following.
+<div class="info" data-title="Note">
 
-</div>
-
-```yaml
-resources:
-  requests:
-    cpu: 4m
-    memory: 55Mi
-  limits:
-    cpu: 6m
-    memory: 75Mi
-```
-
-<div class="info" data-title="Info">
-
-> Setting resource requests and limits is a best practice and should be done for all your deployments.
+> Make sure you are logged into your GitHub account before forking the repository.
 
 </div>
 
-Your `azure-voting-app-deployment.yaml` file should now look like this:
+## Automated Deployments setup
 
-<details>
-<summary>Click to expand code</summary>
+In the Azure portal, navigate to the AKS cluster you created earlier. In the left-hand menu, click on **Automated Deployments** under the **Settings** section. Click on the **+ Create** button, then click **Automatically containerize and deploy** button.
 
-```yaml
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  creationTimestamp: null
-  labels:
-    app: azure-voting-db
-  name: azure-voting-db
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: azure-voting-db
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        app: azure-voting-db
-    spec:
-      containers:
-        - image: postgres
-          name: postgres
-          resources:
-            requests:
-              cpu: 4m
-              memory: 55Mi
-            limits:
-              cpu: 6m
-              memory: 75Mi
-          env:
-            - name: POSTGRES_USER_FILE
-              value: "/mnt/secrets-store/database-user"
-            - name: POSTGRES_PASSWORD_FILE
-              value: "/mnt/secrets-store/database-password"
-          volumeMounts:
-            - name: azure-voting-db-secrets
-              mountPath: "/mnt/secrets-store"
-              readOnly: true
-            - name: azure-voting-db-data
-              mountPath: "/var/lib/postgresql/data"
-              subPath: "data"
-      serviceAccountName: azure-voting-app-serviceaccount
-      volumes:
-        - name: azure-voting-db-secrets
-          csi:
-            driver: secrets-store.csi.k8s.io
-            readOnly: true
-            volumeAttributes:
-              secretProviderClass: azure-keyvault-secrets
-        - name: azure-voting-db-data
-          persistentVolumeClaim:
-            claimName: pvc-azuredisk
+![Azure portal Automated Deployments](./assets/azure-portal-automated-deployments.png)
 
-status: {}
-```
+In the **Repository** tab, fill in the following details:
 
-</details>
+- **Workflow name**: Enter `contoso-air`
+- **Repository location**: Authenticate to your GitHub account
+- **Repository source**: Select the **My repositories** radio button
+- **Repository**: Select the **contoso-air** repository you forked earlier
+- **Branch**: Select the **main** branch
 
-<div class="task" data-title="Task">
+Click **Next: Image**.
 
-> Run the following command to deploy the updated manifest.
+In the **Image** tab, fill in the following details:
 
-</div>
+**Dockerfile configuration**:
 
-```bash
-kubectl apply -f azure-voting-app-deployment.yaml
-```
+- **Application environment**: Select **JavaScript - Node.js 20**
+- **Application port**: Enter **3000**
+- **Dockerfile build context**: Enter `./src/frontend`
 
-### Scaling with KEDA based on CPU utilization
+**Registry details**:
 
-<div class="task" data-title="Task">
+- **Azure Container Registry**: Select the Azure Container Registry you created earlier
+- **Azure Container Registry image**: Enter `contoso-air`
 
-> Create a new `azure-voting-app-scaledobject.yaml` manifest for KEDA. Here we will scale the application up when the CPU utilization is greater than 50%.
+Click **Next: Deployment details**.
 
-</div>
+In the **Deployment details** tab, fill in the following details:
 
-```yaml
-cat <<EOF > azure-voting-app-scaledobject.yaml
-apiVersion: keda.sh/v1alpha1
-kind: ScaledObject
-metadata:
-  name: azure-voting-app-scaledobject
-spec:
-  scaleTargetRef:
-    name: azure-voting-app
-  triggers:
-    - type: cpu
-      metricType: Utilization
-      metadata:
-        value: "50"
-EOF
-```
+- **Namespace**: Select `default`
 
-<div class="info" data-title="Info">
+Click **Next: Review** then click **Next: Deploy**.
 
-> The default values for minimum and maximum replica counts weren't included in our manifest above, but it will default to 0 and 100 respectively. In some cases, the minimum defaults to 1 so consult the documentation for the specific scaler you are using.
+After a minute or so, the deployment will complete and you will see a success message. Click on the **Approve pull request** button to approve the pull request that was created by the Automated Deployments workflow.
 
-</div>
+![Azure portal Automated Deployments success](./assets/azure-portal-automated-deployments-success.png)
 
-<div class="task" data-title="Task">
+## Review the pull request
 
-> Apply the manifest to create the ScaledObject.
+You will be taken to the pull request page in your GitHub repository. Click on the **Files changed** tab to view the changes that were made by the Automated Deployments workflow.
 
-</div>
+Navigate back to the **Conversation** tab and click on the **Merge pull request** button to merge the pull request, then click **Confirm merge**.
 
-```bash
-kubectl apply -f azure-voting-app-scaledobject.yaml
-```
+![GitHub merge pull request](./assets/github-merge-pull-request.png)
 
-<div class="task" data-title="Task">
+With the pull request merged, the changes will be automatically deployed to your AKS cluster. You can view the deployment logs by clicking on the **Actions** tab in your GitHub repository.
 
-> Run the following command to ensure the ScaledObject was created.
+![GitHub Actions tab](./assets/github-actions-tab.png)
 
-</div>
+In the **Actions** tab, you will see the Automated Deployments workflow running. Click on the workflow run to view the logs.
 
-```bash
-kubectl get scaledobject
-```
+![GitHub Actions workflow run](./assets/github-actions-workflow-run.png)
 
-<details>
-<summary>Sample output</summary>
+In the workflow run details page, you can view the logs of each step in the workflow by simply clicking on the step.
 
-Wait until the `READY` column shows `True`
+![GitHub Actions workflow logs](./assets/github-actions-workflow-logs.png)
 
-```text
-NAME                            SCALETARGETKIND      SCALETARGETNAME    MIN   MAX   TRIGGERS   AUTHENTICATION   READY   ACTIVE   FALLBACK   AGE
-azure-voting-app-scaledobject   apps/v1.Deployment   azure-voting-app               cpu                         True    True     Unknown    16s
-```
+After a few minutes, the workflow will complete and you will see two green check marks next to the **buildImage** and **deploy** steps. This means that the application has been successfully deployed to your AKS cluster.
 
-</details>
+## View the deployed application
 
-### Load testing your app
+In the Azure portal, navigate to the AKS cluster you created earlier. In the left-hand menu, click on **Services and ingresses** under the **Kubernetes resources** section. You should see a new service called `contoso-air` with a public IP address assigned to it. Click on the IP address to view the deployed application.
 
-Now that our app is enabled for autoscaling, let's generate some load on our app and watch KEDA scale our app.
+![Azure portal AKS services](./assets/azure-portal-aks-services-contoso-air.png)
 
-We'll use the [Azure Load Testing](https://learn.microsoft.com/azure/load-testing/overview-what-is-azure-load-testing?WT.mc_id=containers-105184-pauyu) service to generate load on our app and watch KEDA scale our app.
-
-<div class="task" data-title="Task">
-
-> In the Azure Portal, navigate to your shared resource group and click on your Azure Load Testing resource.
-> 
-> Click the **Quick test** button to create a new test. In the **Quick test** blade, enter your ingress IP as the URL. 
-> 
-> Set the number of virtual users to **250**, test duration to **240** seconds, and the ramp up time of **60**.
-> 
-> Click the **Run test** button to start the test.
-
-</div>
-
-<div class="info" data-title="Information">
-
-> If you are familiar with creating JMeter tests, you can also create a JMeter test file and upload it to Azure Load Testing.
-
-</div>
-
-![Azure Load Testing](assets/load-test-setup.png)
-
-<div class="task" data-title="Task">
-
-> As the test is running, run the following command to watch the deployment scale.
-
-</div>
-
-```bash
-kubectl get deployment azure-voting-app -w
-```
-
-<div class="task" data-title="Task">
-
-> In a different terminal tab, you can also run the following command to watch the Horizontal Pod Autoscaler reporting metrics as well.
-
-</div>
-
-```bash
-kubectl get hpa -w
-```
-
-After a few minutes, you should start to see the number of replicas increase as the load test runs.
-
-In addition to viewing your application metrics from the Azure Load Testing service, you can also view detailed metrics from your managed Grafana instance and/or Container Insights from the Azure Portal, so be sure to check that out as well.
+With this setup, every time you push application code changes to your GitHub repository, the GitHub Action workflow will automatically build and deploy your application to your AKS cluster.
 
 ---
 
-## Summary
+# Summary
 
-Congratulations, on making it this far 🎉
+In this workshop, you learned how to create an AKS cluster with the new AKS Automatic feature. You deployed a sample application to the cluster and explored some of the features that AKS Automatic provides. You learned how to scale your cluster manually and automatically using the Horizontal Pod Autoscaler and KEDA. You also learned how to handle stateful workloads using Persistent Volumes and Azure Service Bus. Finally, you explored the monitoring and observability features of AKS Automatic.
 
-Hope you had a lot of fun but unfortunately, all good things must come to an end 🥲 
+To learn more about AKS Automatic, visit the [AKS documentation](https://learn.microsoft.com/azure/aks/intro-aks-automatic).
 
-Before you go, let's do a quick recap.
+In addition to this workshop, you can also explore the following resources:
 
-In this workshop, you learned how to:
+- [Azure Kubernetes Service (AKS) documentation](https://learn.microsoft.com/azure/aks)
+- [Kubernetes: Getting started](https://azure.microsoft.com/solutions/kubernetes-on-azure/get-started/)
+- [Learning Path: Introduction to Kubernetes on Azure](https://learn.microsoft.com/training/paths/intro-to-kubernetes-on-azure/)
+- [Learning Path: Deploy containers by using Azure Kubernetes Service (AKS)](https://learn.microsoft.com/training/paths/deploy-manage-containers-azure-kubernetes-service/)
 
-- Deploy an application to Kubernetes using imperative and declarative methods
-- Leverage the power of `kubectl` to generate YAML manifests for our app and deployed them to our AKS cluster
-- Add an additional layer of security for our application secrets by storing them in Azure Key Vault and using the Secrets Store CSI driver to mount them into our pods
-- Effectively run stateful workloads on AKS using StorageClasses to create persistent storage for the database
-- Expose the frontend application to the internet using Istio's Ingress gateway
-- Scale the app using KEDA and load test the application to ensure it scales as expected
-
-To learn more about Kubernetes, check out the [Kubernetes Learning Path](https://azure.microsoft.com/resources/kubernetes-learning-path/) and be sure to check out the [AKS docs](https://docs.microsoft.com/azure/aks/). For additional workshop content, be sure to check out https://azure-samples.github.io/aks-labs/catalog/ and https://aka.ms/oss-labs/
-
-If you have any questions or feedback, please let me know in the comments below or reach out to me on Twitter [@pauldotyu](https://twitter.com/pauldotyu) or LinkedIn [/in/yupaul](https://www.linkedin.com/in/yupaul/)
+If you have any feedback or suggestions for this workshop, please feel free to open an issue or pull request in the [GitHub repository](https://github.com/Azure-Samples/aks-labs)
