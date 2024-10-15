@@ -143,8 +143,7 @@ In the **Basics** tab, fill out the following fields:
 
   <div class="info" data-title="Note">
 
-  > You need to ensure you have 32 vCPU quota for Standard_DSv2 available in the region you are deploying the cluster to. If you don't have enough quota, you can request a quota increase by following this [guide](https://learn.microsoft.com/azure/quotas/quickstart-increase-quota-portal).
-
+  > You need to ensure you have 32 vCPU quota for Standard_DSv2 available in the region you are deploying the cluster to. If you don't have enough quota, you can request a quota increase by following this [guide](https://learn.microsoft.com/azure/quotas/quickstart-increase-quota-portal). To view your available quota for this VM family in a given region, run the following command: `az vm list-usage --location <region> --query "[?name.value=='standardDSv2Family'].{Name:name.value, CurrentValue:currentValue, Limit:limit}" --output table`
   </div>
 
 - **Automatic upgrade scheduler:** Leave the default setting.
@@ -171,11 +170,11 @@ Click the **Review + create** button then after validation passes, click the **C
 
 ## Connect to AKS cluster
 
-The kubectl tool is your direct line of communication with the kube-apiserver and is most common way to interact with a Kubernetes cluster. Access to the kube-apiserver is controlled by the [kubeconfig file](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/). The kubeconfig file contains the necessary certificate information to authenticate against the Kubernetes API server, and the Azure CLI for AKS has a handy command to get the kubeconfig file for your AKS cluster.
+The kubectl tool is your direct line of communication with the kube-apiserver and is the most common way to interact with a Kubernetes cluster. Access to the kube-apiserver is controlled by the [kubeconfig file](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/). The kubeconfig file contains the necessary certificate information to authenticate against the Kubernetes API server, and the Azure CLI for AKS has a handy command to get the kubeconfig file for your AKS cluster.
 
 <div class="info" data-title="Note">
 
-> For the rest of this workshop, you will perform tasks using both kubectl and the Azure portal. This will give you a good understanding of how to interact with your AKS cluster using both methods. Any time we need to interact with the AKS cluster, we will use the Azure Cloud Shell. The Azure Cloud Shell is a free interactive shell that you can use to run the Azure CLI, kubectl, and other tools. It is already configured to use your Azure subscription and is a great way to run commands without having to install anything on your local machine.
+> For the rest of this workshop, you will perform tasks using both kubectl and the Azure portal. This will give you a good understanding of how to interact with your AKS cluster using both methods. Any time we need to interact with the AKS cluster in this lab, we will use the Azure Cloud Shell. The Azure Cloud Shell is a free interactive shell that you can use to run the Azure CLI, kubectl, and other tools. It is already configured to use your Azure subscription and is a great way to run commands without having to install anything on your local machine.
 
 </div>
 
@@ -207,7 +206,7 @@ Run the following command to get the name of your AKS cluster.
 AKS_NAME=$(az aks list -g $RG_NAME --query "[0].name" -o tsv)
 ```
 
-Run the following command to write the environment variables to a local .env file.
+Run the following command to save the environment variables to a local .env file.
 
 ```bash
 echo "RG_NAME=$RG_NAME" > .env
@@ -243,15 +242,15 @@ When running a kubectl command for the first time, you will be presented with a 
 
 </div>
 
-If you can see the cluster information printed in your terminal, your cluster is up and ready to host applications. But there is a little bit more prep work we need to do. We need to prepare the cluster for our application containers.
+If you can see the cluster information printed in your terminal, your cluster is up and ready to host applications. But there is a little more prep work we need to do. We need to prepare the cluster for our application containers.
 
 ## Container Registries
 
-Kubernetes is a container orchestrator. It will run whatever container image you tell it to run. Containers can be pulled from public container registries like [Docker Hub](https://hub.docker.com/) or [GitHub Container Registry (GHCR)](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry), or they can be pulled from private container registries like [Azure Container Registry (ACR)](https://azure.microsoft.com/products/container-registry). Pulling images from a public registry is fine for development and testing but for production workloads, you'll want to use a private registry and only deploy images that have been scanned for vulnerabilities and approved.
+Kubernetes is a container orchestrator. It will run whatever container image you tell it to run. Containers can be pulled from public container registries like [Docker Hub](https://hub.docker.com/) or [GitHub Container Registry (GHCR)](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry), or they can be pulled from private container registries like [Azure Container Registry (ACR)](https://azure.microsoft.com/products/container-registry). Pulling images from a public registry is fine for development and testing but for production workloads, you'll want to use a private registry and only deploy images that have been scanned for vulnerabilities and approved for use.
 
 ### Deploy Azure Container Registry (ACR)
 
-ACR is a managed, private Docker registry service based on the open-source Docker Registry 2.0. It is highly available and scalable across Azure regions across the globe. It also integrates with Microsoft Entra ID for authentication and authorization so it makes it easy to secure your container images.
+ACR is a managed, private Docker registry service based on the open-source Docker Registry 2.0. It is highly available and scalable across Azure regions across the globe. It also integrates with Microsoft Entra ID for authentication and authorization, so it makes it easy to secure your container images.
 
 In the Azure Cloud Shell, run the following command to create an environment variable for your new Azure Container Registry name.
 
@@ -376,7 +375,7 @@ kubectl apply -f aks-store-quickstart.yaml
 
 <div class="info" data-title="Note">
 
-> The deployment can take up to 10 minutes to schedule pods onto a new node. This is because the AKS Node Autoprovisioning feature (aka Karpenter) automatically provisions new nodes when the existing nodes are at capacity. The new nodes are provisioned with the necessary resources to run the pods. The pods are then scheduled onto the new nodes.
+> The deployment can take up to 10 minutes to schedule pods onto a new node. This is because the AKS Node Autoprovisioning feature (aka Karpenter) automatically provisions new nodes when the existing nodes are at capacity. The new nodes are provisioned with the necessary resources to run the pods. The pods are then scheduled onto the new nodes. Optionally, if you want to watch the Karpenter events as the new node is provisioned, run the following command: `kubectl get events -A --field-selector source=karpenter -w`. Use **Ctrl+C** to exit watching the events.
 
 </div>
 
@@ -456,7 +455,7 @@ Run the following command to view the Services.
 kubectl get service store-front
 ```
 
-As you can see, the **store-front** Service is of type [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer). This means that the Service is exposed to the internet and the Service has an public IP address that you can use to access the application.
+As you can see, the **store-front** Service is of type [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer). This means that the Service is exposed to the internet and the Service has a public IP address that you can use to access the application.
 
 ### StatefulSets
 
@@ -468,7 +467,7 @@ Run the following command to view the StatefulSets.
 kubectl get statefulsets
 ```
 
-You can see that there is a StatefulSet for RabbitMQ. The StatefulSet resource is used to manage the RabbitMQ pods and ensure that the pods are created in a specific order.
+You can see that there is a StatefulSet for RabbitMQ. The StatefulSet resource is used to manage the RabbitMQ pods and ensure that the pods are created in a specific order and provides a stable DNS name for access.
 
 ### ConfigMaps
 
@@ -680,7 +679,7 @@ kubectl drain $NODE_NAME --ignore-daemonsets
 
 You should see a list of all the Pods that have been evicted. It doesn't matter that all 3 replicas of the store-front application were running on the node. Kubernetes doesn't care and will evict all the Pods with no regard.
 
-This is where the PodDisruptionBudget comes in. A PodDisruptionBudget is a resource that specifies the minimum number of Pods that must be available during a voluntary disruption. When a PodDisruptionBudget is created, Kubernetes will not evict Pods that violate the budget
+This is where the PodDisruptionBudget comes in. A PodDisruptionBudget is a resource that specifies the minimum number of Pods that must be available during a voluntary disruption. When a PodDisruptionBudget is created, Kubernetes will not evict Pods that violate the budget.
 
 You will need to create a PodDisruptionBudget for the store-front application that specifies that at least 1 Pod must be available during a voluntary disruption. This will ensure that the next time we drain a node, at least 1 Pod will remain running. Once new Pods are scheduled on other nodes, the PodDisruptionBudget will be satisfied and the remaining Pods on the node will be evicted. This is a great way to ensure that your application remains available during a voluntary disruption.
 
@@ -814,7 +813,7 @@ Container storage is ephemeral; that is if a pod is deleted, the data is lost be
 
 ## AKS Storage classes and PVC's
 
-Typically for persistent storage in a Kubernetes cluster, you would create a PV to allocate storage and use a PVC to request a slice storage against the PV.
+Typically, for persistent storage in a Kubernetes cluster, you would create a PV to allocate storage and use a PVC to request a slice storage against the PV.
 
 With AKS, [Azure CSI drivers and storage classes](https://learn.microsoft.com/azure/aks/csi-storage-drivers) are pre-deployed into your cluster. The storage classes allow you to simply create a PVC that references a particular storage class based on your application requirements. This storage class will take care of the task of creating the PV for you, in this case, using Azure Storage. So AKS removes the need to manually create PV's.
 
@@ -865,7 +864,7 @@ Keep the file open, navigate to the pod template spec and add an additional volu
     claimName: rabbitmq-data
 ```
 
-Finally in the container spec, add a volume mount that references the volume.
+Finally, in the container spec, add a volume mount that references the volume.
 
 ```yaml
 - mountPath: /var/lib/rabbitmq/mnesia
@@ -925,7 +924,7 @@ Back in the terminal, run the following command to delete the RabbitMQ pod.
 kubectl delete pod rabbitmq-0
 ```
 
-After a few seconds, Kubernetes will do what it does best and recreate the RabbitMQ pod. At this point the port-forward to the RabbitMQ service will be broken, so run the port-forward command again and reload the RabbitMQ management UI in the browser. Navigate back to the **Queues** tab and you should see the `test` queue you created earlier. This is because the we mounted the Azure Disk to the `/var/lib/rabbitmq/mnesia` path and all RabbitMQ data now persists across pod restarts.
+After a few seconds, Kubernetes will do what it does best and recreate the RabbitMQ pod. At this point the port-forward to the RabbitMQ service will be broken, so run the port-forward command again and reload the RabbitMQ management UI in the browser. Navigate back to the **Queues** tab, and you should see the `test` queue you created earlier. This is because we mounted the Azure Disk to the `/var/lib/rabbitmq/mnesia` path and all RabbitMQ data now persists across pod restarts.
 
 ## Replace RabbitMQ with Azure Service Bus
 
@@ -1006,15 +1005,15 @@ Once the Service Connector for Azure Service Bus has been created, you can confi
 
 In the Service Connector page, select the checkbox next to the Service Bus connection and click the **Yaml snippet** button.
 
-![Azure portal AKS service connector yaml snippet](./assets/azure-portal-aks-service-connector-yaml-snippet.png)
+![Azure portal AKS service connector YAML snippet](./assets/azure-portal-aks-service-connector-yaml-snippet.png)
 
 In the **YAML snippet** window, select **Kubernetes Workload** for **Resource type**, then select **order-service** for **Kubernetes Workload**.
 
-![Azure portal AKS service connector yaml snippet for order-service](./assets/azure-portal-aks-service-connector-yaml-snippet-order-service.png)
+![Azure portal AKS service connector YAML snippet for order-service](./assets/azure-portal-aks-service-connector-yaml-snippet-order-service.png)
 
 You will see the YAML manifest for the order-service application with the highlighted edits required to connect to Azure Service Bus via Workload Identity.
 
-Click **Apply** to apply the changes to the order-service application. This will redeploy the order-service application with the new connection details. But since the original order-service deployment was created specifically to connect to RabbitMQ, we need to update the deployment to remove some of the RabbitMQ specific information.
+Click **Apply** to apply the changes to the order-service application. This will redeploy the order-service application with the new connection details. But since the original order-service deployment was created specifically to connect to RabbitMQ, we need to update the deployment to remove some RabbitMQ specific information.
 
 The order-service is designed to use multiple authentication methods. We need to add one environment variable to the order-service deployment to tell it to connect to the Azure Service Bus using workload identity.
 
@@ -1076,9 +1075,9 @@ You should see 1 active message count in the queue.
 
 # Application and Cluster Scaling
 
-In a enterprise production environment, the demands and resource usage of your workloads running on Azure Kubernetes Service (AKS) can be dynamic and change frequently. If your application requires more resources, it could be impacted due to the lack of clusters resources. One of the easiest ways to ensure your applications have enough resources from the cluster, is to scale your cluster to include more working nodes.
+In an enterprise production environment, the demands and resource usage of your workloads running on Azure Kubernetes Service (AKS) can be dynamic and change frequently. If your application requires more resources, it could be impacted due to the lack of clusters resources. One of the easiest ways to ensure your applications have enough resources from the cluster, is to scale your cluster to include more working nodes.
 
-There are several scenarios that would require your application and/or cluster the need to scale. If your application needs to respond to increased demand, we can scale your application across the cluster to meet demand. If your application has used all of the available resources from the cluster, we can scale the number of nodes in the cluster to meet demand as well.
+There are several scenarios that would require your application and/or cluster the need to scale. If your application needs to respond to increased demand, we can scale your application across the cluster to meet demand. If your application has used all the available resources from the cluster, we can scale the number of nodes in the cluster to meet demand as well.
 
 We will walk through the most popular options that allow you to scale your application and cluster to meet your workload demands.
 
@@ -1129,7 +1128,7 @@ Notice that there is currently only 1 replica running of the **store-front** ser
 kubectl scale deployment store-front --replicas=10
 ```
 
-Scaling to 10 replicas may take a moment. You can view the increased number of replicas by watching the **store-front** deployment.
+Scaling to 10 replicas may take a moment as Karpenter needs to spin up new nodes. You can view the increased number of replicas by watching the **store-front** deployment.
 
 ```bash
 kubectl get deployment store-front -w
@@ -1137,7 +1136,7 @@ kubectl get deployment store-front -w
 
 When you see **READY** and **AVAILABLE** number of replicas as 10, press **Ctrl+C** to stop watching the deployment.
 
-The number of replicas represent the number of Pods running for the **store-front** service. You can view the Pods running for the **store-front** service by running the following command.
+The number of replicas represents the number of Pods running for the **store-front** service. You can view the Pods running for the **store-front** service by running the following command.
 
 ```bash
 kubectl get pods --selector app=store-front
@@ -1184,7 +1183,7 @@ We can then verify that an HPA resource exists for the **store-front** deploymen
 kubectl get hpa store-front
 ```
 
-You may notice that the HPA autoscaler has already added an additional replica (instance) of the **store-front** deployment to meet the HPA configuration.
+You may notice that the HPA autoscaler has already added a replica (instance) of the **store-front** deployment to meet the HPA configuration.
 
 We will now deploy an application to simulate additional client load to the **store-front** deployment. Run the following command to deploy a Pod that will generate additional load to the **store-front** deployment.
 
@@ -1256,7 +1255,7 @@ kubectl scale deployment store-front --replicas=100
 
 This should start to exhaust the currently single node and trigger NAP to auto provision additional nodes in the node pool to support the resource demand.
 
-If you run the following command, you should see some of the Pods for the **store-front** deployment are in a **Running** state and some are in a **Pending** state.
+If you run the following command, you should see some Pods for the **store-front** deployment are in a **Running** state and some are in a **Pending** state.
 
 ```bash
 kubectl get pod --selector app=store-front -o wide
@@ -1276,7 +1275,7 @@ After a few minutes, you should see additional nodes being created to support th
 
 In the previous section, we saw how to use the Horizontal Pod Autoscaler (HPA) to automatically scale your application based on resource utilization. The HPA is a great way to scale your application based on CPU and memory utilization, but what if you want to scale your application based on other metrics like the number of messages in a queue, the length of a stream, or the number of messages in a topic?
 
-The [Kubernetes Event-driven Autoscaling (KEDA)](https://keda.sh/) project is a Kubernetes-based Event-Driven Autoscaler. KEDA allows you to scale your application workloads based on the number of events in a queue, the length of a stream, or the number of messages in a topic. KEDA can be installed manually in your AKS cluster but it is also available as an add-on to AKS and is automatically enabled in AKS Automatic clusters. When you use the AKS add-on for KEDA, it will be fully supported by Microsoft.
+The [Kubernetes Event-driven Autoscaling (KEDA)](https://keda.sh/) project is a Kubernetes-based Event-Driven Autoscaler. KEDA allows you to scale your application workloads based on the number of events in a queue, the length of a stream, or the number of messages in a topic. KEDA can be installed manually in your AKS cluster, but it is also available as an add-on to AKS and is automatically enabled in AKS Automatic clusters. When you use the AKS add-on for KEDA, it will be fully supported by Microsoft.
 
 In order to use KEDA, you can deploy a [ScaledObject](https://keda.sh/docs/2.15/reference/scaledobject-spec/) resource to scale long-running applications or deploy a [ScaledJob](https://keda.sh/docs/2.15/reference/scaledjob-spec/) resource to scale batch jobs. A ScaledObject is a custom resource that defines how to scale a deployment based on an external metric. The ScaledObject will watch the external metric and scale the deployment based on the metric value.
 
@@ -1293,7 +1292,7 @@ In the **Basics** tab, enter the following details:
 - **Maximum replicas**: Enter **10**
 - **Trigger type**: Select **CPU**
 
-Leave the rest of the fields as their default values and click \*_Next_.
+Leave the rest of the fields as their default values and click **Next**.
 
 In the **Review + create** tab, click **Customize with YAML** to view the YAML manifest for the ScaledObject resource.
 
@@ -1305,15 +1304,15 @@ You can see the YAML manifest the AKS portal generated for the ScaledObject reso
 
 Click **Save and create** to create the ScaledObject resource.
 
-Header over to the **Workloads** section in the left-hand menu and click on **Deployments**. In the **Filter by deployment name** field, enter **store-front** to view the **store-front** Deployment. You should see the **store-front** Deployment is now running 2 replicas.
+Header over to the **Workloads** section in the left-hand menu and click on **Deployments**. In the **Filter by deployment name** field, enter **store-front** to view the **store-front** Deployment. You should see the **store-front** Deployment is now running 10 replicas.
 
-Also, if you run the following command, you should see a HPA resource named **keda-hpa-store-front** which KEDA created and is managing for the **store-front** Deployment.
+Also, if you run the following command, you should see an HPA resource named **keda-hpa-store-front** which KEDA created and is managing for the **store-front** Deployment.
 
 ```bash
 kubectl get hpa
 ```
 
-This was a simple example of using using KEDA. But using KEDA over the HPA for CPU and memory utilization doesn't give you lot to differentiate the experience. The real power of KEDA comes from its ability to scale your application based on external metrics like the number of messages in a queue, the length of a stream, the number of messages in a topic, or based on a custom schedule using CRON expressions. There are many [scalers](https://keda.sh/docs/2.15/scalers/) available for KEDA that you can use to scale your application based on a variety of external metrics.
+This was a simple example of using KEDA. But using KEDA over the HPA for CPU and memory utilization doesn't give you lot to differentiate the experience. The real power of KEDA comes from its ability to scale your application based on external metrics like the number of messages in a queue, the length of a stream, the number of messages in a topic, or based on a custom schedule using CRON expressions. There are many [scalers](https://keda.sh/docs/2.15/scalers/) available for KEDA that you can use to scale your application based on a variety of external metrics.
 
 ---
 
@@ -1482,7 +1481,7 @@ In the **Deployment details** tab, fill in the following details:
 
 Click **Next: Review** then click **Next: Deploy**.
 
-After a minute or so, the deployment will complete and you will see a success message. Click on the **Approve pull request** button to approve the pull request that was created by the Automated Deployments workflow.
+After a minute or so, the deployment will complete, and you will see a success message. Click on the **Approve pull request** button to approve the pull request that was created by the Automated Deployments workflow.
 
 ![Azure portal Automated Deployments success](./assets/azure-portal-automated-deployments-success.png)
 
@@ -1506,7 +1505,7 @@ In the workflow run details page, you can view the logs of each step in the work
 
 ![GitHub Actions workflow logs](./assets/github-actions-workflow-logs.png)
 
-After a few minutes, the workflow will complete and you will see two green check marks next to the **buildImage** and **deploy** steps. This means that the application has been successfully deployed to your AKS cluster.
+After a few minutes, the workflow will complete, and you will see two green check marks next to the **buildImage** and **deploy** steps. This means that the application has been successfully deployed to your AKS cluster.
 
 ## View the deployed application
 
@@ -1520,7 +1519,7 @@ With this setup, every time you push application code changes to your GitHub rep
 
 # Summary
 
-In this workshop, you learned how to create an AKS cluster with the new AKS Automatic feature. You deployed a sample application to the cluster and explored some of the features that AKS Automatic provides. You learned how to scale your cluster manually and automatically using the Horizontal Pod Autoscaler and KEDA. You also learned how to handle stateful workloads using Persistent Volumes and Azure Service Bus. Finally, you explored the monitoring and observability features of AKS Automatic.
+In this workshop, you learned how to create an AKS cluster with the new AKS Automatic feature. You deployed a sample application to the cluster and explored some of the features that AKS Automatic provides. You learned how to scale your cluster manually and automatically using the Horizontal Pod Autoscaler and KEDA. Not only that, but you also learned how to handle stateful workloads using Persistent Volumes and Azure Service Bus. Finally, you explored the monitoring and observability features of AKS Automatic.
 
 To learn more about AKS Automatic, visit the [AKS documentation](https://learn.microsoft.com/azure/aks/intro-aks-automatic).
 
