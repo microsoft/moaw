@@ -131,20 +131,24 @@ Let's go ahead and create an AKS automatic cluster.
 In the **Basics** tab, fill out the following fields:
 
 - **Subscription:** Select your Azure subscription.
-
-  <div class="info" data-title="Note">
-
-  > You may see a message that the subscription does not have the flags: EnableAPIServerVnetIntegrationPreview, NRGLockdownPreview, NodeAutoProvisioningPreview, DisableSSHPreview, SafeguardsPreview, AutomaticSKUPreview registered. Preview features must be registered in order to create a cluster so go ahead and click the **Register preview features** link to register the required flags in your subscription.
-
-  </div>
-
 - **Resource group:** Create a new resource group or use an existing one.
 - **Kubernetes cluster name:** Enter a name for your cluster.
 - **Region:** Select the desired region where you want to deploy your cluster.
 
   <div class="info" data-title="Note">
 
-  > You need to ensure you have 32 vCPU quota for Standard_DSv2 available in the region you are deploying the cluster to. If you don't have enough quota, you can request a quota increase by following this [guide](https://learn.microsoft.com/azure/quotas/quickstart-increase-quota-portal).
+  > Make sure your subscription has quota for 16 vCPUs of any of the following SKUs in the region you're deploying the cluster to:
+  >
+  > - Standard_D4pds_v5
+  > - Standard_D4lds_v5
+  > - Standard_D4ads_v5
+  > - Standard_D4ds_v5
+  > - Standard_D4d_v5
+  > - Standard_D4d_v4
+  > - Standard_DS3_v2
+  > - Standard_DS12_v2
+  >
+  > You can view quotas for specific VM-families and submit quota increase requests through the Azure portal. See this [guide](https://learn.microsoft.com/azure/quotas/quickstart-increase-quota-portal) for more info.
 
   </div>
 
