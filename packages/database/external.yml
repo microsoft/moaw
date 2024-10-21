@@ -518,3 +518,22 @@
   duration_minutes: 19
   audience: students, pro devs
   tags: llm, ai, aks, containers, ollama, chat, phi, llama
+
+- title: Product Hands-on Lab - Build serverless intelligent Apps with Azure Functions Flex Consumption and extension for OpenAI
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-azure-functions-flex-openai/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai
+  language: en
+  last_updated: 2024-10-21
+  type: workshop
+  description:  In this workshop you will learn how to build an intelligent application that summarizes audio files using Azure Functions Flex Consumption and Azure OpenAI
+  authors:
+  - Iheb Khemissi
+  - Damien Aicheh
+  contacts:
+    - "@ikhemissi"
+    - "@damienaicheh"
+  duration_minutes: 60
+  audience: students, pro devs
+  level: beginner
+  tags: azure, azure functions, durable function, flex consumption, azure openai, entra id, cosmos db, csu, codespace, devcontainer, ignite
+  navigation_levels: 3
