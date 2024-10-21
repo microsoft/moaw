@@ -481,3 +481,40 @@
   level: beginner
   tags: azure, azure functions, azure durable functions, flex, open ai, apim, monitoring, cosmos db, csu, codespace, devcontainer
   navigation_levels: 3
+
+- title: Build A Fabric Real-Time Intelligence Solution in One Day
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/fabconrtitutorial/main/docs/
+  github_url: https://github.com/microsoft/FabConRTITutorial
+  language: en
+  last_updated: 2024-09-22
+  type: workshop
+  description:  In this technical workshop, you will build a complete analytics platform with streaming data using Microsoft Fabric Real-Time Intelligence components and other features of Microsoft Fabric. This is a proctor led worksop in which each section is accompanied by a technical overview of Fabric RTI components.
+  authors:
+  - Brian Bønk Rueløkke
+  - Devang Shah
+  - Frank Geisler
+  - Johan Ludvig Brattås
+  - Matt Gordon
+  contacts:
+    - "@shahdevangp"
+  duration_minutes: 360
+  audience: students, pro devs, data engineers, data architects, analysts
+  level: intermediate
+  tags: fabric, kql, realtime, intelligence, event, stream, sql, data, analytics, kusto, medallion, dashboard, reflex, activator
+
+- title: Running LLM models in AKS
+  description: This is a workshop for learning ow to deploy Ollama AI model deployment on Azure Kubernetes Service (AKS)
+  url: https://microsoft.github.io/moaw/workshop/gh:HoussemDellai/running-llms-on-aks/main/docs/
+  language: en
+  last_updated: 2024-10-09
+  type: workshop
+  level: beginner
+  github_url: https://github.com/HoussemDellai/running-llms-on-aks
+  authors:
+    - Houssem Dellai                          
+  contacts:
+    - houssem.dellai@microsoft.com
+  video_url: https://www.youtube.com/watch?v=INOeJg4ECh4
+  duration_minutes: 19
+  audience: students, pro devs
+  tags: llm, ai, aks, containers, ollama, chat, phi, llama
