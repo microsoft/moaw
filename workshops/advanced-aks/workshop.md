@@ -53,6 +53,455 @@ wt_id: WT.mc_id=containers-147656-pauyu
 
 ### Istio Service Mesh
 
+Istio is an open-source service mesh that layers transparently onto existing distributed applications. Istio’s powerful features provide a uniform and more efficient way to secure, connect, and monitor services. Istio enables load balancing, service-to-service authentication, and monitoring – with few or no service code changes. Its powerful control plane brings vital features, including:
+
+- Secure service-to-service communication in a cluster with TLS (Transport Layer Security) encryption, strong identity-based authentication, and authorization.
+- Automatic load balancing for HTTP, gRPC, WebSocket, and TCP traffic.
+- Fine-grained control of traffic behavior with rich routing rules, retries, failovers, and fault injection.
+- A pluggable policy layer and configuration API supporting access controls, rate limits, and quotas.
+- Automatic metrics, logs, and traces for all traffic within a cluster, including cluster ingress and egress.
+
+Istio is integrated with AKS as an addon and is supported alongside AKS. 
+
+> NOTE: Please be aware that the Istio addon for AKS does not provide the full functionality of the Istio upstream project. You can view the current limitations for this AKS Istio addon [here](https://learn.microsoft.com/azure/aks/istio-about#limitations) and what is currently [Allowed, supported, and blocked MeshConfig values](https://learn.microsoft.com/azure/aks/istio-meshconfig#allowed-supported-and-blocked-meshconfig-values)
+
+#### Deploy Istio service mesh add-on
+
+Before deploying the AKS Istio add-on, you may want to check the revision of Istio to ensure it is compatible with the version of Kubernetes on the cluster. To check the available revisions in the `westus2` region, run the following command:
+
+```bash
+az aks mesh get-revisions --location westus2
+```
+
+The previous command shows the following output.
+
+```bash
+{
+  "meshRevisions": [
+    {
+      "compatibleWith": [
+        {
+          "name": "kubernetes",
+          "versions": [
+            "1.27",
+            "1.28",
+            "1.29",
+            "1.30"
+          ]
+        }
+      ],
+      "revision": "asm-1-22",
+      "upgrades": [
+        "asm-1-23"
+      ]
+    },
+    {
+      "compatibleWith": [
+        {
+          "name": "kubernetes",
+          "versions": [
+            "1.27",
+            "1.28",
+            "1.29",
+            "1.30",
+            "1.31"
+          ]
+        }
+      ],
+      "revision": "asm-1-23",
+      "upgrades": null
+    }
+  ]
+}
+```
+
+We can interpret the output to say that the AKS Istio revision `asm-1-22` is compatible with the Kubernetes versions `1.27` through `1.30` and Istio revision `asm-1-23` is compatible with Kubernetes versions `1.27` through `1.31`. 
+
+Run the following command to enable the default supported revision of the AKS Istio add-on for the AKS cluster.
+
+```bash
+az aks mesh enable --resource-group myResourceGroup --name myAKSCluster
+```
+
+The enable process is now in process. This will take several moments to complete.
+
+```bash
+ / Running ..
+```
+
+Once completed, the output will show the `serviceMeshProfile` section as below.
+
+```bash
+...
+ "serviceMeshProfile": {
+    "istio": {
+      "certificateAuthority": null,
+      "components": {
+        "egressGateways": null,
+        "ingressGateways": null
+      },
+      "revisions": [
+        "asm-1-22"
+      ]
+    },
+    "mode": "Istio"
+  },
+...
+```
+
+In addition to the verification output, you can run the following command to view the Istio pods on the cluster.
+
+```bash
+kubectl get pods -n aks-istio-system
+```
+
+You should see the following similar output.
+
+```bash
+NAME                               READY   STATUS    RESTARTS   AGE
+istiod-asm-1-22-5d6d4f8b44-2nwgl   1/1     Running   0          2m30s
+istiod-asm-1-22-5d6d4f8b44-7q8jm   1/1     Running   0          2m45s
+```
+
+#### Deploy Sample AKS Store Demo Application
+
+> NOTE: If your cluster already has a deployment of the AKS Store Demo application, you can skip this section.
+
+A Service Mesh is primarily used to secure the communications between services running in a Kubernetes cluster. We will use the AKS Store Demo application to work through some of the most common tasks you will use the Istio AKS add-on service mesh for. 
+
+Install the AKS Store Demo application in the `aks-store` namespace using the following command:
+
+```bash
+kubectl create ns aks-store
+
+kubectl apply -f https://raw.githubusercontent.com/Azure-Samples/aks-store-demo/refs/heads/main/aks-store-quickstart.yaml -n aks-store
+```
+
+This will install the AKS Store Demo application and you should see the following output.
+
+```bash
+namespace/aks-store created
+
+statefulset.apps/rabbitmq created
+configmap/rabbitmq-enabled-plugins created
+service/rabbitmq created
+deployment.apps/order-service created
+service/order-service created
+deployment.apps/product-service created
+service/product-service created
+deployment.apps/store-front created
+service/store-front created
+```
+
+You can verify the AKS Store Demo application was installed with the following command:
+
+```bash
+kubectl get all -n aks-store
+```
+
+You should see similar output as below.
+
+```bash
+NAME                                  READY   STATUS    RESTARTS   AGE
+pod/order-service-5cd94fbc74-mn22t    1/1     Running   0          2m51s
+pod/product-service-b7cbc9bd7-v9z2r   1/1     Running   0          2m49s
+pod/rabbitmq-0                        1/1     Running   0          2m52s
+pod/store-front-68846476f4-qsbd7      1/1     Running   0          2m48s
+
+NAME                      TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)              AGE
+service/order-service     ClusterIP      10.0.146.183   <none>          3000/TCP             2m50s
+service/product-service   ClusterIP      10.0.26.233    <none>          3002/TCP             2m49s
+service/rabbitmq          ClusterIP      10.0.24.182    <none>          5672/TCP,15672/TCP   2m51s
+service/store-front       LoadBalancer   10.0.9.91      4.237.243.246   80:32311/TCP         2m48s
+
+NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/order-service     1/1     1            1           2m51s
+deployment.apps/product-service   1/1     1            1           2m49s
+deployment.apps/store-front       1/1     1            1           2m48s
+
+NAME                                        DESIRED   CURRENT   READY   AGE
+replicaset.apps/order-service-5cd94fbc74    1         1         1       2m52s
+replicaset.apps/product-service-b7cbc9bd7   1         1         1       2m50s
+replicaset.apps/store-front-68846476f4      1         1         1       2m49s
+
+NAME                        READY   AGE
+statefulset.apps/rabbitmq   1/1     2m53s
+```
+
+#### Enable Sidecar Injection
+
+Service meshes traditionally work by deploying an additional container within the same pod as your application container. These additional containers are refered to as a sidecar or a sidecar proxy. These sidecar proxy receive policy and configuration from the service mesh control plane and insert themselves in the communication path of your applciation, to control the traffic to and from your application pod. 
+
+The first step to onboarding your application into a service mesh, is to enable sidecar injection for your application pods. To control which applications are onboarded to the service mesh, we can target specific Kubernetes namespaces where applications are deployed. 
+> NOTE: For upgrade scenarios, it is possible to run multiple Istio add-on control planes with different versions. The following command enables sidecar injection for the Istio revision `asm-1-22`. If you are not sure which revision is installed on the cluster, you can run the following command `az aks show --resource-group myResourceGroup --name myAKSCluster  --query 'serviceMeshProfile.istio.revisions'`
+
+Prior to running the command to enable the Istio sidecar injection, let first view the existing pods in the `aks-store` namespace.
+
+```bash
+kubectl get pods -n aks-store
+```
+
+In the output of getting the pods in the `aks-store` namespace, you will notice in the `READY` column the number of containers in each pod, with is `1/1` meaning there is currently only one container for each pod.
+
+```bash
+NAME                              READY   STATUS    RESTARTS   AGE
+order-service-5cd94fbc74-mn22t    1/1     Running   0          24m
+product-service-b7cbc9bd7-v9z2r   1/1     Running   0          24m
+rabbitmq-0                        1/1     Running   0          24m
+store-front-68846476f4-qsbd7      1/1     Running   0          24m
+```
+
+The following command will enable the AKS Istio add-on sidecar injection for the `aks-store` namespace for the Istio revision `1.22`.
+
+
+```bash
+kubectl label namespace aks-store istio.io/rev=asm-1-22
+
+namespace/aks-store labeled
+```
+
+At this point, we have just simply labeled the namespace, instructing the Istio control plane to enable sidecar injection on new deployments into the namespace. Since we have existing deployments in the namespace already, we will need to restart teh deployments to trigger the sidecar inject.
+
+Get a list of all the current deployment names in the `aks-store` namepace.
+
+```bash
+kubectl get deploy -n aks-store
+
+NAME              READY   UP-TO-DATE   AVAILABLE   AGE
+order-service     1/1     1            1           26m
+product-service   1/1     1            1           26m
+store-front       1/1     1            1           26m
+```
+
+Restart the deployments for the `order-service`, `product-service`, and `store-front`.
+
+```bash
+kubectl rollout restart deployment -n aks-store order-service
+kubectl rollout restart deployment -n aks-store product-service
+kubectl rollout restart deployment -n aks-store store-front
+
+deployment.apps/order-service restarted
+deployment.apps/product-service restarted
+deployment.apps/store-front restarted
+```
+
+If we re-run the get pods command for the `aks-store` namespace, we'll see the following output showing the additional sidecar for the deployments we restarted.
+
+```bash
+NAME                               READY   STATUS    RESTARTS   AGE
+order-service-98ff99c4b-8xpjn      2/2     Running   0          4m28s
+product-service-76fc89b74d-9llrb   2/2     Running   0          4m19s
+rabbitmq-0                         1/1     Running   0          42m
+store-front-5cb5c59d4c-j2f9v       2/2     Running   0          4m10s
+```
+
+You will notice all of the deployments now have a `READY` state of `2/2`, meaning the pods now include the sidecar proxy for Istio. The RabbitMQ for the AKS Store application is actually a stateful set and we will need to redeploy the stateful set.
+
+```bash
+kubectl rollout restart statefulset -n aks-store rabbitmq
+
+statefulset.apps/rabbitmq restarted
+```
+
+If you again re-run the get pods command for the `aks-store` namespace, we'll see all the pods with a `READY` state of `2/2`
+
+```bash
+NAME                               READY   STATUS    RESTARTS   AGE
+order-service-98ff99c4b-8xpjn      2/2     Running   0          23m
+product-service-76fc89b74d-9llrb   2/2     Running   0          22m
+rabbitmq-0                         2/2     Running   0          35s
+store-front-5cb5c59d4c-j2f9v       2/2     Running   0          22m
+```
+
+#### Verify the Istio Mesh is Controlling Mesh Communicaitons
+
+We will walk through some common configurations to ensure the communications for the AKS Store application are secured. To begin we will deploy a Curl utility container to the cluster, so we can execute traffic commands from it to test out the Istio mesh policy. 
+
+Use the following command to deploy the Curl image to the `default` namespace of the cluster.
+
+```bash
+kubectl apply -f - <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: curl-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: curl
+  template:
+    metadata:
+      labels:
+        app: curl
+    spec:
+      containers:
+      - name: curl
+        image: curlimages/curl
+        command: ["sleep", "3600"]
+EOF
+
+deployment.apps/curl-deployment created
+```
+
+We can verify the deployment of BusyBox using the following command:
+
+```bash
+kubectl get pods -n default
+
+NAME                                  READY   STATUS    RESTARTS   AGE
+curl-deployment-b747fd9ff-dlcft       1/1     Running   0          66s
+```
+
+
+
+##### Configure MTLS Strict Mode for AKS Store Namespace
+
+Currently Istio configures workloads to use MTLS when calling other workloads, but the default permissive mode allows a service to accept traffic in plaintext or MTLS traffic. To ensure that the workloads we manage with the Istio add-on only accept MTLS communication, we will deploy a Peer Authentication policy to enforce only MTLS traffic for the workloads in the `aks-store` namespace.
+
+Prior to deploying the MTLS strict mode, let's verify that the `store-front` service will respond to a client not using MTLS. We will invoke a call from the `curl` pod to the `store-front` service and see if we get a response. Run the following command to curl to the `store-front` service.
+
+```bash
+kubectl exec -it $(kubectl get pod -l app=curl -o jsonpath="{.items[0].metadata.name}") -- curl store-front.aks-store.svc.cluster.local:80
+
+<!doctype html><html lang=""><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/favicon.ico"><title>store-front</title><script defer="defer" src="/js/chunk-vendors.1541257f.js"></script><script defer="defer" src="/js/app.1a424918.js"></script><link href="/css/app.0f9f08e7.css" rel="stylesheet"></head><body><noscript><strong>We're sorry but store-front doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"></div></body></html>
+```
+
+As you can see, HTML was returned to the client meaning that the `store-front` service successfully responed to the client in plaintext. Let's now apply the Peer Authentication policy that will enforce all services in the `aks-store` namespace to only use MTLS communication. Run the following command to configure the MTLS Peer Authentication policy.
+
+```bash
+kubectl apply -n aks-store -f - <<EOF
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: aks-store-default
+spec:
+  mtls:
+    mode: STRICT
+EOF
+
+peerauthentication.security.istio.io/aks-store-default created
+```
+
+Once the MTLS strict mode peer authentication policy has been applied, we will now see if we can again get a response back from the `store-front` service from a client not using MTLS. Run the following command to curl to the `store-front` service again.
+
+```bash
+kubectl exec -it $(kubectl get pod -l app=curl -o jsonpath="{.items[0].metadata.name}") -- curl store-front.aks-store.svc.cluster.local:80
+
+curl: (56) Recv failure: Connection reset by peer
+command terminated with exit code 56
+```
+
+Notice that the curl client did not receive the HTML from the prior attempt. The error returned is the indication that the MTLS policy has been enfornced, and that the `store-front` service has rejected the non MTLS communication from the curl client.
+
+#### Deploying External Istio Ingress
+
+By default, services are not accessible from outside the cluster. When managing your workloads with the Istio service mesh, you want to ensure that if you expose a service for communications outside the cluster, mesh policy configurations can still be preserved. 
+
+The AKS Istio AKS add-on comes with both a external and internal ingerss gateway that you can utilize to expose your services in the service mesh. In the following steps, we will show how to enable an external ingerss gateway to allow the `store-front` service to be reached from outside the cluster.
+
+The following command will enable the Istio ingress gateway on the AKS cluster. This may take several moments.
+
+```bash
+az aks mesh enable-ingress-gateway --resource-group myResourceGroup --name myAKSCluster --ingress-gateway-type external
+
+ / Running ..
+```
+
+Once the Istio ingress gateway has been enabled on the AKS cluster, you will see the following output.
+
+```bash
+...
+  "serviceMeshProfile": {
+    "istio": {
+      "certificateAuthority": null,
+      "components": {
+        "egressGateways": null,
+        "ingressGateways": [
+          {
+            "enabled": true,
+            "mode": "External"
+          }
+        ]
+      },
+      "revisions": [
+        "asm-1-22"
+      ]
+    },
+    "mode": "Istio"
+  },
+...
+```
+Use `kubectl get svc` to check the service mapped to the ingress gateway:
+
+```bash
+kubectl get svc aks-istio-ingressgateway-external -n aks-istio-ingress
+
+NAME                                TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)
+       AGE
+aks-istio-ingressgateway-external   LoadBalancer   10.0.133.198   <EXTERNAL_IP>   15021:32686/TCP,80:30989/TCP,443:30790/TCP   108s
+```
+
+> NOTE: It is important to make note of your cluster `EXTERNAL-IP` address. That will be the public endpoint to reach the service we configure for using the external ingress
+
+Next we will create both the `Gateway` and `VirtualService` for the `store-front` service.
+
+```bash
+kubectl apply -f - <<EOF
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: aks-store-gateway-external
+spec:
+  selector:
+    istio: aks-istio-ingressgateway-external
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: store-front-external
+  namespace: aks-store
+spec:
+  hosts:
+  - store-front.aks-store.svc.cluster.local
+  gateways:
+  - aks-store-gateway-external
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: store-front.aks-store.svc.cluster.local
+        port:
+          number: 80
+EOF
+
+gateway.networking.istio.io/aks-store-gateway-external created
+virtualservice.networking.istio.io/store-front-external created
+```
+
+Set environment variables for external ingress host and ports:
+
+```bash
+export INGRESS_HOST_EXTERNAL=$(kubectl -n aks-istio-ingress get service aks-istio-ingressgateway-external -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+export INGRESS_PORT_EXTERNAL=$(kubectl -n aks-istio-ingress get service aks-istio-ingressgateway-external -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
+export GATEWAY_URL_EXTERNAL=$INGRESS_HOST_EXTERNAL:$INGRESS_PORT_EXTERNAL
+```
+
+Retrieve the external address of the AKS Store application:
+
+```bash
+echo "http://$GATEWAY_URL_EXTERNAL/productpage"
+```
+
 ---
 
 ## Advanced Storage Concepts
