@@ -74,7 +74,7 @@ Istio is an open-source service mesh that layers transparently onto existing dis
 - A pluggable policy layer and configuration API supporting access controls, rate limits, and quotas.
 - Automatic metrics, logs, and traces for all traffic within a cluster, including cluster ingress and egress.
 
-Istio is integrated with AKS as an addon and is supported alongside AKS. 
+Istio is integrated with AKS as an addon and is supported alongside AKS.
 
 > NOTE: Please be aware that the Istio addon for AKS does not provide the full functionality of the Istio upstream project. You can view the current limitations for this AKS Istio addon [here](https://learn.microsoft.com/azure/aks/istio-about#limitations) and what is currently [Allowed, supported, and blocked MeshConfig values](https://learn.microsoft.com/azure/aks/istio-meshconfig#allowed-supported-and-blocked-meshconfig-values)
 
@@ -128,7 +128,7 @@ The previous command shows the following output.
 }
 ```
 
-We can interpret the output to say that the AKS Istio revision `asm-1-22` is compatible with the Kubernetes versions `1.27` through `1.30` and Istio revision `asm-1-23` is compatible with Kubernetes versions `1.27` through `1.31`. 
+We can interpret the output to say that the AKS Istio revision `asm-1-22` is compatible with the Kubernetes versions `1.27` through `1.30` and Istio revision `asm-1-23` is compatible with Kubernetes versions `1.27` through `1.31`.
 
 Run the following command to enable the default supported revision of the AKS Istio add-on for the AKS cluster.
 
@@ -180,7 +180,7 @@ istiod-asm-1-22-5d6d4f8b44-7q8jm   1/1     Running   0          2m45s
 
 > NOTE: If your cluster already has a deployment of the AKS Store Demo application, you can skip this section.
 
-A Service Mesh is primarily used to secure the communications between services running in a Kubernetes cluster. We will use the AKS Store Demo application to work through some of the most common tasks you will use the Istio AKS add-on service mesh for. 
+A Service Mesh is primarily used to secure the communications between services running in a Kubernetes cluster. We will use the AKS Store Demo application to work through some of the most common tasks you will use the Istio AKS add-on service mesh for.
 
 Install the AKS Store Demo application in the `aks-store` namespace using the following command:
 
@@ -243,9 +243,10 @@ statefulset.apps/rabbitmq   1/1     2m53s
 
 #### Enable Sidecar Injection
 
-Service meshes traditionally work by deploying an additional container within the same pod as your application container. These additional containers are refered to as a sidecar or a sidecar proxy. These sidecar proxy receive policy and configuration from the service mesh control plane and insert themselves in the communication path of your applciation, to control the traffic to and from your application pod. 
+Service meshes traditionally work by deploying an additional container within the same pod as your application container. These additional containers are referred to as a sidecar or a sidecar proxy. These sidecar proxy receive policy and configuration from the service mesh control plane and insert themselves in the communication path of your application, to control the traffic to and from your application pod.
 
-The first step to onboarding your application into a service mesh, is to enable sidecar injection for your application pods. To control which applications are onboarded to the service mesh, we can target specific Kubernetes namespaces where applications are deployed. 
+The first step to onboarding your application into a service mesh, is to enable sidecar injection for your application pods. To control which applications are onboarded to the service mesh, we can target specific Kubernetes namespaces where applications are deployed.
+
 > NOTE: For upgrade scenarios, it is possible to run multiple Istio add-on control planes with different versions. The following command enables sidecar injection for the Istio revision `asm-1-22`. If you are not sure which revision is installed on the cluster, you can run the following command `az aks show --resource-group myResourceGroup --name myAKSCluster  --query 'serviceMeshProfile.istio.revisions'`
 
 Prior to running the command to enable the Istio sidecar injection, let first view the existing pods in the `aks-store` namespace.
@@ -266,7 +267,6 @@ store-front-68846476f4-qsbd7      1/1     Running   0          24m
 
 The following command will enable the AKS Istio add-on sidecar injection for the `aks-store` namespace for the Istio revision `1.22`.
 
-
 ```bash
 kubectl label namespace aks-store istio.io/rev=asm-1-22
 
@@ -275,7 +275,7 @@ namespace/aks-store labeled
 
 At this point, we have just simply labeled the namespace, instructing the Istio control plane to enable sidecar injection on new deployments into the namespace. Since we have existing deployments in the namespace already, we will need to restart teh deployments to trigger the sidecar inject.
 
-Get a list of all the current deployment names in the `aks-store` namepace.
+Get a list of all the current deployment names in the `aks-store` namespace.
 
 ```bash
 kubectl get deploy -n aks-store
@@ -326,9 +326,9 @@ rabbitmq-0                         2/2     Running   0          35s
 store-front-5cb5c59d4c-j2f9v       2/2     Running   0          22m
 ```
 
-#### Verify the Istio Mesh is Controlling Mesh Communicaitons
+#### Verify the Istio Mesh is Controlling Mesh Communications
 
-We will walk through some common configurations to ensure the communications for the AKS Store application are secured. To begin we will deploy a Curl utility container to the cluster, so we can execute traffic commands from it to test out the Istio mesh policy. 
+We will walk through some common configurations to ensure the communications for the AKS Store application are secured. To begin we will deploy a Curl utility container to the cluster, so we can execute traffic commands from it to test out the Istio mesh policy.
 
 Use the following command to deploy the Curl image to the `default` namespace of the cluster.
 
@@ -366,13 +366,11 @@ NAME                                  READY   STATUS    RESTARTS   AGE
 curl-deployment-b747fd9ff-dlcft       1/1     Running   0          66s
 ```
 
+##### Configure mTLS Strict Mode for AKS Store Namespace
 
+Currently Istio configures workloads to use mTLS when calling other workloads, but the default permissive mode allows a service to accept traffic in plaintext or mTLS traffic. To ensure that the workloads we manage with the Istio add-on only accept mTLS communication, we will deploy a Peer Authentication policy to enforce only mTLS traffic for the workloads in the `aks-store` namespace.
 
-##### Configure MTLS Strict Mode for AKS Store Namespace
-
-Currently Istio configures workloads to use MTLS when calling other workloads, but the default permissive mode allows a service to accept traffic in plaintext or MTLS traffic. To ensure that the workloads we manage with the Istio add-on only accept MTLS communication, we will deploy a Peer Authentication policy to enforce only MTLS traffic for the workloads in the `aks-store` namespace.
-
-Prior to deploying the MTLS strict mode, let's verify that the `store-front` service will respond to a client not using MTLS. We will invoke a call from the `curl` pod to the `store-front` service and see if we get a response. Run the following command to curl to the `store-front` service.
+Prior to deploying the mTLS strict mode, let's verify that the `store-front` service will respond to a client not using mTLS. We will invoke a call from the `curl` pod to the `store-front` service and see if we get a response. Run the following command to curl to the `store-front` service.
 
 ```bash
 kubectl exec -it $(kubectl get pod -l app=curl -o jsonpath="{.items[0].metadata.name}") -- curl store-front.aks-store.svc.cluster.local:80
@@ -380,7 +378,7 @@ kubectl exec -it $(kubectl get pod -l app=curl -o jsonpath="{.items[0].metadata.
 <!doctype html><html lang=""><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/favicon.ico"><title>store-front</title><script defer="defer" src="/js/chunk-vendors.1541257f.js"></script><script defer="defer" src="/js/app.1a424918.js"></script><link href="/css/app.0f9f08e7.css" rel="stylesheet"></head><body><noscript><strong>We're sorry but store-front doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"></div></body></html>
 ```
 
-As you can see, HTML was returned to the client meaning that the `store-front` service successfully responed to the client in plaintext. Let's now apply the Peer Authentication policy that will enforce all services in the `aks-store` namespace to only use MTLS communication. Run the following command to configure the MTLS Peer Authentication policy.
+As you can see, HTML was returned to the client meaning that the `store-front` service successfully responded to the client in plaintext. Let's now apply the Peer Authentication policy that will enforce all services in the `aks-store` namespace to only use mTLS communication. Run the following command to configure the mTLS Peer Authentication policy.
 
 ```bash
 kubectl apply -n aks-store -f - <<EOF
@@ -396,7 +394,7 @@ EOF
 peerauthentication.security.istio.io/aks-store-default created
 ```
 
-Once the MTLS strict mode peer authentication policy has been applied, we will now see if we can again get a response back from the `store-front` service from a client not using MTLS. Run the following command to curl to the `store-front` service again.
+Once the mTLS strict mode peer authentication policy has been applied, we will now see if we can again get a response back from the `store-front` service from a client not using mTLS. Run the following command to curl to the `store-front` service again.
 
 ```bash
 kubectl exec -it $(kubectl get pod -l app=curl -o jsonpath="{.items[0].metadata.name}") -- curl store-front.aks-store.svc.cluster.local:80
@@ -405,13 +403,13 @@ curl: (56) Recv failure: Connection reset by peer
 command terminated with exit code 56
 ```
 
-Notice that the curl client did not receive the HTML from the prior attempt. The error returned is the indication that the MTLS policy has been enfornced, and that the `store-front` service has rejected the non MTLS communication from the curl client.
+Notice that the curl client did not receive the HTML from the prior attempt. The error returned is the indication that the mTLS policy has been enforced, and that the `store-front` service has rejected the non mTLS communication from the curl client.
 
 #### Deploying External Istio Ingress
 
-By default, services are not accessible from outside the cluster. When managing your workloads with the Istio service mesh, you want to ensure that if you expose a service for communications outside the cluster, mesh policy configurations can still be preserved. 
+By default, services are not accessible from outside the cluster. When managing your workloads with the Istio service mesh, you want to ensure that if you expose a service for communications outside the cluster, mesh policy configurations can still be preserved.
 
-The AKS Istio AKS add-on comes with both a external and internal ingerss gateway that you can utilize to expose your services in the service mesh. In the following steps, we will show how to enable an external ingerss gateway to allow the `store-front` service to be reached from outside the cluster.
+The AKS Istio AKS add-on comes with both a external and internal ingress gateway that you can utilize to expose your services in the service mesh. In the following steps, we will show how to enable an external ingress gateway to allow the `store-front` service to be reached from outside the cluster.
 
 The following command will enable the Istio ingress gateway on the AKS cluster. This may take several moments.
 
@@ -445,6 +443,7 @@ Once the Istio ingress gateway has been enabled on the AKS cluster, you will see
   },
 ...
 ```
+
 Use `kubectl get svc` to check the service mapped to the ingress gateway:
 
 ```bash
@@ -555,13 +554,11 @@ Please be aware of the following limitations for Workload Identity
 - The [virtual nodes](https://learn.microsoft.com/en-us/azure/aks/virtual-nodes) add on, based on the open source project [Virtual Kubelet](https://virtual-kubelet.io/docs/), isn't supported.
 - Creation of federated identity credentials is not supported on user-assigned managed identities in these [regions.](https://learn.microsoft.com/en-us/entra/workload-id/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities)
 
-
-
 #### Enable Workload Identity on an AKS cluster
 
-> NOTE: If Workload Idenity is already enabled on your AKS cluster, you can skip this section.
+> NOTE: If Workload Identity is already enabled on your AKS cluster, you can skip this section.
 
-To enable Workload Idenity on the AKS cluster, run the following command.
+To enable Workload Identity on the AKS cluster, run the following command.
 
 ```bash
 az aks update --resource-group "${RESOURCE_GROUP}" --name "${CLUSTER_NAME}" --enable-oidc-issuer --enable-workload-identity
@@ -631,7 +628,7 @@ export USER_ASSIGNED_CLIENT_ID="$(az identity show --resource-group "${RESOURCE_
 
 #### Create a Kubernetes Service Account
 
-Create a Kubernetes service account and annotate it with the client ID of the managed identity created in the previous step. 
+Create a Kubernetes service account and annotate it with the client ID of the managed identity created in the previous step.
 
 ```bash
 cat <<EOF | kubectl apply -f -
@@ -646,7 +643,6 @@ EOF
 ```
 
 You should see the following output.
-
 
 ```bash
 serviceaccount/SERVICE_ACCOUNT_NAME created
@@ -810,6 +806,7 @@ export IDENTITY_PRINCIPAL_ID=$(az identity show --name "${USER_ASSIGNED_IDENTITY
 
 az role assignment create --assignee-object-id "${IDENTITY_PRINCIPAL_ID}" --role "Key Vault Secrets User" --scope "${KEYVAULT_RESOURCE_ID}" --assignee-principal-type ServicePrincipal
 ```
+
 Once completed, you will see a similar output.
 
 ```bash
@@ -906,9 +903,9 @@ Maintaining your AKS cluster's updates is crucial for operational hygiene. Negle
 
 ### API Server upgrades
 
-AKS is a managed Kubernetes service provided by Azure. Even though AKS is managed, flexibility has been given to customer on controlling the version of the API server they use in thier environment. As newer versions of Kubernetes become available, those versions are tested and made available as part of the service. As newer versions are provided, older versions of Kubernetes are phased out of the service and are no longer available to deploy. Staying within the spectrum of supported versions, will ensure you don't compromise support for your AKS cluster. 
+AKS is a managed Kubernetes service provided by Azure. Even though AKS is managed, flexibility has been given to customer on controlling the version of the API server they use in their environment. As newer versions of Kubernetes become available, those versions are tested and made available as part of the service. As newer versions are provided, older versions of Kubernetes are phased out of the service and are no longer available to deploy. Staying within the spectrum of supported versions, will ensure you don't compromise support for your AKS cluster.
 
-You have two options for upgrading your AKS API server, you can do manual upgrades at your own designated schedule, or you can configure cluster to subscribe to an auto-upgrade channel. These two options provides you with the flexibility to adopt the most appropriate choice depending on your organizations policies and procedures. 
+You have two options for upgrading your AKS API server, you can do manual upgrades at your own designated schedule, or you can configure cluster to subscribe to an auto-upgrade channel. These two options provides you with the flexibility to adopt the most appropriate choice depending on your organizations policies and procedures.
 
 > NOTE: When you upgrade a supported AKS cluster, you can't skip Kubernetes minor versions. For more information please see [Kubernetes version upgrades](https://learn.microsoft.com/azure/aks/upgrade-aks-cluster?tabs=azure-cli#kubernetes-version-upgrades)
 
@@ -950,7 +947,7 @@ In the following command output, the current version of the AKS API server is `1
 ...
 ```
 
-We can also, quickly look at the current version of Kuberentes running on the nodes in the nodepools by running the following:
+We can also, quickly look at the current version of Kubernetes running on the nodes in the nodepools by running the following:
 
 ```bash
 kubectl get nodes
@@ -968,13 +965,13 @@ aks-userpool-45861169-vmss000001    Ready    agent   131m   v1.28.0
 
 We will upgrade the current cluster API server, and the Kubernetes version running on the nodes, from version `1.28.0` to version `1.29.9`. Run the following command to upgrade the AKS API server version.
 
-> NOTE: The az aks upgrade command has the ability to seperate the upgrade operation to specify just the control plane and/or the node version. In this lab we will run the command that will upgrade both the control plan and nodes at the same time.
+> NOTE: The az aks upgrade command has the ability to separate the upgrade operation to specify just the control plane and/or the node version. In this lab we will run the command that will upgrade both the control plan and nodes at the same time.
 
 ```bash
 az aks upgrade --resource-group myResourceGroup --name myAKSCluster --kubernetes-version 1.29.9
 ```
 
-You will be promted to confirm you will be upgrading yoru cluster and the cluster will be unavailable during the upgrade. Type `y` to proceed with the upgrade.
+You will be prompted to confirm you will be upgrading your cluster and the cluster will be unavailable during the upgrade. Type `y` to proceed with the upgrade.
 
 ```bash
 Kubernetes may be unavailable during cluster upgrades.
@@ -1008,7 +1005,7 @@ Once the AKS API version has been completed on both the control plane and nodes,
 
 A more preferred method for upgrading your AKS API server and nodes is to configure the cluster auto-upgrade channel for your AKS cluster. This feature allow you a "set once and forget" mechanism that yields tangible time and operational cost benefits. You don't need to stop your workloads, redeploy your workloads, or create a new AKS cluster. By enabling auto-upgrade, you can ensure your clusters are up to date and don't miss the latest features or patches from AKS and upstream Kubernetes.
 
-There are several auto-upgrade channels you can subscribe your AKS cluster to. Those channels include `none`, `patch`, `stable`, and `rapid`. Each channel provides a different upgrade experience depending on how you would like to keep your AKS clusers upgraded. For a more detailed explaination of each channel, please view the [Cluster auto-upgrade channels](https://learn.microsoft.com/azure/aks/auto-upgrade-cluster?tabs=azure-cli#cluster-auto-upgrade-channels) table.
+There are several auto-upgrade channels you can subscribe your AKS cluster to. Those channels include `none`, `patch`, `stable`, and `rapid`. Each channel provides a different upgrade experience depending on how you would like to keep your AKS clusters upgraded. For a more detailed explanation of each channel, please view the [Cluster auto-upgrade channels](https://learn.microsoft.com/azure/aks/auto-upgrade-cluster?tabs=azure-cli#cluster-auto-upgrade-channels) table.
 
 For this lab demonstration, we will configure the AKS cluster to subscribe to the `patch` channel. Patch "automatically upgrades the cluster to the latest supported patch version when it becomes available while keeping the minor version the same."
 
@@ -1017,6 +1014,7 @@ Run the following command to setup the AKS cluster on the `patch` auto-upgrade c
 ```bash
 az aks update --resource-group myResourceGroup --name myAKSCluster --auto-upgrade-channel patch
 ```
+
 The auto-upgrade channel subscription for the AKS cluster is in process for configuration. This will take several moments to complete.
 
 ```bash
@@ -1036,7 +1034,7 @@ Once the auto-upgrade channel subscription has been enabled for your cluster, yo
 
 ### Node image updates
 
-In addition to you being able to upgrade the Kuberenetes API versions of both your control plan and nodepool nodes, you can also upgrade the operating system (OS) image of the VMs for your AKS cluster. AKSregularly provides new node images, so it's beneficial to upgrade your node images frequently to use the latest AKS features. Linux node images are updated weekly, and Windows node images are updated monthly.
+In addition to you being able to upgrade the Kubernetes API versions of both your control plan and nodepool nodes, you can also upgrade the operating system (OS) image of the VMs for your AKS cluster. AKSregularly provides new node images, so it's beneficial to upgrade your node images frequently to use the latest AKS features. Linux node images are updated weekly, and Windows node images are updated monthly.
 
 Upgrading node images is critical to not only ensuring the latest Kubernetes API functionality will be available from the OS, but also to ensure that the nodes in your AKS cluster have the latest security and CVE patches to prevent any vulnerabilities in your environment.
 
@@ -1081,7 +1079,7 @@ az aks upgrade --resource-group <resource-group> --name <cluster-name> --node-im
 
 Maintenance windows provides you with the predictability to know when maintenance from Kubernetes API updates and/or node OS image updates will occur. The use of maintenance windows can help align to your current organizational operational policies concerning when services are expected to not be available.
 
-There are currently three configuration schedules for maintenance windows, `default`, `aksManagedAutoUpgradeSchedule`, and `aksManagedNodeOSUpgradeSchedule`. For more specific information on these configurations, please see [Schedule configuration types for planned maintenance](https://learn.microsoft.com/azure/aks/planned-maintenance?tabs=azure-cli#schedule-configuration-types-for-planned-maintenance). 
+There are currently three configuration schedules for maintenance windows, `default`, `aksManagedAutoUpgradeSchedule`, and `aksManagedNodeOSUpgradeSchedule`. For more specific information on these configurations, please see [Schedule configuration types for planned maintenance](https://learn.microsoft.com/azure/aks/planned-maintenance?tabs=azure-cli#schedule-configuration-types-for-planned-maintenance).
 
 It is recommended to use aksManagedAutoUpgradeSchedule for all cluster upgrade scenarios and aksManagedNodeOSUpgradeSchedule for all node OS security patching scenarios.
 
