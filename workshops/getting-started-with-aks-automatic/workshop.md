@@ -38,7 +38,7 @@ After completing this workshop, you will be able to:
 
 ## Prerequisites
 
-All you need to complete this workshop is an [Azure subscription](https://azure.microsoft.com/) with permissions to create resources and a [GitHub account](https://github.com/signup). You will also need to ensure you have enough vCPU quota in the region you are deploying the AKS cluster to. If you don't have enough quota, you can request a quota increase. See [here](https://docs.microsoft.com/azure/azure-portal/supportability/per-vm-quota-requests) for more information.
+All you need to complete this workshop is an [Azure subscription](https://azure.microsoft.com/) with permissions to create resources and a [GitHub account](https://github.com/signup).
 
 ## Workshop instructions
 
@@ -82,13 +82,13 @@ There are several ways to deploy an AKS cluster, including the Azure Portal, Azu
 
 ## Familiarize yourself with AKS Presets in portal
 
-Open a browser and navigate to the [Azure Portal](https://portal.azure.com). Login with your Azure credentials.
+Open a browser and navigate to the [Azure Portal](https://portal.azure.com) then login with your Azure credentials.
 
-In the search bar at the top of the portal, start typing **kubernetes** and you will start to see a list of services, marketplace items, and resources that match your search. Under **Services** click on **Kubernetes services**.
+In the search bar at the top of the portal, start typing **kubernetes** and you will start to see a list of services, marketplace items, and resources that match your search. In the list, click on **Kubernetes services** which is found under **Services**.
 
 ![Azure Portal Kubernetes Services](./assets/azure-portal-kubernetes-services.png)
 
-In the **Kubernetes services** screen, click on the **Create** drop down and then click on **Kubernetes cluster**.
+In the **Kubernetes services** screen, click on the **Create** drop down, skip over the automatic option and click on **Kubernetes cluster**
 
 ![Azure Portal Create Kubernetes Cluster](./assets/azure-portal-create-kubernetes-cluster.png)
 
@@ -125,8 +125,6 @@ Click on the **Create** drop down again but this time, click **Automatic Kuberne
 You can see that the configuration options are much simpler. There's only a **Basics** and **Monitoring** tab.
 
 ![Azure Portal Create Automatic Kubernetes Cluster](./assets/azure-portal-create-aks-automatic-cluster-options.png)
-
-Let's go ahead and create an AKS automatic cluster.
 
 In the **Basics** tab, fill out the following fields:
 
@@ -180,7 +178,7 @@ The kubectl tool is your direct line of communication with the kube-apiserver an
 
 <div class="info" data-title="Note">
 
-> For the rest of this workshop, you will perform tasks using both kubectl and the Azure portal. This will give you a good understanding of how to interact with your AKS cluster using both methods. Any time we need to interact with the AKS cluster, we will use the Azure Cloud Shell. The Azure Cloud Shell is a free interactive shell that you can use to run the Azure CLI, kubectl, and other tools. It is already configured to use your Azure subscription and is a great way to run commands without having to install anything on your local machine.
+> The Azure Cloud Shell is a free interactive shell that you can use to run the Azure CLI, kubectl, and other tools. It is already configured to use your Azure subscription and is a great way to run commands without having to install anything on your local machine.
 
 </div>
 
@@ -244,11 +242,11 @@ Now you should be able to run kubectl commands against your AKS cluster.
 kubectl cluster-info
 ```
 
-When running a kubectl command for the first time, you will be presented with a login prompt. Follow the instructions on the screen and proceed with the authorization process and the kubectl command will be executed. As your authentication token expires, you will be prompted to re-authenticate.
+When running a kubectl command for the first time, you will be presented with a login prompt. Follow the instructions on the screen and proceed with the authorization process and the kubectl command will be executed.
 
 ![Azure Cloud Shell kubectl login](./assets/azure-cloud-shell-kubectl-login.png)
 
-<div class="info" data-title="Note">
+<div class="info" data-title="Knowledge">
 
 > AKS Automatic clusters are secured by default. It uses [Microsoft Entra ID](https://www.microsoft.com/security/business/identity-access/microsoft-entra-id) authentication with Azure RBAC for cluster access, so simply downloading the kubeconfig file is not enough to access the cluster. You also need to authenticate with Microsoft Entra ID and have the necessary permissions to access the cluster. When you created the AKS Automatic cluster, you were automatically granted the **Azure Kubernetes Service RBAC Cluster Admin** role assignment to access the cluster.
 
@@ -268,8 +266,6 @@ In the Azure Cloud Shell, run the following command to create an environment var
 
 ```bash
 ACR_NAME=<acr-name>
-echo "ACR_NAME=$ACR_NAME" >> .env
-source .env
 ```
 
 <div class="important" data-title="Important">
@@ -277,6 +273,13 @@ source .env
 > Be sure to replace `<acr-name>` with a new unique name for your Azure Container Registry. The name for an ACR resource may contain alphanumeric characters only and must be between 5 and 50 characters long.
 
 </div>
+
+Add the environment variable to a local .env file.
+
+```bash
+echo "ACR_NAME=$ACR_NAME" >> .env
+source .env
+```
 
 Run the following command to create a new Azure Container Registry.
 
@@ -300,7 +303,11 @@ az aks update \
 
 ## Import container images
 
-We will be using a sample application called [aks-store-demo](https://github.com/Azure-Samples/aks-store-demo). This application is a simple e-commerce store that consists of three services: **store-front**, **order-service**, and **product-service**. The [store-front](https://github.com/Azure-Samples/aks-store-demo/tree/main/src/store-front) is a web application that allows users to browse products, add products to a cart, and checkout. The [product-service](https://github.com/Azure-Samples/aks-store-demo/tree/main/src/product-service) is a RESTful API that provides product information to the store-front service. Finally, the [order-service](https://github.com/Azure-Samples/aks-store-demo/tree/main/src/order-service) is a RESTful API that handles order processing and saves order to a [RabbitMQ](https://www.rabbitmq.com/) message queue.
+We will be using a sample application called [aks-store-demo](https://github.com/Azure-Samples/aks-store-demo). This application is a simple e-commerce store that consists of three services: **store-front**, **order-service**, and **product-service**.
+
+- [store-front](https://github.com/Azure-Samples/aks-store-demo/tree/main/src/store-front) is a web UI that allows users to browse products, add products to a cart, and checkout
+- [product-service](https://github.com/Azure-Samples/aks-store-demo/tree/main/src/product-service) is a RESTful API that provides product information to the store-front service
+- [order-service](https://github.com/Azure-Samples/aks-store-demo/tree/main/src/order-service) is a RESTful API that handles order processing and saves order to a [RabbitMQ](https://www.rabbitmq.com/) message queue
 
 Here is a high-level application architecture diagram:
 
@@ -308,7 +315,7 @@ Here is a high-level application architecture diagram:
 
 The application containers are hosted on GitHub Container Registry (GHCR). Rather than building the containers from source, we will import the containers from GHCR to ACR.
 
-In the Azure Cloud Shell, run the following commands to import the application container images from GHCR into ACR.
+Run the following commands to import the application container images from GHCR into ACR. We'll be importing two versions of each application: 1.2.0 and 1.5.0.
 
 ```bash
 # store-front version 1.2.0
@@ -354,12 +361,6 @@ az acr import \
   --no-wait
 ```
 
-<div class="info" data-title="Note">
-
-> If you are wondering why we are importing two versions of each application, it's because we will be rolling out application updates later in the workshop.
-
-</div>
-
 Run the following command to ensure the import operations have completed.
 
 ```bash
@@ -375,19 +376,19 @@ If you see tags for each repository, the import operations have completed.
 
 # Deploy Store App to AKS
 
-Let's continue in the Azure Cloud Shell and use kubectl to deploy the aks-store-demo application to AKS. There is a [YAML manifest](https://github.com/Azure-Samples/aks-store-demo/blob/main/aks-store-quickstart.yaml) in the repo that contains the deployment and service resources for the store-front, order-service, and product-service, and RabbitMQ.
+There is a [YAML manifest](https://github.com/Azure-Samples/aks-store-demo/blob/main/aks-store-quickstart.yaml) in the repo that contains the deployment and service resources for the store-front, order-service, and product-service, and RabbitMQ. We will deploy this manifest to the AKS cluster.
 
 ## Updating Deployment manifests
 
 Before we deploy the manifest, we need to make a few changes. The manifest in the repo references the images on GHCR. We need to replace the image references with the images we imported to ACR.
 
-In the Azure Cloud Shell, run the following command to download the YAML file.
+Run the following command to download the YAML file.
 
 ```bash
 curl -o aks-store-quickstart.yaml https://raw.githubusercontent.com/Azure-Samples/aks-store-demo/main/aks-store-quickstart.yaml
 ```
 
-Next, run the following **sed** command to replace all instances of `ghcr.io/azure-samples` with `${ACR_NAME}.azurecr.io` and the tag `latest` with `1.2.0` in the aks-store-quickstart.yaml file.
+Run the following command to replace all instances of `ghcr.io/azure-samples` with `${ACR_NAME}.azurecr.io` and the tag `latest` with `1.2.0` in the aks-store-quickstart.yaml file.
 
 ```bash
 sed -i -e "s|ghcr.io/azure-samples/\(.*\):latest|${ACR_NAME}.azurecr.io/\1:1.2.0|g" aks-store-quickstart.yaml
@@ -401,7 +402,7 @@ kubectl apply -f aks-store-quickstart.yaml
 
 <div class="info" data-title="Note">
 
-> The deployment can take up to 10 minutes to schedule pods onto a new node. This is because the AKS Node Autoprovisioning feature (aka Karpenter) automatically provisions new nodes when the existing nodes are at capacity. The new nodes are provisioned with the necessary resources to run the pods. The pods are then scheduled onto the new nodes.
+> The deployment can take up a few minutes to schedule pods onto a new node. This is because the [AKS Node Autoprovisioning feature (aka Karpenter)](https://learn.microsoft.com/azure/aks/node-autoprovision?tabs=azure-cli) is enabled in the AKS Automatic cluster and it will automatically provision new nodes when needed.
 
 </div>
 
@@ -449,7 +450,7 @@ The manifest is the desired state of the resources in the cluster. When you appl
 
 ### Deployments
 
-Each Deployment resource specifies the container image to use, the ports to expose, environment variables, and resource requests and limits. The Deployment resource was not originally part of Kubernetes but was introduced to make it easier to manage [ReplicaSets](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/). A ReplicaSet is a resource that ensures a specified number of pod replicas are running at any given time and no longer commonly used in favor of Deployments.
+Each Deployment resource specifies the container image to use, the ports to expose, environment variables, and resource requests and limits. The Deployment manages [ReplicaSets](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/) and a ReplicaSet is a resource that ensures a specified number of pod replicas are running at any given time.
 
 Run the following command to view the Deployments.
 
@@ -457,7 +458,7 @@ Run the following command to view the Deployments.
 kubectl get deployments
 ```
 
-You can see there are three Deployments: **order-service**, **product-service**, and **store-front**. Each Deployment has one replica. A Deployment is a resource that manages a set of identical [Pods](https://kubernetes.io/docs/concepts/workloads/pods/). The Pods are created from the container image specified in the Deployment resource.
+You can see there are three Deployments: **order-service**, **product-service**, and **store-front**. As mentioned above, the Deployment created a ReplicaSet which in turn created a set of identical [Pods](https://kubernetes.io/docs/concepts/workloads/pods/). In the sample app, each Deployment has a single replica.
 
 If you want to see individual Pods, you can run the following command.
 
@@ -465,7 +466,7 @@ If you want to see individual Pods, you can run the following command.
 kubectl get pods
 ```
 
-This is where your application code runs. A Pod is the smallest deployable unit in Kubernetes. It represents a single instance of a running process in your cluster. If you need to troubleshoot an application, you can view the logs of the Pod by running the following command.
+A Pod is where your application code runs and is the smallest deployable unit in Kubernetes. It represents a single instance of a running process in your cluster. If you need to troubleshoot an application, you can view the logs of the Pod by running the **logs** command like this:
 
 ```bash
 kubectl logs rabbitmq-0
@@ -478,10 +479,8 @@ A Service is a resource that exposes an application running in a set of Pods as 
 Run the following command to view the Services.
 
 ```bash
-kubectl get service store-front
+kubectl get service
 ```
-
-As you can see, the **store-front** Service is of type [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer). This means that the Service is exposed to the internet and the Service has an public IP address that you can use to access the application.
 
 ### StatefulSets
 
@@ -505,23 +504,21 @@ Run the following command to view the ConfigMaps.
 kubectl get configmaps
 ```
 
-You can see that there is a ConfigMap for RabbitMQ. The ConfigMap resource is used to store the configuration data for RabbitMQ to enable AMQP 1.0 protocol.
+## Ingress and App Routing add-on
 
-## Ingress and App Routing Add-on
+You may have noticed the service type for the **store-front** service is of type [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer). This is one way to expose an application to the internet. A better way is to use an [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/). An [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) is a Kubernetes resource that manages inbound access to services in a cluster. It provides HTTP and HTTPS routing to services based on hostnames and paths. The Ingress Controller is responsible for reading the Ingress resource and processing the rules to configure the load balancer.
 
-We saw that the service type for the **store-front** service is _LoadBalancer_. This is one way to expose an application to the internet. A better way is to use an [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/). An [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) is a Kubernetes resource that manages inbound access to services in a cluster. It provides HTTP and HTTPS routing to services based on hostnames and paths. The Ingress Controller is responsible for reading the Ingress resource and processing the rules to configure the load balancer. With AKS Automatic, the App Routing Add-on, a managed NGINX Ingress Controller, is enabled by default. All you need to do is create an Ingress resource and the App Routing Add-on will take care of the rest.
+With AKS Automatic, the [App Routing add-on](https://learn.microsoft.com/en-us/azure/aks/app-routing), a managed NGINX Ingress Controller, is enabled by default. All you need to do is create an Ingress resource and the App Routing add-on will take care of the rest.
 
-Let's convert our app to use ingress to expose the store-front service to the internet rather than using a public IP on the service.
-
-Run the following command to patch the store-front service to change the service type to _ClusterIP_.
+Run the following command to patch the store-front service to change the service type to _ClusterIP_. This will remove the public IP address from the service.
 
 ```bash
 kubectl patch service store-front -p '{"spec": {"type": "ClusterIP"}}'
 ```
 
-<div class="info" data-title="Note">
+<div class="info" data-title="Knowledge">
 
-> kubectl is a powerful tool that can be used to create, update, and delete resources in a Kubernetes cluster. The `patch` command is used to update a resource in the cluster. The `-p` flag is used to specify the patch to apply to the resource. In this case, we are changing the service type to _ClusterIP_ to remove the public IP address from the service.
+> kubectl is a powerful tool that can be used to create, update, and delete resources in a Kubernetes cluster. The `patch` command is used to update a resource in the cluster. However, it is not best practice to use `patch` to update resources. It is better to update the resource manifest and apply the changes with `kubectl apply`.
 
 </div>
 
@@ -548,7 +545,7 @@ spec:
 EOF
 ```
 
-This Ingress resource is very similar to a typical [NGINX Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource) resource. The only difference is the `ingressClassName` field. The `ingressClassName` field is set to `webapprouting.kubernetes.azure.com` which enables the AKS App Routing Add-on to manage this resource.
+This Ingress resource is very similar to a typical [NGINX Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource) resource with the major difference being the `ingressClassName` field set to `webapprouting.kubernetes.azure.com`; this enables the AKS App Routing add-on to manage this resource.
 
 Wait a minute or two for the ingress to be created, then run the following command to get the public IP address of the ingress.
 
@@ -560,7 +557,7 @@ Click the URL in the terminal and you should be taken to the product page of the
 
 <div class="important" data-title="Important">
 
-> It is also worth mentioning that the App Routing Add-on does a little more than just manage the NGINX Ingress Controller. It also provides integration with Azure DNS for automatic DNS registration and management and Azure Key Vault for automatic TLS certificate management. Check out the [App Routing Add-on documentation](https://learn.microsoft.com/azure/aks/app-routing?tabs=default%2Cdeploy-app-default) for more information.
+> It is also worth mentioning that the App Routing add-on does a little more than just manage the NGINX Ingress Controller. It also provides integration with Azure DNS for automatic DNS registration and management and Azure Key Vault for automatic TLS certificate management. Check out the [App Routing add-on documentation](https://learn.microsoft.com/azure/aks/app-routing?tabs=default%2Cdeploy-app-default) for more information.
 
 </div>
 
@@ -568,13 +565,13 @@ Click the URL in the terminal and you should be taken to the product page of the
 
 # Application Resiliency
 
-As mentioned above Kubernetes Deployments is a resource that manages [ReplicaSets](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/) and it enables you to manage application updates and rollbacks. This greatly improves the resiliency of your application.
+As mentioned above Kubernetes Deployments is a resource that manages ReplicaSets. In addition to controlling the number of pod replicas, ReplicaSets play an important role in enabling you to manage application updates and rollbacks.
 
 ## Deployments and ReplicaSets
 
-There is a link between Deployment and ReplicaSet resources. When you create a Deployment, Kubernetes creates a ReplicaSet for you.
+The Deployment resource is responsible for creating and updating the ReplicaSet. The ReplicaSet resource is responsible for creating and updating the Pods. In order to keep track of the relationship between the Deployment and ReplicaSet, the Deployment resource sets the `ownerReferences` field in the ReplicaSet resource.
 
-To view the link beetween the two resources, run the following command to get the owner reference of the store-front ReplicaSet.
+Run the following command to get the owner reference of the store-front ReplicaSet.
 
 ```bash
 # get the name of the store-front ReplicaSet
@@ -605,13 +602,27 @@ If we inspect at the Deployment resource, we can see the same `uid` field in the
 kubectl get deployment store-front -o json | jq .metadata.uid
 ```
 
-Additionally, when a Deployment is created, it creates a rollout history. You can view the rollout history by running the following command.
+Same goes for pods, ReplicaSets are responsible for creating and updating the Pods. The Pods are owned by the ReplicaSet.
+
+Run the following command to get the owner reference of the store-front Pod.
+
+```bash
+# get the name of the store-front Pod
+STORE_FRONT_POD_NAME=$(kubectl get pod -l app=store-front -o jsonpath='{.items[0].metadata.name}')
+
+# get the details of the store-front Pod
+kubectl get pod $STORE_FRONT_POD_NAME -o json | jq .metadata.ownerReferences
+```
+
+As each Deployment is updated, it creates a new ReplicaSet and scales it up while scaling down the old ReplicaSet. This is how Kubernetes manages application updates and rollbacks and rollout history is stored for each Deployment.
+
+Run the following command to view the rollout history of the store-front Deployment.
 
 ```bash
 kubectl rollout history deployment store-front
 ```
 
-Here you can see the revision number and you should only have a single revision since we only deployed the application once. Let's update the store-front app to use a new container image version and then roll back to the previous version.
+Here you can see the revision number and you should only have a single revision since we only deployed the application once.
 
 ## Deployment Update Strategy
 
@@ -643,7 +654,15 @@ Now if you run the following command, you should see two different versions of t
 kubectl get rs --selector app=store-front
 ```
 
-You should see the older ReplicaSet with 0 for the DESIRED, CURRENT, and READY columns and the newer ReplicaSet with 1s across the board.
+You should see the older ReplicaSet with 0 for the DESIRED, CURRENT, and READY columns and the newer ReplicaSet with 1 for the DESIRED, CURRENT, and READY columns.
+
+Run the following command to view the rollout history of the store-front Deployment.
+
+```bash
+kubectl rollout history deployment store-front
+```
+
+You should see two revisions in the rollout history. The first revision is the original deployment and the second revision is the updated deployment.
 
 If you browse to the store-front application, you should see the new version of the application.
 
@@ -677,7 +696,9 @@ A voluntary disruption is a disruption that is initiated by the user. For exampl
 
 In maintenance scenarios, a Node will be [drained and cordoned](https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/) so that no new Pods will be scheduled on the node. Any existing Pod will be evicted using the [Eviction API](https://kubernetes.io/docs/concepts/scheduling-eviction/api-eviction/). It doesn't matter how many replicas you have running on a Node or how many replicas will be remaining after the eviction; the Pod will be evicted and rescheduled on another Node. This means you can incur downtime if you are not prepared for it.
 
-Good news is that Kubernetes has a built-in mechanism to handle these disruptions. The [PodDisruptionBudget](https://kubernetes.io/docs/concepts/workloads/pods/disruptions/) resource allows you to specify the minimum number of Pods that must be available during a voluntary disruption. When a PodDisruptionBudget is created, Kubernetes will not evict Pods if evicting it will result in a violation of the budget. Essentially the PodDisruptionBudget ensures that a minimum number of Pods remains available during a voluntary disruption.
+Good news is that Kubernetes has a built-in mechanism to handle these disruptions. The [PodDisruptionBudget](https://kubernetes.io/docs/concepts/workloads/pods/disruptions/) resource allows you to specify the minimum number of Pods that must be available during a voluntary disruption.
+
+When a PodDisruptionBudget is created, Kubernetes will not evict Pods if evicting it will result in a violation of the budget. Essentially the PodDisruptionBudget ensures that a minimum number of Pods remains available during a voluntary disruption.
 
 To see this in action we should scale our store-front deployment to have more than one replica. Run the following command to scale the store-front deployment to 3 replicas.
 
@@ -703,11 +724,7 @@ NODE_NAME=$(kubectl get pod -l app=store-front -o jsonpath='{.items[0].spec.node
 kubectl drain $NODE_NAME --ignore-daemonsets
 ```
 
-You should see a list of all the Pods that have been evicted. It doesn't matter that all 3 replicas of the store-front application were running on the node. Kubernetes doesn't care and will evict all the Pods with no regard.
-
-This is where the PodDisruptionBudget comes in. A PodDisruptionBudget is a resource that specifies the minimum number of Pods that must be available during a voluntary disruption. When a PodDisruptionBudget is created, Kubernetes will not evict Pods that violate the budget
-
-You will need to create a PodDisruptionBudget for the store-front application that specifies that at least 1 Pod must be available during a voluntary disruption. This will ensure that the next time we drain a node, at least 1 Pod will remain running. Once new Pods are scheduled on other nodes, the PodDisruptionBudget will be satisfied and the remaining Pods on the node will be evicted. This is a great way to ensure that your application remains available during a voluntary disruption.
+You should see a list of all the Pods that have been evicted. It doesn't matter that all 3 replicas of the store-front application were running on the node. Kubernetes doesn't care and will evict all the Pods with no regard. This is where the PodDisruptionBudget comes in.
 
 Run the following command to create a PodDisruptionBudget for the store-front application.
 
@@ -725,19 +742,15 @@ spec:
 EOF
 ```
 
-If you run the following command, you should see that the Pods were scheduled on a different node. If you see a status of 'Pending' wait a short while and re-run the command until all three replicas are in the 'Running' state.
+Run the following command and wait for the Pods to be scheduled on a new node.
 
 ```bash
-kubectl get pod --selector app=store-front -o wide
+kubectl get pod --selector app=store-front -o wide -w
 ```
 
-<div class="info" data-title="Note">
+When you see the Pods are in the **Running** state, you can press **Ctrl+C** to exit the watch.
 
-> You may have noticed the drained Node is no longer available in your cluster. This is because the Node was unused and the [AKS Node Autoprovisioning](https://learn.microsoft.com/azure/aks/node-autoprovision?tabs=azure-cli) feature (aka [Karpenter](https://karpenter.sh/)) automatically removed it from the cluster. More on that later.
-
-</div>
-
-Let's drain the node again and see what happens.
+Run the following command to drain the node again and see what happens this time with the PodDisruptionBudget in place.
 
 ```bash
 # get the name of the new node
@@ -758,13 +771,10 @@ Once the new node is up and running, the PodDisruptionBudget will be satisfied a
 
 An involuntary disruption is a disruption that is not initiated by the user. For example, a node may fail and if we had all the replicas of the store-front application running on that node, we would have downtime. When running more than one replica of an application, it is important to spread the replicas across multiple nodes to ensure high availability. This is where [PodAntiAffinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) or [PodTopologySpreadConstraints](https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/) comes in.
 
-**PodAntiAffinity** is a feature that allows you to specify that a Pod should not be scheduled on the same node as another Pod. PodAntiAffinity can be hard or soft. Hard PodAntiAffinity means that the Pods must be scheduled on different nodes. Soft PodAntiAffinity means that the Pods should be scheduled on different nodes if possible.
-
-**PodTopologySpreadConstraints** is a feature that allows you to specify that a Pod should be spread across different zones, regions, or nodes. This is useful for ensuring high availability of your application.
+- **PodAntiAffinity** is a feature that allows you to specify that a Pod should not be scheduled on the same node as another Pod; these can be "hard" or "soft" rules
+- **PodTopologySpreadConstraints** is a feature that allows you to specify that a Pod should be spread across different zones, regions, or nodes; this is useful for ensuring high availability of your application across different failure domains.
 
 Either of these Pod scheduling features can be used to ensure that your application remains available during an involuntary disruption with the difference being that PodAntiAffinity is used to spread Pods across nodes and PodTopologySpreadConstraints can provide more granular control by spreading Pods across zones and/or regions.
-
-Let's ensure the store-front application is spread across multiple nodes. Run the following command to create a PodAntiAffinity rule for the store-front application.
 
 Run the following command to get the YAML manifest for the store-front deployment.
 
@@ -778,13 +788,13 @@ Open the `store-front-deployment.yaml` file using the nano text editor.
 nano store-front-deployment.yaml
 ```
 
-<div class="tip" data-title="Tip">
+Update the `store-front-deployment.yaml` file by adding the following PodAntiAffinity rule to the `spec` section of the **store-front** deployment. This rule tells the Kubernetes scheduler to spread the store-front Pods using `topologyKey: kubernetes.io/hostname` which essentially means to spread the Pods across different nodes.
 
-> When done editing, press the **Ctrl + O** keys to save the file then press the Enter key. Press the **Ctrl + X** keys to exit the nano text editor.
+<div class="warning" data-title="Warning">
+
+> There are many `spec` items in the manifest, you want to add the code snippet above in the `spec` section that includes the `containers` field. Once you locate the correct `spec` section, add a new line after the `spec` field and just before the `containers` field and paste the code snippet.
 
 </div>
-
-In the `store-front-deployment.yaml` file, add the following PodAntiAffinity rule to the `spec` section of the **store-front** deployment. This rule tells the Kubernetes scheduler to spread the store-front Pods using `topologyKey: kubernetes.io/hostname` which essentially means to spread the Pods across different nodes.
 
 ```yaml
 affinity:
@@ -799,19 +809,19 @@ affinity:
         topologyKey: "kubernetes.io/hostname"
 ```
 
-<div class="warning" data-title="Warning">
+<div class="tip" data-title="Tip">
 
-> There are many `spec` items in the manifest, you want to add the code snippet above in the `spec` section that includes the `containers` field. Once you locate the correct `spec` section, add a new line after the `spec` field and just before the `containers` field and paste the code snippet.
+> When done editing, press the **Ctrl + O** keys to save the file then press the Enter key. Press the **Ctrl + X** keys to exit the nano text editor.
 
 </div>
 
-Now let's replace the store-front deployment with the updated manifest.
+Run the following command to replace the store-front deployment with the updated manifest.
 
 ```bash
 kubectl replace -f store-front-deployment.yaml
 ```
 
-This command will force Kubernetes to reschedule Pods onto new nodes. Run the following command to get the nodes that the store-front Pods are running on.
+Run the following command to get the nodes that the store-front Pods are running on.
 
 ```bash
 kubectl get pod --selector app=store-front -o wide -w
@@ -823,7 +833,7 @@ kubectl get pod --selector app=store-front -o wide -w
 
 </div>
 
-Also note that the replacement of the Pods are considered to be an update to the Deployment resource. So the RollingUpdate strategy will be used to rollout new Pods before terminating the old Pods. So we're safe from downtime during this process!
+The replacement of the Pods are considered to be an update to the Deployment resource. So the RollingUpdate strategy will be used to rollout new Pods before terminating the old Pods. So we're safe from downtime during this process!
 
 Once the Pods are rescheduled onto new nodes, you should see that the Pods are spread across multiple nodes.
 
@@ -835,13 +845,13 @@ kubectl get pod --selector app=store-front -o wide
 
 # Handling Stateful Workloads
 
-Container storage is ephemeral; that is if a pod is deleted, the data is lost because by default, data is saved within the container. In order to persist the data, you need to use [Persistent Volume (PV)](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) and [Persistent Volume Claim (PVC)](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims).
+Container storage is ephemeral. If a pod is deleted, the data is lost because by default, data is saved within the container. In order to persist the data, you need to use [Persistent Volume (PV)](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) and [Persistent Volume Claim (PVC)](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims).
 
 ## AKS Storage classes and PVC's
 
 Typically for persistent storage in a Kubernetes cluster, you would create a PV to allocate storage and use a PVC to request a slice storage against the PV.
 
-With AKS, [Azure CSI drivers and storage classes](https://learn.microsoft.com/azure/aks/csi-storage-drivers) are pre-deployed into your cluster. The storage classes allow you to simply create a PVC that references a particular storage class based on your application requirements. This storage class will take care of the task of creating the PV for you, in this case, using Azure Storage. So AKS removes the need to manually create PV's.
+With AKS, [Azure CSI drivers and storage classes](https://learn.microsoft.com/azure/aks/csi-storage-drivers) are pre-deployed into your cluster. The storage classes allow you to simply create a PVC that references a particular storage class based on your application requirements. This storage class will take care of the task of creating the PV for you, in this case, using Azure Storage.
 
 Run the following command to get the list of storage classes in your AKS cluster.
 
@@ -849,7 +859,7 @@ Run the following command to get the list of storage classes in your AKS cluster
 kubectl get storageclasses
 ```
 
-We need to update the RabbitMQ StatefulSet to use a PVC. Run the following command to get the YAML manifest for the RabbitMQ StatefulSet.
+Run the following command to get the YAML manifest for the RabbitMQ StatefulSet.
 
 ```bash
 kubectl get statefulset rabbitmq -o yaml > rabbitmq-statefulset.yaml
@@ -861,7 +871,13 @@ Open the `rabbitmq-statefulset.yaml` file using the nano text editor.
 nano rabbitmq-statefulset.yaml
 ```
 
-Add the following PVC spec to the `rabbitmq-statefulset.yaml` file. This will create a PVC that requests 1Gi of storage using the `managed-csi` storage class.
+Update the RabbitMQ StatefulSet by adding the following PVC spec to the `rabbitmq-statefulset.yaml` file. This will create a PVC that requests 1Gi of storage using the `managed-csi` storage class.
+
+<div class="warning" data-title="Warning">
+
+> There are many `spec` items in the manifest, you want to add the code snippet at the top of the first `spec` section
+
+</div>
 
 ```yaml
 volumeClaimTemplates:
@@ -875,12 +891,6 @@ volumeClaimTemplates:
         requests:
           storage: 1Gi
 ```
-
-<div class="warning" data-title="Warning">
-
-> There are many `spec` items in the manifest, you want to add the code snippet at the top of the first `spec` section
-
-</div>
 
 Keep the file open, navigate to the pod template spec and add an additional volume that references the PVC.
 
@@ -914,7 +924,7 @@ kubectl apply -f rabbitmq-statefulset.yaml
 
 A `volumeClaimTemplates` section was added to the RabbitMQ StatefulSet manifest. This section defines a PVC that requests 1Gi of storage using the `managed-csi` storage class. The PVC is automatically created by the storage class and is bound to an Azure Disk.
 
-You can check the status of the PVC by running the following command.
+Check the status of the PVC by running the following command.
 
 ```bash
 kubectl get pvc
@@ -930,7 +940,7 @@ az resource list \
   -o table
 ```
 
-Now, let's test the durability of the RabbitMQ data by creating a queue and then deleting the RabbitMQ pod. Run the following command to port-forward to the RabbitMQ management UI.
+Test the durability of the RabbitMQ data by creating a queue and then deleting the RabbitMQ pod. Run the following command to port-forward to the RabbitMQ management UI.
 
 ```bash
 kubectl port-forward svc/rabbitmq 15672:15672
@@ -950,7 +960,7 @@ Back in the terminal, run the following command to delete the RabbitMQ pod.
 kubectl delete pod rabbitmq-0
 ```
 
-After a few seconds, Kubernetes will do what it does best and recreate the RabbitMQ pod. At this point the port-forward to the RabbitMQ service will be broken, so run the port-forward command again and reload the RabbitMQ management UI in the browser. Navigate back to the **Queues** tab and you should see the `test` queue you created earlier. This is because the we mounted the Azure Disk to the `/var/lib/rabbitmq/mnesia` path and all RabbitMQ data now persists across pod restarts.
+After a few seconds, Kubernetes will recreate the RabbitMQ pod. At this point the port-forward to the RabbitMQ service will be broken, so run the port-forward command again and reload the RabbitMQ management UI in the browser. Navigate back to the **Queues** tab and you should see the `test` queue you created earlier. This is because the we mounted the Azure Disk to the `/var/lib/rabbitmq/mnesia` path and all RabbitMQ data now persists across pod restarts.
 
 ## Replace RabbitMQ with Azure Service Bus
 
@@ -958,13 +968,11 @@ As you can see, Kubernetes is great for stateless applications especially with A
 
 Before we switch to Azure Service Bus, let's make sure to update all the container images to use the latest version.
 
-In the terminal, run the following command.
+In the terminal, run the following commands.
 
 ```bash
 kubectl set image deployment/product-service product-service=$ACR_NAME.azurecr.io/aks-store-demo/product-service:1.5.0
-
 kubectl set image deployment/order-service order-service=$ACR_NAME.azurecr.io/aks-store-demo/order-service:1.5.0
-
 kubectl set image deployment/store-front store-front=$ACR_NAME.azurecr.io/aks-store-demo/store-front:1.5.0
 ```
 
