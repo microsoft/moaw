@@ -1126,7 +1126,140 @@ You will see the following output:
 
 ### Azure Fleet
 
-https://learn.microsoft.com/azure/kubernetes-fleet/update-orchestration?tabs=azure-portal
+Azure Kubernetes Fleet Manager (Fleet) enables at-scale management of multiple Azure Kubernetes Service (AKS) clusters. Fleet supports the following scenarios:
+
+- Create a Fleet resource and join AKS clusters across regions and subscriptions as member clusters.
+
+- Orchestrate Kubernetes version upgrades and node image upgrades across multiple clusters by using update runs, stages, and groups.
+
+- Automatically trigger version upgrades when new Kubernetes or node image versions are published (preview).
+
+- Create Kubernetes resource objects on the Fleet resource's hub cluster and control their propagation to member clusters.
+
+- Export and import services between member clusters, and load balance incoming layer-4 traffic across service endpoints on multiple clusters (preview).
+
+For this section of the lab we will focus on two AKS Fleet Manager features, creating a fleet and joining member clusters, and propagating resources from a hub cluster to a member clusters.
+
+You can find and learn about additional AKS Fleet Manager concepts and functionality on the [Azure Kubernetes Fleet Manager](https://learn.microsoft.com/azure/kubernetes-fleet/) documentation page.
+
+> IMPORTANT: Please ensure you have enabled the Azure Fleet CLI extension for your Azure subscription. You can enable this by running `az extension add --name fleet` in your terminal. 
+
+#### Create Additional AKS Cluster
+
+> NOTE: If you already have an additional AKS cluster, in addition to your original lab AKS cluster, you can skip this section.
+
+To understand how AKS Fleet Manager can help manage multiple AKS clusters, we will need to create an additional AKS cluster to join as a member cluster. The following commands and instructions will deploy an addtitional AKS cluster into the same Azure resource group as your existing AKS cluster. For this lab purposes, it is not necessary to deploy the additional cluster in a region and/or subscription to show the benefits of AKS Fleet Manager.
+
+Deploy the additional AKS cluster with the following command:
+
+```bash
+az aks create -g myResourceGroup -n <aks-fleet-member-1> --node-vm-size standard_d2_v2 --node-count 2 --enable-managed-identity 
+```
+
+#### Create and configure Access for a Kuberentes Fleet Resource with Hub Cluster
+
+Since this lab will be using AKS Fleet Manager for Kubernetes object propagation, you will need to create the Fleet resource with the hub cluster enabled by specifying the --enable-hub parameter with the az fleet create command. The hub cluster will orchestrate and manage the Fleet member clusters. We will add the lab's original AKS cluster and the newly created additional cluster as a member of the Fleet group in a later step.
+
+Run the following command to create the Kuberenetes AKS Fleet Manager hub cluster.
+
+```bash
+az fleet create --resource-group myResourceGroup --name <myFleetName> --location <myLocation> --enable-hub
+```
+
+Once the Kubernetes Fleet hub cluster has been created, we will need to gather the credential information to access it. This is similar to using the `az aks get-credentials` command on an AKS cluster. Run the following command to get the Fleet hub cluster credentials.
+
+```bash
+az fleet get-credentials --resource-group myResourceGroup --name myFleetName
+```
+
+Now that you have the credential information merged to your local Kubernetes config file, we will need to configure and authorize Azure role access for your account to access the Kubernetes API for the Fleet resource.
+
+Run the following commands to get and set the terminal environment variables for, your Azure subscription ID, your Azure user ID, the Fleet ID, and the Azure RBAC role, to be used in later commands.
+
+```bash
+export SUBSCRIPTION_ID=$(az account show --query id --output tsv) \
+export RESOURCE_GROUP=myResourceGroup \
+export FLEET_NAME=myFleetName \
+export FLEET_ID=$(az fleet show --name ${FLEET_NAME} --resource-group ${RESOURCE_GROUP} --query id --output tsv) \
+export IDENTITY=$(az ad signed-in-user show --query "id" --output tsv) \
+export ROLE="Azure Kubernetes Fleet Manager RBAC Cluster Admin"
+```
+
+Once we have all of the terminal environment variables set, we can run the command to add the Azure account to be a "Azure Kubernetes Fleet Manager RBAC Cluster Admin" role on the Fleet resource. 
+
+```bash
+az role assignment create --role "${ROLE}" --assignee ${IDENTITY} --scope ${FLEET_ID}
+```
+
+
+#### Joining Existing AKS Cluster to the Fleet
+
+Now that we have our Fleet hub cluster created, along with the necessary Fleet API access, we're now ready to join our AKS clusters to Fleet as member servers. To join AKS clusters to Fleet, we will need the Azure subscription path to each AKS object. To get the subscription path to your AKS clusters, you can run the following commands.
+
+> NOTE: The following commands are referencing environment variables created in the earlier terminal session. If you are using a new terminal session, please create the `SUBSCRIPTION_ID`, `RESOURCE_GROUP`, and `FLEET_NAME` variables before proceeding.
+
+```bash
+export AKS_CLUSTER_1=myAKSCluster \
+export AKS_CLUSTER_2=myAdditionalAKSCluster \
+export AKS_CLUSTER_1_ID=$(az aks show --resource-group ${RESOURCE_GROUP} --name ${AKS_CLUSTER_1} --query id --output tsv) \
+export AKS_CLUSTER_2_ID=$(az aks show --resource-group ${RESOURCE_GROUP} --name ${AKS_CLUSTER_2} --query id --output tsv)
+```
+
+Run the following command to join both AKS clusters to the Fleet.
+
+```bash
+az fleet member create --resource-group ${RESOURCE_GROUP} --fleet-name ${FLEET_NAME} --name ${AKS_CLUSTER_1} --member-cluster-id ${AKS_CLUSTER_1_ID}
+
+az fleet member create --resource-group ${RESOURCE_GROUP} --fleet-name ${FLEET_NAME} --name ${AKS_CLUSTER_2} --member-cluster-id ${AKS_CLUSTER_2_ID} 
+```
+
+Once the `az fleet member create` command has completed for both AKS clusters, we can verify they have both been added and enabled for Fleet running the `kubectl get memberclusters` command.
+
+```bash
+kubectl get memberclusters
+```
+
+#### Propagate Resources from a Hub Cluster to Member Clusters
+
+The `ClusterResourcePlacement` API object is used to propagate resources from a hub cluster to member clusters. The `ClusterResourcePlacement` API object specifies the resources to propagate and the placement policy to use when selecting member clusters. The `ClusterResourcePlacement` API object is created in the hub cluster and is used to propagate resources to member clusters. This example demonstrates how to propagate a namespace to member clusters using the `ClusterResourcePlacement` API object with a `PickAll` placement policy.
+
+Before running the following commands, make sure your `kubectl conifg` has the Fleet hub cluster as it's current context. To check your current context, run the `kubectl config current-context` command. You should see the output as `hub`. If the output is not `hub`, please run `kubectl config set-context hub`. 
+
+Create a namespace to place onto the member clusters using the kubectl create namespace command. The following example creates a namespace named my-namespace:
+
+```bash
+kubectl create namespace my-fleet-ns-example
+```
+Create a `ClusterResourcePlacement` API object in the hub cluster to propagate the namespace to the member clusters and deploy it using the `kubectl apply -f` command. The following example `ClusterResourcePlacement` creates an object named `my-lab-crp` and uses the `my-fleet-ns-example` namespace with a `PickAll` placement policy to propagate the namespace to all member clusters:
+
+```bash
+kubectl apply -f - <<EOF
+apiVersion: placement.kubernetes-fleet.io/v1beta1
+kind: ClusterResourcePlacement
+metadata:
+  name: my-lab-crp
+spec:
+  resourceSelectors:
+    - group: ""
+      kind: Namespace
+      version: v1          
+      name: my-fleet-ns-example
+  policy:
+    placementType: PickAll
+EOF
+```
+
+Check the progress of the resource propagation using the `kubectl get clusterresourceplacement` command. The following example checks the status of the `ClusterResourcePlacement` object named `my-lab-crp`:
+
+```bash
+kubectl get clusterresourceplacement my-lab-crp
+```
+
+View the details of the `my-lab-crp` object using the `kubectl describe my-lab-crp` command. The following example describes the `ClusterResourcePlacement` object named `my-lab-crp`:
+
+```bash
+kubectl describe clusterresourceplacement my-lab-crp
+```
 
 ---
 
