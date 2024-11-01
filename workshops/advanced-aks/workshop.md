@@ -895,6 +895,39 @@ I1025 15:04:39.055667       1 main.go:63] "successfully got secret" secret="Hell
 
 ### AKS Cost Analysis
 
+Cost for AKS clusters can be managed like any other resource in Azure, via the [Azure Cost Analysis](https://portal.azure.com/#view/Microsoft_Azure_CostManagement/Menu/~/overview/openedBy/AzurePortal) blade.
+
+Using the Cost Analysis blade, you can view the cost of your Azure resources overtime and can be scoped by management group, subscription, and resource group with further filters and views for more granular analysis. To learn more about Azure Cost Analysis, see [the quickstart guide](https://learn.microsoft.com/azure/cost-management-billing/costs/quick-acm-cost-analysis).
+
+When it comes to Kubernetes, you would want to see a more granular view of the compute, networking, and storage costs associated with Kubernetes namespaces. This is where the AKS Cost Analysis add-on comes in. The AKS Cost Analysis add-on is built on the [OpenCost](https://www.opencost.io/) project, with is a CNCF incubating project that provides a Kubernetes-native cost analysis solution.
+
+You can always install the open-source project into your AKS cluster by following these [instructions](https://www.opencost.io/docs/configuration/azure) but it might be easiest to enable the AKS Cost Analysis add-on to your AKS cluster.
+
+There are a few pre-requisites to enable the AKS Cost Analysis add-on to your AKS cluster and they are documented [here](https://learn.microsoft.com/azure/aks/cost-analysis#prerequisites-and-limitations). Once you have met the pre-requisites, you can enable the AKS Cost Analysis add-on to your AKS cluster.
+
+Run the following command to enable the AKS Cost Analysis add-on to your AKS cluster.
+
+```bash
+az aks update \
+--resource-group myResourceGroup \
+--name myAKSCluster \
+--enable-cost-analysis
+```
+
+It can take a few minutes to enable the AKS Cost Analysis add-on to your AKS cluster and up to 24 hours for cost data to be populated up to the Cost Analysis blade. But when it is ready, you can view the cost of your AKS cluster and its namespaces by navigating to the [Azure Cost Analysis](https://portal.azure.com/#view/Microsoft_Azure_CostManagement/Menu/~/overview/openedBy/AzurePortal) blade. Once you scope to a management group, subscription, or resource group that contains your AKS cluster, you should see a button labeled "Kubernetes clusters". Clicking on this button will take you to the AKS Cost Analysis blade where you can view the cost of your AKS cluster and its namespaces.
+
+![AKS Cost Analysis](../assets/aks-cost-analysis.png)
+
+If you expand the AKS cluster, you will see a list of all the Azure resources that are associated with it.
+
+![AKS Cost Analysis Cluster](../assets/aks-cost-analysis-cluster.png)
+
+If you click on the AKS cluster, you will see a list of all compute, networking, and storage costs associated with namespaces in the AKS cluster.
+
+![AKS Cost Analysis Namespace](../assets/aks-cost-analysis-namespace.png)
+
+It also shows you the "idle charges" which is a great way to see if you are over-provisioning your AKS cluster or if you any opportunities to optimize your AKS cluster.
+
 ---
 
 ## Cluster Update Management
@@ -1142,7 +1175,7 @@ For this section of the lab we will focus on two AKS Fleet Manager features, cre
 
 You can find and learn about additional AKS Fleet Manager concepts and functionality on the [Azure Kubernetes Fleet Manager](https://learn.microsoft.com/azure/kubernetes-fleet/) documentation page.
 
-> IMPORTANT: Please ensure you have enabled the Azure Fleet CLI extension for your Azure subscription. You can enable this by running `az extension add --name fleet` in your terminal. 
+> IMPORTANT: Please ensure you have enabled the Azure Fleet CLI extension for your Azure subscription. You can enable this by running `az extension add --name fleet` in your terminal.
 
 #### Create Additional AKS Cluster
 
@@ -1153,7 +1186,7 @@ To understand how AKS Fleet Manager can help manage multiple AKS clusters, we wi
 Deploy the additional AKS cluster with the following command:
 
 ```bash
-az aks create -g myResourceGroup -n <aks-fleet-member-1> --node-vm-size standard_d2_v2 --node-count 2 --enable-managed-identity 
+az aks create -g myResourceGroup -n <aks-fleet-member-1> --node-vm-size standard_d2_v2 --node-count 2 --enable-managed-identity
 ```
 
 #### Create and configure Access for a Kuberentes Fleet Resource with Hub Cluster
@@ -1185,12 +1218,11 @@ export IDENTITY=$(az ad signed-in-user show --query "id" --output tsv) \
 export ROLE="Azure Kubernetes Fleet Manager RBAC Cluster Admin"
 ```
 
-Once we have all of the terminal environment variables set, we can run the command to add the Azure account to be a "Azure Kubernetes Fleet Manager RBAC Cluster Admin" role on the Fleet resource. 
+Once we have all of the terminal environment variables set, we can run the command to add the Azure account to be a "Azure Kubernetes Fleet Manager RBAC Cluster Admin" role on the Fleet resource.
 
 ```bash
 az role assignment create --role "${ROLE}" --assignee ${IDENTITY} --scope ${FLEET_ID}
 ```
-
 
 #### Joining Existing AKS Cluster to the Fleet
 
@@ -1210,7 +1242,7 @@ Run the following command to join both AKS clusters to the Fleet.
 ```bash
 az fleet member create --resource-group ${RESOURCE_GROUP} --fleet-name ${FLEET_NAME} --name ${AKS_CLUSTER_1} --member-cluster-id ${AKS_CLUSTER_1_ID}
 
-az fleet member create --resource-group ${RESOURCE_GROUP} --fleet-name ${FLEET_NAME} --name ${AKS_CLUSTER_2} --member-cluster-id ${AKS_CLUSTER_2_ID} 
+az fleet member create --resource-group ${RESOURCE_GROUP} --fleet-name ${FLEET_NAME} --name ${AKS_CLUSTER_2} --member-cluster-id ${AKS_CLUSTER_2_ID}
 ```
 
 Once the `az fleet member create` command has completed for both AKS clusters, we can verify they have both been added and enabled for Fleet running the `kubectl get memberclusters` command.
@@ -1223,13 +1255,14 @@ kubectl get memberclusters
 
 The `ClusterResourcePlacement` API object is used to propagate resources from a hub cluster to member clusters. The `ClusterResourcePlacement` API object specifies the resources to propagate and the placement policy to use when selecting member clusters. The `ClusterResourcePlacement` API object is created in the hub cluster and is used to propagate resources to member clusters. This example demonstrates how to propagate a namespace to member clusters using the `ClusterResourcePlacement` API object with a `PickAll` placement policy.
 
-Before running the following commands, make sure your `kubectl conifg` has the Fleet hub cluster as it's current context. To check your current context, run the `kubectl config current-context` command. You should see the output as `hub`. If the output is not `hub`, please run `kubectl config set-context hub`. 
+Before running the following commands, make sure your `kubectl conifg` has the Fleet hub cluster as it's current context. To check your current context, run the `kubectl config current-context` command. You should see the output as `hub`. If the output is not `hub`, please run `kubectl config set-context hub`.
 
 Create a namespace to place onto the member clusters using the kubectl create namespace command. The following example creates a namespace named my-namespace:
 
 ```bash
 kubectl create namespace my-fleet-ns-example
 ```
+
 Create a `ClusterResourcePlacement` API object in the hub cluster to propagate the namespace to the member clusters and deploy it using the `kubectl apply -f` command. The following example `ClusterResourcePlacement` creates an object named `my-lab-crp` and uses the `my-fleet-ns-example` namespace with a `PickAll` placement policy to propagate the namespace to all member clusters:
 
 ```bash
@@ -1242,7 +1275,7 @@ spec:
   resourceSelectors:
     - group: ""
       kind: Namespace
-      version: v1          
+      version: v1
       name: my-fleet-ns-example
   policy:
     placementType: PickAll
