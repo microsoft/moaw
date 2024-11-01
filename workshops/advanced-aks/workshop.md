@@ -54,9 +54,119 @@ To complete this workshop, you will need:
 
 ## Cluster Sizing and Topology
 
-- Multiple clusters
-- Multitenancy
-- Availability Zones
+### Cluster Sizing
+
+When creating an AKS cluster, you need to consider the size of the cluster. The size of the cluster is determined by the number of nodes and the size of the nodes. The number of nodes is determined by the number of pods you want to run on the cluster. The size of the nodes is determined by the amount of CPU and memory you need for your pods.
+
+### System and User Node Pools
+  
+When an AKS cluster is created, a system node pool is created. System node pools serve the primary purpose of hosting pods implementing the Kubernetes control plane (such as `coredns` and `metrics-server`). User node pools are additional node pools that can be created to host user workloads. User node pools can be created with different configurations than the system node pool, such as different VM sizes, node counts, and availability zones and are added after the cluster is created.
+
+When creating an AKS cluster, you can specify the number of nodes and the size of the nodes. The number of nodes is determined by the `--node-count` parameter. The size of the nodes is determined by the `--node-vm-size` parameter.
+
+### Avaiability Zones
+
+When creating an AKS cluster, you can specify the number of availability zones. When you create an AKS cluster with multiple availability zones, the control plane is spread across the availability zones. This provides high availability for the control plane. The `--zones` parameter is a space separated list of availability zones. For example, `--zones 1 2 3` creates an AKS cluster with three availability zones.
+
+### Creating an AKS Cluster
+
+Now that we have covered the basics of cluster sizing and topology, let's create an AKS cluster with multiple node pools and availability zones.
+
+> NOTE: In this workshop we will be creating an AKS cluster that is not intended for production use. The cluster will be created as an internet-facing cluster. For production use, it is recommended to create a private cluster. You can find more information on creating a private cluster [here](https://docs.microsoft.com/en-us/azure/aks/private-clusters).
+
+First we will create a resource group in the eastus region called `myResourceGroup` to hold the AKS cluster.
+
+```bash
+az group create --name myResourceGroup --location eastus
+
+```
+
+Use the [az aks create](https://learn.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-create(aks-preview)) command to create an AKS cluster. We are going to provision the cluster with a number of features that will be useful for the rest of the workshop.
+
+```bash
+az aks create \
+        --location esastus \
+        --resource-group myResourceGroup \
+        --name myAKSCluster \
+        --kubernetes-version 1.30 \
+        --generate-ssh-keys \
+        --node-resource-group myManagedRG \
+        --load-balancer-sku standard \
+        --enable-app-routing \
+        --node-vm-size Standard_D2s_v3\
+        --node-provisioning-mode Auto \
+        --enable-managed-identity \
+        --private-dns-zone system \
+        --disable-public-fqdn \
+        --enable-acns \
+        --network-plugin azure \
+        --network-plugin-mode overlay \
+        --network-dataplane cilium \
+        --network-policy cilium \
+        --nodepool-name systempool \
+        --node-count 2 \
+        --dns-service-ip 10.2.0.10 \
+        --service-cidr 10.2.0.0/24 \
+        --tier standard \
+        --tags "owner=akslabs" \
+        --only-show-errors \
+        --zones 1 2 3 \
+        -o none
+```
+
+This command will create an AKS cluster with these salient features enabled:
+
+- Setting the `node-provisioning-mode` parameter to `Auto` enables the cluster to automatically scale the number of nodes in the node pool using the Karpenter autoscaler.
+
+- Setting the `enable-app-routing` parameter to `true` enables the Azure Application Gateway Ingress Controller for AKS.
+
+- Setting the `network-plugin`, `network-plugin` and `network-dataplane` paramters to enable Azure CNI Overlay Powered By Cilium networking. You can find more information on Azure CNI Overlay Powered By Cilium networking [here](https://learn.microsoft.com/en-us/azure/aks/azure-cni-powered-by-cilium).
+
+- The name of the default (system) node pool name is set to `systempool`. Setting the `node-count` parameter to 2 set the initial size of the system node pool to 2 nodes
+
+- The `enable-managed-identity` parameter is set to true to enable the managed identity for the AKS cluster. We will use the managed identity feature later in the workshop.
+
+### Adding a User Node Pool
+
+Before adding a user node pool, we need to confirm that the cluster has been provisioned successfully. Run the following command to check the status of the AKS cluster.
+
+```bash
+
+state=$(az aks show --resource-group myResourceGroup --name myAKSCluster --query 'provisioningState' -o tsv) && while [ $state != "Succeeded" ]; do echo "Waiting for cluster to be provisioned."; sleep 5; state=$(az aks show --resource-group myResourceGroup --name myAKSCluster --query 'provisioningState' -o tsv); done
+```
+
+Once the cluster has been provisioned successfully, we can add a user node pool to the cluster. Run the following command to add a user node pool to the AKS cluster.
+
+```bash
+az aks nodepool add \
+    --resource-group myResourceGroup \
+    --cluster-name myAKSCluster \
+    --mode User \
+    --name userpool \
+    --node-count 1 \
+    --node-vm-size Standard_D2s_v3 \
+    --zones 1 2 3 \
+    --tags "owner=akslabs" \
+    --only-show-errors \
+    -o none
+```
+
+Now that we have created a user node pool, we need to add a taint to the system node pool to ensure that the user workloads are not scheduled on the system node pool. Run the following command to add a taint to the system node pool.
+
+```bash
+az aks nodepool update \
+    --resource-group ${RESOURCE_GROUP} \
+    --cluster-name ${AKS_CLUSTER_NAME} \
+    --name systempool \
+    --node-taints CriticalAddonsOnly=true:NoSchedule
+```
+
+You have now created an AKS cluster with a system node pool and a user node pool. The user node pool has been configured to run user workloads and the system node pool has been configured to run system workloads. In addition, the AKS cluster has also been configured to:
+
+- Use Azure CNI Overlay Powered By Cilium networking.
+- Use Azure Application Gateway Ingress Controller for AKS.
+- Have a managed identity assigned (which you will do in a later section).
+- Use the Node Auto Provisioning (NAP) feature to automatically scale the number of nodes in a node pool using the Karpenter autoscaler.
 
 ---
 
