@@ -25,7 +25,7 @@ const pageTitle = 'MOAW - All Workshops';
   imports: [CommonModule, HeaderComponent, FooterComponent, LoaderComponent, ChipComponent, CardComponent],
   template: `
     <div class="full-viewport">
-      <app-header logo="images/aks-logo-full.png" logoUrl="" [links]="links"></app-header>
+      <app-header logo="images/aks-logo.png" logoUrl="" [links]="links"></app-header>
       <div class="content bg-light">
         <main id="${mainScrollableId}" class="scrollable">
           <section class="hero">

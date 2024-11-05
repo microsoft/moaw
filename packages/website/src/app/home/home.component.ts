@@ -239,19 +239,10 @@ export class HomeComponent {
 
   // TODO: Extract from tags
   keywords = [
-    'JavaScript',
-    'C#',
     'cloud computing',
-    '.NET',
-    'machine learning',
-    'Python',
-    'serverless',
-    'HTML',
-    'CSS',
-    'APIs',
-    'IoT',
-    'databases',
+    'cloud native',
     'containers',
-    'quantum computing'
+    'Kubernetes',
+    'Azure Kubernetes Service',
   ];
 }
