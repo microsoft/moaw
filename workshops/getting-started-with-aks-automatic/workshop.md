@@ -792,7 +792,7 @@ Update the `store-front-deployment.yaml` file by adding the following PodAntiAff
 
 <div class="warning" data-title="Warning">
 
-> There are many `spec` items in the manifest, you want to add the code snippet above in the `spec` section that includes the `containers` field. Once you locate the correct `spec` section, add a new line after the `spec` field and just before the `containers` field and paste the code snippet.
+> There are many `spec` items in the manifest, you want to add the code snippet below in the `spec` section that includes the `containers` field. Once you locate the correct `spec` section, add a new line after the `spec` field and just before the `containers` field and paste the code snippet.
 
 </div>
 
@@ -1129,7 +1129,7 @@ We will walk through the most popular options that allow you to scale your appli
 
 ## Manually scaling your cluster
 
-Manually scaling your cluster gives you the ability to add or remove additional nodes to the cluster at any point in time, adding additional hardware resources to your cluster. Using manual scaling is good for dev/test and/or small production environments where reacting to changing workload utilization is not that important. In most production environments, you will want to set policies based on conditions to scale your cluster in a more automated fashion. Manually scaling you cluster gives you the ability to scale your cluster at the exact time you want, but your applications could potentially be in a degraded and/or offline state while the cluster is scaling up.
+Manually scaling your cluster gives you the ability to add or remove additional nodes to the cluster at any point in time, adding additional hardware resources to your cluster. Using manual scaling is good for dev/test and/or small production environments where reacting to changing workload utilization is not that important. In most production environments, you will want to set policies based on conditions to scale your cluster in a more automated fashion. Manually scaling your cluster gives you the ability to scale your cluster at the exact time you want, but your applications could potentially be in a degraded and/or offline state while the cluster is scaling up.
 
 With AKS Automatic, system pods and other critical components of the cluster are deployed to a system node pool. This node pool is managed by AKS and is not recommended to be scaled manually. Workloads like the AKS store demo app you deployed earlier are deployed to special nodes that are managed by a different feature of AKS and more on that later.
 
@@ -1168,7 +1168,7 @@ View the current number of replicas for the **store-front** service
 kubectl get deployment store-front
 ```
 
-Notice that there is currently only 1 replica running of the **store-front** service. Run the following command to scale the number of replicas for the store-front service to 10.
+Notice that there is currently only 3 replica running of the **store-front** service. Run the following command to scale the number of replicas for the store-front service to 10.
 
 ```bash
 kubectl scale deployment store-front --replicas=10
