@@ -579,8 +579,528 @@ Click on the link to access the AKS Store application.
 
 ## Advanced Storage Concepts
 
-### Azure Container Storage
+### Storage Options
 
+Azure offers rich set of storage options that can be categorized into two buckets: Block Storage and Shared File Storage. You can choose the best match option based on the workload requirements. The following guidance can facilitate your evaluation: 
+
+1. Select storage category based on the attach mode.
+Block Storage can be attached to a single node one time (RWO: Read Write Once), while Shared File Storage can be attached to different nodes one time (RWX: Read Write Many). If you need to access the same file from different nodes, you would need Shared File Storage. 
+
+2. Select a storage option in each category based on characteristics and user cases. 
+
+Block storage category:
+
+| Storage option    | Characteristics    | User Cases    |
+|:----------:|:----------:|:----------:|
+| [Azure Disks](https://learn.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview)  | Rich SKUs from low-cost HDD disks to high performance Ultra Disks.   | Generic option for all user cases from Backup to database to SAP Hana.  |
+| [Elastic SAN](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-introduction)  | Scalability up to millions of IOPS, Cost efficiency at scale  | Tier 1 & 2 workloads, Databases, VDI hosted on any Compute options (VM, Containers, AVS)   |
+| [Local Disks](https://learn.microsoft.com/en-us/azure/virtual-machines/nvme-overview)  | Priced in VM, High IOPS/Throughput and extremely low latency.   | Applications with no data durability requirement or with built-in data replication support (e.g., Cassandra), AI training   |
+
+Shared File Storage category: 
+
+| Storage option    | Characteristics    | User Cases    |
+|:----------:|:----------:|:----------:|
+| [Azure Files](https://learn.microsoft.com/en-us/azure/storage/files/storage-files-introduction)  | Fully managed, multiple redundancy options.    | General purpose file shares, LOB apps, shared app or config data for CI/CD, AI/ML.  |
+| [Azure NetApp Files](https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-introduction)  | Fully managed ONTAP with high performance and low latency.  | Analytics, HPC, CMS, CI/CD, custom apps currently using NetApp.   |
+| [Azure Blobs](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction)  | Unlimited amounts of unstructured data, data lifecycle management, rich redundancy options.   | Large scale of object data handling, backup   |
+
+3. Select performance tier, redundancy type on the storage option.
+See the product page from above table for further evaluation of performance tier, redundancy type or other requirements. 
+
+### Orchestration options
+
+Besides invoking service REST API to ingest remote storage resources, there are two major ways to use storage options in AKS workloads: CSI (Container Storage Interface) drivers and Azure Container Storage. 
+
+#### CSI Drivers
+
+Container Storage Interface is industry standard that enables storage vendors (SP) to develop a plugin once and have it work across a number of container orchestration systems. It’s widely adopted by both OSS community and major cloud storage vendors. If you already build storage management and operation with CSI drivers, or you plan to build cloud independent k8s cluster setup, it’s the preferred option.
+
+#### Azure Container Storage
+
+Azure Container Storage is built on top of CSI drivers to support greater scaling capability with storage pool and unified management experience across local & remote storage. If you want to simplify the use of local NVMe disks, or achieve higher pod scaling target,​ it’s the preferred option. 
+
+Storage option support on CSI drivers and Azure Container Storage:
+
+| Storage option   | CSI drivers   | Azure Container Storage   |
+|:----------:|:----------:|:----------:|
+| [Azure Disks](https://learn.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview)  | Support([CSI disks driver](https://learn.microsoft.com/en-us/azure/aks/azure-disk-csi))  | Support  |
+| [Elastic SAN](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-introduction)  | N/A  | Support  |
+| [Local Disks](https://learn.microsoft.com/en-us/azure/virtual-machines/nvme-overview)  | N/A (Host Path + Static Provisioner)  | Support  |
+| [Azure Files](https://learn.microsoft.com/en-us/azure/storage/files/storage-files-introduction)  | Support([CSI files driver](https://learn.microsoft.com/en-us/azure/aks/azure-files-csi))  | N/A  |
+| [Azure NetApp Files](https://learn.microsoft.com/en-us/azure/azure-netapp-files/azure-netapp-files-introduction)  | Support([CSI NetApp driver](https://learn.microsoft.com/en-us/azure/aks/azure-netapp-files-nfs))  | N/A  |
+| [Azure Blobs](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction)  | Support([CSI Blobs driver](https://learn.microsoft.com/en-us/azure/aks/azure-blob-csi?tabs=NFS))  | N/A  |
+
+
+
+### Use Azure Container Storage for Replicated Ephemeral NVMe Disk
+
+Deploy a MySQL Server to mount volumes using local NVMe storage via Azure Container Storage and demonstrate replication and failover of replicated local NVMe storage in Azure Container Storage.
+
+#### Setup Azure Container Storage
+
+Set the Azure environment variables:
+
+```bash
+export AZURE_RESOURCE_GROUP=<your_resource_group>
+export AZURE_CLUSTER_NAME=<your_cluster_name>
+```
+
+##### Follow the below steps to enable Azure Container Storage in an existing AKS cluster
+
+* Create a node pool with `Standard_L8s_v3` VMs.
+```bash
+export ACSTOR_NODEPOOL_NAME=<node_pool_name>
+
+az aks nodepool add --cluster-name $AZURE_CLUSTER_NAME --resource-group $AZURE_RESOURCE_GROUP \
+       --name $ACSTOR_NODEPOOL_NAME --node-vm-size Standard_L8s_v3 --node-count 3 
+```
+
+* Update the cluster to enable Azure Container Storage.
+```bash
+az aks update --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_CLUSTER_NAME \
+       --node-count 3 \
+       --os-sku AzureLinux \
+       --enable-azure-container-storage ephemeralDisk \
+       --azure-container-storage-nodepools $ACSTOR_NODEPOOL_NAME \
+       --storage-pool-option NVMe \
+       --node-vm-size Standard_L8s_v3 \
+       --ephemeral-disk-volume-type PersistentVolumeWithAnnotation
+```
+
+##### Follow the below steps to create a new AKS cluster with Azure Container Storage enabled
+
+```bash
+export AZURE_LOCATION=<your_location>
+
+az group create --name $AZURE_RESOURCE_GROUP --location $AZURE_LOCATION
+
+az aks create --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_CLUSTER_NAME \
+       --node-count 3 \
+       --os-sku AzureLinux \
+       --enable-azure-container-storage ephemeralDisk \
+       --storage-pool-option NVMe \
+       --node-vm-size Standard_L8s_v3 \
+       --ephemeral-disk-volume-type PersistentVolumeWithAnnotation
+
+export ACSTOR_NODEPOOL_NAME=nodepool1
+```
+
+Complete the setup by fetching the access credentials and deleting the default storage pool.
+```bash
+az aks get-credentials --resource-group $AZURE_RESOURCE_GROUP --name $AZURE_CLUSTER_NAME --overwrite-existing
+
+kubectl delete sp -n acstor ephemeraldisk-nvme
+```
+
+#### Checkpoint 1: Verify that all Azure Container Storage pods are in running state
+
+Add `--watch` to wait a little bit until all the pods reaches Running state.
+
+```bash
+kubectl get pods -n acstor --watch
+```
+
+#### Create a replicated Ephemeral Storage pool using CRDs
+
+Storage pools can also be created using Kubernetes CRDs, as described here. This CRD generates a storage class called "acstor-(your-storage-pool-name-here)".
+```bash
+kubectl apply -f - <<EOF
+apiVersion: containerstorage.azure.com/v1
+kind: StoragePool
+metadata:
+  name: ephemeraldisk-nvme
+  namespace: acstor
+spec:
+  poolType:
+    ephemeralDisk:
+      diskType: nvme
+      replicas: 3
+EOF
+```
+Storage Class generated will be called "acstor-ephemeraldisk-nvme".
+
+#### Deploy a MySQL server which uses volume provisioned using "acstor-ephemeraldisk-nvme" storage class
+
+* This deployment is a modified version of [this guide](https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/).
+* Create the config map and service deployments:
+
+```bash
+kuebctl apply -f - <<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+    app.kubernetes.io/name: mysql
+data:
+  primary.cnf: |
+    # Apply this config only on the primary.
+    [mysqld]
+    log-bin    
+  replica.cnf: |
+    # Apply this config only on replicas.
+    [mysqld]
+    super-read-only    
+---
+# Headless service for stable DNS entries of StatefulSet members.
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+    app.kubernetes.io/name: mysql
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  clusterIP: None
+  selector:
+    app: mysql
+---
+# Client service for connecting to any MySQL instance for reads.
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-read
+  labels:
+    app: mysql
+    app.kubernetes.io/name: mysql
+    readonly: "true"
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  selector:
+    app: mysql
+EOF
+```
+
+* The statefulset to deploy MySQL server:
+
+```bash
+kubectl apply -f - <<EOF
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  serviceName: mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      # Use the scheduler extender to ensure the pod is placed on a node with an attachment replica on failover.
+      schedulerName: csi-azuredisk-scheduler-extender
+      initContainers:
+      - name: init-mysql
+        image: mysql:5.7
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          # Generate mysql server-id from pod ordinal index.
+          [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
+          ordinal=${BASH_REMATCH[1]}
+          echo [mysqld] > /mnt/conf.d/server-id.cnf
+          # Add an offset to avoid reserved server-id=0 value.
+          echo server-id=$((100 + $ordinal)) >> /mnt/conf.d/server-id.cnf
+          # Copy appropriate conf.d files from config-map to emptyDir.
+          if [[ $ordinal -eq 0 ]]; then
+            cp /mnt/config-map/primary.cnf /mnt/conf.d/
+          else
+            cp /mnt/config-map/replica.cnf /mnt/conf.d/
+          fi          
+        volumeMounts:
+        - name: conf
+          mountPath: /mnt/conf.d
+        - name: config-map
+          mountPath: /mnt/config-map
+      - name: clone-mysql
+        image: gcr.io/google-samples/xtrabackup:1.0
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          # Skip the clone if data already exists.
+          [[ -d /var/lib/mysql/mysql ]] && exit 0
+          # Skip the clone on primary (ordinal index 0).
+          [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
+          ordinal=${BASH_REMATCH[1]}
+          [[ $ordinal -eq 0 ]] && exit 0
+          # Clone data from previous peer.
+          ncat --recv-only mysql-$(($ordinal-1)).mysql 3307 | xbstream -x -C /var/lib/mysql
+          # Prepare the backup.
+          xtrabackup --prepare --target-dir=/var/lib/mysql          
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: conf
+          mountPath: /etc/mysql/conf.d
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        env:
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: "1"
+        ports:
+        - name: mysql
+          containerPort: 3306
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: conf
+          mountPath: /etc/mysql/conf.d
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        livenessProbe:
+          exec:
+            command: ["mysqladmin", "ping"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            # Check we can execute queries over TCP (skip-networking is off).
+            command: ["mysql", "-h", "127.0.0.1", "-e", "SELECT 1"]
+          initialDelaySeconds: 5
+          periodSeconds: 2
+          timeoutSeconds: 1
+      - name: xtrabackup
+        image: gcr.io/google-samples/xtrabackup:1.0
+        ports:
+        - name: xtrabackup
+          containerPort: 3307
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          cd /var/lib/mysql
+
+          # Determine binlog position of cloned data, if any.
+          if [[ -f xtrabackup_slave_info && "x$(<xtrabackup_slave_info)" != "x" ]]; then
+            # XtraBackup already generated a partial "CHANGE MASTER TO" query
+            # because we're cloning from an existing replica. (Need to remove the tailing semicolon!)
+            cat xtrabackup_slave_info | sed -E 's/;$//g' > change_master_to.sql.in
+            # Ignore xtrabackup_binlog_info in this case (it's useless).
+            rm -f xtrabackup_slave_info xtrabackup_binlog_info
+          elif [[ -f xtrabackup_binlog_info ]]; then
+            # We're cloning directly from primary. Parse binlog position.
+            [[ `cat xtrabackup_binlog_info` =~ ^(.*?)[[:space:]]+(.*?)$ ]] || exit 1
+            rm -f xtrabackup_binlog_info xtrabackup_slave_info
+            echo "CHANGE MASTER TO MASTER_LOG_FILE='${BASH_REMATCH[1]}',\
+                  MASTER_LOG_POS=${BASH_REMATCH[2]}" > change_master_to.sql.in
+          fi
+
+          # Check if we need to complete a clone by starting replication.
+          if [[ -f change_master_to.sql.in ]]; then
+            echo "Waiting for mysqld to be ready (accepting connections)"
+            until mysql -h 127.0.0.1 -e "SELECT 1"; do sleep 1; done
+
+            echo "Initializing replication from clone position"
+            mysql -h 127.0.0.1 \
+                  -e "$(<change_master_to.sql.in), \
+                          MASTER_HOST='mysql-0.mysql', \
+                          MASTER_USER='root', \
+                          MASTER_PASSWORD='', \
+                          MASTER_CONNECT_RETRY=10; \
+                        START SLAVE;" || exit 1
+            # In case of container restart, attempt this at-most-once.
+            mv change_master_to.sql.in change_master_to.sql.orig
+          fi
+
+          # Start a server to send backups when requested by peers.
+          exec ncat --listen --keep-open --send-only --max-conns=1 3307 -c \
+            "xtrabackup --backup --slave-info --stream=xbstream --host=127.0.0.1 --user=root"          
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: conf
+          mountPath: /etc/mysql/conf.d
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+      volumes:
+      - name: conf
+        emptyDir: {}
+      - name: config-map
+        configMap:
+          name: mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: azuredisk-standard-ssd-zrs-replicas
+      resources:
+        requests:
+          storage: 256Gi
+EOF
+```
+
+#### Checkpoint 2: Verify that all the MySQL server's components are available
+
+* Verify that 2 services were created (headless one for the statefulset and mysql-read for the reads) 
+
+```bash
+kubectl get svc -l app=mysql  
+```
+
+Output should resemble like:
+```
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+mysql        ClusterIP   None           <none>        3306/TCP   5h43m
+mysql-read   ClusterIP   10.0.205.191   <none>        3306/TCP   5h43m
+```
+
+* Verify that MySql server pod is running
+
+Add the `--watch` to wait and watch until the pod goes from Init to Running state.
+
+```bash
+kubectl get pods -l app=mysql -o wide --watch
+```
+
+Output should resemble like:
+```
+NAME      READY   STATUS    RESTARTS   AGE   IP            NODE                                NOMINATED NODE   READINESS GATES
+mysql-0   2/2     Running   0          1m34s  10.244.3.16   aks-nodepool1-28567125-vmss000003   <none>           <none>
+```
+
+Keep a note of the node on which the `mysql-0` pod is running.
+
+#### Inject data to the MySql database
+
+* Using the mysql-client image `mysql:5.7`, create a database `school` and a table `students`. Also, make a few entries in the table to verify persistence as below:
+
+```bash
+kubectl run mysql-client --image=mysql:5.7 -i --rm --restart=Never -- \
+mysql -h mysql-0.mysql <<EOF
+CREATE DATABASE school;
+CREATE TABLE school.students (RollNumber INT, Name VARCHAR(250));
+INSERT INTO school.students VALUES (1, 'Student1');
+INSERT INTO school.students VALUES (2, 'Student2');
+EOF
+```
+
+#### Checkpoint 3: Verify the entries in the MySQL server
+
+Run the following command to verify the creation of database, table and entries:
+
+```bash
+kubectl run mysql-client --image=mysql:5.7 -i -t --rm --restart=Never -- \
+mysql -h mysql-read -e "SELECT * FROM school.students"
+```
+
+Output:
+```
++------------+----------+
+| RollNumber | Name     |
++------------+----------+
+|          1 | Student1 |
++------------+----------+
+|          2 | Student2 |
++------------+----------+
+pod "mysql-client" deleted
+```
+
+#### Initiate the node failover
+
+Perform the following steps:
+* Capture the number of nodes in the default node pool "nodepool1",
+* Scale up the node pool to add one more node,
+* Capture the node on which the workload is running,
+* Delete the node on which the workload is running.
+
+```bash
+NODE_COUNT=$(az aks nodepool show -g $AZURE_RESOURCE_GROUP --cluster-name $AZURE_CLUSTER_NAME --name $ACSTOR_NODEPOOL_NAME --query count --output tsv)
+
+az aks nodepool scale -g $AZURE_RESOURCE_GROUP --cluster-name $AZURE_CLUSTER_NAME --name $ACSTOR_NODEPOOL_NAME --node-count $((NODE_COUNT+1)) --no-wait
+
+POD_NAME=$(kubectl get pods -l app=mysql  -o custom-columns=":metadata.name" --no-headers)
+
+NODE_NAME=$(kubectl get pods $POD_NAME  -o jsonpath='{.spec.nodeName}')
+
+kubectl delete node $NODE_NAME
+```
+
+#### Checkpoint 4: Observe that the mysql pods are running
+
+Add the `--watch` to wait and watch until the pod goes from Init to Running state.
+
+```bash
+kubectl get pods -l app=mysql -o wide --watch
+```
+
+Output should resemble like:
+```
+NAME      READY   STATUS    RESTARTS   AGE   IP            NODE                                NOMINATED NODE   READINESS GATES
+mysql-0   2/2     Running   0          3m34s  10.244.3.16   aks-nodepool1-28567125-vmss000002   <none>           <none>
+```
+
+NOTE: Compare the `NODE` entry with the value obtained in **Checkpoint 2** and verify that they are different.
+
+#### Verify successful data replication and persistence for MySQL Server
+
+* Verify the mount volume by injecting new data by running the following command:
+
+```bash
+kubectl run mysql-client --image=mysql:5.7 -i --rm --restart=Never -- \
+mysql -h mysql-0.mysql <<EOF
+INSERT INTO school.students VALUES (3, 'Student3');
+INSERT INTO school.students VALUES (4, 'Student4');
+EOF
+```
+
+* Run the command to fetch the entries previously inserted into the database:
+
+```bash
+kubectl run mysql-client --image=mysql:5.7 -i -t --rm --restart=Never -- \
+mysql -h mysql-read -e "SELECT * FROM school.students"
+```
+
+Output:
+
+```
++------------+----------+
+| RollNumber | Name     |
++------------+----------+
+|          1 | Student1 |
++------------+----------+
+|          2 | Student2 |
++------------+----------+
+|          3 | Student3 |
++------------+----------+
+|          4 | Student4 |
++------------+----------+
+pod "mysql-client" deleted
+```
+
+The output obtained contains the values entered before the failover and observed in **Checkpoint 3**.This shows that the database and table entries in the MySQL Server was replicated and persisted across the failover of `mysql-0` pod.
+The output also demonstrates that, newer entries were successfully appended on the newly spawned mysql server application. 
+
+#### Summary
+
+* Create a replicated local NVMe storage pool `ephemeraldisk-nvme`.
+* Create a MySQL server statefulset whose `volumeTemplate` uses the storage pool's storage class `acstor-ephemeraldisk-nvme`.
+* Create entries into MySQL server.
+* Trigger a failover scenario by deleting the node on which the workload pod is running. Scale up the cluster by 1 node so that the 3 active nodes are still present.
+* Once the failover completes successfully, enter newer entries into the database and fetch all entries to verify that the data entered before the failover were successfully replicated and persisted across the failover and newer data were entered on top of the replicated data.
 ---
 
 ## Advanced Security Concepts
