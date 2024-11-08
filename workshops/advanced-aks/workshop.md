@@ -1930,23 +1930,23 @@ Container images are signed as part of the Acquire stage of the platform. Once a
 
 #### Install Notation
 
-First, set a local variable for the version of Notation you want to install (in this lab we will use version 1.2.0).
+First, set a local variable for the version of Notation you want to install (in this lab we will use version 1.2.0). Also set environment variables for the operating system and architecture you are using.
 
 ```bash
 export NOTATION_VERSION=1.2.0
+export OS=$(uname | tr '[:upper:]' '[:lower:]')
+export ARCH=$(uname -m)
 ```
-
-##### For Linux (amd64)
 
 Use the following commands to download and install Notation.
 
 ```bash
-curl -LO https://github.com/notaryproject/notation/releases/download/v$NOTATION_VERSION/notation_$NOTATION_VERSION\_linux_amd64.tar.gz
+curl -LO https://github.com/notaryproject/notation/releases/download/v$NOTATION_VERSION/notation_$NOTATION_VERSION\_${OS}_${ARCH}.tar.gz
 curl -LO https://github.com/notaryproject/notation/releases/download/v$NOTATION_VERSION/notation_$NOTATION_VERSION\_checksums.txt
 shasum --check notation_$NOTATION_VERSION\_checksums.txt
 ```
 
-If the checksum verification is successful, you should see something like this:
+If the checksum verification is successful, you should see something like this (the result shown here is for Linux AMD64):
 
 ```bash
 shasum: notation_1.2.0_darwin_amd64.tar.gz: No such file or directory
@@ -1967,67 +1967,6 @@ If the checksum verification is successful, extract the binary and move it to th
 
 ```bash
 tar xvf notation_$NOTATION_VERSION\_linux_amd64.tar.gz
-mv ./notation /usr/local
-ln -s /usr/local/notation /usr/local/bin/notation
-```
-
-Verify the installation by running the following command:
-
-```bash
-notation version
-```
-
-You should see the version of Notation installed.
-
-```text
-Notation - a tool to sign and verify artifacts.
-
-Version:     1.2.0
-Go version:  go1.23.0
-Git commit:  4700ad6f1bef13e411772d7ae4399f891fc3a6ae
-```
-
-##### For MacOS
-
-There are two ways to install Notation on MacOS:
-
-- Using Homebrew
-
-If you have Homebrew installed, you can install Notation using the following command:
-
-```bash
-brew install notation
-```
-
-- Binary download
-
-Use the following commands to download and check the SHA256 checksum of the binary.
-
-```bash
-curl -LO https://github.com/notaryproject/notation/releases/download/v$NOTATION_VERSION/notation_$NOTATION_VERSION\_darwin_arm64.tar.gz
-curl -LO https://github.com/notaryproject/notation/releases/download/v$NOTATION_VERSION/notation_$NOTATION_VERSION\_checksums.txt
-shasum --check notation_$NOTATION_VERSION\_checksums.txt
-```
-
-If the checksum verification is successful, you should see something like this:
-
-```bash
-shasum: notation_1.2.0_windows_amd64.zip: No such file or directory
-notation_1.2.0_windows_amd64.zip: FAILED open or read
-shasum: notation_1.2.0_linux_amd64.tar.gz: No such file or directory
-notation_1.2.0_linux_amd64.tar.gz: FAILED open or read
-shasum: notation_1.2.0_linux_arm64.tar.gz: No such file or directory
-notation_1.2.0_linux_arm64.tar.gz: FAILED open or read
-notation_1.2.0_darwin_amd64.tar.gz: OK
-shasum: notation_1.2.0_darwin_arm64.tar.gz: No such file or directory
-notation_1.2.0_darwin_arm64.tar.gz: FAILED open or read
-shasum: WARNING: 4 listed files could not be read
-```
-
-If the checksum verification is successful, extract the binary and move it to the desired bin directory in your `$PATH`.
-
-```bash
-tar -xvf notation_$NOTATION_VERSION\_darwin_arm64.tar.gz
 mv ./notation /usr/local
 ln -s /usr/local/notation /usr/local/bin/notation
 ```
