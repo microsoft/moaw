@@ -1966,7 +1966,7 @@ shasum: WARNING: 5 listed files could not be read
 If the checksum verification is successful, extract the binary and move it to the desired bin directory in your `$PATH`.
 
 ```bash
-tar xvf notation_$NOTATION_VERSION\_linux_amd64.tar.gz
+tar xvf notation_$NOTATION_VERSION\_${OS}_${ARCH}.tar.gz
 mv ./notation /usr/local
 ln -s /usr/local/notation /usr/local/bin/notation
 ```
