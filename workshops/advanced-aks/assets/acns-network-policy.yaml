@@ -1,0 +1,100 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-rabbitmq-traffic
+spec:
+  endpointSelector:
+    matchLabels:
+      app: rabbitmq
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: order-service
+      toPorts:
+        - ports:
+            - port: "5672"
+              protocol: TCP
+            - port: "15672"
+              protocol: TCP
+  egress: [] # Block all egress traffic from rabbitmq
+---
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-order-service-traffic
+spec:
+  endpointSelector:
+    matchLabels:
+      app: order-service
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: store-front
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: rabbitmq
+      toPorts:
+        - ports:
+            - port: "5672"
+              protocol: TCP
+---
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-product-service-traffic
+spec:
+  endpointSelector:
+    matchLabels:
+      app: product-service
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app: store-front
+      toPorts:
+        - ports:
+            - port: "3002"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: ai-service
+      toPorts:
+        - ports:
+            - port: "5001"
+              protocol: TCP
+---
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-store-front-traffic
+spec:
+  endpointSelector:
+    matchLabels:
+      app: store-front
+  ingress:
+    - fromEntities:
+        - world # Allow external traffic to store-front via LoadBalancer.
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: order-service
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            app: product-service
+      toPorts:
+        - ports:
+            - port: "3002"
+              protocol: TCP
