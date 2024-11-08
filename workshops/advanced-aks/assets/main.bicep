@@ -101,7 +101,25 @@ resource keyVaultAdministratorRoleAssignment 'Microsoft.Authorization/roleAssign
   }
 }
 
-// TODO: add key vault roles
+// resource keyVaultCertificatesOfficerRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   name: guid(subscription().id, resourceGroup().id, userObjectId, 'Key Vault Certificates Officer')
+//   scope: azureKeyVault
+//   properties: {
+//     principalId: userObjectId
+//     principalType: 'User'
+//     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', '00482a5a-887f-4fb3-b363-3b7fe8e74483')
+//   }
+// }
+
+// resource keyVaultCryptoUserRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   name: guid(subscription().id, resourceGroup().id, userObjectId, 'Key Vault Crypto User')
+//   scope: azureKeyVault
+//   properties: {
+//     principalId: userObjectId
+//     principalType: 'User'
+//     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', '00482a5a-887f-4fb3-b363-3b7fe8e74483')
+//   }
+// }
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-11-01-preview' = {
   name: 'myregistry${uniqueString(subscription().id, resourceGroup().id, deployment().name)}'
@@ -114,4 +132,22 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-11-01-pr
   }
 }
 
-// TODO: add acrpull and acrpush
+// resource acrPullRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   name: guid(subscription().id, resourceGroup().id, userObjectId, 'AcrPull')
+//   scope: containerRegistry
+//   properties: {
+//     principalId: userObjectId
+//     principalType: 'User'
+//     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
+//   }
+// }
+
+// resource acrPushRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   name: guid(subscription().id, resourceGroup().id, userObjectId, 'AcrPush')
+//   scope: containerRegistry
+//   properties: {
+//     principalId: userObjectId
+//     principalType: 'User'
+//     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', '8311e382-0749-4cb8-b61a-304f252e45ec')
+//   }
+// }
