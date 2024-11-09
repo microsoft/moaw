@@ -2356,7 +2356,7 @@ az fleet member create \
 --resource-group ${RG_NAME} \
 --fleet-name ${FLEET_NAME} \
 --name ${AKS_FLEET_CLUSTER_1_NAME} \
---member-cluster-id ${AKS_FLEET_CLUSTER_2_ID}
+--member-cluster-id ${AKS_FLEET_CLUSTER_1_ID}
 
 # add the second AKS cluster to the Fleet
 az fleet member create \
@@ -2419,6 +2419,8 @@ View the details of the ClusterResourcePlacement object using the following comm
 kubectl describe clusterresourceplacement my-lab-crp
 ```
 
+TODO: Add some content recapping what was done in this section.
+
 ---
 
 ## Summary
@@ -2428,8 +2430,8 @@ TODO: Add summary
 ### Additional Resources
 
 - [Cluster operator and developer best practices to build and manage applications on Azure Kubernetes Service (AKS)](https://learn.microsoft.com/azure/aks/best-practices)
+- [AKS baseline architecture](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks/baseline-aks)
+- [AKS baseline for multi-region clusters](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-multi-region/aks-multi-cluster)
+- [Create a private Azure Kubernetes Service (AKS) cluster](https://learn.microsoft.com/azure/aks/private-clusters?tabs=default-basic-networking%2Cazure-portal)
 - [Set up Advanced Network Observability for Azure Kubernetes Service (AKS)](https://learn.microsoft.com/azure/aks/advanced-network-observability-cli?tabs=cilium)
-- Private cluster
-- Secure baseline
-- etc.
-- [Tutorial: Install Azure Container Storage for use with Azure Kubernetes Service](https://learn.microsoft.com/azure/storage/container-storage/install-container-storage-aks)
+- [Install Azure Container Storage for use with Azure Kubernetes Service](https://learn.microsoft.com/azure/storage/container-storage/install-container-storage-aks)
