@@ -26,9 +26,7 @@ wt_id: WT.mc_id=containers-147656-pauyu
 
 This workshop is designed to help you understand advanced Azure Kubernetes Service (AKS) concepts and day 2 operations. The workshop will cover topics such as cluster sizing and topology, advanced networking concepts, advanced storage concepts, advanced security concepts, and advanced monitoring concepts.
 
----
-
-## Objectives
+### Objectives
 
 After completing this workshop, you will be able to:
 
@@ -37,8 +35,6 @@ After completing this workshop, you will be able to:
 - Monitor AKS clusters using Azure Managed Prometheus and Grafana
 - Manage cluster updates and maintenance
 - Manage costs with AKS Cost Analysis
-
----
 
 ## Prerequisites
 
@@ -51,13 +47,16 @@ Most of the workshop will be done using command line tools, so you will need to 
 - [Azure CLI](https://learn.microsoft.com/cli/azure/what-is-azure-cli)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [Hubble CLI](https://docs.cilium.io/en/stable/observability/hubble/setup/)
-- [Notation CLI]()
+- [Notation CLI](https://notaryproject.dev/docs/user-guides/installation/cli/)
+- [Notation AKV plugin](https://github.com/Azure/notation-azure-kv?tab=readme-ov-file#installation-the-akv-plugin)
 - [Git](https://git-scm.com/)
 - Bash shell (e.g. [Windows Terminal](https://www.microsoft.com/p/windows-terminal/9n0dx20hk701) with [WSL](https://docs.microsoft.com/windows/wsl/install-win10) or [Azure Cloud Shell](https://shell.azure.com))
 
 If you are unable to install these tools on your local machine, you can use the Azure Cloud Shell, which has most of the tools pre-installed.
 
-### Lab Resource Setup
+---
+
+## Lab Environment Setup
 
 This workshop will require the use of multiple Azure resources such as [Azure Log Analytics](https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-overview), [Azure Managed Prometheus](https://learn.microsoft.com/azure/azure-monitor/essentials/prometheus-metrics-overview), [Azure Managed Grafana](https://learn.microsoft.com/azure/managed-grafana/overview), [Azure Key Vault](https://learn.microsoft.com/azure/key-vault/general/overview), and [Azure Container Registry](https://learn.microsoft.com/azure/container-registry/container-registry-intro). The resource deployment can take some time, so to expedite the process, we will use a [Bicep template](https://learn.microsoft.com/azure/azure-resource-manager/bicep/overview?tabs=bicep) to deploy the resources.
 
@@ -275,11 +274,16 @@ Run the following commands to get the resource IDs for the resources that were c
 
 ```bash
 cat <<EOF >> .env
-MONITOR_ID="$(az monitor account list -g $RG_NAME --query "[0].id" -o tsv)"
-GRAFANA_ID="$(az grafana list -g $RG_NAME --query "[0].id" -o tsv)"
-LOGS_ID="$(az monitor log-analytics workspace list -g $RG_NAME --query "[0].id" -o tsv)"
-AKV_NAME="$(az keyvault list --resource-group $RG_NAME --query "[0].name" -o tsv)"
-AKV_ID="$(az keyvault show --name $AKV_NAME --query "id" -o tsv)"
+MONITOR_ID="$(az monitor account list -g ${RG_NAME} --query "[0].id" -o tsv)"
+GRAFANA_NAME="$(az grafana list -g ${RG_NAME} --query "[0].name" -o tsv)"
+GRAFANA_ID="$(az grafana list -g ${RG_NAME} --query "[0].id" -o tsv)"
+LOGS_ID="$(az monitor log-analytics workspace list -g ${RG_NAME} --query "[0].id" -o tsv)"
+AKV_NAME="$(az keyvault list --resource-group ${RG_NAME} --query "[0].name" -o tsv)"
+AKV_ID="$(az keyvault show --name ${AKV_NAME} --query "id" -o tsv)"
+AKV_URL="$(az keyvault show --name ${AKV_NAME} --query "properties.vaultUri" -o tsv)"
+ACR_NAME="$(az acr list --resource-group ${RG_NAME} --query "[0].name" -o tsv)"
+ACR_ID="$(az acr show --name ${ACR_NAME} --query "id" -o tsv)"
+ACR_SERVER="$(az acr show -n ${ACR_NAME} --query "loginServer" -o tsv)"
 EOF
 source .env
 ```
@@ -1187,6 +1191,12 @@ az aks nodepool add \
 --node-count 3
 ```
 
+<div class="warning" data-title="Warning">
+
+> You may or may not have enough quota to deploy Standard_L8s_v3 VMs. If you encounter an error, please try with a different VM size within the [L-family](https://learn.microsoft.com/azure/virtual-machines/sizes/storage-optimized/lsv2-series?tabs=sizebasic) or request additional quota by following the instructions [here](https://docs.microsoft.com/azure/azure-portal/supportability/resource-manager-core-quotas-request).
+
+</div>
+
 Update the cluster to enable Azure Container Storage.
 
 ```bash
@@ -1201,17 +1211,25 @@ az aks update \
 
 <div class="info" data-title="Note">
 
-> To create a new AKS cluster with Azure Container Storage, see the [Tutorial: Install Azure Container Storage for use with Azure Kubernetes Service](https://learn.microsoft.com/azure/storage/container-storage/install-container-storage-aks) documentation.
+> This command can take up to 20 minutes to complete.
 
-Add `--watch` to wait a little bit until all the pods reaches Running state.
+</div>
+
+Run the following command and wait until all the pods reaches **Running** state.
 
 ```bash
 kubectl get pods -n acstor --watch
 ```
 
+<div class="info" data-title="Note">
+
+> You will see a lot of activity with pods being created, completed, and terminated. This is expected as the Azure Container Storage is being enabled.
+
+</div>
+
 #### Create a replicated ephemeral storage pool
 
-Storage pools can also be created using Kubernetes CRDs, as described here. This CRD generates a storage class called "acstor-(your-storage-pool-name-here)".
+With Azure Container Storage enabled, storage pools can also be created using Kubernetes CRDs. Run the following command to deploy a new StoragePool custom resource. This will create a new storage class using the storage pool name prefixed with **acstor-**.
 
 ```bash
 kubectl apply -f - <<EOF
@@ -1228,252 +1246,63 @@ spec:
 EOF
 ```
 
-Storage Class generated will be called "acstor-ephemeraldisk-nvme".
+Now you should see the new storage class called **acstor-ephemeraldisk-nvme** has been created.
 
-#### Deploy a MySQL server using acstor-ephemeraldisk-nvme storage class
+```bash
+kubectl get sc
+```
+
+#### Deploy a MySQL server using new storage class
 
 This setup is a modified version of [this guide](https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/).
 
-Deploy the config map and services:
+Run the following command to download the MySQL manifest file.
 
 ```bash
-kuebctl apply -f - <<EOF
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mysql
-  labels:
-    app: mysql
-    app.kubernetes.io/name: mysql
-data:
-  primary.cnf: |
-    # Apply this config only on the primary.
-    [mysqld]
-    log-bin
-  replica.cnf: |
-    # Apply this config only on replicas.
-    [mysqld]
-    super-read-only
----
-# Headless service for stable DNS entries of StatefulSet members.
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql
-  labels:
-    app: mysql
-    app.kubernetes.io/name: mysql
-spec:
-  ports:
-  - name: mysql
-    port: 3306
-  clusterIP: None
-  selector:
-    app: mysql
----
-# Client service for connecting to any MySQL instance for reads.
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql-read
-  labels:
-    app: mysql
-    app.kubernetes.io/name: mysql
-    readonly: "true"
-spec:
-  ports:
-  - name: mysql
-    port: 3306
-  selector:
-    app: mysql
-EOF
+curl -o acstor-mysql-config-services.yaml https://raw.githubusercontent.com/Azure-Samples/aks-labs/refs/heads/main/workshops/advanced-aks/assets/acstor-mysql-config-services.yaml
 ```
 
-Deploy The statefulset for MySQL server:
+Optionally, run the following command to take a look at the MySQL manifest file.
 
 ```bash
-kubectl apply -f - <<EOF
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: mysql
-spec:
-  selector:
-    matchLabels:
-      app: mysql
-  serviceName: mysql
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: mysql
-    spec:
-      # Use the scheduler extender to ensure the pod is placed on a node with an attachment replica on failover.
-      schedulerName: csi-azuredisk-scheduler-extender
-      initContainers:
-      - name: init-mysql
-        image: mysql:5.7
-        command:
-        - bash
-        - "-c"
-        - |
-          set -ex
-          # Generate mysql server-id from pod ordinal index.
-          [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
-          ordinal=${BASH_REMATCH[1]}
-          echo [mysqld] > /mnt/conf.d/server-id.cnf
-          # Add an offset to avoid reserved server-id=0 value.
-          echo server-id=$((100 + $ordinal)) >> /mnt/conf.d/server-id.cnf
-          # Copy appropriate conf.d files from config-map to emptyDir.
-          if [[ $ordinal -eq 0 ]]; then
-            cp /mnt/config-map/primary.cnf /mnt/conf.d/
-          else
-            cp /mnt/config-map/replica.cnf /mnt/conf.d/
-          fi
-        volumeMounts:
-        - name: conf
-          mountPath: /mnt/conf.d
-        - name: config-map
-          mountPath: /mnt/config-map
-      - name: clone-mysql
-        image: gcr.io/google-samples/xtrabackup:1.0
-        command:
-        - bash
-        - "-c"
-        - |
-          set -ex
-          # Skip the clone if data already exists.
-          [[ -d /var/lib/mysql/mysql ]] && exit 0
-          # Skip the clone on primary (ordinal index 0).
-          [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
-          ordinal=${BASH_REMATCH[1]}
-          [[ $ordinal -eq 0 ]] && exit 0
-          # Clone data from previous peer.
-          ncat --recv-only mysql-$(($ordinal-1)).mysql 3307 | xbstream -x -C /var/lib/mysql
-          # Prepare the backup.
-          xtrabackup --prepare --target-dir=/var/lib/mysql
-        volumeMounts:
-        - name: data
-          mountPath: /var/lib/mysql
-          subPath: mysql
-        - name: conf
-          mountPath: /etc/mysql/conf.d
-      containers:
-      - name: mysql
-        image: mysql:5.7
-        env:
-        - name: MYSQL_ALLOW_EMPTY_PASSWORD
-          value: "1"
-        ports:
-        - name: mysql
-          containerPort: 3306
-        volumeMounts:
-        - name: data
-          mountPath: /var/lib/mysql
-          subPath: mysql
-        - name: conf
-          mountPath: /etc/mysql/conf.d
-        resources:
-          requests:
-            cpu: 500m
-            memory: 1Gi
-        livenessProbe:
-          exec:
-            command: ["mysqladmin", "ping"]
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-        readinessProbe:
-          exec:
-            # Check we can execute queries over TCP (skip-networking is off).
-            command: ["mysql", "-h", "127.0.0.1", "-e", "SELECT 1"]
-          initialDelaySeconds: 5
-          periodSeconds: 2
-          timeoutSeconds: 1
-      - name: xtrabackup
-        image: gcr.io/google-samples/xtrabackup:1.0
-        ports:
-        - name: xtrabackup
-          containerPort: 3307
-        command:
-        - bash
-        - "-c"
-        - |
-          set -ex
-          cd /var/lib/mysql
+cat acstor-mysql-config-services.yaml
+```
 
-          # Determine binlog position of cloned data, if any.
-          if [[ -f xtrabackup_slave_info && "x$(<xtrabackup_slave_info)" != "x" ]]; then
-            # XtraBackup already generated a partial "CHANGE MASTER TO" query
-            # because we're cloning from an existing replica. (Need to remove the tailing semicolon!)
-            cat xtrabackup_slave_info | sed -E 's/;$//g' > change_master_to.sql.in
-            # Ignore xtrabackup_binlog_info in this case (it's useless).
-            rm -f xtrabackup_slave_info xtrabackup_binlog_info
-          elif [[ -f xtrabackup_binlog_info ]]; then
-            # We're cloning directly from primary. Parse binlog position.
-            [[ `cat xtrabackup_binlog_info` =~ ^(.*?)[[:space:]]+(.*?)$ ]] || exit 1
-            rm -f xtrabackup_binlog_info xtrabackup_slave_info
-            echo "CHANGE MASTER TO MASTER_LOG_FILE='${BASH_REMATCH[1]}',\
-                  MASTER_LOG_POS=${BASH_REMATCH[2]}" > change_master_to.sql.in
-          fi
+Run the following command to deploy the config map and services for the MySQL server.
 
-          # Check if we need to complete a clone by starting replication.
-          if [[ -f change_master_to.sql.in ]]; then
-            echo "Waiting for mysqld to be ready (accepting connections)"
-            until mysql -h 127.0.0.1 -e "SELECT 1"; do sleep 1; done
+```bash
+kubectl apply -f acstor-mysql-config-services.yaml
+```
 
-            echo "Initializing replication from clone position"
-            mysql -h 127.0.0.1 \
-                  -e "$(<change_master_to.sql.in), \
-                          MASTER_HOST='mysql-0.mysql', \
-                          MASTER_USER='root', \
-                          MASTER_PASSWORD='', \
-                          MASTER_CONNECT_RETRY=10; \
-                        START SLAVE;" || exit 1
-            # In case of container restart, attempt this at-most-once.
-            mv change_master_to.sql.in change_master_to.sql.orig
-          fi
+Next, we'll deploy the MySQL server using the new storage class.
 
-          # Start a server to send backups when requested by peers.
-          exec ncat --listen --keep-open --send-only --max-conns=1 3307 -c \
-            "xtrabackup --backup --slave-info --stream=xbstream --host=127.0.0.1 --user=root"
-        volumeMounts:
-        - name: data
-          mountPath: /var/lib/mysql
-          subPath: mysql
-        - name: conf
-          mountPath: /etc/mysql/conf.d
-        resources:
-          requests:
-            cpu: 100m
-            memory: 100Mi
-      volumes:
-      - name: conf
-        emptyDir: {}
-      - name: config-map
-        configMap:
-          name: mysql
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      storageClassName: azuredisk-standard-ssd-zrs-replicas
-      resources:
-        requests:
-          storage: 256Gi
-EOF
+Run the following command to download the MySQL statefulset manifest file.
+
+```bash
+curl -o acstor-mysql-statefulset.yaml https://raw.githubusercontent.com/Azure-Samples/aks-labs/refs/heads/main/workshops/advanced-aks/assets/acstor-mysql-statefulset.yaml
+```
+
+Optionally, run the following command to take a look at the MySQL statefulset manifest file.
+
+```bash
+cat acstor-mysql-statefulset.yaml
+```
+
+Run the following command to deploy the statefulset for MySQL server.
+
+```bash
+kubectl apply -f acstor-mysql-statefulset.yaml
 ```
 
 #### Verify that all the MySQL server's components are available
 
-Verify that 2 services were created (headless one for the statefulset and mysql-read for the reads)
+Run the following command to verify that both mysql services were created (headless one for the statefulset and mysql-read for the reads).
 
 ```bash
 kubectl get svc -l app=mysql
 ```
 
-Output should resemble like:
+You should see output similar to the following:
 
 ```text
 NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
@@ -1481,15 +1310,13 @@ mysql        ClusterIP   None           <none>        3306/TCP   5h43m
 mysql-read   ClusterIP   10.0.205.191   <none>        3306/TCP   5h43m
 ```
 
-Verify that MySql server pod is running
-
-Add the `--watch` to wait and watch until the pod goes from Init to Running state.
+Run the following command to verify that MySql server pod is running. Add the `--watch` to wait and watch until the pod goes from Init to **Running** state.
 
 ```bash
 kubectl get pods -l app=mysql -o wide --watch
 ```
 
-Output should resemble like:
+You should see output similar to the following:
 
 ```text
 NAME      READY   STATUS    RESTARTS   AGE   IP             NODE                                NOMINATED NODE   READINESS GATES
@@ -1504,7 +1331,7 @@ mysql-0   2/2     Running   0          1m34s  10.244.3.16   aks-nodepool1-285671
 
 #### Inject data to the MySql database
 
-Using the mysql-client image `mysql:5.7`, create a database `school` and a table `students`. Also, make a few entries in the table to verify persistence as below:
+Run the following command to run and exec into a mysql client pod to the create a database named **school** and a table **students**. Also, make a few entries in the table to verify persistence.
 
 ```bash
 kubectl run mysql-client --image=mysql:5.7 -i --rm --restart=Never -- \
@@ -1518,14 +1345,14 @@ EOF
 
 #### Verify the entries in the MySQL server
 
-Run the following command to verify the creation of database, table and entries:
+Run the following command to verify the creation of database, tabl, and entries.
 
 ```bash
 kubectl run mysql-client --image=mysql:5.7 -i -t --rm --restart=Never -- \
 mysql -h mysql-read -e "SELECT * FROM school.students"
 ```
 
-Output:
+You should see output similar to the following:
 
 ```text
 +------------+----------+
@@ -1535,49 +1362,58 @@ Output:
 +------------+----------+
 |          2 | Student2 |
 +------------+----------+
-pod "mysql-client" deleted
 ```
 
 #### Initiate the node failover
 
-Perform the following steps:
+Now we will simulate a failover scenario by deleting the node on which the `mysql-0` pod is running.
 
-- Capture the number of nodes in the default node pool set in the variable `$ACSTOR_NODEPOOL_NAME`,
-- Scale up the node pool to add one more node,
-- Capture the node on which the workload is running,
-- Delete the node on which the workload is running.
+Run the following command to get the current node count in the Azure Container Storage node pool.
 
 ```bash
 NODE_COUNT=$(az aks nodepool show \
--g ${RG_NAME} \
+--resource-group ${RG_NAME} \
 --cluster-name ${AKS_NAME} \
 --name ${ACSTOR_NODEPOOL_NAME} \
 --query count \
 --output tsv)
+```
 
+Run the following command to scale up the Azure Container Storage node pool by 1 node.
+
+```bash
 az aks nodepool scale \
--g ${RG_NAME} \
+--resource-group ${RG_NAME} \
 --cluster-name ${AKS_NAME} \
 --name ${ACSTOR_NODEPOOL_NAME} \
 --node-count $((NODE_COUNT+1)) \
 --no-wait
+```
 
+Now we want to force the failover by deleting the node on which the `mysql-0` pod is running.
+
+Run the following commands to get the name of the node on which the `mysql-0` pod is running.
+
+```bash
 POD_NAME=$(kubectl get pods -l app=mysql -o custom-columns=":metadata.name" --no-headers)
-
 NODE_NAME=$(kubectl get pods $POD_NAME -o jsonpath='{.spec.nodeName}')
+```
 
+Run the following command to delete the node on which the `mysql-0` pod is running.
+
+```bash
 kubectl delete node $NODE_NAME
 ```
 
 #### Observe that the mysql pods are running
 
-Add the `--watch` to wait and watch until the pod goes from Init to Running state.
+Run the following command to get the pods and observe that the `mysql-0` pod is running on a different node.
 
 ```bash
 kubectl get pods -l app=mysql -o wide --watch
 ```
 
-Output should resemble like:
+Eventually you should see output similar to the following:
 
 ```text
 NAME      READY   STATUS    RESTARTS   AGE   IP             NODE                                NOMINATED NODE   READINESS GATES
@@ -1586,13 +1422,13 @@ mysql-0   2/2     Running   0          3m25s  10.244.3.16   aks-nodepool1-285671
 
 <div class="info" data-title="Note">
 
-> Compare the `NODE` entry with the value and verify that they are different.
+> You should see that the **mysql-0** pod is now running on a different node than you noted before the failover.
 
 </div>
 
 #### Verify successful data replication and persistence for MySQL Server
 
-Verify the mount volume by injecting new data by running the following command:
+Run the following command to verify the mount volume by injecting new data by running the following command.
 
 ```bash
 kubectl run mysql-client --image=mysql:5.7 -i --rm --restart=Never -- \
@@ -1602,14 +1438,14 @@ INSERT INTO school.students VALUES (4, 'Student4');
 EOF
 ```
 
-Run the command to fetch the entries previously inserted into the database:
+Run the command to fetch the entries previously inserted into the database.
 
 ```bash
 kubectl run mysql-client --image=mysql:5.7 -i -t --rm --restart=Never -- \
 mysql -h mysql-read -e "SELECT * FROM school.students"
 ```
 
-Output:
+You should see output similar to the following:
 
 ```text
 +------------+----------+
@@ -1623,25 +1459,17 @@ Output:
 +------------+----------+
 |          4 | Student4 |
 +------------+----------+
-pod "mysql-client" deleted
 ```
 
-The output obtained contains the values entered before the failover. This shows that the database and table entries in the MySQL Server were replicated and persisted across the failover of `mysql-0` pod.
-The output also demonstrates that, newer entries were successfully appended on the newly spawned mysql server application.
+The output obtained contains the values entered before the failover. This shows that the database and table entries in the MySQL Server were replicated and persisted across the failover of **mysql-0** pod. The output also demonstrates that, newer entries were successfully appended on the newly spawned mysql server application.
 
-#### Summary
-
-In this section, we have demonstrated the following:
-
-- Create a replicated local NVMe storage pool `ephemeraldisk-nvme`.
-- Create a MySQL server statefulset whose `volumeTemplate` uses the storage pool's storage class `acstor-ephemeraldisk-nvme`.
-- Create entries into MySQL server.
-- Trigger a failover scenario by deleting the node on which the workload pod is running. Scale up the cluster by 1 node so that the 3 active nodes are still present.
-- Once the failover completes successfully, enter newer entries into the database and fetch all entries to verify that the data entered before the failover were successfully replicated and persisted across the failover and newer data were entered on top of the replicated data.
+Congratulations! You successfully created a replicated local NVMe storage pool using Azure Container Storage. You deployed a MySQL server with the storage pool's storage class and added entries to the database. You then triggered a failover by deleting the node hosting the workload pod and scaled up the cluster by one node to maintain three active nodes. Finally, you verified that the pre-failover data were successfully replicated and persisted, with new data added on top of the replicated data.
 
 ---
 
 ## Advanced Security Concepts
+
+TODO: Add a brief description of the section
 
 ### Workload Identity
 
@@ -1660,12 +1488,6 @@ Please be aware of the following limitations for Workload Identity
 
 #### Enable Workload Identity on an AKS cluster
 
-<div class="info" data-title="Note">
-
-> If Workload Identity is already enabled on your AKS cluster, you can skip this section.
-
-</div>
-
 To enable Workload Identity on the AKS cluster, run the following command.
 
 ```bash
@@ -1676,15 +1498,13 @@ az aks update \
 --enable-workload-identity
 ```
 
-This will take several moments to complete.
-
 <div class="info" data-title="Note">
 
-> Please take note of the OIDC Issuer URL. This URL will be used to bind the Kubernetes service account to the Managed Identity for the federated credential.
+> This will can take several moments to complete.
 
 </div>
 
-You can store the AKS OIDC Issuer URL using the following command.
+After the cluster has been updated, run the following command to get the OIDC Issuer URL, save it to the .env file, and reload the environment variables.
 
 ```bash
 cat <<EOF >> .env
@@ -1701,7 +1521,7 @@ source .env
 
 A Managed Identity is a account (identity) created in Microsoft Entra ID. These identities allows your application to leverage them to use when connecting to resources that support Microsoft Entra authentication. Applications can use managed identities to obtain Microsoft Entra tokens without having to manage any credentials.
 
-To expedite the running of commands in this section, it is advised to create the following exported environment variables. Please update the values to what is appropriate for your environment, and then run the export commands in your terminal.
+Run the following command to set the name of the user-assigned managed identity, save it to the .env file, and reload the environment variables.
 
 ```bash
 cat <<EOF >> .env
@@ -1719,9 +1539,7 @@ az identity create \
 --location ${LOCATION} \
 ```
 
-You should see the following output that will contain your environment specific attributes.
-
-Capture your Managed Identity client ID with the following command.
+You will need several properties of the managed identity for the next steps. Run the following command to capture the details of the managed identity, service account, save it to the .env file, and reload the environment variables.
 
 ```bash
 cat <<EOF >> .env
@@ -1730,21 +1548,21 @@ USER_ASSIGNED_CLIENT_ID="$(az identity show \
 --name ${USER_ASSIGNED_IDENTITY_NAME} \
 --query "clientId" \
 --output tsv)"
+USER_ASSIGNED_PRINCIPAL_ID="$(az identity show \
+--name "${USER_ASSIGNED_IDENTITY_NAME}" \
+--resource-group ${RG_NAME} \
+--query "principalId" \
+--output tsv)"
+SERVICE_ACCOUNT_NAMESPACE="default"
+SERVICE_ACCOUNT_NAME="workload-identity-sa"
+FEDERATED_IDENTITY_CREDENTIAL_NAME="myFedIdentity"
 EOF
 source .env
 ```
 
 #### Create a Kubernetes Service Account
 
-Create a Kubernetes service account and annotate it with the client ID of the managed identity created in the previous step.
-
-```bash
-cat <<EOF >> .env
-SERVICE_ACCOUNT_NAMESPACE="default"
-SERVICE_ACCOUNT_NAME="workload-identity-sa"
-EOF
-source .env
-```
+Create a Kubernetes service account and annotate it with the client ID of the managed identity created in the previous step. This annotation is used to associate the managed identity with the service account.
 
 ```bash
 kubectl apply -f - <<EOF
@@ -1760,11 +1578,7 @@ EOF
 
 #### Create the Federated Identity Credential
 
-Call the az identity federated-credential create command to create the federated identity credential between the managed identity, the service account issuer, and the subject. For more information about federated identity credentials in Microsoft Entra, see [Overview of federated identity credentials in Microsoft Entra ID](https://learn.microsoft.com/graph/api/resources/federatedidentitycredentials-overview?view=graph-rest-1.0).
-
-```bash
-FEDERATED_IDENTITY_CREDENTIAL_NAME="myFedIdentity"
-```
+Run the following command to create the federated identity credential which creates a link between the managed identity, the service account issuer, and the subject. For more information about federated identity credentials in Microsoft Entra, see [Overview of federated identity credentials in Microsoft Entra ID](https://learn.microsoft.com/graph/api/resources/federatedidentitycredentials-overview?view=graph-rest-1.0).
 
 ```bash
 az identity federated-credential create \
@@ -1781,6 +1595,16 @@ az identity federated-credential create \
 > It takes a few seconds for the federated identity credential to propagate after it is added. If a token request is made immediately after adding the federated identity credential, the request might fail until the cache is refreshed. To avoid this issue, you can add a slight delay after adding the federated identity credential.
 
 </div>
+
+Assign the Key Vault Secrets User role to the user-assigned managed identity that you created previously. This step gives the managed identity permission to read secrets from the key vault.
+
+```bash
+az role assignment create \
+--assignee-object-id "${USER_ASSIGNED_PRINCIPAL_ID}" \
+--role "Key Vault Secrets User" \
+--scope "${AKV_ID}" \
+--assignee-principal-type ServicePrincipal
+```
 
 #### Deploy a Sample Application Utilizing Workload Identity
 
@@ -1806,81 +1630,32 @@ EOF
 
 <div class="important" data-title="Important">
 
-> Ensure that the application pods using workload identity include the label azure.workload.identity/use: "true" in the pod spec. Otherwise the pods will fail after they are restarted.
+> Ensure that the application pods using workload identity include the label **azure.workload.identity/use: "true"** in the pod spec. Otherwise the pods will fail after they are restarted.
 
 </div>
 
-#### Create an Azure KeyVault and Deploy an Application to Access it.
+#### Access Secrets in Azure Key Vault with Workload Identity
 
 The instructions in this step show how to access secrets, keys, or certificates in an Azure key vault from the pod. The examples in this section configure access to secrets in the key vault for the workload identity, but you can perform similar steps to configure access to keys or certificates.
 
 The following example shows how to use the Azure role-based access control (Azure RBAC) permission model to grant the pod access to the key vault. For more information about the Azure RBAC permission model for Azure Key Vault, see [Grant permission to applications to access an Azure key vault using Azure RBAC](https://learn.microsoft.com/azure/key-vault/general/rbac-guide).
 
-Create a key vault with purge protection and RBAC authorization enabled. You can also use an existing key vault if it is configured for both purge protection and RBAC authorization:
+<div class="warning" data-title="Warning">
 
-```bash
-cat <<EOF >> .env
-KEYVAULT_NAME="myKeyVault${RANDOM}"
-KEYVAULT_SECRET_NAME="my-secret"
-KEYVAULT_RESOURCE_ID="$(az keyvault create \
---name ${KEYVAULT_NAME} \
---resource-group ${RG_NAME} \
---location "${LOCATION}" \
---enable-purge-protection \
---enable-rbac-authorization \
---query "id" \
---output tsv)"
-EOF
-source .env
-```
+> At the beginning of this lab, you created an Azure Key Vault and you should have properties of the key vault in the .env file. If you don't have the properties set, go back to the top of the workshop and set the properties.
 
-Assign yourself the RBAC Key Vault Secrets Officer role so that you can create a secret in the new key vault:
+</div>
 
-```bash
-az role assignment create \
---assignee $(az ad signed-in-user show --query "id" -o tsv) \
---role "Key Vault Secrets Officer" \
---scope "${KEYVAULT_RESOURCE_ID}"
-```
-
-Create a secret in the key vault:
+Run the following command to create a secret in the key vault.
 
 ```bash
 az keyvault secret set \
---vault-name "${KEYVAULT_NAME}" \
---name "${KEYVAULT_SECRET_NAME}" \
+--vault-name "${AKV_NAME}" \
+--name "my-secret" \
 --value "Hello\!"
 ```
 
-Assign the Key Vault Secrets User role to the user-assigned managed identity that you created previously. This step gives the managed identity permission to read secrets from the key vault:
-
-```bash
-IDENTITY_PRINCIPAL_ID="$(az identity show \
---name "${USER_ASSIGNED_IDENTITY_NAME}" \
---resource-group ${RG_NAME} \
---query "principalId" \
---output tsv)"
-```
-
-```bash
-az role assignment create \
---assignee-object-id "${IDENTITY_PRINCIPAL_ID}" \
---role "Key Vault Secrets User" \
---scope "${KEYVAULT_RESOURCE_ID}" \
---assignee-principal-type ServicePrincipal
-```
-
-Create an environment variable for the key vault URL:
-
-```bash
-KEYVAULT_URL="$(az keyvault show \
---resource-group ${RG_NAME} \
---name ${KEYVAULT_NAME} \
---query "properties.vaultUri" \
---output tsv)"
-```
-
-Deploy a pod that references the service account and key vault URL:
+Run the following command to deploy a pod that references the service account and key vault URL.
 
 ```bash
 kubectl apply -f - <<EOF
@@ -1898,9 +1673,9 @@ spec:
       name: oidc
       env:
       - name: KEYVAULT_URL
-        value: ${KEYVAULT_URL}
+        value: ${AKV_URL}
       - name: SECRET_NAME
-        value: ${KEYVAULT_SECRET_NAME}
+        value: my-secret
   nodeSelector:
     kubernetes.io/os: linux
 EOF
@@ -1917,6 +1692,8 @@ To verify that pod is able to get a token and access the resource, use the kubec
 ```bash
 kubectl logs sample-workload-identity-key-vault
 ```
+
+Nice work! You have successfully deployed a sample application that utilizes Workload Identity to access a secret in Azure Key Vault. If you thought the process was too complex, you'll be happy to know that the AKS Service Connector is a relatively new feature that simplifies the process of accessing Azure services from your AKS cluster. Using the AKS Service Connector, many of the steps you performed in this exercise are automated. Be sure to check out the [AKS Service Connector documentation](https://learn.microsoft.com/azure/service-connector/how-to-use-service-connector-in-aks) to learn more.
 
 ### Secure Supply Chain
 
@@ -1963,69 +1740,21 @@ notation plugin ls
 
 Before beginning this exercise, let's set the environment variables for the Azure Container Registry and Azure Key Vault which was created at the beginning of the lab with the Bicep template.
 
-Run the following command to get the name of the Azure Container Registry and Azure Key Vault, store them in the **.env** file, and source the file.
-
-```bash
-cat <<EOF >> .env
-ACR_NAME="$(az acr list --resource-group ${RG_NAME} --query "[].name" -o tsv)"
-ACR_RESOURCE_ID="$(az acr show --name ${ACR_NAME} --query id -o tsv)"
-ACR_SERVER="$(az acr show -n ${ACR_NAME} --query loginServer -o tsv)"
-AKV_NAME="$(az keyvault list --resource-group ${RG_NAME} --query "[].name" -o tsv)"
-AKV_RESOURCE_ID="$(az keyvault show --name ${AKV_NAME} --query id -o tsv)"
-EOF
-source .env
-```
-
 Set the local variables containing information about the certificate to be used for signing the container image.
 
 ```bash
-cat <<EOF >> .env
 CERT_NAME="wabbit-networks-io"
 CERT_SUBJECT="CN=wabbit-networks.io,O=Notation,L=Seattle,ST=WA,C=US"
 CERT_PATH="./${CERT_NAME}.pem"
-EOF
-source .env
 ```
 
 Now set the local variables containing information about the container registry and the image source code directory containing the Dockerfile to build.
 
 ```bash
-cat <<EOF >> .env
 REPO="net-monitor"
 TAG="v1"
 IMAGE="${ACR_SERVER}/${REPO}:${TAG}"
 IMAGE_SOURCE="https://github.com/wabbit-networks/net-monitor.git#main"
-EOF
-source .env
-```
-
-#### Authorize access to the container registry
-
-The `AcrPush` and `AcrPull` roles are required to push and pull images from the Azure Container Registry. Run the following command to save your Azure user id in a local variable and assign the AcrPush and AcrPull roles to it.
-
-```bash
-az role assignment create \
---role "AcrPull" \
---role "AcrPush" \
---assignee ${USER_ID} \
---scope ${ACR_RESOURCE_ID}
-```
-
-#### Authorize access to the key vault
-
-The Azure Key Vault instance you created earlier should have Azure RBAC authorization enabled. The following roles will be required for signing and using self-signed certificates:
-
-- `Key Vault Certificates Officer` to create and read certificates.
-- `Key Vault Crypto User` to sign and verify certificates.
-
-Assign the roles using the following commands:
-
-```bash
-az role assignment create \
---role "Key Vault Certificates Officer" \
---role "Key Vault Crypto User" \
---assignee ${USER_ID} \
---scope ${AKV_RESOURCE_ID=}
 ```
 
 #### Create a self-signed certificate in Azure Key Vault
@@ -2068,12 +1797,12 @@ Use the following command to create a certificate compatible with [Notary Projec
 az keyvault certificate create \
 --vault-name ${AKV_NAME} \
 --name ${CERT_NAME} \
---policy @my_policy.json \
+--policy @my_policy.json
 ```
 
 #### Signing a Container Image using Notation and Azure Key Vault Plugin
 
-To sign a container image using Notation and Azure Key Vault, you first need to authenticate to your Azure Container Registry using the following command:
+To sign a container image using Notation and Azure Key Vault, you first need to authenticate to your Azure Container Registry using the following command.
 
 ```bash
 az acr login --name ${ACR_NAME}
@@ -2086,19 +1815,13 @@ DIGEST="$(az acr build -r ${ACR_NAME} -t ${ACR_SERVER}/${REPO}:${TAG} ${IMAGE_SO
 IMAGE="${ACR_SERVER}/${REPO}@${DIGEST}"
 ```
 
-If the image is built and stored in the registry, the tag serves as an identifier for the image.
-
-```bash
-IMAGE="${ACR_SERVER}/${REPO}:${TAG}"
-```
-
 Get the ID of the signing key. The following command will get the Key ID of the latest version of the certificate.
 
 ```bash
 KEY_ID="$(az keyvault certificate show -n $CERT_NAME --vault-name $AKV_NAME --query 'kid' -o tsv)"
 ```
 
-Sign the image with the [COSE](https://datatracker.ietf.org/doc/html/rfc9052) format using the Notation Azure Key Vault plugin and the key retrieved in the previous step with the following command:
+Sign the image with the [COSE](https://datatracker.ietf.org/doc/html/rfc9052) format using the Notation Azure Key Vault plugin and the key retrieved in the previous step with the following command.
 
 ```bash
 notation sign \
@@ -2110,13 +1833,18 @@ notation sign \
 
 #### Verify the image using Notation
 
-To verify the signed container image, add the root certificate that signs the leaf certificate to the trust store. The following command will download the root certificate and add it to the trust store. In the case of a self-signed certificate, the root certificate _is_ the self-signed certificate. Use the following command to download the root certificate:
+To verify the signed container image, add the root certificate that signs the leaf certificate to the trust store. The following command will download the root certificate and add it to the trust store. In the case of a self-signed certificate, the root certificate _is_ the self-signed certificate
+
+Run the following command to download the root certificate.
 
 ```bash
-az keyvault certificate download --name ${CERT_NAME} --vault-name ${AKV_NAME} --file ${CERT_PATH}
+az keyvault certificate download \
+--name ${CERT_NAME} \
+--vault-name ${AKV_NAME} \
+--file ${CERT_PATH}
 ```
 
-Add the root certificate to the trust store using the following command:
+Add the root certificate to the trust store using the following command.
 
 ```bash
 STORE_TYPE="ca"
@@ -2124,13 +1852,15 @@ STORE_NAME="wabbit-networks.io"
 notation cert add --type ${STORE_TYPE} --store ${STORE_NAME} ${CERT_PATH}
 ```
 
-Verify the image using the following command:
+Verify the image using the following command.
 
 ```bash
 notation cert ls
 ```
 
-Configure the trust policy before verification. The trust policy is a JSON file that specifies the trust policy for the image. The trust policy is used to verify the signature of the image. For more information on trust policies and trust stores, see [Trust store and trust policy specification](https://github.com/notaryproject/notaryproject/blob/v1.0.0/specs/trust-store-trust-policy.md) Use the following command to create a trust policy file named `trust_policy.json`:
+Configure the trust policy before verification. The trust policy is a JSON file that specifies the trust policy for the image. The trust policy is used to verify the signature of the image. For more information on trust policies and trust stores, see [Trust store and trust policy specification](https://github.com/notaryproject/notaryproject/blob/v1.0.0/specs/trust-store-trust-policy.md)
+
+Run the following command to create a trust policy file named **trust_policy.json**.
 
 ```bash
 cat <<EOF > ./trust_policy.json
@@ -2153,10 +1883,10 @@ cat <<EOF > ./trust_policy.json
 EOF
 ```
 
-Import and verify the trust policy from the `trust_poilicy.json` file using the following Notation CLI commands:
+Import and verify the trust policy from the **trust_poilicy.json** file using the following Notation CLI commands.
 
 ```bash
-notation policy import ./trustpolicy.json
+notation policy import ./trust_policy.json
 notation policy show
 ```
 
@@ -2210,30 +1940,25 @@ az aks update \
 
 With Azure Managed Grafana integrated with Azure Managed Prometheus, you can import [kube-apiserver](https://grafana.com/grafana/dashboards/20331-kubernetes-api-server/) and [etcd](https://grafana.com/grafana/dashboards/20330-kubernetes-etcd/) metrics dashboards.
 
-Run the following command to get the name of your Azure Managed Grafana instance.
+Before you attempt to import dashboards into the Azure Managed Grafana instance, you will need to make sure the Azure CLI extension for Azure Managed Grafana is installed. Run the following command to install the extension.
 
 ```bash
-AMG_NAME="$(az grafana list -g ${RG_NAME} --query "[0].name" -o tsv)"
+az extension add --name amg
 ```
 
 Run the following command to import the kube-apiserver and etcd metrics dashboards.
 
 ```bash
-# make sure the amg extension is installed
-az extension add --name amg
-```
-
-```bash
 # import kube-apiserver dashboard
 az grafana dashboard import \
---name ${AMG_NAME} \
+--name ${GRAFANA_NAME} \
 --resource-group ${RG_NAME} \
 --folder 'Azure Managed Prometheus' \
 --definition 20331
 
 # import etcd dashboard
 az grafana dashboard import \
---name ${AMG_NAME} \
+--name ${GRAFANA_NAME} \
 --resource-group ${RG_NAME} \
 --folder 'Azure Managed Prometheus' \
 --definition 20330
@@ -2292,10 +2017,7 @@ Custom resource targets are scraped by pods that start with the name `ama-metric
 Run the following command to get the name of the Azure Monitor Agent pod.
 
 ```bash
-cat <<EOF >> .env
 AMA_METRICS_POD_NAME="$(kubectl get po -n kube-system -lrsName=ama-metrics -o jsonpath='{.items[0].metadata.name}')"
-EOF
-source .env
 ```
 
 Run the following command to port-forward the Prometheus pod to your local machine.
@@ -2304,13 +2026,13 @@ Run the following command to port-forward the Prometheus pod to your local machi
 kubectl port-forward ${AMA_METRICS_POD_NAME} -n kube-system 9090
 ```
 
-Open a browser and navigate to `http://localhost:9090` to access the Prometheus UI.
+Open a browser and navigate to http://localhost:9090 to access the Prometheus UI.
 
 If you click on the **Status** dropdown and select **Targets**, you will see the target for **podMonitor/default/prometheus-reference-app-job/0** and the endpoint that is being scraped.
 
 If you click on the **Status** dropdown and select **Service Discovery**, you will see the scrape jobs with active targets and discovered labels for **podMonitor/default/prometheus-reference-app-job/0**.
 
-When you are done, you can stop the port-forwarding by pressing `Ctrl+C`.
+When you are done, you can stop the port-forwarding by pressing **Ctrl+c**.
 
 Give the scrape job a few moments to collect metrics from the reference app. Once you have given it enough time, you can head over to Azure Managed Grafana and click on the **Explore** tab to query the metrics that are being collected.
 
@@ -2517,7 +2239,7 @@ az aks maintenanceconfiguration add \
 --start-hour 1
 ```
 
-### Azure Fleet
+### Managing Multiple AKS Clusters with Azure Fleet
 
 Azure Kubernetes Fleet Manager (Fleet) enables at-scale management of multiple Azure Kubernetes Service (AKS) clusters. Fleet supports the following scenarios:
 
@@ -2544,10 +2266,7 @@ To understand how AKS Fleet Manager can help manage multiple AKS clusters, we wi
 Run the following command to save the new AKS cluster name to the `.env` file and reload the environment variables.
 
 ```bash
-cat <<EOF >> .env
 AKS_NAME_2="${AKS_NAME}-2"
-EOF
-source .env
 ```
 
 Run the following command to create a new AKS cluster.
@@ -2578,10 +2297,7 @@ az extension add --name fleet
 Run the following command to create new environment variables for the Fleet resource name and reload the environment variables.
 
 ```bash
-cat <<EOF >> .env
 FLEET_NAME="myfleet${RANDOM}"
-EOF
-source .env
 ```
 
 Next run the following command to create the Fleet resource with the hub cluster enabled.
@@ -2594,13 +2310,6 @@ FLEET_ID="$(az fleet create \
 --enable-hub \
 --query id \
 --output tsv)"
-```
-
-Add the `FLEET_ID` to the `.env` file and reload the environment variables.
-
-```bash
-echo "FLEET_ID=${FLEET_ID}" >> .env
-source .env
 ```
 
 Once the Kubernetes Fleet hub cluster has been created, we will need to gather the credential information to access it. This is similar to using the `az aks get-credentials` command on an AKS cluster. Run the following command to get the Fleet hub cluster credentials.
@@ -2618,7 +2327,7 @@ Once we have all of the terminal environment variables set, we can run the comma
 ```bash
 az role assignment create \
 --role "Azure Kubernetes Fleet Manager RBAC Cluster Admin" \
---assignee "$(az ad signed-in-user show --query "id" --output tsv)" \
+--assignee ${USER_ID} \
 --scope ${FLEET_ID}
 ```
 
@@ -2633,13 +2342,10 @@ Now that we have our Fleet hub cluster created, along with the necessary Fleet A
 </div>
 
 ```bash
-cat <<EOF >> .env
 AKS_FLEET_CLUSTER_1_NAME="$(echo ${AKS_NAME} | tr '[:upper:]' '[:lower:]')"
 AKS_FLEET_CLUSTER_2_NAME="$(echo ${AKS_NAME_2} | tr '[:upper:]' '[:lower:]')"
 AKS_FLEET_CLUSTER_1_ID="$(az aks show --resource-group ${RG_NAME} --name ${AKS_FLEET_CLUSTER_1_NAME} --query "id" --output tsv)"
 AKS_FLEET_CLUSTER_2_ID="$(az aks show --resource-group ${RG_NAME} --name ${AKS_FLEET_CLUSTER_2_NAME} --query "id" --output tsv)"
-EOF
-source .env
 ```
 
 Run the following command to join both AKS clusters to the Fleet.
@@ -2650,7 +2356,7 @@ az fleet member create \
 --resource-group ${RG_NAME} \
 --fleet-name ${FLEET_NAME} \
 --name ${AKS_FLEET_CLUSTER_1_NAME} \
---member-cluster-id ${AKS_FLEET_CLUSTER_2_ID}
+--member-cluster-id ${AKS_FLEET_CLUSTER_1_ID}
 
 # add the second AKS cluster to the Fleet
 az fleet member create \
@@ -2713,14 +2419,19 @@ View the details of the ClusterResourcePlacement object using the following comm
 kubectl describe clusterresourceplacement my-lab-crp
 ```
 
+TODO: Add some content recapping what was done in this section.
+
 ---
 
 ## Summary
 
+TODO: Add summary
+
 ### Additional Resources
 
 - [Cluster operator and developer best practices to build and manage applications on Azure Kubernetes Service (AKS)](https://learn.microsoft.com/azure/aks/best-practices)
+- [AKS baseline architecture](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks/baseline-aks)
+- [AKS baseline for multi-region clusters](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-multi-region/aks-multi-cluster)
+- [Create a private Azure Kubernetes Service (AKS) cluster](https://learn.microsoft.com/azure/aks/private-clusters?tabs=default-basic-networking%2Cazure-portal)
 - [Set up Advanced Network Observability for Azure Kubernetes Service (AKS)](https://learn.microsoft.com/azure/aks/advanced-network-observability-cli?tabs=cilium)
-- Private cluster
-- Secure baseline
-- etc.
+- [Install Azure Container Storage for use with Azure Kubernetes Service](https://learn.microsoft.com/azure/storage/container-storage/install-container-storage-aks)
