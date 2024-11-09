@@ -1992,7 +1992,7 @@ Git commit:  4700ad6f1bef13e411772d7ae4399f891fc3a6ae
 After installing Notation, install the Notation Azure Key Vault plugin. You can find the URL and the SHA256 checksum for the Notation Azure Key Vault plugin on the [release page](https://github.com/Azure/notation-azure-kv/releases).
 
 ```bash
-notation plugin install --url https://github.com/Azure/notation-azure-kv/releases/download/v${NOTATION_VERSION}/notation-azure-kv_${NOTATION_VERSION}_${OS}_${ARCH}.tar.gz --sha256sum 06bb5198af31ce11b08c4557ae4c2cbfb09878dfa6b637b7407ebc2d57b87b34
+notation plugin install --url https://github.com/Azure/notation-azure-kv/releases/download/v${NOTATION_VERSION}/notation-azure-kv_${NOTATION_VERSION}_${OS}_${ARCH}.tar.gz --sha256sum <checksum_from_the_release_page>
 ```
 
 Once the plugin is installed, confirm the `azure-kv` plugin is installed by running the following command:
