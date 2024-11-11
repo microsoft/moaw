@@ -163,7 +163,7 @@ spec:
         name: data
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: azuredisk-standard-ssd-zrs-replicas
+        storageClassName: acstor-ephemeraldisk-nvme
         resources:
           requests:
             storage: 256Gi

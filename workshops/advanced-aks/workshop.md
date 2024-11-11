@@ -1227,6 +1227,12 @@ kubectl get pods -n acstor --watch
 
 </div>
 
+Delete the default storage pool created.
+
+```bash
+kubectl delete sp -n acstor ephemeraldisk-nvme
+```
+
 #### Create a replicated ephemeral storage pool
 
 With Azure Container Storage enabled, storage pools can also be created using Kubernetes CRDs. Run the following command to deploy a new StoragePool custom resource. This will create a new storage class using the storage pool name prefixed with **acstor-**.
