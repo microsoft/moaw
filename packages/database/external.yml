@@ -537,3 +537,20 @@
   level: beginner
   tags: azure, azure functions, durable function, flex consumption, azure openai, entra id, cosmos db, csu, codespace, devcontainer, ignite
   navigation_levels: 3
+
+- title: LLMSecOps workshop - Build reliable and secure intelligent Apps
+  url: https://moaw.dev/workshop/?src=gh:microsoft/llmsecops-hands-on-lab/main/docs/
+  github_url: https://github.com/microsoft/llmsecops-hands-on-lab
+  language: en
+  last_updated: 2024-11-13
+  type: workshop
+  description:  This is a workshop for developers and security engineers, intented to walk you through LLMSecOps practices to build secure and reliable GenAI based Apps.
+  authors:
+  - Yassine El Ghali
+  contacts:
+    - "@yelghali"
+  duration_minutes: 400
+  audience: pro devs, security engineers, AI engineers
+  level: beginner
+  tags: llmops, openai, python, semanticKernel, promptFlow, red teaming
+  navigation_levels: 3
