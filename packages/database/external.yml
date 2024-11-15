@@ -523,7 +523,7 @@
   url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-azure-functions-flex-openai/main/docs/
   github_url: https://github.com/microsoft/hands-on-lab-azure-functions-flex-openai
   language: en
-  last_updated: 2024-10-21
+  last_updated: 2024-11-15
   type: workshop
   description:  In this workshop you will learn how to build an intelligent application that summarizes audio files using Azure Functions Flex Consumption and Azure OpenAI
   authors:
@@ -553,4 +553,23 @@
   audience: pro devs, security engineers, AI engineers
   level: beginner
   tags: llmops, openai, python, semanticKernel, promptFlow, red teaming
+  navigation_levels: 3
+
+- title: Product Hands-on Lab - Use Azure Communication Services to extend the capabilities of your applications
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-acs-teams/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-acs-teams
+  language: en
+  last_updated: 2024-11-15
+  type: workshop
+  description: Discover how to integrate Azure Communication Services with Microsoft Teams and you custom application to build a chat application.
+  authors:
+  - Lucas Peirone
+  - Damien Aicheh
+  contacts:
+    - "@lucas.peirone"
+    - "@damienaicheh"
+  duration_minutes: 240
+  audience: students, pro devs
+  level: beginner
+  tags: azure, azure communication services, microsoft teams, javascript, codespace, devcontainer, acs, csu
   navigation_levels: 3
