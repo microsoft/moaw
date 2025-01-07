@@ -441,8 +441,8 @@
 
   
 - title: Product Hands-on Lab - Platform engineering for Devs
-  url: https://microsoft.github.io/moaw/workshop/gh:ikhemissi/hands-on-lab-platform-engineering-for-devs/main/docs/
-  github_url: https://github.com/ikhemissi/hands-on-lab-platform-engineering-for-devs
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-platform-engineering-for-devs/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-platform-engineering-for-devs
   language: en
   last_updated: 2024-06-20
   type: workshop
