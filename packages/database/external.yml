@@ -573,3 +573,30 @@
   level: beginner
   tags: azure, azure communication services, microsoft teams, javascript, codespace, devcontainer, acs, csu
   navigation_levels: 3
+
+- title: Product Hands-on Lab - GitHub Copilot, from Basic to Advanced usage
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-github-copilot/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-github-copilot
+  language: en
+  last_updated: 2025-02-17
+  type: workshop
+  description: Get the most out of GitHub Copilot to develop your projects
+  authors:
+  - Yoshio Terada
+  - Philippe Didiergeorges
+  - Louis-Guillaume Morand
+  - Lucas Peirone
+  - Damien Aicheh
+  - Julien Strebler
+  contacts:
+    - "@yoshioterada"
+    - "@philess"
+    - "@lgmorand"
+    - "@lucas.peirone"
+    - "@damienaicheh"
+    - "@julien.strebler"
+  duration_minutes: 240
+  audience: students, pro devs
+  level: beginner
+  tags: java, python, GitHub, copilot, AI, csu
+  navigation_levels: 3
