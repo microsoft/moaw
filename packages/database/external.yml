@@ -1,7 +1,7 @@
 # ****************************************************************************
 # External workshop entries to include in the database
 # ****************************************************************************
-# The entry format is the same as the frontmatter format described in 
+# The entry format is the same as the frontmatter format described in
 # CONTRIBUTING.md, with these additional fields:
 # - url: Required. The URL of the workshop website
 # - language: Required. The language of the workshop (e.g. "en" for English)
@@ -9,24 +9,24 @@
 # - github_url: Optional. The URL of the workshop's GitHub repository
 # ****************************************************************************
 - title: Azure Confidential Computing powered by AMD SEV-SNP - Workshop
-  description: In this technical workshop, you will gain a comprehensive understanding of Azure's Confidential Computing capabilities powered by AMD SEV-SNP. 
-  url: https://aka.ms/Azure-CC-AMD-Workshop              
-  language: en                          
-  last_updated: 2023-07-06                
-  type: workshop                       
-  level: advanced                         
-  github_url: https://github.com/microsoft/MDCC/    
-  authors:                   
+  description: In this technical workshop, you will gain a comprehensive understanding of Azure's Confidential Computing capabilities powered by AMD SEV-SNP.
+  url: https://aka.ms/Azure-CC-AMD-Workshop
+  language: en
+  last_updated: 2023-07-06
+  type: workshop
+  level: advanced
+  github_url: https://github.com/microsoft/MDCC/
+  authors:
     - Jumelet Arnaud
-    - Ren Jacques     
-  contacts:                               
+    - Ren Jacques
+  contacts:
     - '@Arnaud_Jumelet'
     - 'in/jacques-ren/'
-  duration_minutes: 300                
-  audience: students, pro devs         
+  duration_minutes: 300
+  audience: students, pro devs
   tags: Security, Confidential Computing
 
-  
+
 - title: Azure Blinking IoT Compressor
   url: https://iot-workshop.maneu.fr/
   github_url: https://github.com/cmaneu/Azure-Blinking-IoT-Compressor
@@ -94,7 +94,7 @@
   level: beginner
   tags: powerplatform, azure, cli, function, connector, vscode
 
-- title: Product Hands-on Lab AKS - Azure Kubernetes 
+- title: Product Hands-on Lab AKS - Azure Kubernetes
   url: https://aka.ms/aks-workshop
   github_url: https://github.com/lgmorand/aks-workshop
   language: en
@@ -102,7 +102,7 @@
   type: workshop
   description: In this lab, you’ll go through tasks that will help you master the basic and more advanced topics required to deploy a containerized application to Kubernetes on Azure Kubernetes Service (AKS).
   authors:
-    - Louis-Guillaume MORAND 
+    - Louis-Guillaume MORAND
     - Iheb KHEMISSI
     - Clémence Lesné
   contacts:
@@ -114,7 +114,7 @@
   level: beginner
   tags: aks, container, docker, helm, cli, kubernetes, azure, csu
 
-- title: Product Hands-on Lab ACA - Azure Container Apps 
+- title: Product Hands-on Lab ACA - Azure Container Apps
   url: https://aka.ms/aca-workshop
   github_url: https://github.com/lgmorand/workshop-aca
   language: en
@@ -122,7 +122,7 @@
   type: workshop
   description: In this Hands-on Lab, you’ll go through tasks that will help you master the basics and more advanced topics required to deploy applications to Azure Container Apps.
   authors:
-    - Louis-Guillaume MORAND 
+    - Louis-Guillaume MORAND
     - Fethi Dilmi
     - Maxime VILLEGER
     - Zlatko ARIFHODZIC
@@ -138,13 +138,13 @@
 
 - title: Product Hands-on Lab DAPR - Distributed Application Runtime
   url: https://daprbuildworkshop.z6.web.core.windows.net/
-  github_url: https://github.com/SoTrx/dapr-build-workshop       
+  github_url: https://github.com/SoTrx/dapr-build-workshop
   language: fr
   last_updated: 2023-02-23
   type: workshop
   description: Ce Hands-on Lab est une introduction à Dapr et à ses concepts. Au travers de différentes activités, le but sera de découvrir les fonctionnalités de Dapr, tout d’abord en isolation, et ensuite en utilisant son intégration dans Azure Container Apps.
   authors:
-    - Louis-Guillaume MORAND 
+    - Louis-Guillaume MORAND
     - Lucas Peirone
   contacts:
     - '@lupeiron'
@@ -194,12 +194,12 @@
 
 - title: Product Hands-on Lab ARO - Azure Red Hat OpenShift
   url: https://microsoft.github.io/aroworkshop/
-  github_url: https://github.com/microsoft/aroworkshop     
+  github_url: https://github.com/microsoft/aroworkshop
   language: en
   last_updated: 2023-01-13
   type: workshop
   description: Azure Red Hat OpenShift is a fully managed Red Hat OpenShift service in Azure that is jointly engineered and supported by Microsoft and Red Hat. In this lab, you’ll go through a set of tasks that will help you understand some of the concepts of deploying and securing container based applications on top of Azure Red Hat OpenShift.
-    - Louis-Guillaume MORAND 
+    - Louis-Guillaume MORAND
     - Oren Kashi
     - Ahmed Sabbour
   contacts:
@@ -208,12 +208,12 @@
     - '@lomorand'
   duration_minutes: 240
   audience: students, pro devs, ops, admin
-  level: intermediate 
+  level: intermediate
   tags: container, docker, kubernetes, azure, aro, ocp, openshift, redhat, csu
 
 - title: Product Hands-on Lab - App Service
   url: https://appservicebuild.z28.web.core.windows.net/
-  github_url: https://github.com/franckfotso1/app-service-workshop    
+  github_url: https://github.com/franckfotso1/app-service-workshop
   language: fr
   last_updated: 2023-03-13
   type: workshop
@@ -224,7 +224,7 @@
     - '@franckfotso1'
   duration_minutes: 120
   audience: students, pro devs, ops, admin
-  level: beginner 
+  level: beginner
   tags: azure, web apps, api apps, app service plan, container, docker, app service, csu
 
 - title: Product Hands-on Lab - Code to Cloud
@@ -310,7 +310,7 @@
   authors:
     - Thivy
   contacts:
-    - 'https://github.com/thivy' 
+    - 'https://github.com/thivy'
   duration_minutes: 60
   audience: students, pro devs
   level: intermediate
@@ -325,7 +325,7 @@
   authors:
     - simonkurtz
   contacts:
-    - '@simonkurtz' 
+    - '@simonkurtz'
   duration_minutes: 420
   audience: students, pro devs, architect
   level: intermediate
@@ -355,7 +355,7 @@
   language: en
   last_updated: 2023-11-10
   type: workshop
-  description: Discover how to create and populate a vector database, create a Web chat interface and an API to expose your agent to the Web interface. 
+  description: Discover how to create and populate a vector database, create a Web chat interface and an API to expose your agent to the Web interface.
   authors:
     - Yohan Lasorsa
     - Julien Dubois
@@ -369,38 +369,38 @@
   level: intermediate
   tags: chatgpt, openai, langchain, retrieval-augmented-generation, azure, containers, docker, static web apps, javascript, typescript, node.js, azure cognitive search, fastify, azure container apps
 
-- title: Azure Container Apps - Hands on Lab  
-  url: https://markharrison.io/lab-azure-container-apps/      
+- title: Azure Container Apps - Hands on Lab
+  url: https://markharrison.io/lab-azure-container-apps/
   description: Hands on Lab and demo script for Azure Container Apps
-  language: en                           
+  language: en
   last_updated: 2024-03-14
-  type: workshop                        
-  level: beginner                        
+  type: workshop
+  level: beginner
   github_url: https://github.com/markharrison/lab-azure-container-apps
-  authors:                                
-    - Mark Harrison                          
-  contacts:                               
+  authors:
+    - Mark Harrison
+  contacts:
     - '@markharrison'
-  duration_minutes: 60                    
-  audience: students, pro devs             
-  tags: azure, ACA, Dapr, container, .net, app, container apps 
+  duration_minutes: 60
+  audience: students, pro devs
+  tags: azure, ACA, Dapr, container, .net, app, container apps
 
-- title: Create self-study Flashcards using RAG (Retrieval Augmented Generation) with Microsoft Fabric and Azure OpenAI  
-  url: https://moaw.dev/workshop/?src=gh:microsoft/flashcards-workshop/main/workshop.md      
+- title: Create self-study Flashcards using RAG (Retrieval Augmented Generation) with Microsoft Fabric and Azure OpenAI
+  url: https://moaw.dev/workshop/?src=gh:microsoft/flashcards-workshop/main/workshop.md
   description: Learn how to use Microsoft Fabric and Azure OpenAI to generate a set of study flashcards. Connect Fabric to Azure Blob Storage to store the flashcards and QR codes. Generate a PDF with the flashcards.
-  language: en                           
+  language: en
   last_updated: 2024-03-25
-  type: workshop                        
-  level: beginner                        
+  type: workshop
+  level: beginner
   github_url: https://github.com/microsoft/flashcards-workshop
-  authors:                                
-    - Alvaro Videla                        
-  contacts:                               
+  authors:
+    - Alvaro Videla
+  contacts:
     - '@old_sound'
-  duration_minutes: 30                    
-  audience: students, pro devs             
-  tags: openai, fabric, python, flashcards, Microsoft Fabric, Azure OpenAI 
-  
+  duration_minutes: 30
+  audience: students, pro devs
+  tags: openai, fabric, python, flashcards, Microsoft Fabric, Azure OpenAI
+
 - title: Product Hands-on Lab - Functions
   url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-functions/main/docs/
   github_url: https://github.com/microsoft/hands-on-lab-functions
@@ -439,7 +439,7 @@
   tags: azure policies, azure deployment environment, github advanced security, microsoft dev box, dev center, azure, github, ops, csu
   navigation_levels: 3
 
-  
+
 - title: Product Hands-on Lab - Platform engineering for Devs
   url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-platform-engineering-for-devs/main/docs/
   github_url: https://github.com/microsoft/hands-on-lab-platform-engineering-for-devs
@@ -511,7 +511,7 @@
   level: beginner
   github_url: https://github.com/HoussemDellai/running-llms-on-aks
   authors:
-    - Houssem Dellai                          
+    - Houssem Dellai
   contacts:
     - houssem.dellai@microsoft.com
   video_url: https://www.youtube.com/watch?v=INOeJg4ECh4
@@ -599,4 +599,22 @@
   audience: students, pro devs
   level: beginner
   tags: java, python, GitHub, copilot, AI, csu
+  navigation_levels: 3
+
+- title: The Ultimate GitHub Copilot workshop for developers
+  url: https://aka.ms/github-copilot-hol
+  github_url: https://github.com/Philess/GHCopilotHoL
+  language: en
+  last_updated: 2025-03-10
+  type: workshop
+  description: Discover how to leverage GitHub Copilot to develop your project
+  authors:
+  - Philippe Didiergeorges
+  contacts:
+    - "@philess"
+  duration_minutes: 180
+  audience: students, pro devs
+  level: beginner
+  banner_url: https://raw.githubusercontent.com/philess/GHCopilotHoL/main/assets/banner.jpg
+  tags: JavaScript, .net, GitHub, IA, Copilot, AI, csu
   navigation_levels: 3
