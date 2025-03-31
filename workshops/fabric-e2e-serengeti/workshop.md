@@ -538,17 +538,19 @@ In this section we will learn how to use Apache Spark for data processing and an
 
 ### Creating a Fabric Notebook
 
-To edit and run Spark code in Microsoft Fabric we will use the Notebooks which very similar to Jupyter Notebooks. To create a new Notebook, click on the ```Open Notebook``` from the Lakehouse and from the drop down menu select ```New Notebook```. This will open a new Notebook. On the top right corner of the workspace click on the Notebook name and rename it to ```analyze-and-transform-data```. Click on any empty area to close and rename the Notebook.
+To edit and run Spark code in Microsoft Fabric we will use the Notebooks which very similar to Jupyter Notebooks. To create a new Notebook, click on the ```Open Notebook``` from the Lakehouse and from the drop down menu select ```New Notebook```.
+
+This will open a new Notebook. On the top right corner of the workspace click on the Notebook name and rename it to ```analyze-and-transform-data```. Click on any empty area to close and rename the Notebook.
 
 ![Rename Notebook](assets/analyze-and-transform-data.png)
 
-Before we begin the loading of the data let's install some of the libraries that we'll need.
+<!-- Before we begin the loading of the data let's install some of the libraries that we'll need.
 
 We will need to install the opencv library using pip. Execute the following code block in the cell to install the opencv library and imutils library which is a set of convenience tools to make working with OpenCV easier.
 
 ```python
 %pip install opencv-python imutils
-```
+``` -->
 
 ### Loading data into a Spark Dataframe
 
@@ -559,58 +561,65 @@ We'll then filter out the relevant columns that are we need, *i.e season, seq_id
 
 Finally remove any null values in the `image_id` column and drop any duplicate rows, finally convert the spark dataframe to a pandas dataframe for easier manipulation.
 
-Paste the code below into a cell of the Notebook and run it. Update the select query with the name of the your Lakehouse name.
+Paste the code below into a cell of the Notebook and review to understand before you run it. Update the select query with the name of the your Lakehouse name.
 
 ```python
 # Read all the annotations in the train table from the lakehouse
-df = spark.sql("SELECT * FROM DemoLakehouse.train_annotations WHERE train_annotations.category_id > 1")
+df = spark.sql("SELECT * FROM SnapshotSerengeti_LH.train_annotations WHERE train_annotations.category_id > 1")
 
 # filter out the season, sequence ID, category_id snf image_id
 df_train = df.select("season", "seq_id", "category_id", "location", "image_id", "datetime")
 
 # remove image_id wiTH null and duplicates
 df_train = df_train.filter(df_train.image_id.isNotNull()).dropDuplicates()
-
-# convert df_train to pandas dataframe
-df_train = df_train.toPandas()
 ```
 
 ### Analyzing data across seasons
 
-Next we will define a function to plot the number of image sequences in each season. We'll achieve this by using the matplotlib and seaborn libraries.
+Next we'll analyze the number of image sequences across seasons. We'll achieve this by first creating a new spark dataframe that counts the sequences per season.
+
+Add the following code in a new cell in the Notebook, review to understand and run it.
 
 ```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+# Import the required libraries
+from pyspark.sql.functions import split, regexp_replace, col
 
-def plot_season_counts(df, title="Number of Sequences per Season"):
-    # Extract the season from the seq_id column using a lambda function
-    df['season'] = df.seq_id.map(lambda x: x.split('#')[0])
+# This splits the seq_id string at '#' and takes the first part.
+df_train = df_train.withColumn("season_extracted", split(col("seq_id"), "#").getItem(0))
 
-    # Count the number of sequences in each season, and sort the counts by season
-    season_counts = df.season.value_counts().sort_index()
+# Remove the 'SER_' prefix from the extracted season for better readability.
+df_train = df_train.withColumn("season_label", regexp_replace(col("season_extracted"), "SER_", ""))
 
-    # Replace 'SER_' prefix in season labels with an empty string for easy visibility
-    season_labels = [s.replace('SER_', '') for s in season_counts.index]
+# Group by the season_label and count the number of sequences for each season, then order the results.
+df_counts = df_train.groupBy("season_label").count().orderBy("season_label")
 
-    # Create a bar plot where the x-axis represents the season and the y-axis represents the number of sequences in that season
-    sns.barplot(x=season_labels, y=season_counts.values)
-    plt.xlabel('Season')
-    plt.ylabel('Number of sequences')
-    plt.title(title)
-    plt.show()
+# visualize the spark data frame directly in the notebook
+display(df_counts)
 ```
 
-This function takes a single argument `df`, which is the pandas DataFrame containing the `seq_id` column. The function first extracts the season from the `seq_id` column using a lambda function, and then counts the number of sequences in each season using the `value_counts` method of the pandas Series object. The counts are sorted by season using the `sort_index` method.
+Running this cell will output a table with the columns `season_label` and `count`. The `season_label` column contains the season names and the `count` column contains the number of sequences in each season.
 
-We then can call the function and pass the `df_train` dataframe as an argument.
+You can further visualize this using the new rich dataframe chart view. To do this select the `+ New Chart` tab from the display() output widget.
 
-```python
-plot_season_counts(df_train, "Original Number of Sequences per Season")
-```
+![Display Output Widget](assets/display-output-widget.png)
 
-This will plot the number of sequences in each season.
+This opens the rich dataframe chart view from where you can add up to 5 charts in one display() output widget. Learn more about the rich dataframe chart view [here](https://learn.microsoft.com/en-us/fabric/data-engineering/notebook-visualization?WT.mc_id=data-91115-jndemenge).
+
+In the suggested charts, select `Build my own`, in the **Chart settings ==> Basic** add the following details:
+- **Chart type**: Bar chart
+- **Title**: Original Number of Sequences per Season
+- **Subtitle**: Season 1 to Season 10
+- **X-axis**: season_label
+- **Y-axis**: count
+- **Show Legend**: Toggle off
+- **Series group**: None
+- **Aggregation**: Sum
+- **Stacked**: Toggle off
+- **Aggregate all**: Toggle On
+
+Select the **Chart settings ==> Advanced**, here toggle the **Show labels** to on. The rest of the settings can be left as they are but you can play around with the settings to see what they do.
+
+Rename the chart to `Sequences per Season` by selecting the ellipses next to the chart name and selecting `Rename`. Close the chart settings to view the full chart. 
 
 ![Original Number of Sequences per Season](assets/Original_Number_of_Sequences_per_Season.png)
 
@@ -623,52 +632,67 @@ Since we are working with camera trap data, it is common to have multiple images
 > A sequence is a group of images captured by a single camera trap in a single location over a short period of time. The images in a sequence are captured in rapid succession, and are often very similar to each other.
 </div>
 
-We can visualize the number of images we have for each sequence and after executing the code snippet below you will notice that by far most sequences have between 1 and 3 images in them.
+We can visualize the number of images we have for each sequence and after running the code snippet below you will notice that by far most sequences have between 1 and 3 images in them.
 
 ```python
-# Create the count plot
-ax = sns.countplot(x=df_train.groupby('seq_id').size(), log=True)
+from pyspark.sql import functions as F
 
-# Set the title and axis labels
-ax.set_title('Number of images in each sequence')
-ax.set_xlabel('Number of images')
-ax.set_ylabel('Count of sequences')
+# Compute the number of images per sequence.
+seq_counts = df_train.groupBy("seq_id").count()
 
-# Show the plot
-plt.tight_layout()
-plt.show()
+# Aggregate the data: group by the image count and count how many sequences have that count.
+sequence_length_counts = (seq_counts
+    .groupBy("count")
+    .agg(F.count("seq_id").alias("Count of sequences"))
+    .withColumnRenamed("count", "Number of images")
+    .orderBy(F.col("Number of images"))
+)
+
+# visualize the spark data frame directly in the notebook
+display(sequence_length_counts)
 ```
 
-Next we will load the category names from the Categories table in the lakehouse. We'll then convert the spark dataframe to a pandas dataframe.
-
-Next the add a new column called *label* in the df_train dataframe which is the category name for each category_id and finally remove the category_id column from df_train and rename the image_id column to filename and append the .JPG extension to the the values
+Next we will load the category names from the Categories table in the Lakehouse. We'll then add a new column called *label* in the df_train dataframe which is the category name for each category_id and finally remove the category_id column from df_train and rename the image_id column to filename and append the .JPG extension to the the values
 
 ```python
-import numpy as np
+from pyspark.sql.functions import concat, lit
 
-# Load the Categories DataFrame into a pandas DataFrame
-category_df = spark.sql("SELECT * FROM DemoLakehouse.categories").toPandas()
+# Load the categories table as a Spark DataFrame
+categories_df = spark.sql("SELECT * FROM SnapshotSerengeti_LH.categories")
 
-# Map category IDs to category names using a vectorized approach
-category_map = pd.Series(category_df.name.values, index=category_df.id)
-df_train['label'] = category_map[df_train.category_id].values
+# Join df_train with categories_df on category_id (matching with id) to map category names.
+# The join brings the category name as "name", which we then rename to "label".
+df_train = df_train.join(
+    categories_df.select(col("id").alias("category_id"), col("name")),
+    on="category_id",
+    how="left"
+).withColumnRenamed("name", "label")
 
 # Drop the category_id column
-df_train = df_train.drop('category_id', axis=1)
+df_train = df_train.drop("category_id")
 
-# Rename the image_id column to filename
-df_train = df_train.rename(columns={'image_id': 'filename'})
+# Rename the image_id column to filename.
+df_train = df_train.withColumnRenamed("image_id", "filename")
 
-# Append the .JPG extension to the filename column
-df_train['filename'] = df_train.filename + '.JPG'
+# Append the '.JPG' extension to the filename column.
+df_train = df_train.withColumn("filename", concat(col("filename"), lit(".JPG")))
 ```
 
 Since we are working with a sequence of images we will pick the first image from each sequence, with the assumption that the time period after a camera trap is triggered is the most likely time for an animal to be in the frame.
 
 ```python
-# reduce to first frame only for all sequences
-df_train = df_train.sort_values('filename').groupby('seq_id').first().reset_index()
+from pyspark.sql.window import Window
+from pyspark.sql.functions import row_number
 
+# Define a window partitioned by seq_id and ordered by filename
+windowSpec = Window.partitionBy("seq_id").orderBy("filename")
+
+# Assign a row number to each row within its sequence, filter for the first frame, then drop the helper column.
+df_train = df_train.withColumn("row_num", row_number().over(windowSpec)) \
+                   .filter(col("row_num") == 1) \
+                   .drop("row_num")
+
+# Count the rows in the resulting DataFrame
 df_train.count()
 ```
 
