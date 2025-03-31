@@ -700,22 +700,27 @@ The `df_train.count()` method returns the number of rows in the dataframe. Which
 
 ### Analyzing the image labels
 
-Now that we have handled the image sequences, we will now analyze the labels and as well plot the distribution of labels in the dataset. To do this execute the code snippet below.
+Now that we have handled the image sequences, we will now analyze the labels and as well plot the distribution of labels in the dataset. To do this run the code snippet below in a new cell. 
 
 ```python
-# Create a horizontal bar plot where the y-axis represents the label and the x-axis represents the number of images with that label
-plt.figure(figsize=(8, 12))
-sns.countplot(y='label', data=df, order=df_train['label'].value_counts().index)
-plt.xlabel('Number of images')
-plt.ylabel('Label')
+# Create a new DataFrame that counts the number of images per label
+label_counts = df_train.groupBy("label").count().orderBy(col("count").desc())
 
-# Set the x-axis scale to logarithmic
-plt.xscale('log')
+# Rename the columns for better readability and visualization
+label_counts = label_counts.withColumnRenamed("label", "Label") \
+                           .withColumnRenamed("count", "Number of images")
 
-plt.show()
+# Visualize the label counts
+display(label_counts)
 ```
 
+Create a new bar chart using the rich dataframe chart view, set the X-axis to `Label` and the Y-axis to `Number of images`. Set the chart type to `Bar chart` and set the title to `Distribution of Labels`. In the advanced settings, under **Scale**, set it to `Logarithmic`.
+
 The scale of the x-axis is set to logarithmic to make it easier to read the labels and normalize the distribution. Each bar represents the number of images with that label.
+
+You can configure the other chart settings as desired. Close the chart settings to view the full chart.
+
+![Distribution of Labels](assets/Distribution_of_Labels.png)
 
 ### Transforming the dataframe
 
@@ -725,36 +730,47 @@ To do this we will define a function that takes a filename as the input and retu
 
 ```python
 def get_ImageUrl(filename):
-    return f"https://lilablobssc.blob.core.windows.net/snapshotserengeti-unzipped/{filename}"
+    return f"https://lilawildlife.blob.core.windows.net/lila-wildlife/snapshotserengeti-unzipped/{filename}"
 ```
+
+We then create a Spark UDF from the `get_ImageUrl` function and apply it to the filename column of the df_train Spark DataFrame to generate a new column called image_url that contains the complete URL for each image.
 
 This function is then applied to the `filename` column of the `df_train` dataframe to create a new column called `image_url` which contains the url of the image.
 
 ```python
-df_train['image_url'] = df_train['filename'].apply(get_ImageUrl)
+from pyspark.sql.functions import udf
+from pyspark.sql.types import StringType
+
+# Create a UDF from the function
+get_ImageUrl_udf = udf(get_ImageUrl, StringType())
+
+# Apply the UDF to create the image_url column
+df_train = df_train.withColumn("image_url", get_ImageUrl_udf(col("filename")))
 ```
 
 We can test this by selecting a random image and displaying it. To do this define the following two functions:
 
 ```python
 import urllib.request
+import matplotlib.pyplot as plt
 
 def display_random_image(label, random_state, width=500):
-    # Filter the DataFrame to only include rows with the specified label
-    df_filtered = df_train[df_train['label'] == label]
+    # Filter the Spark DataFrame to only include rows with the specified label,
+    # then order randomly (using the provided seed) and select one row.
+    row = df_train.filter(col("label") == label) \
+                  .orderBy(F.rand(random_state)) \
+                  .limit(1) \
+                  .collect()[0]
     
-    # Select a random row from the filtered DataFrame
-    row = df_filtered.sample(random_state=random_state).iloc[0]
-    
-    # Load the image from the URL and display it
-    url = row['image_url']
+    # Get the image URL from the selected row and display the image
+    url = row["image_url"]
     download_and_display_image(url, label)
 
-# use matplotlib to display the image
 def download_and_display_image(url, label):
     image = plt.imread(urllib.request.urlopen(url), format='jpg')
     plt.imshow(image)
     plt.title(f"Label: {label}")
+    plt.axis('off')
     plt.show()
 ```
 
@@ -779,83 +795,93 @@ Now that we have successfully analyzed the data and performed some transformatio
 
 ### Proportional allocation of the dataset
 
-We will select a subset of the data from the main dataset in a way that maintains the same proportions of the `label`, `season` and `location`.
+We will select a subset of the data from the main dataset in a way that maintains the same distribution of the `label`, `season` and `location`.
 
-To do this define a function that takes in the dataset as an input and a percentage and it calculates how many data points to be included based on that percentage.
+To do this we define two functions:
 
-```python
-def proportional_allocation_percentage(data, percentage):
-    # Calculate the count of the original sample
-    original_count = len(data)
+1. `proportional_allocation_percentage`: This function takes the dataset and a percentage, calculates the sample size and calls the second function to perform the proportional allocation.
 
-    # Calculate the count of the sample based on the percentage
-    sample_count = int((percentage / 100) * original_count)
+    ```python
+    def proportional_allocation_percentage(data, percentage):
+        # Calculate total rows in 'data'
+        original_count = data.count()
+        
+        # Convert percentage to a sample size
+        sample_count = int((percentage / 100) * original_count)
+        
+        # Delegate to proportional_allocation
+        return proportional_allocation(data, sample_count)
+    ```
 
-    # Perform proportional allocation on the calculated sample count
-    return proportional_allocation(data, sample_count)
-```
+2. `proportional_allocation`: This function takes the dataset and the sample size, groups the data, calculates how many rows to take from each (label, season, location) group, adjusts for rounding, and then uses Spark’s window function to randomly pick rows from each group.
 
-Notice that this function uses another function to perform the actual proportional allocation.
+    ```python
+    from pyspark.sql.functions import broadcast, rand
 
-```python
-def proportional_allocation(data, sample_size):
-    # Group the data by "label", "season", and "location" columns
-    grouped_data = data.groupby(["label", "season", "location"])
+    def proportional_allocation(df, sample_size):
+        """
+        Performs stratified proportional sampling on `df` by (label, season, location)
+        to obtain an exact total of `sample_size` rows.
+        """
+        # Optionally repartition to reduce shuffle on large data:
+        # df = df.repartition("label", "season", "location")
+        
+        # Compute total and group totals
+        total_count = df.count()  # single pass
+        group_counts_df = df.groupBy("label", "season", "location").agg(F.count("*").alias("group_count"))
+        
+        # Convert to a small pandas DataFrame to fix sample sizes on the driver
+        pdf = group_counts_df.toPandas()
+        pdf["proportion"] = pdf["group_count"] / total_count
+        pdf["raw_size"] = (pdf["proportion"] * sample_size).round().astype(int)
+        
+        #  Fix rounding differences so the sum matches `sample_size`
+        diff = sample_size - pdf["raw_size"].sum()
+        if diff > 0:
+            # Add 1 to groups with the highest proportions
+            pdf = pdf.sort_values("proportion", ascending=False)
+            pdf.iloc[:diff, pdf.columns.get_loc("raw_size")] += 1
+        elif diff < 0:
+            # Subtract 1 from groups with the lowest proportions
+            pdf = pdf.sort_values("proportion", ascending=True)
+            pdf.iloc[:abs(diff), pdf.columns.get_loc("raw_size")] -= 1
+        
+        # Convert final group sizes back to Spark DF
+        final_sizes_sdf = df.sparkSession.createDataFrame(
+            pdf[["label", "season", "location", "raw_size"]]
+        )
+        
+        # Join + random row_number + filter
+        joined = df.join(broadcast(final_sizes_sdf), on=["label", "season", "location"], how="inner")
+        
+        window = Window.partitionBy("label", "season", "location").orderBy(rand())
+        result = (
+            joined
+            .withColumn("rn", row_number().over(window))
+            .filter(F.col("rn") <= F.col("raw_size"))
+            .drop("rn", "raw_size")
+        )
+        
+        return result
+    ```
 
-    # Calculate the proportion of each group in the original sample
-    proportions = grouped_data.size() / len(data)
-
-    # Calculate the count of each group in the sample based on proportions
-    sample_sizes = np.round(proportions * sample_size).astype(int)
-
-    # Calculate the difference between the desired sample size and the sum of rounded sample sizes
-    size_difference = sample_size - sample_sizes.sum()
-
-    # Adjust the sample sizes to account for the difference
-    if size_difference > 0:
-        # If there is a shortage of items, allocate the additional items to the groups with the largest proportions
-        largest_proportions = proportions.nlargest(size_difference)
-        for group in largest_proportions.index:
-            sample_sizes[group] += 1
-    elif size_difference < 0:
-        # If there is an excess of items, reduce the sample sizes from the groups with the smallest proportions
-        smallest_proportions = proportions.nsmallest(-size_difference)
-        for group in smallest_proportions.index:
-            sample_sizes[group] -= 1
-
-    # Initialize an empty list to store the sample
-    sample_data = []
-
-    # Iterate over each group and randomly sample the required count
-    for group, count in zip(grouped_data.groups, sample_sizes):
-        indices = grouped_data.groups[group]
-        sample_indices = np.random.choice(indices, size=count, replace=False)
-        sample_data.append(data.loc[sample_indices])
-
-    # Concatenate the sampled dataframes into a single dataframe
-    sample_data = pd.concat(sample_data)
-
-    # Reset the index of the sample DataFrame
-    sample_data.reset_index(drop=True, inplace=True)
-
-    return sample_data
-```
-
-This second function, groups the data based on the `label`, `season` and `location` columns and calculates the proportion of each group in the original sample. It then calculates the count of each group in the sample based on proportions.
-
-It also  adjusts the sample sizes if necessary to make sure the total sample size matches the desired count. Finally, it randomly selects the appropriate number of data points from each group and returns the resulting sample, which is a smaller dataset that represents the original dataset's proportions accurately.
-
-For purposes of this demo we we will use `0.05%` of the original dataset.
+This approach uses integer rounding and random selection and thus exact counts can vary slightly. For purposes of this demo we we will use `0.05%` of the original dataset, but you can adjust the percentage to any value you want.
 
 ```python
 percent = 0.05
 sampled_train = proportional_allocation_percentage(df_train, percent)
-plot_season_counts(sampled_train, f"{percent}% Sample from Original Number of Sequences per Season")
+
+# Group by the season_label and count the number of sequences for each season, then order the results.
+df_sampled_train_counts = sampled_train.groupBy("season_label").count().orderBy("season_label")
+
+# visualize the spark data frame directly in the notebook
+display(df_sampled_train_counts)
 ```
-The image below shows a side by side comparison of the output from the execution of the `plot_season_counts` function on the original dataset and the sampled dataset above.
+The image below shows a side by side comparison of the rich dataframe chart view of the original dataset and the sampled dataset. You can see that the distribution of the labels is similar in both datasets. 
 
 ![sampled](assets/sample.png)
 
+Create your own chart using the rich dataframe chart view to visualize the sampled dataset and compare it with the original dataset.
 
 ### Define functions to download images
 
