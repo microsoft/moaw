@@ -84,7 +84,7 @@ To complete this workshop you will need the following:
 
 In this section we'll load the data into the Lakehouse. The data is available in a public Blob Storage container.
 
-To begin, we will create and configure a new Lakehouse. To do this, in your workspace open the `Data Engineering workload` and Click on `Lakehouse` provide a the name `DemoLakehouse` and click `Create`.
+To begin with, we will create a new Lakehouse and configure a Data Factory pipeline to copy the data from the Blob Storage container to the Lakehouse. To do this, in your workspace select the `+ New Item` button and in the pane that opens on the right search for `Lakehouse`, select the `Lakehouse` item, provide the name `SnapshotSerengeti_LH` and click `Create`.
 
 ![Create Lakehouse](assets/create-lakehouse.png)
 
@@ -96,7 +96,7 @@ This will create a new Lakehouse for you. Both the `Files` and `Tables` director
 For this workshop we will use the Data Factory pipelines to load the data into the Lakehouse. 
 
 ### Configure a Data Factory Pipeline to copy data
-From the bottom left corner of the workspace switch to the `Data Factory Workload`. On the page that opens up click on `Data pipeline`. Provide a name for your pipeline and click `Create`.
+In the Lakehouse page, select the `Get Data` drop down from the top menu bar, and in the drop down select `New data pipeline`. Provide a name for your pipeline and click `Create`.
 
 ![Create Data Pipeline](assets/create-data-pipeline.png)
 
@@ -135,25 +135,25 @@ Next, inside the `ForEach` click on the `+` button to add a new activity. From t
 
 In the `General` tab provide a name for the activity. 
 
-Next, click on the `Source` tab. The `Data store type` select `External`. For the Connection click on the `New` button. On the dialog that appears, select `Azure Blob Storage` and click `Continue`.
+Next, click on the `Source` tab. The Connection dropdown select `more`, and in the dialog that appears, search for `Azure Blobs` and select it.
 
 For the `Account name` provide the following URL:
 
 ```url
-https://lilablobssc.blob.core.windows.net/snapshotserengeti-v-2-0
+https://lilawildlife.blob.core.windows.net/lila-wildlife
 ```
 
-Provide an appropriate connection name, and for the Authentication kind select `Anonymous` and click `Create`.
+Provide an appropriate connection name, and for the Authentication kind select `Anonymous` and select `Connect`.
 
 ![Create Connection](assets/create-connection.png)
 
-Back on the `Source` tab, in the `File path`, the container name as `snapshotserengeti-v-2-0` leave the directory empty and for the File name, click on the `Add dynamic content` button and from the pane that appears click on `ForEach CurrentItem`. Then click `Ok` to close the pane.
+Back on the `Source` tab, in the `File path`, the container name as `lila-wildlife` the directory as `snapshotserengeti-v-2-0` and for the File name, click on the `Add dynamic content` button and from the pane that appears click on `ForEach CurrentItem`. Then click `Ok` to close the pane.
 
 ![Create Data Pipeline](assets/source-settings.png)
 
 For File format dropdown select `Binary` and click on the `Settings` button next to this dropdown. on the dialog that appears for the `Compression type` select `ZipDeflate` for the `Compression level` select `Fastest` and click `Ok` to close the dialog.
 
-Next, click on the `Destination` tab to configure the destination settings. For the `Data store type` select `Workspace` and for the `Workspace data store type` select `Lakehouse`. In the Lakehouse dropdown, select the Lakehouse you created earlier.
+Next, click on the `Destination` tab to configure the destination settings. For the `Connection` dropdown, select the `SnapshotSerengeti_LH` Lakehouse you created earlier.
 
 For the Root folder select `Files`. For the File path, the directory, text box type in `raw-data`. Click on the File name text box and click on the `Add dynamic content` button and from the pane that appears put in the following expression:
 
@@ -167,7 +167,8 @@ For the Root folder select `Files`. For the File path, the directory, text box t
 
 Click `Ok` to close the pane. Back to the destination configuration, for the File format select `Binary`.
 
-Now that we have finished configuring both activities click on the `Run` button above the canvas. On the dialog, click `Save and run`. The pipeline takes a few seconds to copy and unzip all the specified files from the Blob Storage container to the Lakehouse.
+Now that we have finished configuring both activities select the `Run` button on the top menu bar, then select `Run`. On the dialog that opens, select `Save and run`. The pipeline takes a few seconds to copy and unzip all the specified files from the Blob Storage container to the Lakehouse.
+
 ![Create Data Pipeline](assets/complete-copy.png)
 
 Navigate back to the lakehouse to explore the data.
@@ -184,7 +185,9 @@ Clicking this subdirectory will reveal the 11 files that we unzipped and copied 
 
 We will need to convert the json files into Parquet files. To do this we will leverage the Fabric Notebooks to perform this task. More about Fabric Notebooks will be covered in [section 6](/?step=5).
 
-To create a new Notebook, ath the top of the workspace click `Open Notebook` click `New Notebook`. At the top right corner of the workspace click on the Notebook name and rename it to `convert-json-to-parquet`. Click on any empty area to close and rename the Notebook.
+To create a new Notebook, from the top menu bar select `Open Notebook` then select `New Notebook`. This will create and open a new notebook. 
+
+At the top right corner of the workspace click on the Notebook name and rename it to `convert-json-to-parquet`. Click on any empty area to close and rename the Notebook.
 
 In the first cell of the Notebook paste the following code:
 
@@ -258,7 +261,9 @@ test_annotations.to_parquet(test_annotations_file, engine='pyarrow', compression
 
 ```
 
-This code will convert the json files into Parquet files and save them in the Lakehouse. To run the code click on the `Run all` button above the Notebook. This will take a few minutes to run.
+This code will convert the json files into Parquet files and save them in the Lakehouse. Review the code and make sure you understand what each line of code does before running it.
+
+To run the code click on the `Run all` button above the Notebook. This will take a few minutes to run.
 
 Right click on the `Files` directory and click `Refresh`. You will notice that the `data` directory has been created and it contains the Parquet files. We used the json files from season 1 to season 10 to create a training set and season 11 to create a testing set.
 
@@ -295,7 +300,7 @@ The [SQL Endpoint](https://learn.microsoft.com/en-us/fabric/data-warehouse/get-s
 
 This autogenerated SQL Endpoint that can be leveraged through familiar SQL tools such as [SQL Server Management Studio](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?WT.mc_id=data-91115-jndemenge), [Azure Data Studio](https://learn.microsoft.com/en-us/sql/azure-data-studio/what-is-azure-data-studio?WT.mc_id=data-91115-jndemenge), the [Microsoft Fabric SQL Query Editor](https://learn.microsoft.com/en-us/fabric/data-warehouse/sql-query-editor?WT.mc_id=data-91115-jndemenge).
 
-You can access the SQL endpoint by opening your workspace and Click the Lakehouse name which has the **Type** as SQL endpoint
+You can access the SQL endpoint by opening your workspace and you will find it beneath the **Lakehouse** you created. 
 
 ![Workspace Interface](assets/Workspace_interface.png)
 
@@ -324,7 +329,7 @@ To learn more on [Model in Power BI](https://learn.microsoft.com/en-us/training/
 Based on our `train_annotations` data, we want to create a dimension for **season** column and we will use an SQL Query to do that:
 
 1. Click **New SQL Query** at the top of your screen
-2. Write this code
+2. Add the following query
 
 ```SQL
 SELECT DISTINCT season
@@ -348,7 +353,7 @@ We want to build relationships with the 4 tables we now have
 - `categories`
 - `Season`
 
-To create relationship : Click the **Model** below the screen where you have Data, Query and Model. You will see all the tables listed above.
+To define relationships : Select **Model layouts** on the Explorer pane. You will see all the tables listed above.
 
 1. Click **Categories[id]** and drag to connect to **train_annotations[category_id]**.
 A screen will pop up with Create Relationship. 
