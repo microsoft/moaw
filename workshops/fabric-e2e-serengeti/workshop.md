@@ -436,7 +436,7 @@ Click on New Report and you will see the Power BI interface.
 
 This report below is what we will build for this workshop
 
-![dashboard](assets/dashboard.png)
+![dashboard](assets/dashboard.jpeg)
 
 ### Building the Report
 
@@ -461,9 +461,9 @@ To build the report, we will use the following visuals
 
 ![dashboard](assets/Format_visual.png)
     
- - Select **Visual** tab then expand the Callout Value and increase the font size to 55.
+ - Select the **Visual** tab then expand the Callout Value and increase the font size to 55.
  - Select and expand the Category label to increase the font size to 18.
- - Select **General** tab then expand **Effects** and make sure the **Background** is on and set to white.
+ - Select the **General** tab then expand **Effects** and make sure the **Background** is on and set to white.
  - Select and expand **Visual border** and increase the **Rounded corners** to 15.
  - Select and expand **Shadow** and make sure the **Shadow** is toggled on.
 
@@ -509,7 +509,7 @@ To build the report, we will use the following visuals
     - Set the **By value** to **train_annotation[annotations]** by dragging the field into the blank space.
     - You can apply the same formatting as the **Card** visuals using the **format your visual icon** in the Visualization pane.
 
-![dashboard](assets/dashboard.png)
+![dashboard](assets/dashboard.jpeg)
 
 Great work in getting to this point. 
 
