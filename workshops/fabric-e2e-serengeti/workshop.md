@@ -385,15 +385,15 @@ This section is about building measures for our analysis. Depending on your repo
 
 To write our first measure
 
-1. Click New measure above
-2. Change measure to Annotation
-3. Type
+1. Select **Reporting** on the top explorer pane then select **Automatically update semantic model**. This will refresh the model and make sure all the tables are up to date.
+2. Once the model is refreshed, select **Model layout** on the explorer pane then select the **train_annotations** table and select the **...** on the right hand side of the table name and select **New measure**.
+3. In the formula bar, type the following measure:
 
 ```SQL
 Annotations = COUNTROWS(train_annotations)
 ```
 
-1. Click **Mark sign**
+1. Select the **Check mark sign**
 1. On your right side, check the **properties**, you can change the **Home table** and format the measure
 
 Apply same steps above for a new measure called **Images**
@@ -449,73 +449,65 @@ In the **filter pane**,
 - Click **Select all**
 - unselect **0** (based on our report, we don't need it)
 
-To bring in Visuals
+To build the report, we will use the following visuals
 
-1. For the first card visual
+1. For the first visual, we will use a **card** visual
 
 ![dashboard](assets/card.png)
 
-   - Click a **card** visual , 
-   - Click the measure called **annotation** in the **train_annotation** table
-   - Click the **format icon** in the Visualization pane
+   - On the visualization pane, select a **card** visual. 
+   - Select the measure called **annotation** in the **train_annotation** table
+   - Select the **format your visual icon** in the Visualization pane
 
 ![dashboard](assets/Format_visual.png)
     
- - Click **Visual**
- - Click the Callout Value and increase the font size to 55
- - Click the Category label to increase the font size to 18
- - Click **Effects** and Click **General**
- - Click and Open the Background
- - On Visual border and increase Rounded corners to 15
- - On Shadow 
+ - Select **Visual** tab then expand the Callout Value and increase the font size to 55.
+ - Select and expand the Category label to increase the font size to 18.
+ - Select **General** tab then expand **Effects** and make sure the **Background** is on and set to white.
+ - Select and expand **Visual border** and increase the **Rounded corners** to 15.
+ - Select and expand **Shadow** and make sure the **Shadow** is toggled on.
 
 
-2. For the second card visual
+2. For the second visual, we will use another **card** visual
 
-- Click a **card** visual, click the measure called **images** in the **train_images** table
-- You can Format the visual in the **format icon** in the Visualization pane
+- In the visualizations pane select a **card** visual, then select the measure called **images** in the **train_images** table from the **Data** pane.
+- Apply the same formatting as the first card visual above to this card visual.
 
-
-
-3. For Slicers
+3. For the third visual, we will use a **slicer** visual
 
 ![dashboard](assets/slicer.png)
 
-- Click a **slicer** visual, Click **season[season]**
+- On the visualizations pane select a **slicer** visual, then select **season[season]** from the **Data** pane.
+- Select another **slicer** visual on the visualizations pane, then select **Category[name]** from the **Data** pane.
+- On visualizations pane, navigate to the **Field** property of the second slicer visual and select the drop down arrow and select **Rename for this visual**.
+- Then change **name** to **Animals**.
+- On the visualizations pane, select the **format your visual icon** then select the **Visual** tab and expand the **Slicer settings** option then expand **Options** and select **Dropdown** for style. Do this for both slicer visuals.
 
-- Click another **slicer** visual, Click **Category[name]**
-- In the Field below Visualization, Right click **name**
-- Click **Rename for thsi visual**
-- Change **name** to **Animals**
 
+- You can apply the same formatting as the **Card** visuals using the **format your visual icon** in the Visualization pane
 
-- You can Format the visuals in the **format icon** in the Visualization pane
-
-4. Annotation by Season
+4. Adding a **Clustered bar chart** visual for number of annotations by season
 
 ![dashboard](assets/clustered_barchart.png)
 
-- Click **Clustered bar chart**
-- Click **season[season]** and **train_annotation[annotations]**
-- You can Format the visual in the **format icon** in the Visualization pane
+- On the visualizations pane select a **Clustered bar chart** visual, then select **Category[name]** and **train_annotation[annotations]** from the **Data** pane.
+- You can apply the same formatting as the **Card** visuals using the **format your visual icon** in the Visualization pane
 
-5. Top Number of Annotations by Animals
+5. Adding a **Clustered bar chart** visual for the top 5 number of annotations by animals
 
-- Click **Clustered bar chart**
-- Click **Category[name]** and **train_annotation[annotations]**
-- In the Format Pane, Check the **name**, change **Advanced filtering** to **TopN**
-- Show items , **Top N** and write **5** beside
-- By Value, drag **train_annotation[annotations]** into the blank space
-- you can Format your visual in the **format icon** in the Visualization pane
+- On the visualizations pane select a **Clustered bar chart** visual, then select **Category[name]** and **train_annotation[annotations]** from the **Data** pane.
+- In the Filters pane, select the **name** and change the filter type from **Advanced filtering** to **TopN**
+- For **Show items**, select **Top** and enter the number **5**.
+- Set the **By value** to **train_annotation[annotations]** by dragging the field into the blank space.
+- You can apply the same formatting as the **Card** visuals using the **format your visual icon** in the Visualization pane
 
 
-6. Bottom Number of Annotations by Animals
-    - Click **Clustered bar chart**
-    - Click **Category[name]** and **train_annotation[annotations]**
-    - In the Format Pane, Check the **name**, change **Advanced filtering** to **TopN**
-    - Show items , Change **Top** to **Bottom** and **5** beside
-    - By Value, drag **train_annotation[annotations]** into the blank space
-    - you can Format your visual in the **format icon** in the Visualization pane
+6. Adding a **Clustered bar chart** visual for the bottom 5 number of annotations by animals
+    - On the visualizations pane select a **Clustered bar chart** visual, then select **Category[name]** and **train_annotation[annotations]** from the **Data** pane.
+    - On the Filters pane, select the **name** and change the filter type from **Advanced filtering** to **TopN**
+    - For **Show items**, change **Top** to **Bottom** and enter the number **5**.
+    - Set the **By value** to **train_annotation[annotations]** by dragging the field into the blank space.
+    - You can apply the same formatting as the **Card** visuals using the **format your visual icon** in the Visualization pane.
 
 ![dashboard](assets/dashboard.png)
 
