@@ -12,7 +12,6 @@ authors:
 contacts:
   - '@Jcardif'
   - '@BethanyJep'
-  - '@DavidAbu'
   - '@dikodev'
 duration_minutes: 180
 tags: data, analytics, Microsoft Fabric, Power BI, data science, data engineering, data visualization
