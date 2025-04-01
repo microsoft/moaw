@@ -1041,27 +1041,11 @@ This section covers preparing out data and training a deep learning model on the
 
 ### Load the sample dataset
 
-From the previous section, our images are already loaded in the lakehouse as `parquet` files contains image details including filename and labels. First we convert the parquet files to Delta tables. In machine learning, Delta tables can be used to store training data for machine learning models, allowing us to easily update the data and retrain the model.
+From the previous section, we have successfully downloaded the images into the Lakehouse and saved the sampled train and test dataframes to delta tables in the lakehouse. We will now load the sampled train and test dataframes from the lakehouse into a new notebook.
 
-![Converting parquet files to delta tables](assets/data_to_delta_tables.png)
-To convert our data from parquet to delta files we:
+To do this, create a new notebook and rename it to `train-model`.
 
-1. Go to our Lakehouse
-1. In the Lakehouse, click on `data`
-1. Right click on the train and test parquet files. You will do this for both `sample_test.parquet` and `sample_train.parquet`
-1. Select **load to Tables** then **create a new table.**
-1. Finally, you will see our new delta files in the LakeHouse as shown below:
-![Output of our delta files](assets/data_to_delta_tables_output.png)
-
- Next, create a new notebook and rename it to `train-model` as described in the previous section.
-
-Before we continue loading our data, we will first install the two libraries we need to train our data using `pip install`. We will be training our model using [Pytorch](https://pytorch.org) which requires two libraries: torch and torchvision. `torch` is the main PyTorch package that provides the core functionality for working with tensors, building neural networks, and training models. `torchvision` is a package that provides tools and utilities for working with computer vision tasks, such as image classification and object detection.
-
-We will have to install the libraries separately. To install torch we run the command below:
-
-```python
-%pip install torch
-```
+Before we continue loading our data, we will first install the two libraries we need to train our data using `pip install`. We will be training our model using [Pytorch](https://pytorch.org) which requires two libraries: torch and torchvision. `torch` is the main PyTorch package that provides the core functionality for working with tensors, building neural networks, and training models. `torchvision` is a package that provides tools and utilities for working with computer vision tasks, such as image classification and object detection. PyTorch is already built into the Fabric environment, so we only need to install torchvision.
 
 To install torchvision we run the command below:
 
@@ -1072,20 +1056,19 @@ To install torchvision we run the command below:
 As our datasets are now as delta files, we load our data and convert it to a Pandas dataframe to easily manipulate and visualize our data with inbuilt Pandas tools starting with the train files:
 
 ```python
-# load our data 
-train_df = spark.sql("SELECT * FROM DemoLakehouse.sampled_train LIMIT 1000")
-
-# import pandas library that will convert our dataset into dataframes
 import pandas as pd
+
+# load our data 
+train_df = spark.sql("SELECT * FROM SnapshotSerengeti_LH.sampled_train")
 
 # convert train_df to pandas dataframe
 train_df = train_df.toPandas()
 ```
 
-Lastly, we convert our file name to read the image URL as follows:
+Lastly, we will create a new column in the dataframe that has the full path to the image on the Lakehouse. 
 
 ```python
-# Create a new column in the dataframe to apply to the filename column tor read the image URL
+# Create a new column in the dataframe 
 train_df['image_url'] = train_df['filename'].apply(lambda filename: f"/lakehouse/default/Files/images/train/{filename}")
 
 train_df.head()
@@ -1115,12 +1098,12 @@ train_df['labels'] = le.transform(train_df['label'])
 
 <div class="important" data-title="Test Dataset">
 
-> Ensure you repeat the process for test dataset, by droping the filename column and merge the two dataframes using `pd.concat()` as follows:
+> Ensure you repeat the process for test dataset, by dropping the filename column and merge the two dataframes using `pd.concat()` as follows:
 </div>
 
 ```python
 # Repeat the process for the test dataset
-test_df = spark.sql("SELECT * FROM DemoLakehouse.sampled_test LIMIT 1000")
+test_df = spark.sql("SELECT * FROM SnapshotSerengeti_LH.sampled_test")
 
 # convert test_df to pandas dataframe
 test_df = test_df.toPandas()
@@ -1235,12 +1218,15 @@ After this code is executed, the `model` object will be a pre-trained DenseNet 2
 
 ```python
 import torchvision
+import torch
 import torch.nn as nn
+from torchvision.models import DenseNet201_Weights
 
 # load the pre-trained DenseNet 201 model
-model = torchvision.models.densenet201(pretrained=True)
+model = torchvision.models.densenet201(weights=DenseNet201_Weights.IMAGENET1K_V1)
 num_ftrs = model.classifier.in_features
 model.classifier = nn.Linear(num_ftrs, 53)
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 ```
@@ -1251,6 +1237,7 @@ We use the cross-entropy loss function and the Adam optimizer to train the model
 
 ```python
 import torch.optim as optim
+
 # define the loss function
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
