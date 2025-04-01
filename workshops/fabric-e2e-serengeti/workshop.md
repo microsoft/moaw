@@ -8,11 +8,12 @@ level: beginner
 authors:
   - Josh Ndemenge
   - Bethany Jepchumba
-  - David Abu
+  - Someleze Diko
 contacts:
   - '@Jcardif'
   - '@BethanyJep'
   - '@DavidAbu'
+  - '@dikodev'
 duration_minutes: 180
 tags: data, analytics, Microsoft Fabric, Power BI, data science, data engineering, data visualization
 banner_url: assets/architecture.png
