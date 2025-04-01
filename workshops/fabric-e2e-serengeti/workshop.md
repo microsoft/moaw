@@ -536,14 +536,6 @@ This will open a new Notebook. On the top right corner of the workspace click on
 
 ![Rename Notebook](assets/analyze-and-transform-data.png)
 
-<!-- Before we begin the loading of the data let's install some of the libraries that we'll need.
-
-We will need to install the opencv library using pip. Execute the following code block in the cell to install the opencv library and imutils library which is a set of convenience tools to make working with OpenCV easier.
-
-```python
-%pip install opencv-python imutils
-``` -->
-
 ### Loading data into a Spark Dataframe
 
 To begin we will load the annotations data from the Lakehouse `train_annotations` table. From this we get information about each season's sequences and labels.
@@ -551,7 +543,7 @@ To begin we will load the annotations data from the Lakehouse `train_annotations
 
 We'll then filter out the relevant columns that are we need, *i.e season, seq_id, category_id, image_id and date_time* and also need to filter out all records whose *category_id is greater than 1* to exclude all empty and human images which are not relevant for this training.
 
-Finally remove any null values in the `image_id` column and drop any duplicate rows, finally convert the spark dataframe to a pandas dataframe for easier manipulation.
+Finally remove any null values in the `image_id` column and drop any duplicate rows.
 
 Paste the code below into a cell of the Notebook and review to understand before you run it. Update the select query with the name of the your Lakehouse name.
 
@@ -568,9 +560,7 @@ df_train = df_train.filter(df_train.image_id.isNotNull()).dropDuplicates()
 
 ### Analyzing data across seasons
 
-Next we'll analyze the number of image sequences across seasons. We'll achieve this by first creating a new spark dataframe that counts the sequences per season.
-
-Add the following code in a new cell in the Notebook, review to understand and run it.
+Next we'll analyze the number of image sequences across seasons.Add the following code in a new cell in the Notebook, review to understand and run it.
 
 ```python
 # Import the required libraries
@@ -597,7 +587,7 @@ You can further visualize this using the new rich dataframe chart view. To do th
 
 This opens the rich dataframe chart view from where you can add up to 5 charts in one display() output widget. Learn more about the rich dataframe chart view [here](https://learn.microsoft.com/en-us/fabric/data-engineering/notebook-visualization?WT.mc_id=data-91115-jndemenge).
 
-In the suggested charts, select `Build my own`, in the **Chart settings ==> Basic** add the following details:
+In the suggested charts, select `Build my own`, in the **Chart settings > Basic** add the following details:
 - **Chart type**: Bar chart
 - **Title**: Original Number of Sequences per Season
 - **Subtitle**: Season 1 to Season 10
@@ -609,7 +599,7 @@ In the suggested charts, select `Build my own`, in the **Chart settings ==> Basi
 - **Stacked**: Toggle off
 - **Aggregate all**: Toggle On
 
-Select the **Chart settings ==> Advanced**, here toggle the **Show labels** to on. The rest of the settings can be left as they are but you can play around with the settings to see what they do.
+Select the **Chart settings > Advanced**, here toggle the **Show labels** to on. The rest of the settings can be left as they are but you can play around with the settings to see what they do.
 
 Rename the chart to `Sequences per Season` by selecting the ellipses next to the chart name and selecting `Rename`. Close the chart settings to view the full chart. 
 
@@ -644,7 +634,9 @@ sequence_length_counts = (seq_counts
 display(sequence_length_counts)
 ```
 
-Next we will load the category names from the Categories table in the Lakehouse. We'll then add a new column called *label* in the df_train dataframe which is the category name for each category_id and finally remove the category_id column from df_train and rename the image_id column to filename and append the .JPG extension to the filename. We achieve this by defining a function called `transform_image_data` which takes the dataframe and the categories dataframe as input and returns the transformed dataframe. This function will be reused later to perform the same transformation on the test data.
+Next we will load the category names from the Categories table in the Lakehouse. We'll then add a new column called *label* in the df_train dataframe which is the category name for each category_id and finally remove the category_id column from df_train and rename the image_id column to filename and append the .JPG extension. 
+
+We achieve this by defining a function called `transform_image_data` which takes the dataframe and the categories dataframe as input and returns the transformed dataframe. This function will be reused later to perform the same transformation on the test data.
 
 ```python
 from pyspark.sql.functions import concat, lit
@@ -701,7 +693,7 @@ The `df_train.count()` method returns the number of rows in the dataframe. Which
 
 ### Analyzing the image labels
 
-Now that we have handled the image sequences, we will now analyze the labels and as well plot the distribution of labels in the dataset. To do this run the code snippet below in a new cell. 
+Now that we have handled the image sequences, we will now analyze the labels and display the distribution of labels in the dataset. To do this run the code snippet below in a new cell. 
 
 ```python
 # Create a new DataFrame that counts the number of images per label
@@ -715,9 +707,9 @@ label_counts = label_counts.withColumnRenamed("label", "Label") \
 display(label_counts)
 ```
 
-Create a new bar chart using the rich dataframe chart view, set the X-axis to `Label` and the Y-axis to `Number of images`. Set the chart type to `Bar chart` and set the title to `Distribution of Labels`. In the advanced settings, under **Scale**, set it to `Logarithmic`.
+Create a new bar chart using the rich dataframe chart view, set the X-axis to `Label` and the Y-axis to `Number of images`. Set the chart type to `Bar chart` and set the title to `Distribution of Labels`. In the advanced settings, under **Y-axis > Scale**, set it to `Logarithmic`.
 
-The scale of the x-axis is set to logarithmic to make it easier to read the labels and normalize the distribution. Each bar represents the number of images with that label.
+The scale of the Y-axis is set to logarithmic to make it easier to read the labels and normalize the distribution. Each bar represents the number of images with that label.
 
 You can configure the other chart settings as desired. Close the chart settings to view the full chart.
 
@@ -734,9 +726,9 @@ def get_ImageUrl(filename):
     return f"https://lilawildlife.blob.core.windows.net/lila-wildlife/snapshotserengeti-unzipped/{filename}"
 ```
 
-We then create a Spark UDF from the `get_ImageUrl` function and apply it to the filename column of the df_train Spark DataFrame to generate a new column called image_url that contains the complete URL for each image.
+We then create a Spark UDF from the `get_ImageUrl` function and apply it to the filename column of a Spark DataFrame to generate a new column, image_url that contains the complete URL for each image.
 
-This function is then applied to the `filename` column of the `df_train` dataframe to create a new column called `image_url` which contains the url of the image.
+This function is then applied to the `filename` column of the `df_train` dataframe.
 
 ```python
 from pyspark.sql.functions import udf
