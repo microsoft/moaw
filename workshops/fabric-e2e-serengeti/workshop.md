@@ -1362,11 +1362,32 @@ for batch_idx, (x, target) in enumerate(test_loader):
 Model evaluation results gives out the epochs, batch index, test loss and model accuracy. To increase our model accuracy, we may need to include more images to our train and test set:
 ![model_evaluation](assets/model_evaluation.png)
 
-Next, we test our model with a single image. We use the `PIL` library to load an image from a file as shown below:
+Next, we test our model with a single image. We use the `PIL` library to load an image from a file as shown below. We'll select a random image from the test dataset and load it using the `PIL` library. `
 
 ```python
+import random
+
+def get_random_jpg_path(root_dir):
+    # Define the image file extension for JPG files (case-insensitive)
+    jpg_extension = '.jpg'
+    jpg_paths = []
+    
+    # Walk through the directory tree
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        for filename in filenames:
+            if filename.lower().endswith(jpg_extension):
+                full_path = os.path.join(dirpath, filename)
+                jpg_paths.append(full_path)
+    
+    # Return a random JPG image if any are found, else return None
+    if jpg_paths:
+        return random.choice(jpg_paths)
+    else:
+        return None
+
 # Load a new image from the test data using Pillow
-image = Image.open('/lakehouse/default/Files/images/test/SER_S11/B03/B03_R1/SER_S11_B03_R1_IMAG1021.JPG')
+random_image_path = "/lakehouse/default/Files/images/test"
+image = Image.open(get_random_jpg_path(random_image_path))
 image
 ```
 
@@ -1423,11 +1444,12 @@ This concludes our workshop. The next section covers all the resources you will 
 ## Appendix
 
 ### Importing Notebook into the Workspace
-To import an existing notebook into the workspace, on the bottom left of your workspace switch to the `Data Engineering` workload. In the page that appears click on `Import Notebook` then click the `Upload` button on the pane that opens.
+
+To import an existing notebook into the workspace, on the top menu bar in your workspace, select the `->| Import` drop down, then select `Notebook` ==> `From this computer`. A pane opens on the right side of the screen, select the `Upload` button, browse to the location of the notebook you want to import and select it.
 
 ![Importing Notebook](assets/import_notebook.png)
 
-Select the notebook you want to import. After successful import, navigate back to your workspace and you will find the recently imported notebook. 
+After successful import, navigate back to your workspace and you will find the recently imported notebook. 
 
 Open the notebook and if the Lakehouse explorer indicates that `Missing Lakehouse`, click on the arrows to the left of the error and on the dialog that appears click on `Add Lakehouse`.
 
