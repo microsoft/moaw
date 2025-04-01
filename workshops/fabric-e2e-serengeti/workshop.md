@@ -644,30 +644,39 @@ sequence_length_counts = (seq_counts
 display(sequence_length_counts)
 ```
 
-Next we will load the category names from the Categories table in the Lakehouse. We'll then add a new column called *label* in the df_train dataframe which is the category name for each category_id and finally remove the category_id column from df_train and rename the image_id column to filename and append the .JPG extension to the the values
+Next we will load the category names from the Categories table in the Lakehouse. We'll then add a new column called *label* in the df_train dataframe which is the category name for each category_id and finally remove the category_id column from df_train and rename the image_id column to filename and append the .JPG extension to the filename. We achieve this by defining a function called `transform_image_data` which takes the dataframe and the categories dataframe as input and returns the transformed dataframe. This function will be reused later to perform the same transformation on the test data.
 
 ```python
 from pyspark.sql.functions import concat, lit
 
+def transform_image_data(df, categories_df):
+    """
+    Joins the input DataFrame with the categories DataFrame, renames columns,
+    and appends a '.JPG' extension to the filename column.
+    """
+    # Join on category_id to map category names. The join brings the category name as "name", which we then rename to "label".
+    df = df.join(
+        categories_df.select(col("id").alias("category_id"), col("name")),
+        on="category_id",
+        how="left"
+    ).withColumnRenamed("name", "label")
+
+    # Drop the 'category_id' column
+    df = df.drop("category_id")
+
+    # Rename 'image_id' to 'filename'
+    df = df.withColumnRenamed("image_id", "filename")
+
+    # Append '.JPG' to the filename
+    df = df.withColumn("filename", concat(col("filename"), lit(".JPG")))
+
+    return df
+
 # Load the categories table as a Spark DataFrame
 categories_df = spark.sql("SELECT * FROM SnapshotSerengeti_LH.categories")
 
-# Join df_train with categories_df on category_id (matching with id) to map category names.
-# The join brings the category name as "name", which we then rename to "label".
-df_train = df_train.join(
-    categories_df.select(col("id").alias("category_id"), col("name")),
-    on="category_id",
-    how="left"
-).withColumnRenamed("name", "label")
-
-# Drop the category_id column
-df_train = df_train.drop("category_id")
-
-# Rename the image_id column to filename.
-df_train = df_train.withColumnRenamed("image_id", "filename")
-
-# Append the '.JPG' extension to the filename column.
-df_train = df_train.withColumn("filename", concat(col("filename"), lit(".JPG")))
+# Apply trsnaformation for image data
+df_train = transform_image_data(df_train, categories_df)
 ```
 
 Since we are working with a sequence of images we will pick the first image from each sequence, with the assumption that the time period after a camera trap is triggered is the most likely time for an animal to be in the frame.
@@ -789,75 +798,89 @@ Now that we have successfully analyzed the data and performed some transformatio
 
 We will select a subset of the data from the main dataset in a way that maintains the same distribution of the `label`, `season` and `location`.
 
-To do this we define two functions:
+To do this we define a function called `proportional_allocation_percentage` that takes the dataset and a percentage as input and the performs proportional allocation of the dataset. 
 
-1. `proportional_allocation_percentage`: This function takes the dataset and a percentage, calculates the sample size and calls the second function to perform the proportional allocation.
+```python
+def proportional_allocation_percentage(df, percentage):
+    """
+    Proportionally allocate a sample of 'percentage'% of df across label, season, location
+    """
+    # Determine the total number of rows and desired sample size
+    total_count = df.count()
+    sample_size = int(round(total_count * (percentage / 100.0)))
 
-    ```python
-    def proportional_allocation_percentage(data, percentage):
-        # Calculate total rows in 'data'
-        original_count = data.count()
-        
-        # Convert percentage to a sample size
-        sample_count = int((percentage / 100) * original_count)
-        
-        # Delegate to proportional_allocation
-        return proportional_allocation(data, sample_count)
-    ```
+    # Compute group counts
+    group_counts = (
+        df.groupBy("label", "season", "location")
+          .count()  # number of rows in each group
+          .withColumnRenamed("count", "group_count")
+    )
 
-2. `proportional_allocation`: This function takes the dataset and the sample size, groups the data, calculates how many rows to take from each (label, season, location) group, adjusts for rounding, and then uses Spark’s window function to randomly pick rows from each group.
+    # Compute the proportion of each group, then approximate "sample_needed" via rounding
+    group_counts = (
+        group_counts
+        .withColumn("proportion", F.col("group_count") / F.lit(total_count))
+        .withColumn("sample_needed", F.round(F.col("proportion") * sample_size).cast("int"))
+    )
 
-    ```python
-    from pyspark.sql.functions import broadcast, rand
+    #  Collect just the group-level info to the driver for fine-grained adjustment
+    group_counts_pd = group_counts.select(
+        "label", "season", "location", "group_count", "sample_needed", "proportion"
+    ).toPandas()
 
-    def proportional_allocation(df, sample_size):
-        """
-        Performs stratified proportional sampling on `df` by (label, season, location)
-        to obtain an exact total of `sample_size` rows.
-        """
-        # Optionally repartition to reduce shuffle on large data:
-        # df = df.repartition("label", "season", "location")
-        
-        # Compute total and group totals
-        total_count = df.count()  # single pass
-        group_counts_df = df.groupBy("label", "season", "location").agg(F.count("*").alias("group_count"))
-        
-        # Convert to a small pandas DataFrame to fix sample sizes on the driver
-        pdf = group_counts_df.toPandas()
-        pdf["proportion"] = pdf["group_count"] / total_count
-        pdf["raw_size"] = (pdf["proportion"] * sample_size).round().astype(int)
-        
-        #  Fix rounding differences so the sum matches `sample_size`
-        diff = sample_size - pdf["raw_size"].sum()
-        if diff > 0:
-            # Add 1 to groups with the highest proportions
-            pdf = pdf.sort_values("proportion", ascending=False)
-            pdf.iloc[:diff, pdf.columns.get_loc("raw_size")] += 1
-        elif diff < 0:
-            # Subtract 1 from groups with the lowest proportions
-            pdf = pdf.sort_values("proportion", ascending=True)
-            pdf.iloc[:abs(diff), pdf.columns.get_loc("raw_size")] -= 1
-        
-        # Convert final group sizes back to Spark DF
-        final_sizes_sdf = df.sparkSession.createDataFrame(
-            pdf[["label", "season", "location", "raw_size"]]
+    # Sum of "sample_needed" might not equal the total desired sample_size due to rounding
+    current_sum = group_counts_pd["sample_needed"].sum()
+    difference = sample_size - current_sum
+
+    if difference > 0:
+        # If we're short, we add +1 to the groups with the largest proportions until we fix the difference
+        # Sort descending by proportion
+        group_counts_pd = group_counts_pd.sort_values("proportion", ascending=False)
+        for i in range(difference):
+            group_counts_pd.iat[i, group_counts_pd.columns.get_loc("sample_needed")] += 1
+        # Re-sort back if desired
+        group_counts_pd = group_counts_pd.sort_values(["label", "season", "location"])
+    elif difference < 0:
+        # If we have too many, subtract 1 from the groups with the smallest proportions
+        # Sort ascending by proportion
+        group_counts_pd = group_counts_pd.sort_values("proportion", ascending=True)
+        for i in range(abs(difference)):
+            group_counts_pd.iat[i, group_counts_pd.columns.get_loc("sample_needed")] -= 1
+        # Re-sort back if desired
+        group_counts_pd = group_counts_pd.sort_values(["label", "season", "location"])
+
+    # Create a Spark DataFrame of the final sample allocations
+    allocations_sdf = spark.createDataFrame(group_counts_pd)
+
+    #  Join the allocations back to the main DataFrame so each row knows how many rows 
+    #    from its group we want to keep
+    df_joined = (
+        df.join(
+            F.broadcast(allocations_sdf),
+            on=["label", "season", "location"],
+            how="left"
         )
-        
-        # Join + random row_number + filter
-        joined = df.join(broadcast(final_sizes_sdf), on=["label", "season", "location"], how="inner")
-        
-        window = Window.partitionBy("label", "season", "location").orderBy(rand())
-        result = (
-            joined
-            .withColumn("rn", row_number().over(window))
-            .filter(F.col("rn") <= F.col("raw_size"))
-            .drop("rn", "raw_size")
-        )
-        
-        return result
-    ```
+    )
 
-This approach uses integer rounding and random selection and thus exact counts can vary slightly. For purposes of this demo we we will use `0.05%` of the original dataset, but you can adjust the percentage to any value you want.
+    # Use a row_number partitioned by (label, season, location) to limit how many rows per group
+    window_spec = Window.partitionBy("label", "season", "location").orderBy(F.monotonically_increasing_id())
+    df_with_rn = df_joined.withColumn("rn", F.row_number().over(window_spec))
+
+    # Filter out rows where 'rn' exceeds 'sample_needed'
+    df_sample = df_with_rn.filter(F.col("rn") <= F.col("sample_needed"))
+
+    # Drop helper columns if you don't need them in the final result
+    df_sample = df_sample.drop("proportion", "group_count", "sample_needed", "rn")
+
+    return df_sample
+```
+
+This function works by first determining the total number of rows in the dataframe and the desired sample size based on the percentage provided. It then computes the group counts for each combination of `label`, `season`, and `location` and calculates the proportion of each group. The function then adjusts the sample size to ensure that it matches the desired sample size.
+
+Finally, it filters the original dataframe to include only the rows that are needed for the sample.
+
+
+For purposes of this demo we we will use `0.05%` of the original dataset, but you can adjust the percentage to any value you want.
 
 ```python
 percent = 0.05
@@ -879,47 +902,52 @@ Create your own chart using the rich dataframe chart view to visualize the sampl
 
 Now that we have a sampled dataset, we will download the images into the lakehouse.
 
-To do, we will be using the opencv library to download the images. Define a function that takes in the url of the image and the path to download the image to.
+To do this, define a function that takes in the url of the image and the path to download the image to.
 
 ```python
 import urllib.request
-import cv2
-import imutils
+from PIL import Image
+import os
 
 def download_and_resize_image(url, path, kind):
     filename = os.path.basename(path)
     directory = os.path.dirname(path)
 
+    # Define a new directory path where permission is granted
     directory_path = f'/lakehouse/default/Files/images/{kind}/{directory}/'
 
     # Create the directory if it does not exist
     os.makedirs(directory_path, exist_ok=True)
 
-    # check if file already exists
-    if os.path.isfile(os.path.join(directory_path, filename)):
+    # Define the full target file path
+    target_file_path = os.path.join(directory_path, filename)
+
+    # Check if file already exists
+    if os.path.isfile(target_file_path):
         return
 
     # Download the image
-    urllib.request.urlretrieve(url, filename)
+    urllib.request.urlretrieve(url, target_file_path)
 
-    # Read the image using OpenCV
-    img = cv2.imread(filename)
+    # Open the image using PIL
+    img = Image.open(target_file_path)
 
-    # Resize the image to a reasonable ML training size using imutils
-    resized_img = imutils.resize(img, width=224, height=224, inter=cv2.INTER_AREA)
+    # Resize the image to a reasonable ML training size
+    resized_img = img.resize((224, 224), Image.ANTIALIAS)
 
     # Save the resized image to a defined filepath
-    cv2.imwrite(os.path.join(directory_path, filename), resized_img)
+    resized_img.save(target_file_path)
 ```
 
 The kind parameter is used to define whether the image is a training image or a validation/testing image.
 
-We are going to use this `download_and_resize_image` function in another function that will execute the download in parallel using the `concurrent.futures` library.
+We are going to use this `download_and_resize_image` function in another function that will execute the download in parallel using the `concurrent.futures` library. For simplicity, we'll convert the spark dataframe to a Pandas dataframe because it is small enough to fit into memory.
 
 ```python
 import concurrent.futures
 
-def execute_parallel_download(df, kind):
+def execute_parallel_download(spark_df, kind):
+    df = spark_df.toPandas()
     # Use a process pool instead of a thread pool to avoid thread safety issues
     with concurrent.futures.ProcessPoolExecutor() as executor:
         # Batch process images instead of processing them one at a time
@@ -935,25 +963,18 @@ def execute_parallel_download(df, kind):
 Next we will prepare the test data in the same way we have the train data then download both the train and test images.
 
 ```python
-df = spark.sql("SELECT * FROM DemoLakehouse.test_annotations WHERE test_annotations.category_id > 1")
+df_test = spark.sql("SELECT * FROM SnapshotSerengeti_LH.test_annotations WHERE test_annotations.category_id > 1")
 
-df_test = df.select("season", "seq_id", "category_id", "location", "image_id", "datetime")
 
-df_test= df_test.filter(df_test.image_id.isNotNull()).dropDuplicates()
+df_test = (
+    df_test
+    .filter(df_test.image_id.isNotNull())
+    .dropDuplicates()
+    .withColumn("season_extracted", split(col("seq_id"), "#").getItem(0))
+    .withColumn("season_label", regexp_replace(col("season_extracted"), "SER_", "")))
 
-df_test = df_test.toPandas()
-
-df_test['label'] = category_map[df_test.category_id].values
-
-df_test = df_test.drop('category_id', axis=1)
-
-df_test = df_test.rename(columns={'image_id':'filename'})
-
-df_test['filename'] = df_test.filename+ '.JPG'
-
-df_test = df_test.sort_values('filename').groupby('seq_id').first().reset_index()
-
-df_test['image_url'] = df_test['filename'].apply(get_ImageUrl)
+df_test = transform_image_data(df_test, categories_df)
+df_test = df_test.withColumn("image_url", get_ImageUrl_udf(col("filename")))
 
 sampled_test = proportional_allocation_percentage(df_test, 0.27)
 ```
@@ -962,7 +983,7 @@ From this code snippet we create a test set using `0.27%` from the original test
 
 ### Download the images
 
-Next we execute the download of the images: this will take approximately 10 minutes to complete.
+Next we execute the download of the images: this will take approximately 3-5 minutes to complete for the 0.05% of the training dataset and 0.27% of the test dataset.
 
 ```python
 import os
@@ -971,18 +992,39 @@ execute_parallel_download(sampled_train, 'train')
 execute_parallel_download(sampled_test, 'test')
 ```
 
-### Save the sampled dataframes to parquet files
-
-Once the download is complete we will then save the sampled train and test dataframes to parquet files in the lakehouse, for use in the next section. We drop all the columns except the filename and label columns, since these are the only required columns for training the model.
+Run the code below to confirm that all the images have been downloaded successfully.
 
 ```python
-data_dir = '/lakehouse/default/Files/data/'
+import os
 
-train_data_file = os.path.join(data_dir, 'sampled_train.parquet')
-test_data_file = os.path.join(data_dir, 'sampled_test.parquet')
+def list_all_files(directory):
+    file_list = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_list.append(os.path.join(root, file))
+    return file_list
 
-sampled_train.loc[:, ['filename', 'label']].to_parquet(train_data_file, engine='pyarrow', compression='snappy')
-sampled_test.loc[:, ['filename', 'label']].to_parquet(test_data_file, engine='pyarrow', compression='snappy')
+train_images_path = f"/lakehouse/default/Files/images/train/"
+test_images_path =  f"/lakehouse/default/Files/images/test/"
+
+print(f"{len(list_all_files(train_images_path))} files downloaded out of {sampled_train.count()}")
+print(f"{len(list_all_files(test_images_path))} files downloaded out of {sampled_test.count()}")
+```
+
+Ensure that you have all images downloaded successfully before proceeding. 
+
+### Save the sampled dataframes to parquet files
+
+Once the download is complete we will then save the sampled train and test dataframes to delta tables in the lakehouse, for use in the next section. We drop all the columns except the filename and label columns, since these are the only required columns for training the model.
+
+```python
+# Drop all columns except filename and label and save to a delta table for train data
+sampled_train.select("filename", "label")\
+    .write.saveAsTable("sampled_train", mode="overwrite", overwriteSchema="true")
+
+# Drop all columns except filename and label and save to a delta table for test data
+sampled_test.select("filename", "label")\
+    .write.saveAsTable("sampled_test", mode="overwrite", overwriteSchema="true")
 ```
 
 You can view the saved parquet files from the Lakehouse explorer.
