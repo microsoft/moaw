@@ -602,10 +602,10 @@
   navigation_levels: 3
 
 - title: GitHub Copilot, your new AI pair programmer - The Ultimate workshop for developers
-  url: https://aka.ms/github-copilot-hol
+  url: https://microsoft.github.io/moaw/workshop/gh:Philess/GHCopilotHoL/main/docs/
   github_url: https://github.com/Philess/GHCopilotHoL
   language: en
-  last_updated: 2025-03-10
+  last_updated: 2025-04-03
   type: workshop
   description: Discover how to leverage GitHub Copilot to develop your project
   authors:
