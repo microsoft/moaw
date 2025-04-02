@@ -8,11 +8,11 @@ level: beginner
 authors:
   - Josh Ndemenge
   - Bethany Jepchumba
-  - David Abu
+  - Someleze Diko
 contacts:
   - '@Jcardif'
   - '@BethanyJep'
-  - '@DavidAbu'
+  - '@dikodev'
 duration_minutes: 180
 tags: data, analytics, Microsoft Fabric, Power BI, data science, data engineering, data visualization
 banner_url: assets/architecture.png
@@ -84,7 +84,7 @@ To complete this workshop you will need the following:
 
 In this section we'll load the data into the Lakehouse. The data is available in a public Blob Storage container.
 
-To begin, we will create and configure a new Lakehouse. To do this, in your workspace open the `Data Engineering workload` and Click on `Lakehouse` provide a the name `DemoLakehouse` and click `Create`.
+To begin with, we will create a new Lakehouse and configure a Data Factory pipeline to copy the data from the Blob Storage container to the Lakehouse. To do this, in your workspace select the `+ New Item` button and in the pane that opens on the right search for `Lakehouse`, select the `Lakehouse` item, provide the name `SnapshotSerengeti_LH` and click `Create`.
 
 ![Create Lakehouse](assets/create-lakehouse.png)
 
@@ -96,7 +96,7 @@ This will create a new Lakehouse for you. Both the `Files` and `Tables` director
 For this workshop we will use the Data Factory pipelines to load the data into the Lakehouse. 
 
 ### Configure a Data Factory Pipeline to copy data
-From the bottom left corner of the workspace switch to the `Data Factory Workload`. On the page that opens up click on `Data pipeline`. Provide a name for your pipeline and click `Create`.
+In the Lakehouse page, select the `Get Data` drop down from the top menu bar, and in the drop down select `New data pipeline`. Provide a name for your pipeline and click `Create`.
 
 ![Create Data Pipeline](assets/create-data-pipeline.png)
 
@@ -135,25 +135,25 @@ Next, inside the `ForEach` click on the `+` button to add a new activity. From t
 
 In the `General` tab provide a name for the activity. 
 
-Next, click on the `Source` tab. The `Data store type` select `External`. For the Connection click on the `New` button. On the dialog that appears, select `Azure Blob Storage` and click `Continue`.
+Next, click on the `Source` tab. The Connection dropdown select `more`, and in the dialog that appears, search for `Azure Blobs` and select it.
 
 For the `Account name` provide the following URL:
 
 ```url
-https://lilablobssc.blob.core.windows.net/snapshotserengeti-v-2-0
+https://lilawildlife.blob.core.windows.net/lila-wildlife
 ```
 
-Provide an appropriate connection name, and for the Authentication kind select `Anonymous` and click `Create`.
+Provide an appropriate connection name, and for the Authentication kind select `Anonymous` and select `Connect`.
 
 ![Create Connection](assets/create-connection.png)
 
-Back on the `Source` tab, in the `File path`, the container name as `snapshotserengeti-v-2-0` leave the directory empty and for the File name, click on the `Add dynamic content` button and from the pane that appears click on `ForEach CurrentItem`. Then click `Ok` to close the pane.
+Back on the `Source` tab, in the `File path`, the container name as `lila-wildlife` the directory as `snapshotserengeti-v-2-0` and for the File name, click on the `Add dynamic content` button and from the pane that appears click on `ForEach CurrentItem`. Then click `Ok` to close the pane.
 
 ![Create Data Pipeline](assets/source-settings.png)
 
 For File format dropdown select `Binary` and click on the `Settings` button next to this dropdown. on the dialog that appears for the `Compression type` select `ZipDeflate` for the `Compression level` select `Fastest` and click `Ok` to close the dialog.
 
-Next, click on the `Destination` tab to configure the destination settings. For the `Data store type` select `Workspace` and for the `Workspace data store type` select `Lakehouse`. In the Lakehouse dropdown, select the Lakehouse you created earlier.
+Next, click on the `Destination` tab to configure the destination settings. For the `Connection` dropdown, select the `SnapshotSerengeti_LH` Lakehouse you created earlier.
 
 For the Root folder select `Files`. For the File path, the directory, text box type in `raw-data`. Click on the File name text box and click on the `Add dynamic content` button and from the pane that appears put in the following expression:
 
@@ -167,7 +167,8 @@ For the Root folder select `Files`. For the File path, the directory, text box t
 
 Click `Ok` to close the pane. Back to the destination configuration, for the File format select `Binary`.
 
-Now that we have finished configuring both activities click on the `Run` button above the canvas. On the dialog, click `Save and run`. The pipeline takes a few seconds to copy and unzip all the specified files from the Blob Storage container to the Lakehouse.
+Now that we have finished configuring both activities select the `Run` button on the top menu bar, then select `Run`. On the dialog that opens, select `Save and run`. The pipeline takes a few seconds to copy and unzip all the specified files from the Blob Storage container to the Lakehouse.
+
 ![Create Data Pipeline](assets/complete-copy.png)
 
 Navigate back to the lakehouse to explore the data.
@@ -184,7 +185,9 @@ Clicking this subdirectory will reveal the 11 files that we unzipped and copied 
 
 We will need to convert the json files into Parquet files. To do this we will leverage the Fabric Notebooks to perform this task. More about Fabric Notebooks will be covered in [section 6](/?step=5).
 
-To create a new Notebook, ath the top of the workspace click `Open Notebook` click `New Notebook`. At the top right corner of the workspace click on the Notebook name and rename it to `convert-json-to-parquet`. Click on any empty area to close and rename the Notebook.
+To create a new Notebook, from the top menu bar select `Open Notebook` then select `New Notebook`. This will create and open a new notebook. 
+
+At the top right corner of the workspace click on the Notebook name and rename it to `convert-json-to-parquet`. Click on any empty area to close and rename the Notebook.
 
 In the first cell of the Notebook paste the following code:
 
@@ -258,7 +261,9 @@ test_annotations.to_parquet(test_annotations_file, engine='pyarrow', compression
 
 ```
 
-This code will convert the json files into Parquet files and save them in the Lakehouse. To run the code click on the `Run all` button above the Notebook. This will take a few minutes to run.
+This code will convert the json files into Parquet files and save them in the Lakehouse. Review the code and make sure you understand what each line of code does before running it.
+
+To run the code click on the `Run all` button above the Notebook. This will take a few minutes to run.
 
 Right click on the `Files` directory and click `Refresh`. You will notice that the `data` directory has been created and it contains the Parquet files. We used the json files from season 1 to season 10 to create a training set and season 11 to create a testing set.
 
@@ -295,7 +300,7 @@ The [SQL Endpoint](https://learn.microsoft.com/en-us/fabric/data-warehouse/get-s
 
 This autogenerated SQL Endpoint that can be leveraged through familiar SQL tools such as [SQL Server Management Studio](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?WT.mc_id=data-91115-jndemenge), [Azure Data Studio](https://learn.microsoft.com/en-us/sql/azure-data-studio/what-is-azure-data-studio?WT.mc_id=data-91115-jndemenge), the [Microsoft Fabric SQL Query Editor](https://learn.microsoft.com/en-us/fabric/data-warehouse/sql-query-editor?WT.mc_id=data-91115-jndemenge).
 
-You can access the SQL endpoint by opening your workspace and Click the Lakehouse name which has the **Type** as SQL endpoint
+You can access the SQL endpoint by opening your workspace and you will find it beneath the **Lakehouse** you created. 
 
 ![Workspace Interface](assets/Workspace_interface.png)
 
@@ -324,7 +329,7 @@ To learn more on [Model in Power BI](https://learn.microsoft.com/en-us/training/
 Based on our `train_annotations` data, we want to create a dimension for **season** column and we will use an SQL Query to do that:
 
 1. Click **New SQL Query** at the top of your screen
-2. Write this code
+2. Add the following query
 
 ```SQL
 SELECT DISTINCT season
@@ -348,7 +353,7 @@ We want to build relationships with the 4 tables we now have
 - `categories`
 - `Season`
 
-To create relationship : Click the **Model** below the screen where you have Data, Query and Model. You will see all the tables listed above.
+To define relationships : Select **Model layouts** on the Explorer pane. You will see all the tables listed above.
 
 1. Click **Categories[id]** and drag to connect to **train_annotations[category_id]**.
 A screen will pop up with Create Relationship. 
@@ -380,15 +385,15 @@ This section is about building measures for our analysis. Depending on your repo
 
 To write our first measure
 
-1. Click New measure above
-2. Change measure to Annotation
-3. Type
+1. Select **Reporting** on the top explorer pane then select **Automatically update semantic model**. This will refresh the model and make sure all the tables are up to date.
+2. Once the model is refreshed, select **Model layout** on the explorer pane then select the **train_annotations** table and select the **...** on the right hand side of the table name and select **New measure**.
+3. In the formula bar, type the following measure:
 
 ```SQL
 Annotations = COUNTROWS(train_annotations)
 ```
 
-1. Click **Mark sign**
+1. Select the **Check mark sign**
 1. On your right side, check the **properties**, you can change the **Home table** and format the measure
 
 Apply same steps above for a new measure called **Images**
@@ -431,7 +436,7 @@ Click on New Report and you will see the Power BI interface.
 
 This report below is what we will build for this workshop
 
-![dashboard](assets/dashboard.png)
+![dashboard](assets/dashboard.jpeg)
 
 ### Building the Report
 
@@ -444,77 +449,69 @@ In the **filter pane**,
 - Click **Select all**
 - unselect **0** (based on our report, we don't need it)
 
-To bring in Visuals
+To build the report, we will use the following visuals
 
-1. For the first card visual
+1. For the first visual, we will use a **card** visual
 
-![dashboard](assets/card.png)
+    ![dashboard](assets/card.png)
 
-   - Click a **card** visual , 
-   - Click the measure called **annotation** in the **train_annotation** table
-   - Click the **format icon** in the Visualization pane
+    - On the visualization pane, select a **card** visual. 
+    - Select the measure called **annotation** in the **train_annotation** table
+    - Select the **format your visual icon** in the Visualization pane
 
-![dashboard](assets/Format_visual.png)
+    ![dashboard](assets/Format_visual.png)
     
- - Click **Visual**
- - Click the Callout Value and increase the font size to 55
- - Click the Category label to increase the font size to 18
- - Click **Effects** and Click **General**
- - Click and Open the Background
- - On Visual border and increase Rounded corners to 15
- - On Shadow 
+    - Select the **Visual** tab then expand the Callout Value and increase the font size to 55.
+    - Select and expand the Category label to increase the font size to 18.
+    - Select the **General** tab then expand **Effects** and make sure the **Background** is on and set to white.
+    - Select and expand **Visual border** make sure is toggled on and increase the **Rounded corners** to 15.
+    - Select and expand **Shadow** and make sure the **Shadow** is toggled on.
 
 
-2. For the second card visual
+2. For the second visual, we will use another **card** visual
 
-- Click a **card** visual, click the measure called **images** in the **train_images** table
-- You can Format the visual in the **format icon** in the Visualization pane
+    - In the visualizations pane select a **card** visual, then select the measure called **images** in the **train_images** table from the **Data** pane.
+    - Apply the same formatting as the first card visual above to this card visual.
 
+3. For the third visual, we will use a **slicer** visual
 
+    ![dashboard](assets/slicer.png)
 
-3. For Slicers
+    - On the visualizations pane select a **slicer** visual, then select **season[season]** from the **Data** pane.
+    - Select another **slicer** visual on the visualizations pane, then select **Category[name]** from the **Data** pane.
+    - On visualizations pane, navigate to the **Field** property of the second slicer visual and select the drop down arrow and select **Rename for this visual**.
+    - Then change **name** to **Animals**.
+    - On the visualizations pane, select the **format your visual icon** then select the **Visual** tab and expand the **Slicer settings** option then expand **Options** and select **Dropdown** for style. Do this for both slicer visuals.
+    - You can apply formatting for **Effects** to be the same as the **Card** visuals using the **format your visual icon** in the Visualization pane
 
-![dashboard](assets/slicer.png)
+4. Adding a **Clustered bar chart** visual for number of annotations by season
 
-- Click a **slicer** visual, Click **season[season]**
+    ![dashboard](assets/clustered_barchart.png)
 
-- Click another **slicer** visual, Click **Category[name]**
-- In the Field below Visualization, Right click **name**
-- Click **Rename for thsi visual**
-- Change **name** to **Animals**
+    - On the visualizations pane select a **Clustered bar chart** visual, then select **Season[season]** and **train_annotation[annotations]** from the **Data** pane.
+    - On the visualizations pane, select the **format your visual icon** then select the **Visual** tab and expand the **Data labels** option and select **On** for **Data label**.
+    - You can apply formatting for **Effects** to be the same as the **Card** visuals using the **format your visual icon** in the Visualization pane
 
-
-- You can Format the visuals in the **format icon** in the Visualization pane
-
-4. Annotation by Season
-
-![dashboard](assets/clustered_barchart.png)
-
-- Click **Clustered bar chart**
-- Click **season[season]** and **train_annotation[annotations]**
-- You can Format the visual in the **format icon** in the Visualization pane
-
-5. Top Number of Annotations by Animals
-
-- Click **Clustered bar chart**
-- Click **Category[name]** and **train_annotation[annotations]**
-- In the Format Pane, Check the **name**, change **Advanced filtering** to **TopN**
-- Show items , **Top N** and write **5** beside
-- By Value, drag **train_annotation[annotations]** into the blank space
-- you can Format your visual in the **format icon** in the Visualization pane
+5. Adding a **Clustered bar chart** visual for the top 5 number of annotations by animals
+    - On the visualizations pane select a **Clustered bar chart** visual, then select **Category[name]** and **train_annotation[annotations]** from the **Data** pane.
+    - In the Filters pane, select the **name** and change the filter type from **Basic filtering** to **TopN**
+    - For **Show items**, select **Top** and enter the number **5**.
+    - Set the **By value** to **train_annotation[annotations]** by dragging the field into the blank space.
+    - On the visualizations pane, select the **format your visual icon** then select the **Visual** tab and expand the **Data labels** option and select **On** for **Data label**. Then select the **General** tab and expand **Title** then add **Top Number of Annotations by Animals** in the **Text** box.
+    - You can apply formatting for **Effects** to be the same as the **Card** visuals using the **format your visual icon** in the Visualization pane
 
 
-6. Bottom Number of Annotations by Animals
-    - Click **Clustered bar chart**
-    - Click **Category[name]** and **train_annotation[annotations]**
-    - In the Format Pane, Check the **name**, change **Advanced filtering** to **TopN**
-    - Show items , Change **Top** to **Bottom** and **5** beside
-    - By Value, drag **train_annotation[annotations]** into the blank space
-    - you can Format your visual in the **format icon** in the Visualization pane
+6. Adding a **Clustered bar chart** visual for the bottom 5 number of annotations by animals
+    - On the visualizations pane select a **Clustered bar chart** visual, then select **Category[name]** and **train_annotation[annotations]** from the **Data** pane.
+    - On the Filters pane, select the **name** and change the filter type from **Basic filtering** to **TopN**
+    - For **Show items**, change **Top** to **Bottom** and enter the number **5**.
+    - Set the **By value** to **train_annotation[annotations]** by dragging the field into the blank space.
+    - On the visualizations pane, select the **format your visual icon** then select the **Visual** tab and expand the **Data labels** option and select **On** for **Data label**. Then select the **General** tab and expand **Title** then add **Bottom Number of Annotations by Animals** in the **Text** box.
+    - You can apply formatting for **Effects** to be the same as the **Card** visuals using the **format your visual icon** in the Visualization pane
 
-![dashboard](assets/dashboard.png)
+![dashboard](assets/dashboard.jpeg)
 
-Great work in getting to this point. 
+Great work in getting to this point. You can save the report by clicking on the **Save** icon on the top menu bar.
 
 I hope you enjoyed this session, You can explore and build more visualizations with the data based on what you have learnt in this session..
 
@@ -533,17 +530,11 @@ In this section we will learn how to use Apache Spark for data processing and an
 
 ### Creating a Fabric Notebook
 
-To edit and run Spark code in Microsoft Fabric we will use the Notebooks which very similar to Jupyter Notebooks. To create a new Notebook, click on the ```Open Notebook``` from the Lakehouse and from the drop down menu select ```New Notebook```. This will open a new Notebook. On the top right corner of the workspace click on the Notebook name and rename it to ```analyze-and-transform-data```. Click on any empty area to close and rename the Notebook.
+To edit and run Spark code in Microsoft Fabric we will use the Notebooks which very similar to Jupyter Notebooks. To create a new Notebook, click on the ```Open Notebook``` from the Lakehouse and from the drop down menu select ```New Notebook```.
+
+This will open a new Notebook. On the top right corner of the workspace click on the Notebook name and rename it to ```analyze-and-transform-data```. Click on any empty area to close and rename the Notebook.
 
 ![Rename Notebook](assets/analyze-and-transform-data.png)
-
-Before we begin the loading of the data let's install some of the libraries that we'll need.
-
-We will need to install the opencv library using pip. Execute the following code block in the cell to install the opencv library and imutils library which is a set of convenience tools to make working with OpenCV easier.
-
-```python
-%pip install opencv-python imutils
-```
 
 ### Loading data into a Spark Dataframe
 
@@ -552,60 +543,65 @@ To begin we will load the annotations data from the Lakehouse `train_annotations
 
 We'll then filter out the relevant columns that are we need, *i.e season, seq_id, category_id, image_id and date_time* and also need to filter out all records whose *category_id is greater than 1* to exclude all empty and human images which are not relevant for this training.
 
-Finally remove any null values in the `image_id` column and drop any duplicate rows, finally convert the spark dataframe to a pandas dataframe for easier manipulation.
+Finally remove any null values in the `image_id` column and drop any duplicate rows.
 
-Paste the code below into a cell of the Notebook and run it. Update the select query with the name of the your Lakehouse name.
+Paste the code below into a cell of the Notebook and review to understand before you run it. Update the select query with the name of the your Lakehouse name.
 
 ```python
 # Read all the annotations in the train table from the lakehouse
-df = spark.sql("SELECT * FROM DemoLakehouse.train_annotations WHERE train_annotations.category_id > 1")
+df = spark.sql("SELECT * FROM SnapshotSerengeti_LH.train_annotations WHERE train_annotations.category_id > 1")
 
 # filter out the season, sequence ID, category_id snf image_id
 df_train = df.select("season", "seq_id", "category_id", "location", "image_id", "datetime")
 
 # remove image_id wiTH null and duplicates
 df_train = df_train.filter(df_train.image_id.isNotNull()).dropDuplicates()
-
-# convert df_train to pandas dataframe
-df_train = df_train.toPandas()
 ```
 
 ### Analyzing data across seasons
 
-Next we will define a function to plot the number of image sequences in each season. We'll achieve this by using the matplotlib and seaborn libraries.
+Next we'll analyze the number of image sequences across seasons.Add the following code in a new cell in the Notebook, review to understand and run it.
 
 ```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+# Import the required libraries
+from pyspark.sql.functions import split, regexp_replace, col
 
-def plot_season_counts(df, title="Number of Sequences per Season"):
-    # Extract the season from the seq_id column using a lambda function
-    df['season'] = df.seq_id.map(lambda x: x.split('#')[0])
+# This splits the seq_id string at '#' and takes the first part.
+df_train = df_train.withColumn("season_extracted", split(col("seq_id"), "#").getItem(0))
 
-    # Count the number of sequences in each season, and sort the counts by season
-    season_counts = df.season.value_counts().sort_index()
+# Remove the 'SER_' prefix from the extracted season for better readability.
+df_train = df_train.withColumn("season_label", regexp_replace(col("season_extracted"), "SER_", ""))
 
-    # Replace 'SER_' prefix in season labels with an empty string for easy visibility
-    season_labels = [s.replace('SER_', '') for s in season_counts.index]
+# Group by the season_label and count the number of sequences for each season, then order the results.
+df_counts = df_train.groupBy("season_label").count().orderBy("season_label")
 
-    # Create a bar plot where the x-axis represents the season and the y-axis represents the number of sequences in that season
-    sns.barplot(x=season_labels, y=season_counts.values)
-    plt.xlabel('Season')
-    plt.ylabel('Number of sequences')
-    plt.title(title)
-    plt.show()
+# visualize the spark data frame directly in the notebook
+display(df_counts)
 ```
 
-This function takes a single argument `df`, which is the pandas DataFrame containing the `seq_id` column. The function first extracts the season from the `seq_id` column using a lambda function, and then counts the number of sequences in each season using the `value_counts` method of the pandas Series object. The counts are sorted by season using the `sort_index` method.
+Running this cell will output a table with the columns `season_label` and `count`. The `season_label` column contains the season names and the `count` column contains the number of sequences in each season.
 
-We then can call the function and pass the `df_train` dataframe as an argument.
+You can further visualize this using the new rich dataframe chart view. To do this select the `+ New Chart` tab from the display() output widget.
 
-```python
-plot_season_counts(df_train, "Original Number of Sequences per Season")
-```
+![Display Output Widget](assets/display-output-widget.png)
 
-This will plot the number of sequences in each season.
+This opens the rich dataframe chart view from where you can add up to 5 charts in one display() output widget. Learn more about the rich dataframe chart view [here](https://learn.microsoft.com/en-us/fabric/data-engineering/notebook-visualization?WT.mc_id=data-91115-jndemenge).
+
+In the suggested charts, select `Build my own`, in the **Chart settings > Basic** add the following details:
+- **Chart type**: Bar chart
+- **Title**: Original Number of Sequences per Season
+- **Subtitle**: Season 1 to Season 10
+- **X-axis**: season_label
+- **Y-axis**: count
+- **Show Legend**: Toggle off
+- **Series group**: None
+- **Aggregation**: Sum
+- **Stacked**: Toggle off
+- **Aggregate all**: Toggle On
+
+Select the **Chart settings > Advanced**, here toggle the **Show labels** to on. The rest of the settings can be left as they are but you can play around with the settings to see what they do.
+
+Rename the chart to `Sequences per Season` by selecting the ellipses next to the chart name and selecting `Rename`. Close the chart settings to view the full chart. 
 
 ![Original Number of Sequences per Season](assets/Original_Number_of_Sequences_per_Season.png)
 
@@ -618,52 +614,78 @@ Since we are working with camera trap data, it is common to have multiple images
 > A sequence is a group of images captured by a single camera trap in a single location over a short period of time. The images in a sequence are captured in rapid succession, and are often very similar to each other.
 </div>
 
-We can visualize the number of images we have for each sequence and after executing the code snippet below you will notice that by far most sequences have between 1 and 3 images in them.
+We can visualize the number of images we have for each sequence and after running the code snippet below you will notice that by far most sequences have between 1 and 3 images in them.
 
 ```python
-# Create the count plot
-ax = sns.countplot(x=df_train.groupby('seq_id').size(), log=True)
+from pyspark.sql import functions as F
 
-# Set the title and axis labels
-ax.set_title('Number of images in each sequence')
-ax.set_xlabel('Number of images')
-ax.set_ylabel('Count of sequences')
+# Compute the number of images per sequence.
+seq_counts = df_train.groupBy("seq_id").count()
 
-# Show the plot
-plt.tight_layout()
-plt.show()
+# Aggregate the data: group by the image count and count how many sequences have that count.
+sequence_length_counts = (seq_counts
+    .groupBy("count")
+    .agg(F.count("seq_id").alias("Count of sequences"))
+    .withColumnRenamed("count", "Number of images")
+    .orderBy(F.col("Number of images"))
+)
+
+# visualize the spark data frame directly in the notebook
+display(sequence_length_counts)
 ```
 
-Next we will load the category names from the Categories table in the lakehouse. We'll then convert the spark dataframe to a pandas dataframe.
+Next we will load the category names from the Categories table in the Lakehouse. We'll then add a new column called *label* in the df_train dataframe which is the category name for each category_id and finally remove the category_id column from df_train and rename the image_id column to filename and append the .JPG extension. 
 
-Next the add a new column called *label* in the df_train dataframe which is the category name for each category_id and finally remove the category_id column from df_train and rename the image_id column to filename and append the .JPG extension to the the values
+We achieve this by defining a function called `transform_image_data` which takes the dataframe and the categories dataframe as input and returns the transformed dataframe. This function will be reused later to perform the same transformation on the test data.
 
 ```python
-import numpy as np
+from pyspark.sql.functions import concat, lit
 
-# Load the Categories DataFrame into a pandas DataFrame
-category_df = spark.sql("SELECT * FROM DemoLakehouse.categories").toPandas()
+def transform_image_data(df, categories_df):
+    """
+    Joins the input DataFrame with the categories DataFrame, renames columns,
+    and appends a '.JPG' extension to the filename column.
+    """
+    # Join on category_id to map category names. The join brings the category name as "name", which we then rename to "label".
+    df = df.join(
+        categories_df.select(col("id").alias("category_id"), col("name")),
+        on="category_id",
+        how="left"
+    ).withColumnRenamed("name", "label")
 
-# Map category IDs to category names using a vectorized approach
-category_map = pd.Series(category_df.name.values, index=category_df.id)
-df_train['label'] = category_map[df_train.category_id].values
+    # Drop the 'category_id' column
+    df = df.drop("category_id")
 
-# Drop the category_id column
-df_train = df_train.drop('category_id', axis=1)
+    # Rename 'image_id' to 'filename'
+    df = df.withColumnRenamed("image_id", "filename")
 
-# Rename the image_id column to filename
-df_train = df_train.rename(columns={'image_id': 'filename'})
+    # Append '.JPG' to the filename
+    df = df.withColumn("filename", concat(col("filename"), lit(".JPG")))
 
-# Append the .JPG extension to the filename column
-df_train['filename'] = df_train.filename + '.JPG'
+    return df
+
+# Load the categories table as a Spark DataFrame
+categories_df = spark.sql("SELECT * FROM SnapshotSerengeti_LH.categories")
+
+# Apply trsnaformation for image data
+df_train = transform_image_data(df_train, categories_df)
 ```
 
 Since we are working with a sequence of images we will pick the first image from each sequence, with the assumption that the time period after a camera trap is triggered is the most likely time for an animal to be in the frame.
 
 ```python
-# reduce to first frame only for all sequences
-df_train = df_train.sort_values('filename').groupby('seq_id').first().reset_index()
+from pyspark.sql.window import Window
+from pyspark.sql.functions import row_number
 
+# Define a window partitioned by seq_id and ordered by filename
+windowSpec = Window.partitionBy("seq_id").orderBy("filename")
+
+# Assign a row number to each row within its sequence, filter for the first frame, then drop the helper column.
+df_train = df_train.withColumn("row_num", row_number().over(windowSpec)) \
+                   .filter(col("row_num") == 1) \
+                   .drop("row_num")
+
+# Count the rows in the resulting DataFrame
 df_train.count()
 ```
 
@@ -671,22 +693,27 @@ The `df_train.count()` method returns the number of rows in the dataframe. Which
 
 ### Analyzing the image labels
 
-Now that we have handled the image sequences, we will now analyze the labels and as well plot the distribution of labels in the dataset. To do this execute the code snippet below.
+Now that we have handled the image sequences, we will now analyze the labels and display the distribution of labels in the dataset. To do this run the code snippet below in a new cell. 
 
 ```python
-# Create a horizontal bar plot where the y-axis represents the label and the x-axis represents the number of images with that label
-plt.figure(figsize=(8, 12))
-sns.countplot(y='label', data=df, order=df_train['label'].value_counts().index)
-plt.xlabel('Number of images')
-plt.ylabel('Label')
+# Create a new DataFrame that counts the number of images per label
+label_counts = df_train.groupBy("label").count().orderBy(col("count").desc())
 
-# Set the x-axis scale to logarithmic
-plt.xscale('log')
+# Rename the columns for better readability and visualization
+label_counts = label_counts.withColumnRenamed("label", "Label") \
+                           .withColumnRenamed("count", "Number of images")
 
-plt.show()
+# Visualize the label counts
+display(label_counts)
 ```
 
-The scale of the x-axis is set to logarithmic to make it easier to read the labels and normalize the distribution. Each bar represents the number of images with that label.
+Create a new bar chart using the rich dataframe chart view, set the X-axis to `Label` and the Y-axis to `Number of images`. Set the chart type to `Bar chart` and set the title to `Distribution of Labels`. In the advanced settings, under **Y-axis > Scale**, set it to `Logarithmic`.
+
+The scale of the Y-axis is set to logarithmic to make it easier to read the labels and normalize the distribution. Each bar represents the number of images with that label.
+
+You can configure the other chart settings as desired. Close the chart settings to view the full chart.
+
+![Distribution of Labels](assets/Distribution_of_Labels.png)
 
 ### Transforming the dataframe
 
@@ -696,36 +723,47 @@ To do this we will define a function that takes a filename as the input and retu
 
 ```python
 def get_ImageUrl(filename):
-    return f"https://lilablobssc.blob.core.windows.net/snapshotserengeti-unzipped/{filename}"
+    return f"https://lilawildlife.blob.core.windows.net/lila-wildlife/snapshotserengeti-unzipped/{filename}"
 ```
 
-This function is then applied to the `filename` column of the `df_train` dataframe to create a new column called `image_url` which contains the url of the image.
+We then create a Spark UDF from the `get_ImageUrl` function and apply it to the filename column of a Spark DataFrame to generate a new column, image_url that contains the complete URL for each image.
+
+This function is then applied to the `filename` column of the `df_train` dataframe.
 
 ```python
-df_train['image_url'] = df_train['filename'].apply(get_ImageUrl)
+from pyspark.sql.functions import udf
+from pyspark.sql.types import StringType
+
+# Create a UDF from the function
+get_ImageUrl_udf = udf(get_ImageUrl, StringType())
+
+# Apply the UDF to create the image_url column
+df_train = df_train.withColumn("image_url", get_ImageUrl_udf(col("filename")))
 ```
 
 We can test this by selecting a random image and displaying it. To do this define the following two functions:
 
 ```python
 import urllib.request
+import matplotlib.pyplot as plt
 
 def display_random_image(label, random_state, width=500):
-    # Filter the DataFrame to only include rows with the specified label
-    df_filtered = df_train[df_train['label'] == label]
+    # Filter the Spark DataFrame to only include rows with the specified label,
+    # then order randomly (using the provided seed) and select one row.
+    row = df_train.filter(col("label") == label) \
+                  .orderBy(F.rand(random_state)) \
+                  .limit(1) \
+                  .collect()[0]
     
-    # Select a random row from the filtered DataFrame
-    row = df_filtered.sample(random_state=random_state).iloc[0]
-    
-    # Load the image from the URL and display it
-    url = row['image_url']
+    # Get the image URL from the selected row and display the image
+    url = row["image_url"]
     download_and_display_image(url, label)
 
-# use matplotlib to display the image
 def download_and_display_image(url, label):
     image = plt.imread(urllib.request.urlopen(url), format='jpg')
     plt.imshow(image)
     plt.title(f"Label: {label}")
+    plt.axis('off')
     plt.show()
 ```
 
@@ -750,129 +788,158 @@ Now that we have successfully analyzed the data and performed some transformatio
 
 ### Proportional allocation of the dataset
 
-We will select a subset of the data from the main dataset in a way that maintains the same proportions of the `label`, `season` and `location`.
+We will select a subset of the data from the main dataset in a way that maintains the same distribution of the `label`, `season` and `location`.
 
-To do this define a function that takes in the dataset as an input and a percentage and it calculates how many data points to be included based on that percentage.
-
-```python
-def proportional_allocation_percentage(data, percentage):
-    # Calculate the count of the original sample
-    original_count = len(data)
-
-    # Calculate the count of the sample based on the percentage
-    sample_count = int((percentage / 100) * original_count)
-
-    # Perform proportional allocation on the calculated sample count
-    return proportional_allocation(data, sample_count)
-```
-
-Notice that this function uses another function to perform the actual proportional allocation.
+To do this we define a function called `proportional_allocation_percentage` that takes the dataset and a percentage as input and the performs proportional allocation of the dataset. 
 
 ```python
-def proportional_allocation(data, sample_size):
-    # Group the data by "label", "season", and "location" columns
-    grouped_data = data.groupby(["label", "season", "location"])
+def proportional_allocation_percentage(df, percentage):
+    """
+    Proportionally allocate a sample of 'percentage'% of df across label, season, location
+    """
+    # Determine the total number of rows and desired sample size
+    total_count = df.count()
+    sample_size = int(round(total_count * (percentage / 100.0)))
 
-    # Calculate the proportion of each group in the original sample
-    proportions = grouped_data.size() / len(data)
+    # Compute group counts
+    group_counts = (
+        df.groupBy("label", "season", "location")
+          .count()  # number of rows in each group
+          .withColumnRenamed("count", "group_count")
+    )
 
-    # Calculate the count of each group in the sample based on proportions
-    sample_sizes = np.round(proportions * sample_size).astype(int)
+    # Compute the proportion of each group, then approximate "sample_needed" via rounding
+    group_counts = (
+        group_counts
+        .withColumn("proportion", F.col("group_count") / F.lit(total_count))
+        .withColumn("sample_needed", F.round(F.col("proportion") * sample_size).cast("int"))
+    )
 
-    # Calculate the difference between the desired sample size and the sum of rounded sample sizes
-    size_difference = sample_size - sample_sizes.sum()
+    #  Collect just the group-level info to the driver for fine-grained adjustment
+    group_counts_pd = group_counts.select(
+        "label", "season", "location", "group_count", "sample_needed", "proportion"
+    ).toPandas()
 
-    # Adjust the sample sizes to account for the difference
-    if size_difference > 0:
-        # If there is a shortage of items, allocate the additional items to the groups with the largest proportions
-        largest_proportions = proportions.nlargest(size_difference)
-        for group in largest_proportions.index:
-            sample_sizes[group] += 1
-    elif size_difference < 0:
-        # If there is an excess of items, reduce the sample sizes from the groups with the smallest proportions
-        smallest_proportions = proportions.nsmallest(-size_difference)
-        for group in smallest_proportions.index:
-            sample_sizes[group] -= 1
+    # Sum of "sample_needed" might not equal the total desired sample_size due to rounding
+    current_sum = group_counts_pd["sample_needed"].sum()
+    difference = sample_size - current_sum
 
-    # Initialize an empty list to store the sample
-    sample_data = []
+    if difference > 0:
+        # If we're short, we add +1 to the groups with the largest proportions until we fix the difference
+        # Sort descending by proportion
+        group_counts_pd = group_counts_pd.sort_values("proportion", ascending=False)
+        for i in range(difference):
+            group_counts_pd.iat[i, group_counts_pd.columns.get_loc("sample_needed")] += 1
+        # Re-sort back if desired
+        group_counts_pd = group_counts_pd.sort_values(["label", "season", "location"])
+    elif difference < 0:
+        # If we have too many, subtract 1 from the groups with the smallest proportions
+        # Sort ascending by proportion
+        group_counts_pd = group_counts_pd.sort_values("proportion", ascending=True)
+        for i in range(abs(difference)):
+            group_counts_pd.iat[i, group_counts_pd.columns.get_loc("sample_needed")] -= 1
+        # Re-sort back if desired
+        group_counts_pd = group_counts_pd.sort_values(["label", "season", "location"])
 
-    # Iterate over each group and randomly sample the required count
-    for group, count in zip(grouped_data.groups, sample_sizes):
-        indices = grouped_data.groups[group]
-        sample_indices = np.random.choice(indices, size=count, replace=False)
-        sample_data.append(data.loc[sample_indices])
+    # Create a Spark DataFrame of the final sample allocations
+    allocations_sdf = spark.createDataFrame(group_counts_pd)
 
-    # Concatenate the sampled dataframes into a single dataframe
-    sample_data = pd.concat(sample_data)
+    #  Join the allocations back to the main DataFrame so each row knows how many rows 
+    #    from its group we want to keep
+    df_joined = (
+        df.join(
+            F.broadcast(allocations_sdf),
+            on=["label", "season", "location"],
+            how="left"
+        )
+    )
 
-    # Reset the index of the sample DataFrame
-    sample_data.reset_index(drop=True, inplace=True)
+    # Use a row_number partitioned by (label, season, location) to limit how many rows per group
+    window_spec = Window.partitionBy("label", "season", "location").orderBy(F.monotonically_increasing_id())
+    df_with_rn = df_joined.withColumn("rn", F.row_number().over(window_spec))
 
-    return sample_data
+    # Filter out rows where 'rn' exceeds 'sample_needed'
+    df_sample = df_with_rn.filter(F.col("rn") <= F.col("sample_needed"))
+
+    # Drop helper columns if you don't need them in the final result
+    df_sample = df_sample.drop("proportion", "group_count", "sample_needed", "rn")
+
+    return df_sample
 ```
 
-This second function, groups the data based on the `label`, `season` and `location` columns and calculates the proportion of each group in the original sample. It then calculates the count of each group in the sample based on proportions.
+This function works by first determining the total number of rows in the dataframe and the desired sample size based on the percentage provided. It then computes the group counts for each combination of `label`, `season`, and `location` and calculates the proportion of each group. The function then adjusts the sample size to ensure that it matches the desired sample size.
 
-It also  adjusts the sample sizes if necessary to make sure the total sample size matches the desired count. Finally, it randomly selects the appropriate number of data points from each group and returns the resulting sample, which is a smaller dataset that represents the original dataset's proportions accurately.
+Finally, it filters the original dataframe to include only the rows that are needed for the sample.
 
-For purposes of this demo we we will use `0.05%` of the original dataset.
+
+For purposes of this demo we we will use `0.05%` of the original dataset, but you can adjust the percentage to any value you want.
 
 ```python
 percent = 0.05
 sampled_train = proportional_allocation_percentage(df_train, percent)
-plot_season_counts(sampled_train, f"{percent}% Sample from Original Number of Sequences per Season")
+
+# Group by the season_label and count the number of sequences for each season, then order the results.
+df_sampled_train_counts = sampled_train.groupBy("season_label").count().orderBy("season_label")
+
+# visualize the spark data frame directly in the notebook
+display(df_sampled_train_counts)
 ```
-The image below shows a side by side comparison of the output from the execution of the `plot_season_counts` function on the original dataset and the sampled dataset above.
+The image below shows a side by side comparison of the rich dataframe chart view of the original dataset and the sampled dataset. You can see that the distribution of the labels is similar in both datasets. 
 
 ![sampled](assets/sample.png)
 
+Create your own chart using the rich dataframe chart view to visualize the sampled dataset and compare it with the original dataset.
 
 ### Define functions to download images
 
 Now that we have a sampled dataset, we will download the images into the lakehouse.
 
-To do, we will be using the opencv library to download the images. Define a function that takes in the url of the image and the path to download the image to.
+To do this, define a function that takes in the url of the image and the path to download the image to.
 
 ```python
 import urllib.request
-import cv2
-import imutils
+from PIL import Image
+import os
 
 def download_and_resize_image(url, path, kind):
     filename = os.path.basename(path)
     directory = os.path.dirname(path)
 
+    # Define a new directory path where permission is granted
     directory_path = f'/lakehouse/default/Files/images/{kind}/{directory}/'
 
     # Create the directory if it does not exist
     os.makedirs(directory_path, exist_ok=True)
 
-    # check if file already exists
-    if os.path.isfile(os.path.join(directory_path, filename)):
+    # Define the full target file path
+    target_file_path = os.path.join(directory_path, filename)
+
+    # Check if file already exists
+    if os.path.isfile(target_file_path):
         return
 
     # Download the image
-    urllib.request.urlretrieve(url, filename)
+    urllib.request.urlretrieve(url, target_file_path)
 
-    # Read the image using OpenCV
-    img = cv2.imread(filename)
+    # Open the image using PIL
+    img = Image.open(target_file_path)
 
-    # Resize the image to a reasonable ML training size using imutils
-    resized_img = imutils.resize(img, width=224, height=224, inter=cv2.INTER_AREA)
+    # Resize the image to a reasonable ML training size
+    resized_img = img.resize((224, 224), Image.ANTIALIAS)
 
     # Save the resized image to a defined filepath
-    cv2.imwrite(os.path.join(directory_path, filename), resized_img)
+    resized_img.save(target_file_path)
 ```
 
 The kind parameter is used to define whether the image is a training image or a validation/testing image.
 
-We are going to use this `download_and_resize_image` function in another function that will execute the download in parallel using the `concurrent.futures` library.
+We are going to use this `download_and_resize_image` function in another function that will execute the download in parallel using the `concurrent.futures` library. For simplicity, we'll convert the spark dataframe to a Pandas dataframe because it is small enough to fit into memory.
 
 ```python
 import concurrent.futures
 
-def execute_parallel_download(df, kind):
+def execute_parallel_download(spark_df, kind):
+    df = spark_df.toPandas()
     # Use a process pool instead of a thread pool to avoid thread safety issues
     with concurrent.futures.ProcessPoolExecutor() as executor:
         # Batch process images instead of processing them one at a time
@@ -888,25 +955,18 @@ def execute_parallel_download(df, kind):
 Next we will prepare the test data in the same way we have the train data then download both the train and test images.
 
 ```python
-df = spark.sql("SELECT * FROM DemoLakehouse.test_annotations WHERE test_annotations.category_id > 1")
+df_test = spark.sql("SELECT * FROM SnapshotSerengeti_LH.test_annotations WHERE test_annotations.category_id > 1")
 
-df_test = df.select("season", "seq_id", "category_id", "location", "image_id", "datetime")
 
-df_test= df_test.filter(df_test.image_id.isNotNull()).dropDuplicates()
+df_test = (
+    df_test
+    .filter(df_test.image_id.isNotNull())
+    .dropDuplicates()
+    .withColumn("season_extracted", split(col("seq_id"), "#").getItem(0))
+    .withColumn("season_label", regexp_replace(col("season_extracted"), "SER_", "")))
 
-df_test = df_test.toPandas()
-
-df_test['label'] = category_map[df_test.category_id].values
-
-df_test = df_test.drop('category_id', axis=1)
-
-df_test = df_test.rename(columns={'image_id':'filename'})
-
-df_test['filename'] = df_test.filename+ '.JPG'
-
-df_test = df_test.sort_values('filename').groupby('seq_id').first().reset_index()
-
-df_test['image_url'] = df_test['filename'].apply(get_ImageUrl)
+df_test = transform_image_data(df_test, categories_df)
+df_test = df_test.withColumn("image_url", get_ImageUrl_udf(col("filename")))
 
 sampled_test = proportional_allocation_percentage(df_test, 0.27)
 ```
@@ -915,7 +975,7 @@ From this code snippet we create a test set using `0.27%` from the original test
 
 ### Download the images
 
-Next we execute the download of the images: this will take approximately 10 minutes to complete.
+Next we execute the download of the images: this will take approximately 3-5 minutes to complete for the 0.05% of the training dataset and 0.27% of the test dataset.
 
 ```python
 import os
@@ -924,18 +984,39 @@ execute_parallel_download(sampled_train, 'train')
 execute_parallel_download(sampled_test, 'test')
 ```
 
-### Save the sampled dataframes to parquet files
-
-Once the download is complete we will then save the sampled train and test dataframes to parquet files in the lakehouse, for use in the next section. We drop all the columns except the filename and label columns, since these are the only required columns for training the model.
+Run the code below to confirm that all the images have been downloaded successfully.
 
 ```python
-data_dir = '/lakehouse/default/Files/data/'
+import os
 
-train_data_file = os.path.join(data_dir, 'sampled_train.parquet')
-test_data_file = os.path.join(data_dir, 'sampled_test.parquet')
+def list_all_files(directory):
+    file_list = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_list.append(os.path.join(root, file))
+    return file_list
 
-sampled_train.loc[:, ['filename', 'label']].to_parquet(train_data_file, engine='pyarrow', compression='snappy')
-sampled_test.loc[:, ['filename', 'label']].to_parquet(test_data_file, engine='pyarrow', compression='snappy')
+train_images_path = f"/lakehouse/default/Files/images/train/"
+test_images_path =  f"/lakehouse/default/Files/images/test/"
+
+print(f"{len(list_all_files(train_images_path))} files downloaded out of {sampled_train.count()}")
+print(f"{len(list_all_files(test_images_path))} files downloaded out of {sampled_test.count()}")
+```
+
+Ensure that you have all images downloaded successfully before proceeding. 
+
+### Save the sampled dataframes to parquet files
+
+Once the download is complete we will then save the sampled train and test dataframes to delta tables in the lakehouse, for use in the next section. We drop all the columns except the filename and label columns, since these are the only required columns for training the model.
+
+```python
+# Drop all columns except filename and label and save to a delta table for train data
+sampled_train.select("filename", "label")\
+    .write.saveAsTable("sampled_train", mode="overwrite", overwriteSchema="true")
+
+# Drop all columns except filename and label and save to a delta table for test data
+sampled_test.select("filename", "label")\
+    .write.saveAsTable("sampled_test", mode="overwrite", overwriteSchema="true")
 ```
 
 You can view the saved parquet files from the Lakehouse explorer.
@@ -952,27 +1033,11 @@ This section covers preparing out data and training a deep learning model on the
 
 ### Load the sample dataset
 
-From the previous section, our images are already loaded in the lakehouse as `parquet` files contains image details including filename and labels. First we convert the parquet files to Delta tables. In machine learning, Delta tables can be used to store training data for machine learning models, allowing us to easily update the data and retrain the model.
+From the previous section, we have successfully downloaded the images into the Lakehouse and saved the sampled train and test dataframes to delta tables in the lakehouse. We will now load the sampled train and test dataframes from the lakehouse into a new notebook.
 
-![Converting parquet files to delta tables](assets/data_to_delta_tables.png)
-To convert our data from parquet to delta files we:
+To do this, create a new notebook and rename it to `train-model`.
 
-1. Go to our Lakehouse
-1. In the Lakehouse, click on `data`
-1. Right click on the train and test parquet files. You will do this for both `sample_test.parquet` and `sample_train.parquet`
-1. Select **load to Tables** then **create a new table.**
-1. Finally, you will see our new delta files in the LakeHouse as shown below:
-![Output of our delta files](assets/data_to_delta_tables_output.png)
-
- Next, create a new notebook and rename it to `train-model` as described in the previous section.
-
-Before we continue loading our data, we will first install the two libraries we need to train our data using `pip install`. We will be training our model using [Pytorch](https://pytorch.org) which requires two libraries: torch and torchvision. `torch` is the main PyTorch package that provides the core functionality for working with tensors, building neural networks, and training models. `torchvision` is a package that provides tools and utilities for working with computer vision tasks, such as image classification and object detection.
-
-We will have to install the libraries separately. To install torch we run the command below:
-
-```python
-%pip install torch
-```
+Before we continue loading our data, we will first install the two libraries we need to train our data using `pip install`. We will be training our model using [Pytorch](https://pytorch.org) which requires two libraries: torch and torchvision. `torch` is the main PyTorch package that provides the core functionality for working with tensors, building neural networks, and training models. `torchvision` is a package that provides tools and utilities for working with computer vision tasks, such as image classification and object detection. PyTorch is already built into the Fabric environment, so we only need to install torchvision.
 
 To install torchvision we run the command below:
 
@@ -983,20 +1048,19 @@ To install torchvision we run the command below:
 As our datasets are now as delta files, we load our data and convert it to a Pandas dataframe to easily manipulate and visualize our data with inbuilt Pandas tools starting with the train files:
 
 ```python
-# load our data 
-train_df = spark.sql("SELECT * FROM DemoLakehouse.sampled_train LIMIT 1000")
-
-# import pandas library that will convert our dataset into dataframes
 import pandas as pd
+
+# load our data 
+train_df = spark.sql("SELECT * FROM SnapshotSerengeti_LH.sampled_train")
 
 # convert train_df to pandas dataframe
 train_df = train_df.toPandas()
 ```
 
-Lastly, we convert our file name to read the image URL as follows:
+Lastly, we will create a new column in the dataframe that has the full path to the image on the Lakehouse. 
 
 ```python
-# Create a new column in the dataframe to apply to the filename column tor read the image URL
+# Create a new column in the dataframe 
 train_df['image_url'] = train_df['filename'].apply(lambda filename: f"/lakehouse/default/Files/images/train/{filename}")
 
 train_df.head()
@@ -1026,12 +1090,12 @@ train_df['labels'] = le.transform(train_df['label'])
 
 <div class="important" data-title="Test Dataset">
 
-> Ensure you repeat the process for test dataset, by droping the filename column and merge the two dataframes using `pd.concat()` as follows:
+> Ensure you repeat the process for test dataset, by dropping the filename column and merge the two dataframes using `pd.concat()` as follows:
 </div>
 
 ```python
 # Repeat the process for the test dataset
-test_df = spark.sql("SELECT * FROM DemoLakehouse.sampled_test LIMIT 1000")
+test_df = spark.sql("SELECT * FROM SnapshotSerengeti_LH.sampled_test")
 
 # convert test_df to pandas dataframe
 test_df = test_df.toPandas()
@@ -1146,12 +1210,15 @@ After this code is executed, the `model` object will be a pre-trained DenseNet 2
 
 ```python
 import torchvision
+import torch
 import torch.nn as nn
+from torchvision.models import DenseNet201_Weights
 
 # load the pre-trained DenseNet 201 model
-model = torchvision.models.densenet201(pretrained=True)
+model = torchvision.models.densenet201(weights=DenseNet201_Weights.IMAGENET1K_V1)
 num_ftrs = model.classifier.in_features
 model.classifier = nn.Linear(num_ftrs, 53)
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 ```
@@ -1162,6 +1229,7 @@ We use the cross-entropy loss function and the Adam optimizer to train the model
 
 ```python
 import torch.optim as optim
+
 # define the loss function
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
@@ -1286,11 +1354,32 @@ for batch_idx, (x, target) in enumerate(test_loader):
 Model evaluation results gives out the epochs, batch index, test loss and model accuracy. To increase our model accuracy, we may need to include more images to our train and test set:
 ![model_evaluation](assets/model_evaluation.png)
 
-Next, we test our model with a single image. We use the `PIL` library to load an image from a file as shown below:
+Next, we test our model with a single image. We use the `PIL` library to load an image from a file as shown below. We'll select a random image from the test dataset and load it using the `PIL` library. `
 
 ```python
+import random
+
+def get_random_jpg_path(root_dir):
+    # Define the image file extension for JPG files (case-insensitive)
+    jpg_extension = '.jpg'
+    jpg_paths = []
+    
+    # Walk through the directory tree
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        for filename in filenames:
+            if filename.lower().endswith(jpg_extension):
+                full_path = os.path.join(dirpath, filename)
+                jpg_paths.append(full_path)
+    
+    # Return a random JPG image if any are found, else return None
+    if jpg_paths:
+        return random.choice(jpg_paths)
+    else:
+        return None
+
 # Load a new image from the test data using Pillow
-image = Image.open('/lakehouse/default/Files/images/test/SER_S11/B03/B03_R1/SER_S11_B03_R1_IMAG1021.JPG')
+random_image_path = "/lakehouse/default/Files/images/test"
+image = Image.open(get_random_jpg_path(random_image_path))
 image
 ```
 
@@ -1347,11 +1436,12 @@ This concludes our workshop. The next section covers all the resources you will 
 ## Appendix
 
 ### Importing Notebook into the Workspace
-To import an existing notebook into the workspace, on the bottom left of your workspace switch to the `Data Engineering` workload. In the page that appears click on `Import Notebook` then click the `Upload` button on the pane that opens.
+
+To import an existing notebook into the workspace, on the top menu bar in your workspace, select the `->| Import` drop down, then select `Notebook` ==> `From this computer`. A pane opens on the right side of the screen, select the `Upload` button, browse to the location of the notebook you want to import and select it.
 
 ![Importing Notebook](assets/import_notebook.png)
 
-Select the notebook you want to import. After successful import, navigate back to your workspace and you will find the recently imported notebook. 
+After successful import, navigate back to your workspace and you will find the recently imported notebook. 
 
 Open the notebook and if the Lakehouse explorer indicates that `Missing Lakehouse`, click on the arrows to the left of the error and on the dialog that appears click on `Add Lakehouse`.
 
