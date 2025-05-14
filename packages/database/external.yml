@@ -98,7 +98,7 @@
   url: https://aka.ms/aks-workshop
   github_url: https://github.com/lgmorand/aks-workshop
   language: en
-  last_updated: 2023-02-23
+  last_updated: 2025-02-23
   type: workshop
   description: In this lab, you’ll go through tasks that will help you master the basic and more advanced topics required to deploy a containerized application to Kubernetes on Azure Kubernetes Service (AKS).
   authors:
@@ -118,7 +118,7 @@
   url: https://aka.ms/aca-workshop
   github_url: https://github.com/lgmorand/workshop-aca
   language: en
-  last_updated: 2023-02-23
+  last_updated: 2025-04-24
   type: workshop
   description: In this Hands-on Lab, you’ll go through tasks that will help you master the basics and more advanced topics required to deploy applications to Azure Container Apps.
   authors:
