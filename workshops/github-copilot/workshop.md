@@ -1,5 +1,5 @@
 ---
-published: true
+published: false
 type: workshop
 title: Product Hands-on Lab - GitHub Copilot, your new AI pair programmer  
 short_title: GitHub Copilot, your new AI pair programmer
