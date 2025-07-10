@@ -618,3 +618,21 @@
   banner_url: https://raw.githubusercontent.com/philess/GHCopilotHoL/main/assets/banner.jpg
   tags: JavaScript, .net, GitHub, IA, Copilot, AI, csu
   navigation_levels: 3
+
+- title: AKS intro for infra teams
+  description: This is a workshop for getting started with Azure AKS for the infrastructure teams focusing on infra and network concepts.
+  url: https://microsoft.github.io/moaw/workshop/gh:HoussemDellai/aks-intro-for-infra-teams/main/docs/
+  language: en
+  last_updated: 2025-07-09
+  type: workshop
+  level: beginner
+  github_url: https://github.com/HoussemDellai/aks-intro-for-infra-teams
+  authors:
+    - Houssem Dellai                          
+  contacts:
+    - houssem.dellai@microsoft.com
+  banner_url: https://banner.url
+  video_url: https://www.youtube.com/watch?v=vV6TeUSlmvc&list=PLpbcUe4chE79sB7Jg7B4z3HytqUUEwcNE&index=24
+  duration_minutes: 180
+  audience: students, infra, dev
+  tags: aks, azure, containers, network, infra
