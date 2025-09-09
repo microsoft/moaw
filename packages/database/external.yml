@@ -636,3 +636,20 @@
   duration_minutes: 180
   audience: students, infra, dev
   tags: aks, azure, containers, network, infra
+
+  title: Fabric Real-Time Intelligence Workshop
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/fabconrtiworkshop/main/docs/
+  github_url: https://github.com/microsoft/FabConRTIWorkshop/
+  language: en
+  last_updated: 2025-09-09
+  type: workshop
+  description:  In this technical workshop, you will build multiple event-driven patterns with streaming data using Microsoft Fabric Real-Time Intelligence components and other features of Microsoft Fabric. This is a proctor led worksop in which each section is accompanied by a technical overview of Fabric RTI components.
+  authors:
+  - Devang Shah
+  - Sander van de Velde
+  contacts:
+    - "@shahdevangp"
+  duration_minutes: 360
+  audience: students, pro devs, data engineers, data architects, analysts
+  level: intermediate
+  tags: fabric, kql, realtime, intelligence, event, stream, sql, data, analytics, kusto, medallion, dashboard, reflex, activator
