@@ -636,3 +636,23 @@
   duration_minutes: 180
   audience: students, infra, dev
   tags: aks, azure, containers, network, infra
+
+- title: Product Hands-on Lab - Azure Managed Redis in the Azure World
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-azure-managed-redis/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-azure-managed-redis
+  language: en
+  last_updated: 2025-09-25
+  type: workshop
+  description:  This workshop will show you how Azure Managed Redis is integrated with other Azure Services.
+  authors:
+    - Damien Aicheh
+    - Julien Strebler
+    - Iheb Khemissi
+  contacts:
+    - "@damienaicheh"
+    - "@justrebl"
+    - "@ikhemissi"
+  duration_minutes: 360
+  audience: students, pro devs
+  level: beginner
+  tags: azure, managed redis, database, serverless, apim, cache, csu
