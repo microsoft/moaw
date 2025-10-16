@@ -8,6 +8,24 @@
 # - last_updated: Required. The last update date of the workshop (YYYY-MM-DD)
 # - github_url: Optional. The URL of the workshop's GitHub repository
 # ****************************************************************************
+- title: Azure Container Apps beginners workshop
+  description: This is a workshop for getting started with Azure Container Apps. It builds on the simple labs to discover different aspects of ACA, requiring a simple environment setup.
+  url: https://moaw.dev/workshop/?src=gh:yelghali/azure-container-apps-lab-beginners/main/docs/
+  language: en
+  last_updated: 2025-10-06
+  type: workshop
+  level: beginner
+  github_url: https://github.com/yelghali/azure-container-apps-lab-beginners
+  authors:
+    - Abdoul-Hakim Afraitane
+    - Yassine El Ghali
+  contacts:
+    - '@akafraitane'
+    - '@yelghali'
+  duration_minutes: 300
+  audience: students, pro devs
+  tags: aca, api, container, beginner
+
 - title: Azure Confidential Computing powered by AMD SEV-SNP - Workshop
   description: In this technical workshop, you will gain a comprehensive understanding of Azure's Confidential Computing capabilities powered by AMD SEV-SNP.
   url: https://aka.ms/Azure-CC-AMD-Workshop
@@ -25,7 +43,6 @@
   duration_minutes: 300
   audience: students, pro devs
   tags: Security, Confidential Computing
-
 
 - title: Azure Blinking IoT Compressor
   url: https://iot-workshop.maneu.fr/
