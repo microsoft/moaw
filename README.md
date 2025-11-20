@@ -1,3 +1,9 @@
+> [!IMPORTANT]
+> The **moaw.dev** domain name will be let go in 2027, and the website will fall back to the regular http://microsoft.github.io/moaw/ URL.
+> **Make sure that all your workshop URLs use the https://aka.ms/moaw shortlink** to avoid any disruption in the transition!
+
+---
+
 # 🌳 The Mother Of All Workshops (MOAW)
 
 [![Open in Visual Studio Code](https://img.shields.io/static/v1?logo=visualstudiocode&label=&message=Open%20in%20VS%20Code&labelColor=2c2c32&color=007acc&logoColor=007acc)](https://github.dev/microsoft/moaw)
