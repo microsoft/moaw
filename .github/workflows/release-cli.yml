@@ -8,6 +8,7 @@ concurrency:
   group: "release-cli"
 
 permissions:
+  id-token: write
   contents: write
   issues: write
   pull-requests: write
@@ -28,8 +29,7 @@ jobs:
     - run: cd packages/cli && npx semantic-release-monorepo
       if: success()
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # Need owner/admin account to bypass branch protection
         GIT_COMMITTER_NAME: sinedied
         GIT_COMMITTER_EMAIL: noda@free.fr
