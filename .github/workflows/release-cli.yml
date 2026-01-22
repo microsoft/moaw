@@ -8,6 +8,7 @@ concurrency:
   group: "release-cli"
 
 permissions:
+  id-token: write
   contents: write
   issues: write
   pull-requests: write
@@ -22,14 +23,13 @@ jobs:
         persist-credentials: false
     - uses: actions/setup-node@v4
       with:
-        node-version: 22
+        node-version: 24
     - run: npm ci
     - run: npm run build:cli
     - run: cd packages/cli && npx semantic-release-monorepo
       if: success()
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         # Need owner/admin account to bypass branch protection
         GIT_COMMITTER_NAME: sinedied
         GIT_COMMITTER_EMAIL: noda@free.fr

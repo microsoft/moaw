@@ -1,6 +1,6 @@
 {
   "name": "@moaw/cli",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Command line tool to create, preview and export workshops using MOAW platform",
   "type": "module",
   "repository": {
@@ -33,7 +33,7 @@
     "@types/node": "^18.14.1",
     "@types/update-notifier": "^6.0.2",
     "semantic-release": "^24.0.0",
-    "semantic-release-npm-github": "^5.0.0",
+    "semantic-release-npm-github": "^6.0.0",
     "typescript": "^5.1.6",
     "xo": "^0.58.0"
   },

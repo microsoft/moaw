@@ -1,3 +1,10 @@
+# [cli-1.5.2](https://github.com/microsoft/moaw/compare/cli-1.5.1...cli-1.5.2) (2026-01-22)
+
+
+### Bug Fixes
+
+* **cli:** moaw serve not handling assets correctly for translations ([#174](https://github.com/microsoft/moaw/issues/174)) ([cb6c2a5](https://github.com/microsoft/moaw/commit/cb6c2a56358c5829a7ba646828bafd2dc106299d))
+
 # [cli-1.5.1](https://github.com/microsoft/moaw/compare/cli-1.5.0...cli-1.5.1) (2024-06-04)
 
 

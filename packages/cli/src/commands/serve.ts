@@ -54,7 +54,15 @@ export async function serve(options: ServeOptions = {}) {
       isPathFolder = !isCurrentFolder;
     }
 
-    const startPath = `/workshop/${path.basename(targetPath) + (isPathFolder ? '/' : '')}`;
+    // Check if the target is in a translations folder
+    const absoluteTargetPath = path.resolve(targetPath);
+    const workshopDir = path.dirname(absoluteTargetPath);
+    const isTranslation = path.basename(workshopDir) === 'translations';
+    const workshopRoot = isTranslation ? path.dirname(workshopDir) : workshopDir;
+
+    const startPath = isTranslation
+      ? `/workshop/translations/${path.basename(targetPath)}`
+      : `/workshop/${path.basename(targetPath) + (isPathFolder ? '/' : '')}`;
 
     browserSync.init(
       {
@@ -67,13 +75,13 @@ export async function serve(options: ServeOptions = {}) {
         notify: false,
         ghostMode: false,
         ignore: ['node_modules'],
-        files: [`${path.dirname(targetPath)}/**/*`],
+        files: [`${workshopRoot}/**/*`],
         server: {
           baseDir: [path.join(__dirname, '../..', websitePath)],
           directory: true,
           routes: {
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            '/workshops': path.dirname(targetPath)
+            '/workshops': workshopRoot
           }
         },
         logLevel: options.verbose ? 'info' : 'silent',
