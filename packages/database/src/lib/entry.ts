@@ -33,7 +33,7 @@ export async function createEntry(
     lastUpdated: extraData.lastUpdated ?? file.lastModified,
     url: extraData.url ?? getUrl(file.path),
     githubUrl: extraData.githubUrl ?? undefined,
-    language: extraData.language ?? getLanguageFromFile(file.path),
+    language: extraData.language ?? file.meta.language ?? getLanguageFromFile(file.path),
     level: file.meta.level ?? 'beginner',
     audience: parseCsvOrArray(file.meta.audience) ?? ['students', 'pro devs'],
     ...(searchTranslations ? { translations: await findTranslations(file.path) } : {})

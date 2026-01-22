@@ -5,7 +5,7 @@ import { ContentEntry } from '../../../website/src/app/catalog/content-entry.js'
 import { getWorkshops } from './workshop.js';
 import { createEntry } from './entry.js';
 
-const languageRegex = /.*?\.([a-zA-Z]{2})\.md$/;
+const languageRegex = /.*?\.([a-zA-Z]{2}(?:_[a-zA-Z]{2})?)\.md$/;
 const translationsFolder = 'translations';
 
 export function getLanguageFromFile(filePath: string): string {

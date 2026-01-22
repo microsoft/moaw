@@ -7,12 +7,15 @@ import { FooterComponent } from '../shared/components/footer.component';
 import { SidebarComponent } from '../shared/components/sidebar.component';
 import { LoaderComponent } from '../shared/components/loader.component';
 import { CopyComponent } from '../shared/components/copy.component';
+import { LanguageOption } from '../shared/components/language-selector.component';
 import { Workshop, loadWorkshop, createMenuLinks } from './workshop';
 import { PaginationComponent } from './pagination.component';
 import { MenuLink } from '../shared/link';
 import { debounce } from '../shared/event';
 import { scrollToId, scrollToTop } from '../shared/scroll';
 import { getRepoPath } from '../shared/loader';
+import { loadCatalog, ContentEntry } from '../catalog/content-entry';
+import { defaultLanguage } from '../shared/constants';
 
 @Component({
   selector: 'app-workshop',
@@ -29,7 +32,7 @@ import { getRepoPath } from '../shared/loader';
   ],
   template: `
     <div (click)="sidebar.toggleOpen(false)" class="full-viewport">
-      <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
+      <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar" [languages]="languages" [currentLanguage]="currentLanguage"></app-header>
       <main class="content">
         <app-sidebar
           #sidebar="sidebar"
@@ -88,6 +91,8 @@ export class WorkshopComponent {
   menuLinks: MenuLink[] = [];
   scrollInit: boolean = false;
   enableScrollEvent: boolean = false;
+  languages: LanguageOption[] = [];
+  currentLanguage: string = defaultLanguage;
 
   scrolled = debounce((_event: Event) => {
     if (!this.scrollInit) {
@@ -155,6 +160,7 @@ export class WorkshopComponent {
       this.workshop = await loadWorkshop(repoPath, { wtid, ocid, vars });
       this.menuLinks = createMenuLinks(this.workshop);
       this.updateAuthors();
+      await this.loadLanguages(repoPath);
     } catch (error) {
       console.error(error);
     }
@@ -206,5 +212,92 @@ export class WorkshopComponent {
     // Need to push this to the end of the event loop to avoid received triggers
     // from browser-generated scroll events
     setTimeout(() => (this.enableScrollEvent = true));
+  }
+
+  async loadLanguages(repoPath: string) {
+    try {
+      const catalog = await loadCatalog();
+      const normalizedRepoPath = this.normalizeRepoPath(repoPath);
+      
+      // Find the current workshop in the catalog
+      const workshopEntry = catalog.find(entry => {
+        const entryPath = this.normalizeRepoPath(entry.url);
+        return entryPath === normalizedRepoPath;
+      });
+
+      if (!workshopEntry) {
+        return;
+      }
+
+      // Get the current language
+      this.currentLanguage = this.workshop?.meta?.language || workshopEntry.language || defaultLanguage;
+
+      // Check if this is a translation or the base workshop
+      let baseEntry: ContentEntry | undefined = workshopEntry;
+      let isTranslation = false;
+
+      // If the current workshop is a translation, find the base workshop
+      for (const entry of catalog) {
+        if (entry.translations?.some(t => this.normalizeRepoPath(t.url) === normalizedRepoPath)) {
+          baseEntry = entry;
+          isTranslation = true;
+          break;
+        }
+      }
+
+      if (!baseEntry) {
+        return;
+      }
+
+      // Build language options
+      const languages: LanguageOption[] = [];
+
+      // Add the base language first (always labeled as "default")
+      const baseLanguage = baseEntry.language || defaultLanguage;
+      languages.push({
+        code: baseLanguage,
+        label: `default (${baseLanguage})`,
+        url: this.getWorkshopUrl(baseEntry.url)
+      });
+
+      // Add translations sorted alphabetically
+      if (baseEntry.translations && baseEntry.translations.length > 0) {
+        const sortedTranslations = [...baseEntry.translations].sort((a, b) => 
+          a.language.localeCompare(b.language)
+        );
+
+        for (const translation of sortedTranslations) {
+          languages.push({
+            code: translation.language,
+            label: translation.language,
+            url: this.getWorkshopUrl(translation.url)
+          });
+        }
+      }
+
+      // Only show language selector if there are translations
+      if (languages.length > 1) {
+        this.languages = languages;
+      }
+    } catch (error) {
+      console.error('Failed to load languages:', error);
+    }
+  }
+
+  normalizeRepoPath(path: string): string {
+    // Remove the domain and base path, keep only the relative path
+    const url = new URL(path, window.location.origin);
+    let normalized = url.pathname.replace(/^\/[^/]*\/workshop\//, '');
+    // Ensure trailing slash for consistency
+    if (!normalized.endsWith('/') && !normalized.endsWith('.md')) {
+      normalized += '/';
+    }
+    return normalized;
+  }
+
+  getWorkshopUrl(catalogUrl: string): string {
+    // Extract the workshop path from the catalog URL
+    const url = new URL(catalogUrl, window.location.origin);
+    return url.pathname + url.search;
   }
 }
