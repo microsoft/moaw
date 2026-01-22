@@ -35,7 +35,6 @@ jobs:
       run: npm run build:website
       env:
         SEARCH_URL: ${{ secrets.SEARCH_URL }}
-        BASE_HREF: /moaw/
     - name: Setup GitHub Pages
       uses: actions/configure-pages@v4
     - name: Upload artifact
