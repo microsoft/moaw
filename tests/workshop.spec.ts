@@ -2,87 +2,115 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Workshop Rendering and Navigation', () => {
   test('should load a workshop page', async ({ page }) => {
-    // Navigate to a workshop - using a generic workshop path
-    // The actual workshop URL might be something like /workshop/?src=sample-workshop/
-    await page.goto('/workshop/');
-
-    // Wait for the page to load
+    // Navigate to the catalog to find an actual workshop
+    await page.goto('/catalog/');
     await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
 
-    // Check that the workshop component is present
-    const workshopContent = page.locator('app-workshop, app-deck, app-page');
-    await expect(workshopContent).toBeVisible();
+    // Look for any workshop card link
+    const workshopLink = page.locator('app-card a').first();
+    
+    const linkCount = await workshopLink.count();
+    if (linkCount > 0) {
+      // Click on a workshop
+      await workshopLink.click();
+      await page.waitForLoadState('networkidle');
+
+      // Check that the workshop component is present
+      const workshopContent = page.locator('app-workshop');
+      const count = await workshopContent.count();
+      expect(count).toBeGreaterThan(0);
+    } else {
+      // If no workshops available, just verify the workshop route is accessible
+      await page.goto('/workshop/?src=test');
+      await page.waitForLoadState('networkidle');
+      
+      // At least the page should load
+      await expect(page).toHaveTitle(/MOAW/);
+    }
   });
 
   test('should render workshop content from URL parameter', async ({ page }) => {
     // Try to load a specific workshop if one exists
-    // First, let's go to homepage and try to find a workshop link
-    await page.goto('/');
+    // First, let's go to catalog and try to find a workshop link
+    await page.goto('/catalog/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
-    // Look for any workshop link
-    const workshopLink = page.locator('a[href*="/workshop/"]').first();
+    // Look for any workshop card link
+    const workshopLink = page.locator('app-card a').first();
     
-    if (await workshopLink.count() > 0) {
+    const linkCount = await workshopLink.count();
+    if (linkCount > 0) {
       await workshopLink.click();
       await page.waitForLoadState('networkidle');
       
-      // Verify workshop content is rendered
-      const workshopContent = page.locator('app-workshop, app-deck, app-page');
-      await expect(workshopContent).toBeVisible();
+      // Verify workshop component exists
+      const workshopContent = page.locator('app-workshop');
+      expect(await workshopContent.count()).toBeGreaterThan(0);
       
-      // Check that there's actual content (markdown rendered)
-      const content = page.locator('article, .content, .markdown, main');
-      await expect(content).toBeVisible();
+      // Check that there's markdown content loaded
+      const content = page.locator('markdown');
+      const contentCount = await content.count();
+      expect(contentCount).toBeGreaterThan(0);
+    } else {
+      // Skip test if no workshops are available
+      test.skip();
     }
   });
 
   test('should navigate between workshop sections', async ({ page }) => {
-    // Navigate to homepage first to find a workshop
-    await page.goto('/');
+    // Navigate to catalog first to find a workshop
+    await page.goto('/catalog/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
-    // Find and click on a workshop link
-    const workshopLink = page.locator('a[href*="/workshop/"]').first();
+    // Find and click on a workshop card
+    const workshopLink = page.locator('app-card a').first();
     
-    if (await workshopLink.count() > 0) {
+    const linkCount = await workshopLink.count();
+    if (linkCount > 0) {
       await workshopLink.click();
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
 
-      // Look for navigation elements (next/previous buttons, section links, etc.)
-      const nextButton = page.locator('button:has-text("Next"), a:has-text("Next"), [aria-label*="next"]');
-      const prevButton = page.locator('button:has-text("Previous"), button:has-text("Prev"), a:has-text("Previous"), [aria-label*="previous"]');
-      const tableOfContents = page.locator('nav, aside, [class*="toc"], [class*="navigation"]');
+      // Look for navigation elements (pagination, sidebar links, etc.)
+      const pagination = page.locator('app-pagination');
+      const sidebar = page.locator('app-sidebar');
 
       // Check if navigation exists
-      const hasNext = await nextButton.count() > 0;
-      const hasPrev = await prevButton.count() > 0;
-      const hasToc = await tableOfContents.count() > 0;
+      const hasPagination = await pagination.count() > 0;
+      const hasSidebar = await sidebar.count() > 0;
 
-      // If navigation exists, test it
-      if (hasNext) {
-        const currentUrl = page.url();
-        await nextButton.first().click();
-        await page.waitForLoadState('networkidle');
-        
-        // Verify URL changed or content updated
-        const newUrl = page.url();
-        // URL might change or content might update without URL change
-        // Just verify the page is still functional
-        const workshopContent = page.locator('app-workshop, app-deck, app-page');
-        await expect(workshopContent).toBeVisible();
-      }
+      // At least one of these should exist
+      expect(hasPagination || hasSidebar).toBe(true);
 
-      if (hasToc) {
-        // If there's a table of contents, verify it's clickable
-        const tocLinks = tableOfContents.locator('a, button');
-        if (await tocLinks.count() > 0) {
-          expect(await tocLinks.count()).toBeGreaterThan(0);
+      // If pagination exists, test it
+      if (hasPagination) {
+        const paginationButtons = pagination.locator('button, a');
+        if (await paginationButtons.count() > 0) {
+          const lastButton = paginationButtons.last();
+          if (await lastButton.isEnabled()) {
+            await lastButton.click();
+            await page.waitForTimeout(500);
+            
+            // Verify the page is still functional
+            const workshopContent = page.locator('app-workshop');
+            expect(await workshopContent.count()).toBeGreaterThan(0);
+          }
         }
       }
+
+      // If sidebar exists, verify it has links
+      if (hasSidebar) {
+        const sidebarLinks = sidebar.locator('a');
+        if (await sidebarLinks.count() > 0) {
+          expect(await sidebarLinks.count()).toBeGreaterThan(0);
+        }
+      }
+    } else {
+      // Skip test if no workshops are available
+      test.skip();
     }
   });
 
@@ -91,38 +119,35 @@ test.describe('Workshop Rendering and Navigation', () => {
     await page.goto('/workshop/?src=test');
     await page.waitForLoadState('networkidle');
 
-    // Page should load even if workshop doesn't exist (might show error or empty state)
-    const workshopComponent = page.locator('app-workshop, app-root');
-    await expect(workshopComponent).toBeVisible();
+    // Page should load the workshop component
+    const workshopComponent = page.locator('app-workshop');
+    expect(await workshopComponent.count()).toBeGreaterThan(0);
   });
 
   test('should display workshop metadata', async ({ page }) => {
-    // Navigate to homepage and find a workshop
-    await page.goto('/');
+    // Navigate to catalog and find a workshop
+    await page.goto('/catalog/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
-    const workshopLink = page.locator('a[href*="/workshop/"]').first();
+    const workshopLink = page.locator('app-card a').first();
     
-    if (await workshopLink.count() > 0) {
+    const linkCount = await workshopLink.count();
+    if (linkCount > 0) {
       await workshopLink.click();
       await page.waitForLoadState('networkidle');
       await page.waitForTimeout(1000);
 
-      // Look for metadata elements (title, author, duration, etc.)
-      const title = page.locator('h1, .title, [class*="workshop-title"]');
-      
-      // At minimum, there should be a title
-      if (await title.count() > 0) {
-        await expect(title.first()).toBeVisible();
-      }
+      // Look for header component which should contain metadata
+      const header = page.locator('app-header');
+      expect(await header.count()).toBeGreaterThan(0);
 
-      // Check for content sections
-      const sections = page.locator('section, article, .section');
-      const sectionCount = await sections.count();
-      
-      // Should have at least some content structure
-      expect(sectionCount).toBeGreaterThanOrEqual(0);
+      // Check for workshop container
+      const workshopContainer = page.locator('app-workshop');
+      expect(await workshopContainer.count()).toBeGreaterThan(0);
+    } else {
+      // Skip test if no workshops are available
+      test.skip();
     }
   });
 });

@@ -11,43 +11,41 @@ test.describe('Homepage and Workshop List', () => {
     // Check that the page title is present
     await expect(page).toHaveTitle(/MOAW/);
 
-    // Check that main content is visible
-    const mainContent = page.locator('app-root');
-    await expect(mainContent).toBeVisible();
+    // Check that the main heading is visible (from home component)
+    const heading = page.locator('h1');
+    await expect(heading).toBeVisible();
+    await expect(heading).toContainText('Hands-on tutorials');
   });
 
   test('should display workshop catalog', async ({ page }) => {
-    // Navigate to the homepage
-    await page.goto('/');
+    // Navigate to the catalog page
+    await page.goto('/catalog/');
 
     // Wait for the page to be fully loaded
     await page.waitForLoadState('networkidle');
 
-    // Look for catalog/workshop list elements
-    // The catalog should be visible on the homepage
-    const catalog = page.locator('app-catalog, app-home');
-    await expect(catalog).toBeVisible();
+    // Check for workshop cards or search input
+    const searchInput = page.locator('input[type="search"]');
+    await expect(searchInput).toBeVisible();
   });
 
   test('should be able to search/filter workshops', async ({ page }) => {
-    // Navigate to the homepage
-    await page.goto('/');
+    // Navigate to the catalog page
+    await page.goto('/catalog/');
 
     // Wait for the page to be fully loaded
     await page.waitForLoadState('networkidle');
 
-    // Look for search input or filter controls
-    const searchInput = page.locator('input[type="search"], input[placeholder*="Search"], input[placeholder*="search"]');
+    // Look for search input
+    const searchInput = page.locator('input[type="search"]');
+    await expect(searchInput).toBeVisible();
     
-    // If search exists, test it
-    if (await searchInput.count() > 0) {
-      await searchInput.first().fill('azure');
-      await page.waitForTimeout(500); // Wait for search to filter
-      
-      // Check that results are displayed
-      const catalogContent = page.locator('app-catalog, app-home');
-      await expect(catalogContent).toBeVisible();
-    }
+    // Test search functionality
+    await searchInput.fill('azure');
+    await page.waitForTimeout(500); // Wait for search to filter
+    
+    // Verify search input has the value
+    await expect(searchInput).toHaveValue('azure');
   });
 
   test('should navigate to workshop list/catalog', async ({ page }) => {
@@ -58,22 +56,21 @@ test.describe('Homepage and Workshop List', () => {
     await page.waitForLoadState('networkidle');
 
     // Check if there's a link to browse all workshops or catalog
-    const catalogLink = page.locator('a[href*="catalog"], a:has-text("Browse"), a:has-text("Workshops")').first();
+    const catalogLink = page.locator('a[href*="catalog"]').first();
+    await expect(catalogLink).toBeVisible();
     
-    if (await catalogLink.count() > 0) {
-      await catalogLink.click();
-      
-      // Wait for navigation
-      await page.waitForLoadState('networkidle');
-      
-      // Verify we're on the catalog page
-      expect(page.url()).toContain('catalog');
-    }
+    await catalogLink.click();
+    
+    // Wait for navigation
+    await page.waitForLoadState('networkidle');
+    
+    // Verify we're on the catalog page
+    expect(page.url()).toContain('catalog');
   });
 
   test('should display workshop cards or list items', async ({ page }) => {
-    // Navigate to the homepage
-    await page.goto('/');
+    // Navigate to the catalog page
+    await page.goto('/catalog/');
 
     // Wait for the page to be fully loaded
     await page.waitForLoadState('networkidle');
@@ -81,11 +78,11 @@ test.describe('Homepage and Workshop List', () => {
     // Wait a bit for workshops to load
     await page.waitForTimeout(1000);
 
-    // Check for workshop items (cards, list items, etc.)
-    const workshopItems = page.locator('[class*="workshop"], [class*="card"], .list-item, article');
+    // Check for workshop cards - based on catalog component structure
+    const workshopCards = page.locator('app-card');
     
-    // There should be at least some content
-    const count = await workshopItems.count();
+    // There should be at least some workshop cards
+    const count = await workshopCards.count();
     expect(count).toBeGreaterThan(0);
   });
 });
