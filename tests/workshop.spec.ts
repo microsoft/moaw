@@ -89,6 +89,7 @@ test.describe('Workshop Rendering and Navigation', () => {
       if (hasPagination) {
         const paginationButtons = pagination.locator('button, a');
         if (await paginationButtons.count() > 0) {
+          // Click the last button (typically "Next" or last page)
           const lastButton = paginationButtons.last();
           if (await lastButton.isEnabled()) {
             await lastButton.click();
@@ -104,9 +105,7 @@ test.describe('Workshop Rendering and Navigation', () => {
       // If sidebar exists, verify it has links
       if (hasSidebar) {
         const sidebarLinks = sidebar.locator('a');
-        if (await sidebarLinks.count() > 0) {
-          expect(await sidebarLinks.count()).toBeGreaterThan(0);
-        }
+        expect(await sidebarLinks.count()).toBeGreaterThan(0);
       }
     } else {
       // Skip test if no workshops are available
