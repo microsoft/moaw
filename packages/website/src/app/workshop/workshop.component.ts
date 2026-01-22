@@ -276,8 +276,13 @@ export class WorkshopComponent {
     if (currentLang) {
       // Path is like "workshops/my-workshop/translations/workshop.fr.md"
       // or "workshops/my-workshop/workshop.fr.md"
-      return repoPath.replace(new RegExp(`\\.${currentLang}\\.md$`), '.md')
-                     .replace('/translations/', '/');
+      // Use simple string replacement to avoid regex issues
+      const suffix = `.${currentLang}.md`;
+      if (repoPath.endsWith(suffix)) {
+        return repoPath.slice(0, -suffix.length) + '.md';
+      }
+      // Also handle translations folder
+      return repoPath.replace('/translations/', '/');
     }
     // Already a base path
     return repoPath;
@@ -311,6 +316,6 @@ export class WorkshopComponent {
     const queryString = params.toString();
     const baseUrl = `${window.location.origin}${window.location.pathname.split('?')[0]}`;
     
-    return `${baseUrl}?src=${workshopPath}${queryString ? '&' + queryString : ''}`;
+    return `${baseUrl}?src=${encodeURIComponent(workshopPath)}${queryString ? '&' + queryString : ''}`;
   }
 }
