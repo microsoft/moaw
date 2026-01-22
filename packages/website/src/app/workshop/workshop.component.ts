@@ -14,7 +14,6 @@ import { MenuLink } from '../shared/link';
 import { debounce } from '../shared/event';
 import { scrollToId, scrollToTop } from '../shared/scroll';
 import { getRepoPath } from '../shared/loader';
-import { loadCatalog, ContentEntry } from '../catalog/content-entry';
 import { defaultLanguage } from '../shared/constants';
 
 @Component({
@@ -160,7 +159,7 @@ export class WorkshopComponent {
       this.workshop = await loadWorkshop(repoPath, { wtid, ocid, vars });
       this.menuLinks = createMenuLinks(this.workshop);
       this.updateAuthors();
-      await this.loadLanguages(repoPath);
+      this.loadLanguages(repoPath);
     } catch (error) {
       console.error(error);
     }
@@ -214,112 +213,104 @@ export class WorkshopComponent {
     setTimeout(() => (this.enableScrollEvent = true));
   }
 
-  async loadLanguages(repoPath: string) {
-    try {
-      const catalog = await loadCatalog();
-      const normalizedRepoPath = this.normalizeRepoPath(repoPath);
-      
-      // Find the workshop entry - either as a main entry or as a translation
-      let workshopEntry: ContentEntry | undefined;
-      let baseEntry: ContentEntry | undefined;
-      let isTranslation = false;
+  loadLanguages(repoPath: string) {
+    if (!this.workshop) {
+      return;
+    }
 
-      // First, try to find as a main entry
-      workshopEntry = catalog.find(entry => {
-        const entryPath = this.normalizeRepoPath(entry.url);
-        return entryPath === normalizedRepoPath;
-      });
+    // Get current language from metadata or detect from path
+    const languageFromMeta = this.workshop.meta?.language;
+    const languageFromPath = this.getLanguageFromPath(repoPath);
+    this.currentLanguage = languageFromMeta || languageFromPath || defaultLanguage;
 
-      if (workshopEntry) {
-        // Found as main entry
-        baseEntry = workshopEntry;
-      } else {
-        // Not found as main entry, check if it's a translation
-        for (const entry of catalog) {
-          if (entry.translations?.some(t => this.normalizeRepoPath(t.url) === normalizedRepoPath)) {
-            baseEntry = entry;
-            isTranslation = true;
-            break;
-          }
-        }
-      }
+    // Get translations from metadata
+    const translationsMeta = this.workshop.meta?.translations;
+    if (!translationsMeta || (Array.isArray(translationsMeta) && translationsMeta.length === 0)) {
+      // No translations defined
+      return;
+    }
 
-      if (!baseEntry) {
-        // Not found at all
-        return;
-      }
+    // Parse translations array
+    const translationCodes = Array.isArray(translationsMeta) 
+      ? translationsMeta 
+      : translationsMeta.split(',').map(t => t.trim());
 
-      // Get the current language
-      this.currentLanguage = this.workshop?.meta?.language || 
-                             (isTranslation ? normalizedRepoPath.match(/\.([a-zA-Z]{2}(?:_[A-Z]{2})?)\.md$/)?.[1] : undefined) ||
-                             baseEntry.language || 
-                             defaultLanguage;
+    // Build language options
+    const languages: LanguageOption[] = [];
 
-      // Build language options
-      const languages: LanguageOption[] = [];
+    // Determine base path
+    const basePath = this.getBasePath(repoPath, languageFromPath);
 
-      // Add the base language first (always labeled as "default")
-      const baseLanguage = baseEntry.language || defaultLanguage;
+    // Add base language first (always labeled as "default")
+    const baseLanguage = languageFromMeta || defaultLanguage;
+    languages.push({
+      code: baseLanguage,
+      label: `default (${baseLanguage})`,
+      url: this.buildWorkshopUrl(basePath, null)
+    });
+
+    // Add translations sorted alphabetically
+    const sortedTranslations = [...translationCodes].sort((a, b) => a.localeCompare(b));
+    for (const langCode of sortedTranslations) {
       languages.push({
-        code: baseLanguage,
-        label: `default (${baseLanguage})`,
-        url: this.getWorkshopUrl(baseEntry.url)
+        code: langCode,
+        label: langCode,
+        url: this.buildWorkshopUrl(basePath, langCode)
       });
+    }
 
-      // Add translations sorted alphabetically
-      if (baseEntry.translations && baseEntry.translations.length > 0) {
-        const sortedTranslations = [...baseEntry.translations].sort((a, b) => 
-          a.language.localeCompare(b.language)
-        );
-
-        for (const translation of sortedTranslations) {
-          languages.push({
-            code: translation.language,
-            label: translation.language,
-            url: this.getWorkshopUrl(translation.url)
-          });
-        }
-      }
-
-      // Only show language selector if there are translations
-      if (languages.length > 1) {
-        this.languages = languages;
-      }
-    } catch (error) {
-      console.error('Failed to load languages:', error);
+    // Only show language selector if there are translations
+    if (languages.length > 1) {
+      this.languages = languages;
     }
   }
 
-  normalizeRepoPath(path: string): string {
-    // Handle both relative paths and full URLs
-    let normalized: string;
-    
-    if (path.startsWith('http')) {
-      // Full URL - extract the path after /workshop/
-      const url = new URL(path);
-      normalized = url.pathname.replace(/^.*\/workshop\//, '');
-    } else {
-      // Relative path - use as is
-      normalized = path;
-    }
-    
-    // Ensure trailing slash for consistency (unless it's a .md file)
-    if (!normalized.endsWith('/') && !normalized.endsWith('.md')) {
-      normalized += '/';
-    }
-    
-    return normalized;
+  getLanguageFromPath(repoPath: string): string | null {
+    // Extract language code from path like "workshop.fr.md" or "translations/workshop.ja.md"
+    const match = repoPath.match(/\.([a-zA-Z]{2}(?:_[A-Z]{2})?)\.md$/);
+    return match ? match[1] : null;
   }
 
-  getWorkshopUrl(catalogUrl: string): string {
-    // The catalog URL is either a full URL or a relative path
-    if (catalogUrl.startsWith('http')) {
-      // Full URL - extract and use as is
-      const url = new URL(catalogUrl);
-      return url.pathname + url.search;
-    } else {
-      // Relative path - construct workshop URL with src parameter
-      return `/workshop/?src=${encodeURIComponent(catalogUrl)}`;
+  getBasePath(repoPath: string, currentLang: string | null): string {
+    // Remove language code and extension from path to get base path
+    if (currentLang) {
+      // Path is like "workshops/my-workshop/translations/workshop.fr.md"
+      // or "workshops/my-workshop/workshop.fr.md"
+      return repoPath.replace(new RegExp(`\\.${currentLang}\\.md$`), '.md')
+                     .replace('/translations/', '/');
     }
+    // Already a base path
+    return repoPath;
+  }
+
+  buildWorkshopUrl(basePath: string, langCode: string | null): string {
+    const { step, wtid, ocid, vars } = getQueryParams();
+    let workshopPath = basePath;
+
+    if (langCode) {
+      // Build translation path: insert "translations/" folder and language code
+      // basePath could be like "workshops/my-workshop/workshop.md" or "my-workshop/"
+      if (workshopPath.endsWith('.md')) {
+        const parts = workshopPath.split('/');
+        const fileName = parts.pop() || '';
+        const baseName = fileName.replace('.md', '');
+        workshopPath = `${parts.join('/')}/translations/${baseName}.${langCode}.md`;
+      } else {
+        // Handle directory path
+        workshopPath = `${workshopPath}translations/workshop.${langCode}.md`;
+      }
+    }
+
+    // Build query string
+    const params = new URLSearchParams();
+    if (step) params.set('step', step);
+    if (wtid) params.set('wtid', wtid);
+    if (ocid) params.set('ocid', ocid);
+    if (vars) params.set('vars', vars);
+    
+    const queryString = params.toString();
+    const baseUrl = `${window.location.origin}${window.location.pathname.split('?')[0]}`;
+    
+    return `${baseUrl}?src=${workshopPath}${queryString ? '&' + queryString : ''}`;
   }
 }

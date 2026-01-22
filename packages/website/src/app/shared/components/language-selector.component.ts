@@ -14,86 +14,60 @@ export interface LanguageOption {
   imports: [CommonModule, IconComponent],
   template: `
     <div class="language-selector" *ngIf="languages.length > 0">
-      <button class="language-button" (click)="toggleDropdown($event)">
-        <app-icon name="globe" size="20"></app-icon>
-        <span class="current-language">{{ currentLanguage }}</span>
-        <app-icon name="chevron-down" size="16" class="chevron"></app-icon>
-      </button>
-      <div class="language-dropdown" *ngIf="isOpen">
-        <a
+      <app-icon name="globe" size="20" class="globe-icon"></app-icon>
+      <select 
+        class="language-select"
+        [value]="currentLanguage"
+        (change)="onLanguageChange($event)"
+        aria-label="Select language"
+      >
+        <option 
           *ngFor="let lang of languages"
-          [href]="lang.url"
-          class="language-option"
-          [class.active]="lang.code === currentLanguage"
+          [value]="lang.code"
+          [attr.data-url]="lang.url"
         >
           {{ lang.label }}
-        </a>
-      </div>
+        </option>
+      </select>
     </div>
   `,
   styles: [
     `
       .language-selector {
-        position: relative;
-        display: inline-block;
-      }
-
-      .language-button {
         display: flex;
         align-items: center;
         gap: var(--space-xs);
+      }
+
+      .globe-icon {
+        color: var(--text-light);
+      }
+
+      .language-select {
         background: transparent;
         border: 1px solid rgba(255, 255, 255, 0.3);
         border-radius: 4px;
         color: var(--text-light);
         padding: var(--space-xs) var(--space-sm);
+        font-size: var(--text-size-sm);
         cursor: pointer;
         transition: all var(--transition-duration);
-        white-space: nowrap;
+        text-transform: uppercase;
 
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           border-color: rgba(255, 255, 255, 0.5);
         }
-      }
 
-      .current-language {
-        font-size: var(--text-size-sm);
-        text-transform: uppercase;
-      }
-
-      .chevron {
-        opacity: 0.7;
-      }
-
-      .language-dropdown {
-        position: absolute;
-        top: calc(100% + var(--space-xs));
-        right: 0;
-        background: var(--background);
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        min-width: 200px;
-        z-index: 1000;
-        overflow: hidden;
-      }
-
-      .language-option {
-        display: block;
-        padding: var(--space-sm) var(--space-md);
-        color: var(--text);
-        text-decoration: none;
-        transition: background var(--transition-duration);
-
-        &:hover {
-          background: var(--hover-color);
+        &:focus {
+          outline: 2px solid rgba(255, 255, 255, 0.5);
+          outline-offset: 2px;
         }
 
-        &.active {
-          background: var(--primary);
-          color: var(--text-light);
-          font-weight: 500;
+        option {
+          background: var(--background);
+          color: var(--text);
+          text-transform: none;
         }
       }
     `
@@ -102,22 +76,13 @@ export interface LanguageOption {
 export class LanguageSelectorComponent {
   @Input() languages: LanguageOption[] = [];
   @Input() currentLanguage: string = 'en';
-  isOpen: boolean = false;
 
-  toggleDropdown(event: Event) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isOpen = !this.isOpen;
-
-    if (this.isOpen) {
-      // Close dropdown when clicking outside - use queueMicrotask to avoid race condition
-      queueMicrotask(() => {
-        document.addEventListener('click', this.closeDropdown.bind(this), { once: true });
-      });
+  onLanguageChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const selectedOption = select.options[select.selectedIndex];
+    const url = selectedOption.getAttribute('data-url');
+    if (url) {
+      window.location.href = url;
     }
-  }
-
-  closeDropdown() {
-    this.isOpen = false;
   }
 }
