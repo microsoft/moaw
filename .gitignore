@@ -6,3 +6,8 @@ TODO
 *.env
 
 .vscode/ltex*
+
+# Playwright
+playwright-report/
+test-results/
+
