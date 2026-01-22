@@ -36,7 +36,7 @@ export async function createEntry(
     language: extraData.language ?? file.meta.language ?? getLanguageFromFile(file.path),
     level: file.meta.level ?? 'beginner',
     audience: parseCsvOrArray(file.meta.audience) ?? ['students', 'pro devs'],
-    ...(searchTranslations ? { translations: await findTranslations(file.path) } : {})
+    ...(searchTranslations ? { translations: await findTranslations(file.path, file) } : {})
   };
   return {
     ...entryWithoutId,

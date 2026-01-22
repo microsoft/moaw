@@ -219,35 +219,41 @@ export class WorkshopComponent {
       const catalog = await loadCatalog();
       const normalizedRepoPath = this.normalizeRepoPath(repoPath);
       
-      // Find the current workshop in the catalog
-      const workshopEntry = catalog.find(entry => {
+      // Find the workshop entry - either as a main entry or as a translation
+      let workshopEntry: ContentEntry | undefined;
+      let baseEntry: ContentEntry | undefined;
+      let isTranslation = false;
+
+      // First, try to find as a main entry
+      workshopEntry = catalog.find(entry => {
         const entryPath = this.normalizeRepoPath(entry.url);
         return entryPath === normalizedRepoPath;
       });
 
-      if (!workshopEntry) {
-        return;
-      }
-
-      // Get the current language
-      this.currentLanguage = this.workshop?.meta?.language || workshopEntry.language || defaultLanguage;
-
-      // Check if this is a translation or the base workshop
-      let baseEntry: ContentEntry | undefined = workshopEntry;
-      let isTranslation = false;
-
-      // If the current workshop is a translation, find the base workshop
-      for (const entry of catalog) {
-        if (entry.translations?.some(t => this.normalizeRepoPath(t.url) === normalizedRepoPath)) {
-          baseEntry = entry;
-          isTranslation = true;
-          break;
+      if (workshopEntry) {
+        // Found as main entry
+        baseEntry = workshopEntry;
+      } else {
+        // Not found as main entry, check if it's a translation
+        for (const entry of catalog) {
+          if (entry.translations?.some(t => this.normalizeRepoPath(t.url) === normalizedRepoPath)) {
+            baseEntry = entry;
+            isTranslation = true;
+            break;
+          }
         }
       }
 
       if (!baseEntry) {
+        // Not found at all
         return;
       }
+
+      // Get the current language
+      this.currentLanguage = this.workshop?.meta?.language || 
+                             (isTranslation ? normalizedRepoPath.match(/\.([a-z]{2}(?:_[A-Z]{2})?)\.md$/)?.[1] : undefined) ||
+                             baseEntry.language || 
+                             defaultLanguage;
 
       // Build language options
       const languages: LanguageOption[] = [];
@@ -285,19 +291,35 @@ export class WorkshopComponent {
   }
 
   normalizeRepoPath(path: string): string {
-    // Remove the domain and base path, keep only the relative path
-    const url = new URL(path, window.location.origin);
-    let normalized = url.pathname.replace(/^\/[^/]*\/workshop\//, '');
-    // Ensure trailing slash for consistency
+    // Handle both relative paths and full URLs
+    let normalized: string;
+    
+    if (path.startsWith('http')) {
+      // Full URL - extract the path after /workshop/
+      const url = new URL(path);
+      normalized = url.pathname.replace(/^.*\/workshop\//, '');
+    } else {
+      // Relative path - use as is
+      normalized = path;
+    }
+    
+    // Ensure trailing slash for consistency (unless it's a .md file)
     if (!normalized.endsWith('/') && !normalized.endsWith('.md')) {
       normalized += '/';
     }
+    
     return normalized;
   }
 
   getWorkshopUrl(catalogUrl: string): string {
-    // Extract the workshop path from the catalog URL
-    const url = new URL(catalogUrl, window.location.origin);
-    return url.pathname + url.search;
+    // The catalog URL is either a full URL or a relative path
+    if (catalogUrl.startsWith('http')) {
+      // Full URL - extract and use as is
+      const url = new URL(catalogUrl);
+      return url.pathname + url.search;
+    } else {
+      // Relative path - construct workshop URL with src parameter
+      return `/workshop/?src=${encodeURIComponent(catalogUrl)}`;
+    }
   }
 }
