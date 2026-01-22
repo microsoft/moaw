@@ -110,8 +110,8 @@ export class LanguageSelectorComponent {
     this.isOpen = !this.isOpen;
 
     if (this.isOpen) {
-      // Close dropdown when clicking outside
-      setTimeout(() => {
+      // Close dropdown when clicking outside - use queueMicrotask to avoid race condition
+      queueMicrotask(() => {
         document.addEventListener('click', this.closeDropdown.bind(this), { once: true });
       });
     }
