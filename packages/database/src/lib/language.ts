@@ -8,7 +8,7 @@ import { createEntry } from './entry.js';
 import { FileInfo } from './workshop.js';
 import { parseCsvOrArray } from './util.js';
 
-const languageRegex = /.*?\.([a-zA-Z]{2}(?:_[a-zA-Z]{2})?)\.md$/;
+const languageRegex = /.*?\.([a-zA-Z]{2}(?:_[A-Z]{2})?)\.md$/;
 const translationsFolder = 'translations';
 
 export function getLanguageFromFile(filePath: string): string {

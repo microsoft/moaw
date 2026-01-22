@@ -251,7 +251,7 @@ export class WorkshopComponent {
 
       // Get the current language
       this.currentLanguage = this.workshop?.meta?.language || 
-                             (isTranslation ? normalizedRepoPath.match(/\.([a-z]{2}(?:_[A-Z]{2})?)\.md$/)?.[1] : undefined) ||
+                             (isTranslation ? normalizedRepoPath.match(/\.([a-zA-Z]{2}(?:_[A-Z]{2})?)\.md$/)?.[1] : undefined) ||
                              baseEntry.language || 
                              defaultLanguage;
 
