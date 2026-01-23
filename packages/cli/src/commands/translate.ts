@@ -1,11 +1,11 @@
-import process from "node:process";
-import createDebug from "debug";
-import { CopilotClient } from "@github/copilot-sdk";
-import { pathExists } from "../util.js";
-import { defaultWorkshopFile } from "../constants.js";
+import process from 'node:process';
+import createDebug from 'debug';
+import { CopilotClient } from '@github/copilot-sdk';
+import { pathExists } from '../util.js';
+import { defaultWorkshopFile } from '../constants.js';
 
-const debug = createDebug("translate");
-const translationsFolder = "translations";
+const debug = createDebug('translate');
+const translationsFolder = 'translations';
 
 const translatePrompt = (file: string, languages: string) => `## Role
 You are an expert translator for technical documents. Your task is to translate the provided workshop content into the specified target language while preserving the original formatting, code snippets, and technical terminology. Ensure that the translated content is complete, clear, accurate, and maintains the instructional tone of the original text.
@@ -32,18 +32,19 @@ export type TranslateOptions = {
 export async function translate(options: TranslateOptions = {}): Promise<void> {
   try {
     options.file = options.file?.trim() || defaultWorkshopFile;
-    options.model = options.model?.trim() || "gpt-5.2";
-    debug("Options %o", options);
+    options.model = options.model?.trim() || 'gpt-5.2';
+    debug('Options %o', options);
 
     const { file, model, languages } = options;
     if (!languages) {
-      throw new Error("No target languages specified. Use the --languages option to specify target languages.");
+      throw new Error('No target languages specified. Use the --languages option to specify target languages.');
     }
 
     if (!(await pathExists(file))) {
       throw new Error(`File not found: ${file}`);
     }
 
+    const startTime = Date.now();
     const client = new CopilotClient();
     try {
       await client.start();
@@ -54,11 +55,12 @@ export async function translate(options: TranslateOptions = {}): Promise<void> {
           'GitHub Copilot CLI is not authenticated.\nPlease run "copilot" and use "/login" to authenticate.'
         );
       }
-      debug("Connected to GitHub Copilot CLI");
+
+      debug('Connected to GitHub Copilot CLI');
       console.info(`Started translation agent for file "${file}" to languages: ${languages}...`);
 
       session.on((event) => {
-        if (event.type === "assistant.message") {
+        if (event.type === 'assistant.message') {
           debug(`Copilot: ${event.data.content}`);
         }
       });
@@ -66,27 +68,34 @@ export async function translate(options: TranslateOptions = {}): Promise<void> {
       const response = await session.sendAndWait(
         {
           prompt: translatePrompt(file, languages),
-          attachments: [{ type: "file", path: file }],
+          attachments: [{ type: 'file', path: file }]
         },
         15 * 60 * 1000 // 15 minutes timeout
       );
-      console.info(`Translation agent task completed:`);
+
+      const elapsed = (Date.now() - startTime) / 1000;
+      const timeStr = elapsed > 60 ? `${(elapsed / 60).toFixed(1)}m` : `${elapsed.toFixed(1)}s`;
+      console.info(`Translation agent task completed in ${timeStr}:`);
       console.log(response?.data.content);
 
       await session.destroy();
-      debug("Copilot CLI session destroyed");
-    } catch (error: any) {
-      if (error.message.includes("ENOENT")) {
+      debug('Copilot CLI session destroyed');
+    } catch (error: unknown) {
+      const error_ = error as Error;
+      if (error_.message?.includes('ENOENT')) {
         throw new Error(
           `GitHub Copilot CLI is not installed.\nSee https://docs.github.com/copilot/how-tos/set-up/install-copilot-cli for installation instructions.`
         );
       }
-      throw error;
+
+      throw error_;
     } finally {
       await client.stop();
-      debug("Copilot CLI client stopped");
+      debug('Copilot CLI client stopped');
     }
+
     // Temp workaround to avoid process hanging
+    // eslint-disable-next-line unicorn/no-process-exit
     process.exit();
   } catch (error: unknown) {
     const error_ = error as Error;
