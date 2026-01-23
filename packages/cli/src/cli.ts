@@ -2,7 +2,7 @@ import process from 'node:process';
 import debug from 'debug';
 import updateNotifier, { type Package } from 'update-notifier';
 import minimist from 'minimist';
-import { convert, createNew, link, serve, build } from './commands/index.js';
+import { convert, createNew, link, serve, build, translate } from './commands/index.js';
 import { getPackageJson } from './util.js';
 
 const help = `Usage: moaw <command> [options]
@@ -21,6 +21,9 @@ Commands:
   l, link [<file>]   Get link to target file (default: workshop.md)
     -r, --repo       Set GitHub repo instead of fetching it from git
     -b, --branch <name>     Set branch name (default: current branch)
+  t, translate [<file>]     Translate workshop to different languages
+    -l, --languages <lang1,lang2,...>  Comma-separated list of target languages
+    -m, --model <model_name>  Copilot model to use (default: gpt-5.2)
 
 General options:
   -v, --version      Show version
@@ -29,7 +32,7 @@ General options:
 
 export async function run(args: string[]) {
   const options = minimist(args, {
-    string: ['host', 'attr', 'dest', 'repo', 'branch'],
+    string: ['host', 'attr', 'dest', 'repo', 'branch', 'languages', 'model'],
     boolean: ['verbose', 'version', 'help', 'open'],
     alias: {
       v: 'version',
@@ -39,7 +42,9 @@ export async function run(args: string[]) {
       a: 'attr',
       d: 'dest',
       r: 'repo',
-      b: 'branch'
+      b: 'branch',
+      l: 'languages',
+      m: 'model'
     }
   });
 
@@ -108,6 +113,17 @@ export async function run(args: string[]) {
         file: parameters[0],
         repo: options.repo as string,
         branch: options.branch as string
+      });
+      break;
+    }
+
+    case 't':
+    case 'translate': {
+      await translate({
+        file: parameters[0],
+        languages: options.languages as string,
+        model: options.model as string,
+        verbose: Boolean(options.verbose)
       });
       break;
     }
