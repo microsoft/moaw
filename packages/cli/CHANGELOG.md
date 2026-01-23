@@ -1,3 +1,10 @@
+# [cli-1.6.0](https://github.com/microsoft/moaw/compare/cli-1.5.2...cli-1.6.0) (2026-01-23)
+
+
+### Features
+
+* **cli:** add translate command using Copilot SDK ([e72aaca](https://github.com/microsoft/moaw/commit/e72aaca0e3a82944ac97a529a19963cac5e1be40))
+
 # [cli-1.5.2](https://github.com/microsoft/moaw/compare/cli-1.5.1...cli-1.5.2) (2026-01-22)
 
 
