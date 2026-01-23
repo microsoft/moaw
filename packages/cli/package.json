@@ -38,6 +38,7 @@
     "xo": "^0.58.0"
   },
   "dependencies": {
+    "@github/copilot-sdk": "^0.1.16",
     "asciidoctor": "^3.0.2",
     "browser-sync": "^3.0.2",
     "debug": "^4.3.4",
