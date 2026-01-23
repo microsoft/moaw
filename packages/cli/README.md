@@ -32,6 +32,9 @@ Commands:
   l, link [<file>]   Get link to target file (default: workshop.md)
     -r, --repo       Set GitHub repo instead of fetching it from git
     -b, --branch <name>     Set branch name (default: current branch)
+  t, translate [<file>]     Translate workshop to different languages
+    -l, --languages <lang1,lang2,...>  Comma-separated list of target languages
+    -m, --model <model_name>  Copilot model to use (default: gpt-5.2)
 
 General options:
   -v, --version      Show version
@@ -64,3 +67,19 @@ As MOAW requires specific [frontmatter metadata in the Markdown file](../../temp
 ```
 
 Note that not all AsciiDoc features are supported, and fall back to HTML generation will be used in that case. You can use the `--verbose` option to see if any unsupported feature is used.
+
+#### AI-Generated translations
+
+The `translate` command allows you to translate your workshop to different languages using GitHub Copilot CLI.
+
+GitHub Copilot CLI must be installed and authenticated before you can use this command (see [installation guide](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli)).
+
+You can then use AI models from Copilot to translate your workshop. For example, to translate to Spanish and French:
+
+```bash
+moaw translate workshop.md -l es,fr
+```
+
+> [!NOTE]
+> Translation may take some time depending on the size of your workshop and the number of target languages.
+> There's a hard timeout of 30 minutes per translation request, so for very large workshops you may need to separate the translation task into multiple commands.
