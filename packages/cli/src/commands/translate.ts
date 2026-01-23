@@ -70,7 +70,7 @@ export async function translate(options: TranslateOptions = {}): Promise<void> {
           prompt: translatePrompt(file, languages),
           attachments: [{ type: 'file', path: file }]
         },
-        15 * 60 * 1000 // 15 minutes timeout
+        30 * 60 * 1000 // 30 minutes timeout
       );
 
       const elapsed = (Date.now() - startTime) / 1000;
