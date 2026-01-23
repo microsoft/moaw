@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import process from 'node:process';
 import { dirname, parse } from 'node:path';
 import createDebug from 'debug';
-import { pathExists, readJson } from '../util.js';
+import { pathExists } from '../util.js';
 import { defaultWorkshopFile } from '../constants.js';
 import { processFileIncludes } from '../include.js';
 
