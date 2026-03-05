@@ -676,7 +676,7 @@
 
 - title: Building Scalable Real-Time Solutions using Event-Driven Architectures with Microsoft Fabric
   url: https://microsoft.github.io/moaw/workshop/gh:microsoft/FabConATLRTIWorkshopPublic/main/docs/
-  github_url: https://github.com/minwal/FabConATLRTIWorkshop
+  github_url: https://github.com/microsoft/FabConATLRTIWorkshopPublic
   language: en
   last_updated: 2026-03-05
   type: workshop
