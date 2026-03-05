@@ -673,3 +673,25 @@
   audience: students, pro devs
   level: beginner
   tags: azure, managed redis, database, serverless, apim, cache, csu
+
+- title: Building Scalable Real-Time Solutions using Event-Driven Architectures with Microsoft Fabric
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/FabConATLRTIWorkshopPublic/main/docs/
+  github_url: https://github.com/minwal/FabConATLRTIWorkshop
+  language: en
+  last_updated: 2026-03-05
+  type: workshop
+  description:  In this technical workshop, you will build a complete analytics platform with streaming data using Microsoft Fabric Real-Time Intelligence components and other features of Microsoft Fabric. This is a proctor led workshop in which each section is accompanied by a technical overview of Fabric RTI components.
+  authors:
+  - Brian Bønk Rueløkke
+  - Devang Shah
+  - Frank Geisler
+  - Johan Ludvig Brattås
+  - Matt Gordon
+  - Minni Walia
+  - Heidi Hasting
+  contacts:
+    - "@minwal"
+  duration_minutes: 360
+  audience: students, pro devs, data engineers, data architects, analysts
+  level: intermediate
+  tags: fabric, kql, realtime, intelligence, event, stream, sql, data, analytics, kusto, medallion, dashboard, reflex, activator
