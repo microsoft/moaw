@@ -680,15 +680,15 @@
   language: en
   last_updated: 2026-03-06
   type: workshop
-  description:  In this technical workshop, you will build a complete analytics platform with streaming data using Microsoft Fabric Real-Time Intelligence components and other features of Microsoft Fabric. This is a proctor-led workshop in which each section is accompanied by a technical overview of Fabric RTI components.
+  description: In this technical workshop, you will build a complete analytics platform with streaming data using Microsoft Fabric Real-Time Intelligence components and other features of Microsoft Fabric. This is a proctor-led workshop in which each section is accompanied by a technical overview of Fabric RTI components.
   authors:
-  - Brian Bønk Rueløkke
-  - Devang Shah
-  - Frank Geisler
-  - Johan Ludvig Brattås
-  - Matt Gordon
-  - Minni Walia
-  - Heidi Hasting
+    - Brian Bønk Rueløkke
+    - Devang Shah
+    - Frank Geisler
+    - Johan Ludvig Brattås
+    - Matt Gordon
+    - Minni Walia
+    - Heidi Hasting
   contacts:
     - "@minwal"
   duration_minutes: 360
