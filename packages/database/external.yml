@@ -674,7 +674,6 @@
   level: beginner
   tags: azure, managed redis, database, serverless, apim, cache, csu
 
-
 - title: Building Scalable Real-Time Solutions using Event-Driven Architectures with Microsoft Fabric
   url: https://microsoft.github.io/moaw/workshop/gh:minwal/FabConATLRTIWorkshop/main/docs/
   github_url: https://github.com/minwal/FabConATLRTIWorkshop
