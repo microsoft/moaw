@@ -6,7 +6,10 @@
     "build:website": "npm run build --workspace=website",
     "build:cli": "npm run build --workspace=@moaw/cli",
     "create:db": "npm run create:db --workspace=database",
-    "format": "npm run format --workspaces --if-present"
+    "format": "npm run format --workspaces --if-present",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui"
   },
   "repository": {
     "type": "git",
@@ -24,5 +27,9 @@
   "homepage": "https://github.com/microsoft/moaw#readme",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "playwright": "^1.57.0"
+  }
 }
