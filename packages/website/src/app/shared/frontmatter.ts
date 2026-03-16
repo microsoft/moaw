@@ -21,6 +21,8 @@ export type FrontMatterData = Partial<{
   oc_id: string;
   audience: string;
   level: string;
+  language: string;
+  translations: string | string[];
 }>;
 
 export interface FrontMatterParseResult<ExtraProperties = {}> {
