@@ -695,3 +695,26 @@
   audience: students, pro devs, data engineers, data architects, analysts
   level: intermediate
   tags: fabric, kql, realtime, intelligence, event, stream, sql, data, analytics, kusto, medallion, dashboard, reflex, activator
+
+- title: Product Hands-on Lab - Microsoft Agent Framework with Microsoft Foundry
+  url: https://microsoft.github.io/moaw/workshop/gh:microsoft/hands-on-lab-agent-framework-with-microsoft-foundry/main/docs/
+  github_url: https://github.com/microsoft/hands-on-lab-agent-framework-with-microsoft-foundry
+  language: en
+  last_updated: 2026-04-22
+  type: workshop
+  description:  This workshop will cover how to build agentic applications using the Microsoft Agent Framework with Microsoft Foundry. You will use it to build a complete real world scenario.
+  authors:
+    - Damien Aicheh
+    - Olivier Mertens
+    - David Rei
+    - Amine Lemsih
+  contacts:
+    - "@damienaicheh"
+    - "@olmertens"
+    - "@reidav"
+    - "@aminelemsih"
+  duration_minutes: 300
+  audience: developers, architects, AI engineers
+  level: beginner
+  tags: microsoft foundry, agent framework, mcp, ai search, foundry iq, dev-ui, csu, codespace, devcontainer
+  navigation_levels: 3
