@@ -4,7 +4,9 @@
   <!-- Workaround for GitHub Pages not supporting SPA routing -->
   <script>
     sessionStorage.redirect = location.href;
-    const url = window.location.hostname.includes('.github.io') ? '__BASE_HREF__' : '/';
+    const hostname = window.location.hostname;
+    const isGitHubPagesHost = hostname === 'github.io' || hostname.endsWith('.github.io');
+    const url = isGitHubPagesHost ? '__BASE_HREF__' : '/';
     window.location.replace(url);
   </script>
 </head>
