@@ -718,3 +718,22 @@
   level: beginner
   tags: microsoft foundry, agent framework, mcp, ai search, foundry iq, dev-ui, csu, codespace, devcontainer
   navigation_levels: 3
+
+- title: Agent Quality & Token Optimization
+  description: This workshop turns the Agent Quality & Token Optimization workshop into a set of hands-on labs. You will not just read about the techniques, you will practice them and measure the difference they make.
+  url: https://microsoft.github.io/moaw/workshop/gh:fimdim/agent-quality-token-optimization-workshop/main/docs/
+  language: en
+  last_updated: 2026-06-28
+  type: workshop
+  level: intermediate
+  github_url: https://github.com/fimdim/agent-quality-token-optimization-workshop
+  authors:
+    - Firas Mdimagh
+    - Juan Manuel Servera
+  contacts:
+    - '@fimdim'
+    - '@jmservera'
+  duration_minutes: 180
+  audience: students, pro devs
+  tags: github-copilot, ai-agent, prompt-engineering, context-engineering, token-optimization
+  navigation_levels: 3
