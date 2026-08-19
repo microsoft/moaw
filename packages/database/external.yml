@@ -737,3 +737,21 @@
   audience: students, pro devs
   tags: github-copilot, ai-agent, prompt-engineering, context-engineering, token-optimization
   navigation_levels: 3
+
+- title: "Context > Models: How to make your agents truly intelligent"
+  description: Plan a cupcake order with GitHub Copilot and discover why the right context matters more than which model you use. Hands-on with Foundry IQ, Fabric IQ and MCP.
+  url: https://microsoft.github.io/moaw/workshop/gh:marcteipel/ContextMattersMost-Workshop/main/docs/
+  github_url: https://github.com/marcteipel/ContextMattersMost-Workshop
+  language: en
+  last_updated: 2026-07-09
+  type: workshop
+  level: beginner
+  authors:
+    - Marc Teipel
+  contacts:
+    - '@marcteipel'
+  duration_minutes: 60
+  audience: students, pro devs
+  tags: github copilot, mcp, foundry iq, fabric iq, azure, context engineering
+  navigation_levels: 2
+  navigation_numbering: true
