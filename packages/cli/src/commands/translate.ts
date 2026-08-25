@@ -78,8 +78,8 @@ export async function translate(options: TranslateOptions = {}): Promise<void> {
       console.info(`Translation agent task completed in ${timeStr}:`);
       console.log(response?.data.content);
 
-      await session.destroy();
-      debug('Copilot CLI session destroyed');
+      await session.disconnect();
+      debug('Copilot CLI session disconnected');
     } catch (error: unknown) {
       const error_ = error as Error;
       if (error_.message?.includes('ENOENT')) {
