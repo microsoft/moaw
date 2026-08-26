@@ -1,3 +1,10 @@
+# [cli-1.6.1](https://github.com/microsoft/moaw/compare/cli-1.6.0...cli-1.6.1) (2026-08-26)
+
+
+### Bug Fixes
+
+* **cli:** update Copilot SDK to fix module loading error ([#190](https://github.com/microsoft/moaw/issues/190)) ([9deeac0](https://github.com/microsoft/moaw/commit/9deeac0c8c7823d42e44f3a23bdec9559c68ce55))
+
 # [cli-1.6.0](https://github.com/microsoft/moaw/compare/cli-1.5.2...cli-1.6.0) (2026-01-23)
 
 
