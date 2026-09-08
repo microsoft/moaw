@@ -737,3 +737,17 @@
   audience: students, pro devs
   tags: github-copilot, ai-agent, prompt-engineering, context-engineering, token-optimization
   navigation_levels: 3
+
+- title: Monitoring Cart Abandonment with Fabric Real-Time Intelligence
+  url: https://moaw.dev/workshop/?src=gh:dikodev/cartabandonment-rti-workshop/main/docs/
+  github_url: https://github.com/dikodev/cartabandonment-rti-workshop
+  language: en
+  last_updated: 2026-09-02
+  type: workshop
+  level: beginner
+  description: Learn how to monitor and act on real-time data from an e-commerce application using Microsoft Fabric's Real-Time Intelligence.
+  authors:
+    - Someleze Diko
+  contacts:
+    - "@dikodev"
+  audience: students, pro devs
