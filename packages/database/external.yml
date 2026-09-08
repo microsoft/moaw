@@ -744,6 +744,7 @@
   language: en
   last_updated: 2026-09-02
   type: workshop
+  level: beginner
   description: Learn how to monitor and act on real-time data from an e-commerce application using Microsoft Fabric's Real-Time Intelligence.
   authors:
     - Someleze Diko
