@@ -751,3 +751,37 @@
   contacts:
     - "@dikodev"
   audience: students, pro devs
+
+- title: GitHub Enterprise - From Commit to Firmware assets automations
+  description: >-
+    Build and verify an embedded CI/CD pipeline with GitHub Actions
+    in your existing customer embedded project.
+  url: https://aka.ms/ws?src=gh:christophegigax-microsoft/gh-actions-embedded-workshop/main/moaw/
+  language: en
+  last_updated: 2026-11-13
+  type: workshop
+  level: intermediate
+  github_url: https://github.com/ChristopheGigax-Microsoft/gh-actions-embedded-workshop
+  authors:
+    - ChristopheGigax-Microsoft
+  contacts:
+    - https://github.com/ChristopheGigax-Microsoft
+  duration_minutes: 150
+  tags: github actions, embedded, firmware, ci/cd, testing, delivery
+
+- title: GitHub Enterprise - From Rulesets to Safeguards
+  description: >-
+    Configure, challenge, inspect, and prove GitHub repository rulesets
+    in an approved repository, solo or with an optional partner.
+  url: https://aka.ms/ws?src=gh:ChristopheGigax-Microsoft/gh-rulesets-admin-workshop/main/moaw/
+  language: en
+  last_updated: '2026-11-13'
+  type: workshop
+  level: intermediate
+  github_url: https://github.com/ChristopheGigax-Microsoft/gh-rulesets-admin-workshop
+  authors:
+    - ChristopheGigax-Microsoft
+  contacts:
+    - https://github.com/ChristopheGigax-Microsoft
+  duration_minutes: null # Required: replace with a positive integer.
+  tags: github, administration, rulesets, pull requests, ci
