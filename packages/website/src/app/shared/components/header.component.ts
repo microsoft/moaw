@@ -2,12 +2,13 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from './icon.component';
 import { SidebarComponent } from './sidebar.component';
+import { LanguageSelectorComponent, LanguageOption } from './language-selector.component';
 import { Link } from '../link';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconComponent, LanguageSelectorComponent],
   template: `
     <header class="navbar" [ngClass]="type">
       <div class="navbar-container">
@@ -20,6 +21,11 @@ import { Link } from '../link';
         </div>
         <div class="title text-ellipsis">{{ title }}</div>
         <div class="fill"></div>
+        <app-language-selector
+          *ngIf="languages.length > 0"
+          [languages]="languages"
+          [currentLanguage]="currentLanguage"
+        ></app-language-selector>
         <div class="links">
           <a *ngFor="let link of links" [href]="link.url" [target]="isExternalLink(link) ? '_blank' : '_self'">
             <app-icon *ngIf="link.icon" [name]="link.icon" size="20" class="link-icon"></app-icon>{{ link.text
@@ -153,6 +159,8 @@ export class HeaderComponent {
   @Input() links: Link[] = [];
   @Input() sidebar: SidebarComponent | undefined;
   @Input() type: string = '';
+  @Input() languages: LanguageOption[] = [];
+  @Input() currentLanguage: string = 'en';
 
   toggleSidebar(event: Event) {
     if (this.sidebar) {

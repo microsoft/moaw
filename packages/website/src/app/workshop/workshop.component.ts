@@ -7,12 +7,14 @@ import { FooterComponent } from '../shared/components/footer.component';
 import { SidebarComponent } from '../shared/components/sidebar.component';
 import { LoaderComponent } from '../shared/components/loader.component';
 import { CopyComponent } from '../shared/components/copy.component';
+import { LanguageOption } from '../shared/components/language-selector.component';
 import { Workshop, loadWorkshop, createMenuLinks } from './workshop';
 import { PaginationComponent } from './pagination.component';
 import { MenuLink } from '../shared/link';
 import { debounce } from '../shared/event';
 import { scrollToId, scrollToTop } from '../shared/scroll';
 import { getRepoPath } from '../shared/loader';
+import { defaultLanguage } from '../shared/constants';
 
 @Component({
   selector: 'app-workshop',
@@ -29,7 +31,7 @@ import { getRepoPath } from '../shared/loader';
   ],
   template: `
     <div (click)="sidebar.toggleOpen(false)" class="full-viewport">
-      <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar"></app-header>
+      <app-header [title]="workshop?.shortTitle || 'Workshop'" [sidebar]="sidebar" [languages]="languages" [currentLanguage]="currentLanguage"></app-header>
       <main class="content">
         <app-sidebar
           #sidebar="sidebar"
@@ -88,6 +90,8 @@ export class WorkshopComponent {
   menuLinks: MenuLink[] = [];
   scrollInit: boolean = false;
   enableScrollEvent: boolean = false;
+  languages: LanguageOption[] = [];
+  currentLanguage: string = defaultLanguage;
 
   scrolled = debounce((_event: Event) => {
     if (!this.scrollInit) {
@@ -155,6 +159,7 @@ export class WorkshopComponent {
       this.workshop = await loadWorkshop(repoPath, { wtid, ocid, vars });
       this.menuLinks = createMenuLinks(this.workshop);
       this.updateAuthors();
+      this.loadLanguages(repoPath);
     } catch (error) {
       console.error(error);
     }
@@ -206,5 +211,111 @@ export class WorkshopComponent {
     // Need to push this to the end of the event loop to avoid received triggers
     // from browser-generated scroll events
     setTimeout(() => (this.enableScrollEvent = true));
+  }
+
+  loadLanguages(repoPath: string) {
+    if (!this.workshop) {
+      return;
+    }
+
+    // Get current language from metadata or detect from path
+    const languageFromMeta = this.workshop.meta?.language;
+    const languageFromPath = this.getLanguageFromPath(repoPath);
+    this.currentLanguage = languageFromMeta || languageFromPath || defaultLanguage;
+
+    // Get translations from metadata
+    const translationsMeta = this.workshop.meta?.translations;
+    if (!translationsMeta || (Array.isArray(translationsMeta) && translationsMeta.length === 0)) {
+      // No translations defined
+      return;
+    }
+
+    // Parse translations array
+    const translationCodes = Array.isArray(translationsMeta) 
+      ? translationsMeta 
+      : translationsMeta.split(',').map(t => t.trim());
+
+    // Build language options
+    const languages: LanguageOption[] = [];
+
+    // Determine base path
+    const basePath = this.getBasePath(repoPath, languageFromPath);
+
+    // Add base language first (always labeled as "default")
+    const baseLanguage = languageFromMeta || defaultLanguage;
+    languages.push({
+      code: baseLanguage,
+      label: `default (${baseLanguage})`,
+      url: this.buildWorkshopUrl(basePath, null)
+    });
+
+    // Add translations sorted alphabetically
+    const sortedTranslations = [...translationCodes].sort((a, b) => a.localeCompare(b));
+    for (const langCode of sortedTranslations) {
+      languages.push({
+        code: langCode,
+        label: langCode,
+        url: this.buildWorkshopUrl(basePath, langCode)
+      });
+    }
+
+    // Only show language selector if there are translations
+    if (languages.length > 1) {
+      this.languages = languages;
+    }
+  }
+
+  getLanguageFromPath(repoPath: string): string | null {
+    // Extract language code from path like "workshop.fr.md" or "translations/workshop.ja.md"
+    const match = repoPath.match(/\.([a-zA-Z]{2}(?:_[A-Z]{2})?)\.md$/);
+    return match ? match[1] : null;
+  }
+
+  getBasePath(repoPath: string, currentLang: string | null): string {
+    // Remove language code and extension from path to get base path
+    if (currentLang) {
+      // Path is like "workshops/my-workshop/translations/workshop.fr.md"
+      // or "workshops/my-workshop/workshop.fr.md"
+      // Use simple string replacement to avoid regex issues
+      const suffix = `.${currentLang}.md`;
+      if (repoPath.endsWith(suffix)) {
+        return repoPath.slice(0, -suffix.length) + '.md';
+      }
+      // Also handle translations folder
+      return repoPath.replace('/translations/', '/');
+    }
+    // Already a base path
+    return repoPath;
+  }
+
+  buildWorkshopUrl(basePath: string, langCode: string | null): string {
+    const { step, wtid, ocid, vars } = getQueryParams();
+    let workshopPath = basePath;
+
+    if (langCode) {
+      // Build translation path: insert "translations/" folder and language code
+      // basePath could be like "workshops/my-workshop/workshop.md" or "my-workshop/"
+      if (workshopPath.endsWith('.md')) {
+        const parts = workshopPath.split('/');
+        const fileName = parts.pop() || '';
+        const baseName = fileName.replace('.md', '');
+        workshopPath = `${parts.join('/')}/translations/${baseName}.${langCode}.md`;
+      } else {
+        // Handle directory path
+        workshopPath = `${workshopPath}translations/workshop.${langCode}.md`;
+      }
+    }
+
+    // Build query string
+    const params = new URLSearchParams();
+    if (step) params.set('step', step);
+    if (wtid) params.set('wtid', wtid);
+    if (ocid) params.set('ocid', ocid);
+    if (vars) params.set('vars', vars);
+    
+    const queryString = params.toString();
+    const baseUrl = `${window.location.origin}${window.location.pathname.split('?')[0]}`;
+    
+    return `${baseUrl}?src=${encodeURIComponent(workshopPath)}${queryString ? '&' + queryString : ''}`;
   }
 }
