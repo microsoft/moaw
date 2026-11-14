@@ -799,7 +799,9 @@ def proportional_allocation_percentage(df, percentage):
     """
     # Determine the total number of rows and desired sample size
     total_count = df.count()
-    sample_size = int(round(total_count * (percentage / 100.0)))
+    sample_size_compute = df.groupBy('season').count().select(sum(col('count'))).withColumnRenamed('sum(count)', 'summation')
+    sample_size_compute = sample_size_compute.withColumn('multiplied', col('summation') * (percentage/100.0))
+    sample_size = sample_size_compute.select(round('multiplied', 0)).collect()[0][0]
 
     # Compute group counts
     group_counts = (
@@ -822,7 +824,7 @@ def proportional_allocation_percentage(df, percentage):
 
     # Sum of "sample_needed" might not equal the total desired sample_size due to rounding
     current_sum = group_counts_pd["sample_needed"].sum()
-    difference = sample_size - current_sum
+    difference = int(sample_size - current_sum)
 
     if difference > 0:
         # If we're short, we add +1 to the groups with the largest proportions until we fix the difference
